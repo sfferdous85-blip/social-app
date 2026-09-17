@@ -6,7 +6,11 @@
 <title>My Social App</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 body{
   font-family:Arial,sans-serif;
@@ -17,22 +21,34 @@ body{
 .header{
   background:#1877f2;
   color:white;
-  padding:15px;
-  font-size:24px;
+  padding:12px;
+  font-size:23px;
   font-weight:bold;
   text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header button{
+  float:right;
+  background:white;
+  color:#1877f2;
+  padding:7px 10px;
+  margin:0;
+  font-size:13px;
 }
 
 .container{
-  max-width:600px;
-  margin:20px auto;
+  max-width:650px;
+  margin:15px auto;
   padding:10px;
 }
 
 .card,.post{
   background:white;
   border-radius:12px;
-  padding:18px;
+  padding:16px;
   margin-bottom:15px;
   box-shadow:0 2px 7px rgba(0,0,0,.1);
 }
@@ -54,8 +70,8 @@ textarea{
 button{
   border:0;
   border-radius:8px;
-  padding:11px 18px;
-  margin-top:8px;
+  padding:11px 17px;
+  margin-top:7px;
   background:#1877f2;
   color:white;
   font-size:16px;
@@ -68,13 +84,74 @@ button{
 }
 
 .hidden{
-  display:none;
+  display:none!important;
 }
 
 .title{
-  font-size:25px;
+  font-size:24px;
   font-weight:bold;
   margin-bottom:15px;
+}
+
+.profile-cover{
+  height:170px;
+  background:#1877f2;
+  border-radius:12px 12px 0 0;
+  overflow:hidden;
+}
+
+.profile-cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-area{
+  background:white;
+  padding:0 16px 18px;
+  border-radius:0 0 12px 12px;
+  text-align:center;
+  box-shadow:0 2px 7px rgba(0,0,0,.1);
+  margin-bottom:15px;
+}
+
+.profile-picture{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  border:5px solid white;
+  object-fit:cover;
+  margin-top:-55px;
+  background:#ddd;
+}
+
+.profile-name{
+  font-size:24px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.profile-email{
+  color:#666;
+  margin-top:5px;
+}
+
+.nav{
+  display:flex;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.nav button{
+  flex:1;
+}
+
+.post-image{
+  width:100%;
+  max-height:500px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-top:12px;
 }
 
 .post-name{
@@ -91,7 +168,7 @@ button{
 
 .actions{
   display:flex;
-  gap:8px;
+  gap:7px;
   margin-top:12px;
 }
 
@@ -99,13 +176,66 @@ button{
   flex:1;
   background:#eee;
   color:#222;
+  font-size:14px;
 }
 
-.logout{
-  float:right;
+.preview{
+  width:100%;
+  max-height:250px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.file-label{
+  display:block;
+  background:#eee;
+  color:#222;
+  padding:12px;
+  border-radius:8px;
+  text-align:center;
+  margin-top:8px;
+  cursor:pointer;
+}
+
+.file-label input{
+  display:none;
+}
+
+hr{
+  border:0;
+  border-top:1px solid #eee;
+  margin:15px 0;
+}
+
+.message{
+  margin-top:10px;
+  color:#d00;
+}
+
+.comment-box{
+  margin-top:10px;
+  display:none;
+}
+
+.comment{
+  background:#f0f2f5;
+  padding:8px;
+  border-radius:8px;
+  margin-top:6px;
+}
+
+.share-box{
+  margin-top:10px;
+  background:#f0f2f5;
+  padding:10px;
+  border-radius:8px;
+}
+
+.stats{
+  color:#666;
   font-size:14px;
-  padding:8px 12px;
-  margin-top:-5px;
+  margin-top:8px;
 }
 </style>
 </head>
@@ -114,53 +244,209 @@ button{
 
 <div class="header">
   My Social App
-  <button class="logout hidden" id="logoutBtn" onclick="logout()">Logout</button>
+  <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
 </div>
 
 <div class="container">
 
 <!-- LOGIN -->
 <div id="loginPage" class="card">
+
   <div class="title">Login</div>
 
-  <input id="loginEmail" type="email" placeholder="Email">
-  <input id="loginPassword" type="password" placeholder="Password">
+  <input id="loginEmail"
+         type="email"
+         placeholder="Email">
+
+  <input id="loginPassword"
+         type="password"
+         placeholder="Password">
 
   <button onclick="login()">Login</button>
-  <button class="secondary" onclick="showRegister()">Create new account</button>
 
-  <p id="loginMessage"></p>
+  <button class="secondary"
+          onclick="showRegister()">
+    Create new account
+  </button>
+
+  <p id="loginMessage"
+     class="message"></p>
+
 </div>
 
 
 <!-- REGISTER -->
-<div id="registerPage" class="card hidden">
+<div id="registerPage"
+     class="card hidden">
+
   <div class="title">Create Account</div>
 
-  <input id="regName" type="text" placeholder="আপনার নাম">
-  <input id="regEmail" type="email" placeholder="Email">
-  <input id="regPassword" type="password" placeholder="Password">
+  <input id="regName"
+         type="text"
+         placeholder="আপনার নাম">
 
-  <button onclick="register()">Register</button>
-  <button class="secondary" onclick="showLogin()">Already have an account?</button>
+  <input id="regEmail"
+         type="email"
+         placeholder="Email">
 
-  <p id="registerMessage"></p>
+  <input id="regPassword"
+         type="password"
+         placeholder="Password">
+
+  <button onclick="register()">
+    Register
+  </button>
+
+  <button class="secondary"
+          onclick="showLogin()">
+    Already have an account?
+  </button>
+
+  <p id="registerMessage"
+     class="message"></p>
+
 </div>
 
 
 <!-- HOME -->
 <div id="homePage" class="hidden">
 
-  <div class="card">
-    <div class="title">Home Feed</div>
+  <div class="nav">
 
-    <textarea id="postText"
-      placeholder="আপনি কী ভাবছেন?"></textarea>
+    <button onclick="showHome()">
+      🏠 Home
+    </button>
 
-    <button onclick="createPost()">Post</button>
+    <button onclick="showProfile()">
+      👤 Profile
+    </button>
+
   </div>
 
+
+  <!-- CREATE POST -->
+  <div class="card">
+
+    <div class="title">
+      Create Post
+    </div>
+
+    <textarea
+      id="postText"
+      placeholder="আপনি কী ভাবছেন?">
+    </textarea>
+
+    <label class="file-label">
+
+      📷 Photo নির্বাচন করুন
+
+      <input
+        id="postPhoto"
+        type="file"
+        accept="image/*"
+        onchange="previewPostPhoto(event)">
+
+    </label>
+
+    <img
+      id="postPreview"
+      class="preview hidden">
+
+    <button onclick="createPost()">
+      Post
+    </button>
+
+  </div>
+
+
+  <!-- FEED -->
   <div id="feed"></div>
+
+</div>
+
+
+<!-- PROFILE -->
+<div id="profilePage" class="hidden">
+
+  <div class="nav">
+
+    <button onclick="showHome()">
+      🏠 Home
+    </button>
+
+    <button onclick="showProfile()">
+      👤 Profile
+    </button>
+
+  </div>
+
+
+  <div class="profile-cover">
+
+    <img
+      id="coverImage"
+      src=""
+      alt="Cover">
+
+  </div>
+
+
+  <div class="profile-area">
+
+    <img
+      id="profileImage"
+      class="profile-picture"
+      src=""
+      alt="Profile">
+
+    <div
+      id="profileName"
+      class="profile-name">
+    </div>
+
+    <div
+      id="profileEmail"
+      class="profile-email">
+    </div>
+
+    <hr>
+
+    <label class="file-label">
+
+      📷 Change Profile Photo
+
+      <input
+        id="profilePhotoInput"
+        type="file"
+        accept="image/*"
+        onchange="changeProfilePhoto(event)">
+
+    </label>
+
+    <label class="file-label">
+
+      🖼️ Change Cover Photo
+
+      <input
+        id="coverPhotoInput"
+        type="file"
+        accept="image/*"
+        onchange="changeCoverPhoto(event)">
+
+    </label>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="title">
+      My Posts
+    </div>
+
+    <div id="myPosts"></div>
+
+  </div>
 
 </div>
 
@@ -171,178 +457,1116 @@ button{
 
 let currentUser = null;
 
-let users = JSON.parse(localStorage.getItem("users") || "[]");
+let users =
+JSON.parse(
+  localStorage.getItem("users") || "[]"
+);
 
-let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+let posts =
+JSON.parse(
+  localStorage.getItem("posts") || "[]"
+);
 
+
+/* =========================
+   SAVE DATA
+========================= */
 
 function saveData(){
-  localStorage.setItem("users",JSON.stringify(users));
-  localStorage.setItem("posts",JSON.stringify(posts));
+
+  localStorage.setItem(
+    "users",
+    JSON.stringify(users)
+  );
+
+  localStorage.setItem(
+    "posts",
+    JSON.stringify(posts)
+  );
+
 }
 
 
+/* =========================
+   LOGIN / REGISTER
+========================= */
+
 function showRegister(){
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("registerPage").classList.remove("hidden");
+
+  document
+    .getElementById("loginPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("registerPage")
+    .classList.remove("hidden");
+
 }
 
 
 function showLogin(){
-  document.getElementById("registerPage").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
+
+  document
+    .getElementById("registerPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
+
 }
 
 
 function register(){
 
-  const name=document.getElementById("regName").value.trim();
-  const email=document.getElementById("regEmail").value.trim();
-  const password=document.getElementById("regPassword").value;
+  const name =
+    document
+      .getElementById("regName")
+      .value
+      .trim();
+
+  const email =
+    document
+      .getElementById("regEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("regPassword")
+      .value;
+
 
   if(!name || !email || !password){
-    document.getElementById("registerMessage").innerText="সব তথ্য পূরণ করুন।";
+
+    document
+      .getElementById("registerMessage")
+      .innerText =
+      "সব তথ্য পূরণ করুন।";
+
     return;
   }
 
-  if(users.some(u=>u.email===email)){
-    document.getElementById("registerMessage").innerText="এই Email দিয়ে আগে অ্যাকাউন্ট আছে।";
+
+  if(users.some(u => u.email === email)){
+
+    document
+      .getElementById("registerMessage")
+      .innerText =
+      "এই Email দিয়ে আগে অ্যাকাউন্ট আছে।";
+
     return;
   }
 
-  users.push({
+
+  const newUser = {
+
+    id:Date.now(),
+
     name:name,
+
     email:email,
-    password:password
-  });
+
+    password:password,
+
+    profilePhoto:"",
+
+    coverPhoto:""
+
+  };
+
+
+  users.push(newUser);
 
   saveData();
 
-  document.getElementById("registerMessage").innerText="Account তৈরি হয়েছে! এখন Login করুন।";
+
+  document
+    .getElementById("registerMessage")
+    .innerText =
+    "Account তৈরি হয়েছে! এখন Login করুন।";
+
 
   setTimeout(showLogin,800);
+
 }
 
 
 function login(){
 
-  const email=document.getElementById("loginEmail").value.trim();
-  const password=document.getElementById("loginPassword").value;
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
 
-  const user=users.find(
-    u=>u.email===email && u.password===password
-  );
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+
+  const user =
+    users.find(
+      u =>
+      u.email === email &&
+      u.password === password
+    );
+
 
   if(!user){
-    document.getElementById("loginMessage").innerText="Email অথবা Password ভুল।";
+
+    document
+      .getElementById("loginMessage")
+      .innerText =
+      "Email অথবা Password ভুল।";
+
     return;
   }
 
-  currentUser=user;
 
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("registerPage").classList.add("hidden");
-  document.getElementById("homePage").classList.remove("hidden");
+  currentUser = user;
 
-  document.getElementById("logoutBtn").classList.remove("hidden");
+
+  document
+    .getElementById("loginPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("registerPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("homePage")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("logoutBtn")
+    .classList.remove("hidden");
+
 
   loadPosts();
+
 }
 
 
 function logout(){
 
-  currentUser=null;
+  currentUser = null;
 
-  document.getElementById("homePage").classList.add("hidden");
-  document.getElementById("logoutBtn").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
+
+  document
+    .getElementById("homePage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("profilePage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("logoutBtn")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
+
 }
 
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showHome(){
+
+  document
+    .getElementById("profilePage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("homePage")
+    .classList.remove("hidden");
+
+  loadPosts();
+
+}
+
+
+function showProfile(){
+
+  document
+    .getElementById("homePage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("profilePage")
+    .classList.remove("hidden");
+
+  loadProfile();
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function loadProfile(){
+
+  document
+    .getElementById("profileName")
+    .innerText =
+    currentUser.name;
+
+
+  document
+    .getElementById("profileEmail")
+    .innerText =
+    currentUser.email;
+
+
+  document
+    .getElementById("profileImage")
+    .src =
+    currentUser.profilePhoto ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' font-size='70'%3E👤%3C/text%3E%3C/svg%3E";
+
+
+  document
+    .getElementById("coverImage")
+    .src =
+    currentUser.coverPhoto ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='250'%3E%3Crect width='100%25' height='100%25' fill='%231877f2'/%3E%3C/svg%3E";
+
+
+  loadMyPosts();
+
+}
+
+
+function changeProfilePhoto(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file) return;
+
+
+  resizeImage(
+    file,
+    400,
+    400,
+    function(imageData){
+
+      currentUser.profilePhoto =
+        imageData;
+
+      updateCurrentUser();
+
+      loadProfile();
+
+    }
+  );
+
+}
+
+
+function changeCoverPhoto(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file) return;
+
+
+  resizeImage(
+    file,
+    1000,
+    400,
+    function(imageData){
+
+      currentUser.coverPhoto =
+        imageData;
+
+      updateCurrentUser();
+
+      loadProfile();
+
+    }
+  );
+
+}
+
+
+function updateCurrentUser(){
+
+  const index =
+    users.findIndex(
+      u =>
+      u.id === currentUser.id
+    );
+
+
+  if(index !== -1){
+
+    users[index] =
+      currentUser;
+
+    saveData();
+
+  }
+
+}
+
+
+/* =========================
+   PHOTO RESIZE
+========================= */
+
+function resizeImage(
+  file,
+  maxWidth,
+  maxHeight,
+  callback
+){
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function(e){
+
+      const img =
+        new Image();
+
+
+      img.onload =
+        function(){
+
+          let width =
+            img.width;
+
+          let height =
+            img.height;
+
+
+          const ratio =
+            Math.min(
+              maxWidth / width,
+              maxHeight / height,
+              1
+            );
+
+
+          width =
+            Math.round(
+              width * ratio
+            );
+
+          height =
+            Math.round(
+              height * ratio
+            );
+
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          canvas.width =
+            width;
+
+          canvas.height =
+            height;
+
+
+          const ctx =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          callback(
+            canvas.toDataURL(
+              "image/jpeg",
+              0.75
+            )
+          );
+
+        };
+
+
+      img.src =
+        e.target.result;
+
+    };
+
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/* =========================
+   POST PHOTO
+========================= */
+
+let selectedPostPhoto = "";
+
+
+function previewPostPhoto(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file) return;
+
+
+  resizeImage(
+    file,
+    900,
+    900,
+    function(imageData){
+
+      selectedPostPhoto =
+        imageData;
+
+
+      const preview =
+        document.getElementById(
+          "postPreview"
+        );
+
+
+      preview.src =
+        imageData;
+
+
+      preview.classList
+        .remove("hidden");
+
+    }
+  );
+
+}
+
+
+/* =========================
+   CREATE POST
+========================= */
 
 function createPost(){
 
-  const text=document.getElementById("postText").value.trim();
+  const text =
+    document
+      .getElementById("postText")
+      .value
+      .trim();
 
-  if(!text){
-    alert("আগে কিছু লিখুন!");
+
+  if(!text && !selectedPostPhoto){
+
+    alert(
+      "লেখা অথবা ছবি দিন!"
+    );
+
     return;
   }
 
+
   posts.unshift({
+
     id:Date.now(),
+
+    userId:currentUser.id,
+
     name:currentUser.name,
+
     text:text,
-    likes:0
+
+    image:selectedPostPhoto,
+
+    likes:0,
+
+    likedBy:[],
+
+    comments:[],
+
+    shares:0
+
   });
+
 
   saveData();
 
-  document.getElementById("postText").value="";
+
+  document
+    .getElementById("postText")
+    .value = "";
+
+
+  document
+    .getElementById("postPhoto")
+    .value = "";
+
+
+  document
+    .getElementById("postPreview")
+    .classList
+    .add("hidden");
+
+
+  selectedPostPhoto = "";
+
 
   loadPosts();
+
 }
 
 
-function likePost(id){
-
-  const post=posts.find(p=>p.id===id);
-
-  if(post){
-    post.likes++;
-    saveData();
-    loadPosts();
-  }
-}
-
+/* =========================
+   FEED
+========================= */
 
 function loadPosts(){
 
-  const feed=document.getElementById("feed");
+  const feed =
+    document.getElementById(
+      "feed"
+    );
 
-  feed.innerHTML="";
 
-  posts.forEach(post=>{
+  feed.innerHTML = "";
 
-    const div=document.createElement("div");
 
-    div.className="post";
+  if(posts.length === 0){
 
-    div.innerHTML=`
-      <div class="post-name">${escapeHTML(post.name)}</div>
+    feed.innerHTML =
+      `<div class="card">
+        এখনো কোনো Post নেই।
+      </div>`;
 
-      <div class="post-text">${escapeHTML(post.text)}</div>
+    return;
+  }
+
+
+  posts.forEach(post => {
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    div.className =
+      "post";
+
+
+    let imageHTML = "";
+
+
+    if(post.image){
+
+      imageHTML =
+        `<img
+          class="post-image"
+          src="${post.image}"
+          alt="Post photo">`;
+
+    }
+
+
+    const liked =
+      post.likedBy &&
+      post.likedBy.includes(
+        currentUser.id
+      );
+
+
+    const comments =
+      post.comments || [];
+
+
+    let commentsHTML = "";
+
+
+    comments.forEach(comment => {
+
+      commentsHTML +=
+        `<div class="comment">
+          <b>${escapeHTML(comment.name)}</b>
+          <br>
+          ${escapeHTML(comment.text)}
+        </div>`;
+
+    });
+
+
+    div.innerHTML = `
+
+      <div class="post-name">
+        ${escapeHTML(post.name)}
+      </div>
+
+      <div class="post-text">
+        ${escapeHTML(post.text)}
+      </div>
+
+      ${imageHTML}
+
+      <div class="stats">
+
+        ❤️ ${post.likes || 0}
+        Likes
+        •
+        💬 ${comments.length}
+        Comments
+        •
+        ↗ ${post.shares || 0}
+        Shares
+
+      </div>
+
 
       <div class="actions">
 
-        <button onclick="likePost(${post.id})">
-          ❤️ Like ${post.likes}
+        <button
+          onclick="likePost(${post.id})">
+
+          ${liked ? "💙 Unlike" : "❤️ Like"}
+
         </button>
 
-        <button onclick="alert('Comment feature আমরা পরের ধাপে যোগ করব')">
+
+        <button
+          onclick="toggleComment(${post.id})">
+
           💬 Comment
+
         </button>
 
-        <button onclick="alert('Share feature আমরা পরের ধাপে যোগ করব')">
+
+        <button
+          onclick="sharePost(${post.id})">
+
           ↗ Share
+
         </button>
 
       </div>
+
+
+      <div
+        id="commentBox${post.id}"
+        class="comment-box">
+
+        <input
+          id="commentInput${post.id}"
+          type="text"
+          placeholder="Comment লিখুন...">
+
+        <button
+          onclick="addComment(${post.id})">
+
+          Comment
+
+        </button>
+
+        <div>
+          ${commentsHTML}
+        </div>
+
+      </div>
+
     `;
 
+
     feed.appendChild(div);
+
   });
+
 }
 
+
+/* =========================
+   MY POSTS
+========================= */
+
+function loadMyPosts(){
+
+  const box =
+    document.getElementById(
+      "myPosts"
+    );
+
+
+  box.innerHTML = "";
+
+
+  const myPosts =
+    posts.filter(
+      p =>
+      p.userId ===
+      currentUser.id
+    );
+
+
+  if(myPosts.length === 0){
+
+    box.innerHTML =
+      "<p>আপনার এখনো কোনো পোস্ট নেই।</p>";
+
+    return;
+  }
+
+
+  myPosts.forEach(post => {
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    div.className =
+      "post";
+
+
+    div.innerHTML = `
+
+      <div class="post-text">
+        ${escapeHTML(post.text)}
+      </div>
+
+      ${
+        post.image
+        ?
+        `<img
+          class="post-image"
+          src="${post.image}">`
+        :
+        ""
+      }
+
+      <div class="stats">
+
+        ❤️ ${post.likes || 0}
+        Likes
+
+        •
+        💬 ${(post.comments || []).length}
+        Comments
+
+        •
+        ↗ ${post.shares || 0}
+        Shares
+
+      </div>
+
+    `;
+
+
+    box.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================
+   LIKE
+========================= */
+
+function likePost(id){
+
+  const post =
+    posts.find(
+      p =>
+      p.id === id
+    );
+
+
+  if(!post) return;
+
+
+  if(!post.likedBy){
+
+    post.likedBy = [];
+
+  }
+
+
+  const index =
+    post.likedBy.indexOf(
+      currentUser.id
+    );
+
+
+  if(index === -1){
+
+    post.likedBy.push(
+      currentUser.id
+    );
+
+    post.likes =
+      (post.likes || 0) + 1;
+
+  }else{
+
+    post.likedBy.splice(
+      index,
+      1
+    );
+
+    post.likes =
+      Math.max(
+        0,
+        (post.likes || 0) - 1
+      );
+
+  }
+
+
+  saveData();
+
+  loadPosts();
+
+}
+
+
+/* =========================
+   COMMENT
+========================= */
+
+function toggleComment(id){
+
+  const box =
+    document.getElementById(
+      "commentBox" + id
+    );
+
+
+  if(
+    box.style.display ===
+    "block"
+  ){
+
+    box.style.display =
+      "none";
+
+  }else{
+
+    box.style.display =
+      "block";
+
+  }
+
+}
+
+
+function addComment(id){
+
+  const input =
+    document.getElementById(
+      "commentInput" + id
+    );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text) return;
+
+
+  const post =
+    posts.find(
+      p =>
+      p.id === id
+    );
+
+
+  if(!post) return;
+
+
+  if(!post.comments){
+
+    post.comments = [];
+
+  }
+
+
+  post.comments.push({
+
+    id:Date.now(),
+
+    userId:
+      currentUser.id,
+
+    name:
+      currentUser.name,
+
+    text:text
+
+  });
+
+
+  saveData();
+
+  loadPosts();
+
+}
+
+
+/* =========================
+   SHARE
+========================= */
+
+function sharePost(id){
+
+  const post =
+    posts.find(
+      p =>
+      p.id === id
+    );
+
+
+  if(!post) return;
+
+
+  post.shares =
+    (post.shares || 0) + 1;
+
+
+  saveData();
+
+
+  if(
+    navigator.share
+  ){
+
+    navigator.share({
+
+      title:
+        "My Social App",
+
+      text:
+        post.text ||
+        "একটি পোস্ট দেখুন"
+
+    }).catch(
+      () => {}
+    );
+
+  }else{
+
+    alert(
+      "Post Share হয়েছে!"
+    );
+
+  }
+
+
+  loadPosts();
+
+}
+
+
+/* =========================
+   SECURITY
+========================= */
 
 function escapeHTML(text){
 
-  const div=document.createElement("div");
+  const div =
+    document.createElement(
+      "div"
+    );
 
-  div.textContent=text;
+
+  div.textContent =
+    text || "";
+
 
   return div.innerHTML;
+
 }
+
+
+/* =========================
+   AUTO LOGIN
+========================= */
+
+window.onload =
+  function(){
+
+    const savedUser =
+      localStorage.getItem(
+        "currentUser"
+      );
+
+
+    if(savedUser){
+
+      const user =
+        users.find(
+          u =>
+          u.id ===
+          Number(savedUser)
+        );
+
+
+      if(user){
+
+        currentUser =
+          user;
+
+
+        document
+          .getElementById(
+            "loginPage"
+          )
+          .classList
+          .add("hidden");
+
+
+        document
+          .getElementById(
+            "homePage"
+          )
+          .classList
+          .remove("hidden");
+
+
+        document
+          .getElementById(
+            "logoutBtn"
+          )
+          .classList
+          .remove("hidden");
+
+
+        loadPosts();
+
+      }
+
+    }
+
+  };
+
 
 </script>
 
