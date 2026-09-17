@@ -3,16 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>My Social App</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
     font-family:Arial,sans-serif;
     background:#f0f2f5;
     color:#222;
 }
+
 button{
     border:0;
     padding:10px 14px;
@@ -20,6 +27,7 @@ button{
     cursor:pointer;
     font-weight:bold;
 }
+
 input,textarea{
     width:100%;
     padding:12px;
@@ -27,2757 +35,2980 @@ input,textarea{
     border:1px solid #ddd;
     border-radius:8px;
     outline:none;
+    background:white;
 }
-textarea{resize:none;height:80px}
+
+textarea{
+    resize:none;
+    height:80px;
+}
+
+img{
+    max-width:100%;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.blue{
+    background:#1877f2;
+    color:white;
+}
+
+.green{
+    background:#42b72a;
+    color:white;
+}
+
+.red{
+    background:#e41e3f;
+    color:white;
+}
+
+.gray{
+    background:#e4e6eb;
+    color:#222;
+}
+
+/* AUTH */
+
+#authPage{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.authBox{
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 25px rgba(0,0,0,.1);
+}
+
+.authBox h1{
+    text-align:center;
+    color:#1877f2;
+    margin-top:0;
+}
+
+.authBox h2{
+    text-align:center;
+}
+
+.authBox button{
+    width:100%;
+    margin-top:8px;
+}
+
+.authMsg{
+    text-align:center;
+    margin-top:10px;
+    color:#e41e3f;
+}
+
+/* APP */
+
+#app{
+    min-height:100vh;
+}
 
 .topbar{
     background:#1877f2;
     color:white;
-    padding:12px;
+    padding:10px 15px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     position:sticky;
     top:0;
-    z-index:20;
+    z-index:100;
 }
+
 .logo{
     font-size:21px;
     font-weight:bold;
 }
-.nav button{
-    background:transparent;
-    color:white;
-    font-size:17px;
-    padding:7px;
+
+.topActions{
+    display:flex;
+    gap:6px;
+}
+
+.topActions button{
+    padding:8px 10px;
+}
+
+.navbar{
+    background:white;
+    display:flex;
+    justify-content:center;
+    gap:5px;
+    padding:8px;
+    position:sticky;
+    top:55px;
+    z-index:90;
+    box-shadow:0 1px 3px rgba(0,0,0,.1);
+}
+
+.navbar button{
+    background:white;
+    font-size:14px;
+}
+
+.navbar button:hover{
+    background:#e4e6eb;
 }
 
 .container{
-    max-width:650px;
-    margin:auto;
-    padding:12px;
+    width:100%;
+    max-width:900px;
+    margin:15px auto;
+    padding:0 10px;
 }
 
-.page{display:none}
-.page.active{display:block}
-
-.card{
+.section{
     background:white;
+    border-radius:12px;
     padding:15px;
-    margin:10px 0;
-    border-radius:10px;
-    box-shadow:0 1px 3px #ccc;
+    margin-bottom:15px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
 }
 
-.center{text-align:center}
+.section h2{
+    margin-top:0;
+}
 
-.profile-cover{
-    height:180px;
+/* PROFILE */
+
+.profileCover{
+    height:220px;
     background:#ddd;
+    border-radius:12px 12px 0 0;
     background-size:cover;
     background-position:center;
-    border-radius:10px 10px 0 0;
+    position:relative;
 }
-.profile-photo{
-    width:110px;
-    height:110px;
+
+.profileAvatar{
+    width:130px;
+    height:130px;
     border-radius:50%;
+    border:5px solid white;
     object-fit:cover;
-    border:4px solid white;
-    margin-top:-55px;
+    position:absolute;
+    left:25px;
+    bottom:-65px;
+    background:white;
 }
-.small-photo{
+
+.profileInfo{
+    padding:75px 20px 20px;
+}
+
+.profileInfo h1{
+    margin:0 0 5px;
+}
+
+.profileBio{
+    color:#555;
+}
+
+.profileButtons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+/* CREATE POST */
+
+.createPost textarea{
+    height:70px;
+}
+
+.fileLabel{
+    display:inline-block;
+    background:#e4e6eb;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:5px;
+}
+
+.fileLabel input{
+    display:none;
+}
+
+/* POSTS */
+
+.post{
+    background:white;
+    border-radius:12px;
+    margin-bottom:15px;
+    padding:15px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+
+.postHeader{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
     width:45px;
     height:45px;
     border-radius:50%;
     object-fit:cover;
-    vertical-align:middle;
+    background:#ddd;
 }
 
-.post-img{
-    width:100%;
-    max-height:500px;
-    object-fit:cover;
-    border-radius:8px;
-    margin-top:10px;
-}
-.reel-video{
-    width:100%;
-    max-height:550px;
-    background:#000;
-    border-radius:8px;
-    margin-top:10px;
+.postName{
+    font-weight:bold;
 }
 
-.action-row{
+.postDate{
+    color:#777;
+    font-size:12px;
+}
+
+.postText{
+    margin:15px 0;
+    white-space:pre-wrap;
+}
+
+.postImage{
+    width:100%;
+    max-height:600px;
+    object-fit:contain;
+    border-radius:10px;
+    background:#eee;
+}
+
+.postActions{
+    display:flex;
+    gap:5px;
+    margin-top:10px;
+    border-top:1px solid #eee;
+    padding-top:8px;
+}
+
+.postActions button{
+    flex:1;
+    background:#f0f2f5;
+}
+
+.commentBox{
     display:flex;
     gap:5px;
     margin-top:10px;
 }
-.action-row button{
-    flex:1;
-    background:#eee;
+
+.commentBox input{
+    margin:0;
+}
+
+.commentBox button{
+    background:#1877f2;
+    color:white;
 }
 
 .comment{
     background:#f0f2f5;
-    padding:8px;
-    border-radius:8px;
-    margin-top:5px;
+    padding:8px 10px;
+    border-radius:10px;
+    margin-top:6px;
 }
 
-.hidden{display:none!important}
-
-.auth{
-    max-width:400px;
-    margin:60px auto;
-    padding:20px;
-}
-.auth h1{
-    color:#1877f2;
-    text-align:center;
+.commentName{
+    font-weight:bold;
 }
 
-.blue{background:#1877f2;color:white}
-.green{background:#42b72a;color:white}
-.red{background:#e53935;color:white}
-.gray{background:#777;color:white}
-.dark{background:#222;color:white}
-.orange{background:#f57c00;color:white}
+/* SEARCH */
 
-.menu-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-}
-.menu-grid button{
-    padding:16px 8px;
-    background:white;
-    box-shadow:0 1px 3px #ccc;
-}
-
-.stats{
+.userCard{
     display:flex;
-    justify-content:space-around;
-    text-align:center;
+    align-items:center;
+    gap:12px;
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+.userCard:last-child{
+    border-bottom:0;
+}
+
+.userCardInfo{
+    flex:1;
+}
+
+.userCard button{
+    margin-left:5px;
+}
+
+/* CHAT */
+
+.chatList{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.chatUser{
+    padding:12px;
+    background:#f0f2f5;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.chatWindow{
+    height:400px;
+    overflow-y:auto;
+    background:#f0f2f5;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.message{
+    max-width:75%;
+    padding:9px 12px;
+    margin:5px 0;
+    border-radius:15px;
+}
+
+.messageMine{
+    background:#1877f2;
+    color:white;
+    margin-left:auto;
+}
+
+.messageOther{
+    background:white;
+}
+
+.messageTime{
+    font-size:10px;
+    opacity:.7;
+}
+
+.chatSend{
+    display:flex;
+    gap:5px;
+}
+
+.chatSend input{
+    margin:0;
+}
+
+.chatSend button{
+    background:#1877f2;
+    color:white;
+}
+
+/* REELS */
+
+.reel{
+    background:#111;
+    color:white;
+    border-radius:12px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.reel video{
+    width:100%;
+    max-height:600px;
+    display:block;
+    background:#000;
+}
+
+.reelInfo{
     padding:12px;
 }
-.stats b{
-    display:block;
-    font-size:20px;
+
+/* NOTIFICATIONS */
+
+.notification{
+    padding:12px;
+    border-bottom:1px solid #eee;
 }
+
+.unread{
+    background:#e7f3ff;
+}
+
+/* MODAL */
 
 .modal{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.65);
-    display:none;
+    background:rgba(0,0,0,.6);
+    display:flex;
     align-items:center;
     justify-content:center;
-    z-index:100;
+    z-index:1000;
     padding:15px;
 }
-.modal-box{
+
+.modalBox{
     background:white;
     width:100%;
     max-width:500px;
     max-height:90vh;
     overflow:auto;
     padding:20px;
-    border-radius:12px;
+    border-radius:15px;
 }
 
-.admin-stat{
-    background:#fff;
-    padding:15px;
-    border-radius:10px;
+.closeBtn{
+    float:right;
+    background:#e4e6eb;
+}
+
+/* LOADING */
+
+.loading{
     text-align:center;
-    box-shadow:0 1px 3px #ccc;
-}
-.admin-stat b{
-    display:block;
-    font-size:26px;
-    color:#1877f2;
-}
-.admin-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-}
-
-.admin-item{
-    border:1px solid #ddd;
-    padding:10px;
-    border-radius:8px;
-    margin:8px 0;
-    background:#fafafa;
-}
-
-.online{
-    color:#16a34a;
-    font-size:12px;
-}
-.offline{
+    padding:25px;
     color:#777;
-    font-size:12px;
+}
+
+.empty{
+    text-align:center;
+    color:#777;
+    padding:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .topbar{
+        padding:9px;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .navbar{
+        overflow-x:auto;
+        justify-content:flex-start;
+        white-space:nowrap;
+        top:51px;
+    }
+
+    .navbar button{
+        min-width:max-content;
+    }
+
+    .profileCover{
+        height:170px;
+    }
+
+    .profileAvatar{
+        width:100px;
+        height:100px;
+        bottom:-50px;
+    }
+
+    .profileInfo{
+        padding-top:60px;
+    }
+
+    .postActions button{
+        padding:8px 5px;
+        font-size:12px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginPage" class="page active">
-<div class="auth">
+<!-- ================= AUTH ================= -->
+
+<div id="authPage">
+
+<div class="authBox">
+
 <h1>My Social App</h1>
 
-<div class="card">
+<div id="loginBox">
+
 <h2>Login</h2>
 
-<input id="loginEmail" type="email" placeholder="Email">
-<input id="loginPassword" type="password" placeholder="Password">
+<input
+id="loginEmail"
+type="email"
+placeholder="Email"
+>
 
-<button class="blue" style="width:100%" onclick="login()">Login</button>
+<input
+id="loginPassword"
+type="password"
+placeholder="Password"
+>
 
-<br><br>
-
-<button class="green" style="width:100%" onclick="showRegister()">
-Create New Account
+<button
+class="blue"
+onclick="login()"
+>
+Login
 </button>
 
-<br><br>
-
-<button class="dark" style="width:100%" onclick="showAdminLogin()">
-👨‍💼 Admin Login
-</button>
-</div>
-</div>
-</div>
-
-
-<!-- REGISTER -->
-<div id="registerPage" class="page">
-<div class="auth">
-<h1>Create Account</h1>
-
-<div class="card">
-<input id="regName" placeholder="Your Name">
-<input id="regEmail" type="email" placeholder="Email">
-<input id="regPassword" type="password" placeholder="Password">
-
-<button class="green" style="width:100%" onclick="register()">
-Create Account
+<button
+class="green"
+onclick="showRegister()"
+>
+Create new account
 </button>
 
-<br><br>
+<div id="loginMsg" class="authMsg"></div>
 
-<button class="gray" style="width:100%" onclick="showLogin()">
+</div>
+
+
+<div id="registerBox" class="hidden">
+
+<h2>Create account</h2>
+
+<input
+id="regName"
+type="text"
+placeholder="আপনার নাম"
+>
+
+<input
+id="regEmail"
+type="email"
+placeholder="Email"
+>
+
+<input
+id="regPassword"
+type="password"
+placeholder="Password (কমপক্ষে 6 অক্ষর)"
+>
+
+<button
+class="green"
+onclick="register()"
+>
+Create account
+</button>
+
+<button
+class="gray"
+onclick="showLogin()"
+>
 Back to Login
 </button>
+
+<div id="registerMsg" class="authMsg"></div>
+
 </div>
-</div>
-</div>
 
-
-<!-- ADMIN LOGIN -->
-<div id="adminLoginPage" class="page">
-<div class="auth">
-<h1>👨‍💼 Admin Login</h1>
-
-<div class="card">
-<p><b>Demo Admin Account</b></p>
-<p>Email: admin@mysocial.com</p>
-<p>Password: admin123</p>
-
-<input id="adminEmail" placeholder="Admin Email">
-<input id="adminPassword" type="password" placeholder="Password">
-
-<button class="dark" style="width:100%" onclick="adminLogin()">
-Login as Admin
-</button>
-
-<br><br>
-
-<button class="gray" style="width:100%" onclick="showLogin()">
-Back
-</button>
-</div>
 </div>
 </div>
 
 
-<!-- APP -->
-<div id="appArea" class="hidden">
+<!-- ================= APP ================= -->
+
+<div id="app" class="hidden">
 
 <div class="topbar">
-<div class="logo">My Social App</div>
 
-<div class="nav">
-<button onclick="showHome()">🏠</button>
-<button onclick="showReels()">🎬</button>
-<button onclick="showFriends()">👥</button>
-<button onclick="showChatList()">💬</button>
-<button onclick="toggleNotifications()">🔔</button>
-<button onclick="showSettings()">☰</button>
+<div class="logo">
+My Social App
 </div>
+
+<div class="topActions">
+
+<button
+onclick="openProfile(currentUser?.id)"
+>
+👤
+</button>
+
+<button
+onclick="logout()"
+>
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<div class="navbar">
+
+<button onclick="showSection('homeSection')">
+🏠 Home
+</button>
+
+<button onclick="showSection('searchSection');loadUsers()">
+🔎 Search
+</button>
+
+<button onclick="showSection('friendsSection');loadFriends()">
+👥 Friends
+</button>
+
+<button onclick="showSection('messagesSection');loadChatUsers()">
+💬 Messenger
+</button>
+
+<button onclick="showSection('notificationsSection');loadNotifications()">
+🔔 Notifications
+</button>
+
+<button onclick="showSection('reelsSection');loadReels()">
+🎬 Reels
+</button>
+
+<button onclick="showSection('profileSection');openProfile(currentUser?.id)">
+👤 Profile
+</button>
+
 </div>
 
 
 <div class="container">
 
 <!-- HOME -->
-<div id="homePage" class="page">
-<div class="card">
-<h3>Create Post</h3>
 
-<textarea id="postText" placeholder="What's on your mind?"></textarea>
+<div id="homeSection">
 
-<input id="postPhoto" type="file" accept="image/*"
-onchange="previewPostPhoto()">
+<div class="section createPost">
 
-<img id="postPreview" class="post-img hidden">
+<h2>Create Post</h2>
 
-<button class="blue" style="width:100%" onclick="createPost()">
+<textarea
+id="postText"
+placeholder="What's on your mind?"
+></textarea>
+
+<label class="fileLabel">
+📷 Photo
+<input
+type="file"
+id="postImage"
+accept="image/*"
+>
+</label>
+
+<button
+class="blue"
+onclick="createPost()"
+>
 Post
 </button>
-</div>
 
-<div id="feed"></div>
-</div>
+<div id="postMsg"></div>
 
-
-<!-- REELS -->
-<div id="reelsPage" class="page">
-
-<div class="card">
-<h3>🎬 Create Reel</h3>
-
-<input id="reelText" placeholder="Write something...">
-
-<input id="reelVideoInput" type="file" accept="video/*"
-onchange="previewReel()">
-
-<video id="reelPreview" class="reel-video hidden" controls></video>
-
-<button class="blue" style="width:100%" onclick="createReel()">
-Upload Reel
-</button>
-</div>
-
-<div id="reels"></div>
 </div>
 
 
-<!-- PROFILE -->
-<div id="profilePage" class="page">
+<div class="section">
 
-<div class="card center">
-<div id="myCover" class="profile-cover"></div>
+<h2>Feed</h2>
 
-<img id="myProfilePhoto" class="profile-photo">
-
-<h2 id="myName"></h2>
-<p id="myBio"></p>
-
-<div class="stats">
-<div><b id="followersCount">0</b>Followers</div>
-<div><b id="followingCount">0</b>Following</div>
-<div><b id="friendsCount">0</b>Friends</div>
+<div id="feed">
+<div class="loading">Loading...</div>
 </div>
 
-<button class="blue" onclick="openEditProfile()">Edit Profile</button>
 </div>
 
-<h3>My Posts</h3>
-<div id="myPosts"></div>
-</div>
-
-
-<!-- USER PROFILE -->
-<div id="userProfilePage" class="page">
-<div id="otherProfile"></div>
 </div>
 
 
 <!-- SEARCH -->
-<div id="searchPage" class="page">
 
-<div class="card">
-<input id="searchInput"
-placeholder="Search people..."
-oninput="searchUsers()">
+<div id="searchSection" class="hidden">
+
+<div class="section">
+
+<h2>Search Users</h2>
+
+<input
+id="userSearch"
+placeholder="নাম দিয়ে খুঁজুন"
+oninput="searchUsers()"
+>
+
+<div id="usersList"></div>
+
 </div>
 
-<div id="searchResults"></div>
 </div>
 
 
 <!-- FRIENDS -->
-<div id="friendsPage" class="page">
 
-<div class="card">
-<h2>👥 Friends</h2>
+<div id="friendsSection" class="hidden">
 
-<button class="blue" onclick="showFriendRequests()">
-Friend Requests
-</button>
+<div class="section">
 
-<button class="gray" onclick="showSentRequests()">
-Sent Requests
-</button>
+<h2>Friend Requests</h2>
+
+<div id="friendRequests"></div>
+
 </div>
+
+<div class="section">
+
+<h2>My Friends</h2>
 
 <div id="friendsList"></div>
+
+</div>
+
 </div>
 
 
-<!-- CHAT LIST -->
-<div id="chatListPage" class="page">
-<div class="card">
-<h2>💬 Messenger</h2>
-<input id="chatSearch" placeholder="Search users..." oninput="renderChatList()">
-</div>
-<div id="chatList"></div>
-</div>
+<!-- MESSAGES -->
 
+<div id="messagesSection" class="hidden">
 
-<!-- CHAT -->
-<div id="chatPage" class="page">
-<div class="card">
-<button class="gray" onclick="showChatList()">← Back</button>
-<h3 id="chatTitle"></h3>
-<div id="chatStatus"></div>
+<div class="section">
+
+<h2>Messenger</h2>
+
+<div id="chatUsers" class="chatList"></div>
+
 </div>
 
-<div id="messages"></div>
+<div id="chatArea" class="section hidden">
 
-<div class="card">
-<input id="messageInput" placeholder="Write a message..."
-onkeydown="if(event.key==='Enter')sendMessage()">
+<h2 id="chatTitle">Chat</h2>
 
-<button class="blue" style="width:100%" onclick="sendMessage()">
+<div id="chatWindow" class="chatWindow"></div>
+
+<div class="chatSend">
+
+<input
+id="messageInput"
+placeholder="Write a message..."
+>
+
+<button onclick="sendMessage()">
 Send
 </button>
+
 </div>
+
+</div>
+
 </div>
 
 
-<!-- SETTINGS -->
-<div id="settingsPage" class="page">
+<!-- NOTIFICATIONS -->
 
-<div class="card">
-<h2>⚙️ Settings</h2>
+<div id="notificationsSection" class="hidden">
 
-<button class="blue" style="width:100%" onclick="openEditProfile()">
-✏️ Edit Profile
+<div class="section">
+
+<h2>Notifications</h2>
+
+<div id="notificationsList"></div>
+
+</div>
+
+</div>
+
+
+<!-- REELS -->
+
+<div id="reelsSection" class="hidden">
+
+<div class="section">
+
+<h2>Upload Reel</h2>
+
+<input
+id="reelCaption"
+placeholder="Caption"
+>
+
+<input
+type="file"
+id="reelFile"
+accept="video/*"
+>
+
+<button
+class="blue"
+onclick="uploadReel()"
+>
+Upload Reel
 </button>
 
-<br><br>
+<div id="reelMsg"></div>
 
-<button class="gray" style="width:100%" onclick="openPrivacySettings()">
-🔐 Privacy Settings
+</div>
+
+<div class="section">
+
+<h2>Reels</h2>
+
+<div id="reelsList"></div>
+
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+
+<div id="profileSection" class="hidden">
+
+<div id="profileContent"></div>
+
+</div>
+
+
+<!-- OTHER PROFILE -->
+
+<div id="otherProfileSection" class="hidden">
+
+<div id="otherProfileContent"></div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div id="editModal" class="modal hidden">
+
+<div class="modalBox">
+
+<button
+class="closeBtn"
+onclick="closeEditModal()"
+>
+✕
 </button>
-
-<br><br>
-
-<button class="gray" style="width:100%" onclick="showBlockedUsers()">
-🚫 Blocked Users
-</button>
-
-<br><br>
-
-<button class="gray" style="width:100%" onclick="showMyActivity()">
-📊 Your Activity
-</button>
-
-<br><br>
-
-<button class="dark" style="width:100%" onclick="openAdminFromApp()">
-👨‍💼 Admin Panel
-</button>
-
-<br><br>
-
-<button class="red" style="width:100%" onclick="deleteAccount()">
-🗑️ Delete Account
-</button>
-
-<br><br>
-
-<button class="red" style="width:100%" onclick="logout()">
-Logout
-</button>
-</div>
-
-<div class="card">
-<h3>🔎 Search Users</h3>
-<button class="blue" onclick="showSearch()">Search People</button>
-</div>
-
-</div>
-
-
-<!-- ADMIN PANEL -->
-<div id="adminPage" class="page">
-
-<div class="card">
-<h2>👨‍💼 Admin Panel</h2>
-
-<button class="gray" onclick="exitAdmin()">
-← Back to App
-</button>
-</div>
-
-<div class="admin-grid">
-
-<div class="admin-stat">
-<b id="adminUsers">0</b>
-Users
-</div>
-
-<div class="admin-stat">
-<b id="adminPosts">0</b>
-Posts
-</div>
-
-<div class="admin-stat">
-<b id="adminReels">0</b>
-Reels
-</div>
-
-<div class="admin-stat">
-<b id="adminMessages">0</b>
-Messages
-</div>
-
-</div>
-
-<div class="card">
-<h3>📢 Send Announcement</h3>
-
-<textarea id="announcementText"
-placeholder="Write announcement..."></textarea>
-
-<button class="blue" style="width:100%"
-onclick="sendAnnouncement()">
-Send to All Users
-</button>
-</div>
-
-<div class="card">
-<h3>👥 Manage Users</h3>
-
-<input id="adminUserSearch"
-placeholder="Search user..."
-oninput="renderAdminUsers()">
-
-<div id="adminUsersList"></div>
-</div>
-
-<div class="card">
-<h3>📝 Manage Posts</h3>
-<div id="adminPostsList"></div>
-</div>
-
-<div class="card">
-<h3>🎬 Manage Reels</h3>
-<div id="adminReelsList"></div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-
-<!-- EDIT PROFILE MODAL -->
-<div id="editModal" class="modal">
-<div class="modal-box">
 
 <h2>Edit Profile</h2>
 
-<input id="editName" placeholder="Name">
-<textarea id="editBio" placeholder="Bio"></textarea>
+<input
+id="editName"
+placeholder="Name"
+>
 
-<label>Profile Photo</label>
-<input id="profilePhotoInput" type="file" accept="image/*">
+<textarea
+id="editBio"
+placeholder="Bio"
+></textarea>
 
-<label>Cover Photo</label>
-<input id="coverPhotoInput" type="file" accept="image/*">
+<label class="fileLabel">
+Profile Photo
+<input
+type="file"
+id="editProfilePhoto"
+accept="image/*"
+>
+</label>
 
-<br>
+<label class="fileLabel">
+Cover Photo
+<input
+type="file"
+id="editCoverPhoto"
+accept="image/*"
+>
+</label>
 
-<button class="blue" onclick="saveProfile()">Save</button>
-<button class="gray" onclick="closeEditProfile()">Cancel</button>
-
-</div>
-</div>
-
-
-<!-- PRIVACY MODAL -->
-<div id="privacyModal" class="modal">
-<div class="modal-box">
-
-<h2>🔐 Privacy</h2>
-
-<p>
-Private Profile:
-<button id="privateBtn" class="gray" onclick="togglePrivate()">
-OFF
-</button>
-</p>
-
-<p>
-Show Online Status:
-<button id="onlineBtn" class="green" onclick="toggleOnlineStatus()">
-ON
-</button>
-</p>
-
-<button class="gray" onclick="closePrivacySettings()">
-Close
+<button
+class="blue"
+onclick="saveProfile()"
+>
+Save
 </button>
 
-</div>
-</div>
-
-
-<!-- BLOCKED MODAL -->
-<div id="blockedModal" class="modal">
-<div class="modal-box">
-
-<h2>🚫 Blocked Users</h2>
-<div id="blockedList"></div>
-
-<button class="gray" onclick="closeBlockedUsers()">
-Close
-</button>
+<div id="editMsg"></div>
 
 </div>
-</div>
 
-
-<!-- ACTIVITY MODAL -->
-<div id="activityModal" class="modal">
-<div class="modal-box">
-
-<h2>📊 Your Activity</h2>
-<div id="activityContent"></div>
-
-<button class="gray" onclick="closeActivity()">
-Close
-</button>
-
-</div>
-</div>
-
-
-<!-- NOTIFICATION MODAL -->
-<div id="notificationModal" class="modal">
-<div class="modal-box">
-
-<h2>🔔 Notifications</h2>
-<div id="notificationList"></div>
-
-<button class="gray" onclick="closeNotifications()">
-Close
-</button>
-
-</div>
 </div>
 
 
 <script>
 
-/* =========================
-   STORAGE
-========================= */
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
 
-let users = JSON.parse(localStorage.getItem("users") || "[]");
-let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-let reels = JSON.parse(localStorage.getItem("reels") || "[]");
-let notifications = JSON.parse(localStorage.getItem("notifications") || "[]");
-let messages = JSON.parse(localStorage.getItem("messages") || "[]");
+const SUPABASE_URL =
+"https://skereuaizdczbvjplisi.supabase.co";
 
-let currentUserId = localStorage.getItem("currentUserId");
-let currentChatUserId = null;
-let isAdmin = false;
+/*
+IMPORTANT:
+এখানে আপনার নিজের Publishable Key বসান।
+এটি sb_publishable_ দিয়ে শুরু হবে।
+*/
+const SUPABASE_PUBLISHABLE_KEY =
+"PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
 
 
-/* =========================
-   HELPERS
-========================= */
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
 
-function saveAll(){
-    localStorage.setItem("users",JSON.stringify(users));
-    localStorage.setItem("posts",JSON.stringify(posts));
-    localStorage.setItem("reels",JSON.stringify(reels));
-    localStorage.setItem("notifications",JSON.stringify(notifications));
-    localStorage.setItem("messages",JSON.stringify(messages));
+let currentUser = null;
+let currentProfile = null;
+let currentChatUser = null;
+
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function $(id){
+    return document.getElementById(id);
 }
 
-function uid(){
-    return Math.random().toString(36).substring(2,10);
-}
 
-function now(){
-    return new Date().toLocaleString();
-}
+function escapeHTML(value){
+    if(value === null || value === undefined){
+        return "";
+    }
 
-function currentUser(){
-    return users.find(u=>u.id===currentUserId);
-}
-
-function getUser(id){
-    return users.find(u=>u.id===id);
-}
-
-function esc(text){
-    if(!text)return "";
-    return String(text)
+    return String(value)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 
-/* =========================
-   MIGRATION
-========================= */
+function formatDate(date){
+    if(!date){
+        return "";
+    }
 
-function migrate(){
-
-    users.forEach(u=>{
-
-        if(!u.followers)u.followers=[];
-        if(!u.following)u.following=[];
-        if(!u.friends)u.friends=[];
-        if(!u.friendRequests)u.friendRequests=[];
-        if(!u.sentRequests)u.sentRequests=[];
-        if(!u.blocked)u.blocked=[];
-
-        if(u.privateProfile===undefined)
-            u.privateProfile=false;
-
-        if(u.showOnline===undefined)
-            u.showOnline=true;
-
-        if(u.adminBlocked===undefined)
-            u.adminBlocked=false;
-
-    });
-
-    posts.forEach(p=>{
-        if(!p.likes)p.likes=0;
-        if(!p.likedBy)p.likedBy=[];
-        if(!p.comments)p.comments=[];
-        if(!p.shares)p.shares=0;
-    });
-
-    reels.forEach(r=>{
-        if(!r.likes)r.likes=0;
-        if(!r.likedBy)r.likedBy=[];
-        if(!r.comments)r.comments=[];
-        if(!r.shares)r.shares=0;
-    });
-
-    saveAll();
+    try{
+        return new Date(date).toLocaleString("bn-BD");
+    }catch(e){
+        return "";
+    }
 }
 
 
-/* =========================
-   AUTH
-========================= */
-
-function showRegister(){
-    hideAllPages();
-    document.getElementById("registerPage").classList.add("active");
+function makeId(){
+    /*
+    আপনার int8 ID column auto increment না হলেও
+    আপাতত unique numeric ID তৈরি করবে।
+    */
+    return Date.now() + Math.floor(Math.random()*1000);
 }
+
+
+function showSection(id){
+
+    const sections = [
+        "homeSection",
+        "searchSection",
+        "friendsSection",
+        "messagesSection",
+        "notificationsSection",
+        "reelsSection",
+        "profileSection",
+        "otherProfileSection"
+    ];
+
+    sections.forEach(x=>{
+        $(x)?.classList.add("hidden");
+    });
+
+    $(id)?.classList.remove("hidden");
+}
+
 
 function showLogin(){
-    hideAllPages();
-    document.getElementById("loginPage").classList.add("active");
+
+    $("loginBox").classList.remove("hidden");
+    $("registerBox").classList.add("hidden");
+
 }
 
-function register(){
 
-    let name=document.getElementById("regName").value.trim();
-    let email=document.getElementById("regEmail").value.trim();
-    let password=document.getElementById("regPassword").value;
+function showRegister(){
 
-    if(!name||!email||!password){
-        alert("সব তথ্য দিন");
+    $("loginBox").classList.add("hidden");
+    $("registerBox").classList.remove("hidden");
+
+}
+
+
+function closeEditModal(){
+    $("editModal").classList.add("hidden");
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function register(){
+
+    const name =
+        $("regName").value.trim();
+
+    const email =
+        $("regEmail").value.trim();
+
+    const password =
+        $("regPassword").value;
+
+    $("registerMsg").textContent =
+        "Creating account...";
+
+    if(!name || !email || !password){
+
+        $("registerMsg").textContent =
+            "সব তথ্য পূরণ করুন।";
+
         return;
     }
 
-    if(users.some(u=>u.email.toLowerCase()===email.toLowerCase())){
-        alert("এই Email দিয়ে আগে থেকেই Account আছে");
+    if(password.length < 6){
+
+        $("registerMsg").textContent =
+            "Password কমপক্ষে 6 অক্ষরের হতে হবে।";
+
         return;
     }
 
-    let user={
-        id:uid(),
-        name:name,
-        email:email,
-        password:password,
-        bio:"",
-        profilePhoto:"",
-        coverPhoto:"",
-        followers:[],
-        following:[],
-        friends:[],
-        friendRequests:[],
-        sentRequests:[],
-        blocked:[],
-        privateProfile:false,
-        showOnline:true,
-        adminBlocked:false
-    };
+    const {data,error} =
+        await supabaseClient.auth.signUp({
 
-    users.push(user);
+            email:email,
+            password:password,
 
-    saveAll();
+            options:{
+                data:{
+                    name:name
+                }
+            }
 
-    alert("Account তৈরি হয়েছে");
-
-    document.getElementById("regName").value="";
-    document.getElementById("regEmail").value="";
-    document.getElementById("regPassword").value="";
-
-    showLogin();
-}
-
-function login(){
-
-    let email=document.getElementById("loginEmail").value.trim();
-    let password=document.getElementById("loginPassword").value;
-
-    let user=users.find(
-        u=>u.email.toLowerCase()===email.toLowerCase()
-        && u.password===password
-    );
-
-    if(!user){
-        alert("Email অথবা Password ভুল");
-        return;
-    }
-
-    if(user.adminBlocked){
-        alert("আপনার Account Admin দ্বারা Block করা হয়েছে");
-        return;
-    }
-
-    currentUserId=user.id;
-    localStorage.setItem("currentUserId",currentUserId);
-
-    openApp();
-}
-
-function logout(){
-
-    setOnline(false);
-
-    currentUserId=null;
-    localStorage.removeItem("currentUserId");
-
-    document.getElementById("appArea").classList.add("hidden");
-
-    showLogin();
-}
-
-function openApp(){
-
-    if(!currentUserId){
-        showLogin();
-        return;
-    }
-
-    let user=currentUser();
-
-    if(!user || user.adminBlocked){
-        localStorage.removeItem("currentUserId");
-        currentUserId=null;
-        showLogin();
-        return;
-    }
-
-    document.getElementById("appArea").classList.remove("hidden");
-
-    setOnline(true);
-    showHome();
-}
-
-
-/* =========================
-   PAGE CONTROL
-========================= */
-
-function hideAllPages(){
-
-    document.querySelectorAll(".page").forEach(p=>{
-        p.classList.remove("active");
-    });
-}
-
-function showHome(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("homePage").classList.add("active");
-    loadFeed();
-}
-
-function showReels(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("reelsPage").classList.add("active");
-    loadReels();
-}
-
-function showProfile(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("profilePage").classList.add("active");
-    loadProfile();
-}
-
-function showSearch(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("searchPage").classList.add("active");
-}
-
-function showFriends(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("friendsPage").classList.add("active");
-    renderFriends();
-}
-
-function showChatList(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("chatListPage").classList.add("active");
-    renderChatList();
-}
-
-function showSettings(){
-    isAdmin=false;
-    hideAllPages();
-    document.getElementById("settingsPage").classList.add("active");
-}
-
-
-/* =========================
-   PROFILE
-========================= */
-
-function loadProfile(){
-
-    let u=currentUser();
-
-    document.getElementById("myName").textContent=u.name;
-    document.getElementById("myBio").textContent=u.bio || "No bio";
-
-    document.getElementById("followersCount").textContent=u.followers.length;
-    document.getElementById("followingCount").textContent=u.following.length;
-    document.getElementById("friendsCount").textContent=u.friends.length;
-
-    document.getElementById("myProfilePhoto").src=
-        u.profilePhoto || "https://via.placeholder.com/150";
-
-    let cover=document.getElementById("myCover");
-
-    cover.style.backgroundImage=
-        `url('${u.coverPhoto || "https://via.placeholder.com/800x300"}')`;
-
-    let myPosts=posts.filter(p=>p.userId===u.id);
-
-    document.getElementById("myPosts").innerHTML=
-        myPosts.map(renderPost).join("");
-}
-
-function openEditProfile(){
-
-    let u=currentUser();
-
-    document.getElementById("editName").value=u.name;
-    document.getElementById("editBio").value=u.bio||"";
-
-    document.getElementById("editModal").style.display="flex";
-}
-
-function closeEditProfile(){
-    document.getElementById("editModal").style.display="none";
-}
-
-function readFile(file,callback){
-
-    if(!file){
-        callback("");
-        return;
-    }
-
-    let reader=new FileReader();
-
-    reader.onload=function(e){
-        callback(e.target.result);
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function saveProfile(){
-
-    let u=currentUser();
-
-    u.name=document.getElementById("editName").value.trim();
-    u.bio=document.getElementById("editBio").value.trim();
-
-    let profileFile=
-        document.getElementById("profilePhotoInput").files[0];
-
-    let coverFile=
-        document.getElementById("coverPhotoInput").files[0];
-
-    readFile(profileFile,function(profileData){
-
-        if(profileData)
-            u.profilePhoto=profileData;
-
-        readFile(coverFile,function(coverData){
-
-            if(coverData)
-                u.coverPhoto=coverData;
-
-            saveAll();
-            closeEditProfile();
-            loadProfile();
-
-            alert("Profile updated");
-        });
-    });
-}
-
-
-/* =========================
-   POST
-========================= */
-
-function previewPostPhoto(){
-
-    let file=document.getElementById("postPhoto").files[0];
-
-    if(!file)return;
-
-    let reader=new FileReader();
-
-    reader.onload=function(e){
-
-        let img=document.getElementById("postPreview");
-
-        img.src=e.target.result;
-        img.classList.remove("hidden");
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function createPost(){
-
-    let text=document.getElementById("postText").value.trim();
-    let file=document.getElementById("postPhoto").files[0];
-
-    if(!text && !file){
-        alert("কিছু লিখুন অথবা ছবি দিন");
-        return;
-    }
-
-    function finish(image=""){
-
-        let u=currentUser();
-
-        posts.unshift({
-            id:uid(),
-            userId:u.id,
-            name:u.name,
-            text:text,
-            image:image,
-            likes:0,
-            likedBy:[],
-            comments:[],
-            shares:0,
-            time:now()
         });
 
-        saveAll();
+    if(error){
 
-        document.getElementById("postText").value="";
-        document.getElementById("postPhoto").value="";
-        document.getElementById("postPreview").classList.add("hidden");
+        $("registerMsg").textContent =
+            error.message;
 
-        loadFeed();
-    }
-
-    if(file){
-
-        let reader=new FileReader();
-
-        reader.onload=e=>finish(e.target.result);
-
-        reader.readAsDataURL(file);
-
-    }else{
-        finish("");
-    }
-}
-
-function loadFeed(){
-
-    let html="";
-
-    posts.forEach(p=>{
-
-        let owner=getUser(p.userId);
-
-        if(!owner)return;
-
-        if(owner.adminBlocked)return;
-
-        if(currentUser() &&
-           currentUser().blocked.includes(owner.id))
-            return;
-
-        html+=renderPost(p);
-    });
-
-    document.getElementById("feed").innerHTML=
-        html || `<div class="card center">No posts yet</div>`;
-}
-
-function renderPost(p){
-
-    let owner=getUser(p.userId);
-    if(!owner)return "";
-
-    let liked=p.likedBy.includes(currentUserId);
-
-    let comments=(p.comments||[]).map(c=>`
-        <div class="comment">
-        <b>${esc(c.name)}</b><br>
-        ${esc(c.text)}
-        </div>
-    `).join("");
-
-    let deleteButton=
-        p.userId===currentUserId
-        ? `<button class="red" onclick="deletePost('${p.id}')">Delete</button>`
-        : "";
-
-    return `
-    <div class="card">
-
-    <div>
-    <img class="small-photo"
-    src="${owner.profilePhoto || "https://via.placeholder.com/50"}">
-
-    <b onclick="openUserProfile('${owner.id}')"
-    style="cursor:pointer">${esc(owner.name)}</b>
-
-    <small>${esc(p.time)}</small>
-    </div>
-
-    <p>${esc(p.text)}</p>
-
-    ${p.image ? `<img class="post-img" src="${p.image}">` : ""}
-
-    <p>❤️ ${p.likes} &nbsp; 💬 ${(p.comments||[]).length}
-    &nbsp; ↗ ${p.shares}</p>
-
-    <div class="action-row">
-
-    <button onclick="likePost('${p.id}')">
-    ${liked?"💔 Unlike":"❤️ Like"}
-    </button>
-
-    <button onclick="toggleComment('${p.id}')">
-    💬 Comment
-    </button>
-
-    <button onclick="sharePost('${p.id}')">
-    ↗ Share
-    </button>
-
-    ${deleteButton}
-
-    </div>
-
-    <div id="comments-${p.id}" class="hidden">
-    <input id="commentInput-${p.id}" placeholder="Write a comment...">
-    <button class="blue" onclick="addComment('${p.id}')">
-    Comment
-    </button>
-
-    ${comments}
-    </div>
-
-    </div>`;
-}
-
-function likePost(id){
-
-    let p=posts.find(x=>x.id===id);
-    if(!p)return;
-
-    if(p.likedBy.includes(currentUserId)){
-
-        p.likedBy=p.likedBy.filter(id=>id!==currentUserId);
-        p.likes--;
-
-    }else{
-
-        p.likedBy.push(currentUserId);
-        p.likes++;
-
-        if(p.userId!==currentUserId){
-            addNotification(
-                p.userId,
-                currentUser().name+" liked your post"
-            );
-        }
-    }
-
-    saveAll();
-    loadFeed();
-}
-
-function toggleComment(id){
-
-    let el=document.getElementById("comments-"+id);
-
-    if(el)el.classList.toggle("hidden");
-}
-
-function addComment(id){
-
-    let input=document.getElementById("commentInput-"+id);
-
-    if(!input.value.trim())return;
-
-    let p=posts.find(x=>x.id===id);
-
-    p.comments.push({
-        id:uid(),
-        userId:currentUserId,
-        name:currentUser().name,
-        text:input.value.trim(),
-        time:now()
-    });
-
-    if(p.userId!==currentUserId){
-        addNotification(
-            p.userId,
-            currentUser().name+" commented on your post"
-        );
-    }
-
-    saveAll();
-    loadFeed();
-}
-
-function sharePost(id){
-
-    let p=posts.find(x=>x.id===id);
-    if(!p)return;
-
-    p.shares++;
-
-    saveAll();
-
-    if(navigator.share){
-
-        navigator.share({
-            title:"My Social App",
-            text:p.text || "Check this post"
-        }).catch(()=>{});
-
-    }else{
-        alert("Post shared");
-    }
-
-    loadFeed();
-}
-
-function deletePost(id){
-
-    if(!confirm("এই Post Delete করবেন?"))return;
-
-    posts=posts.filter(p=>p.id!==id);
-
-    saveAll();
-
-    loadFeed();
-    loadProfile();
-}
-
-
-/* =========================
-   REELS
-========================= */
-
-function previewReel(){
-
-    let file=document.getElementById("reelVideoInput").files[0];
-
-    if(!file)return;
-
-    if(file.size>15*1024*1024){
-
-        alert("Demo version-এ 15MB এর বেশি ভিডিও দেওয়া যাবে না");
-        document.getElementById("reelVideoInput").value="";
         return;
     }
 
-    let reader=new FileReader();
-
-    reader.onload=function(e){
-
-        let video=document.getElementById("reelPreview");
-
-        video.src=e.target.result;
-        video.classList.remove("hidden");
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function createReel(){
-
-    let file=document.getElementById("reelVideoInput").files[0];
-    let text=document.getElementById("reelText").value.trim();
-
-    if(!file){
-        alert("একটি ভিডিও নির্বাচন করুন");
-        return;
-    }
-
-    let reader=new FileReader();
-
-    reader.onload=function(e){
-
-        let u=currentUser();
-
-        reels.unshift({
-            id:uid(),
-            userId:u.id,
-            name:u.name,
-            text:text,
-            video:e.target.result,
-            likes:0,
-            likedBy:[],
-            comments:[],
-            shares:0,
-            time:now()
-        });
-
-        saveAll();
-
-        document.getElementById("reelText").value="";
-        document.getElementById("reelVideoInput").value="";
-        document.getElementById("reelPreview").classList.add("hidden");
-
-        loadReels();
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function loadReels(){
-
-    document.getElementById("reels").innerHTML=
-        reels
-        .filter(r=>{
-            let u=getUser(r.userId);
-            return u && !u.adminBlocked;
-        })
-        .map(renderReel)
-        .join("");
-}
-
-function renderReel(r){
-
-    let owner=getUser(r.userId);
-
-    if(!owner)return "";
-
-    let liked=r.likedBy.includes(currentUserId);
-
-    let comments=(r.comments||[]).map(c=>`
-        <div class="comment">
-        <b>${esc(c.name)}</b><br>
-        ${esc(c.text)}
-        </div>
-    `).join("");
-
-    return `
-    <div class="card">
-
-    <b onclick="openUserProfile('${owner.id}')">
-    ${esc(owner.name)}
-    </b>
-
-    <small>${esc(r.time)}</small>
-
-    <p>${esc(r.text)}</p>
-
-    <video class="reel-video" src="${r.video}" controls></video>
-
-    <p>❤️ ${r.likes} &nbsp; 💬 ${(r.comments||[]).length}
-    &nbsp; ↗ ${r.shares}</p>
-
-    <div class="action-row">
-
-    <button onclick="likeReel('${r.id}')">
-    ${liked?"💔 Unlike":"❤️ Like"}
-    </button>
-
-    <button onclick="addReelComment('${r.id}')">
-    💬 Comment
-    </button>
-
-    <button onclick="shareReel('${r.id}')">
-    ↗ Share
-    </button>
-
-    ${
-        r.userId===currentUserId
-        ? `<button class="red" onclick="deleteReel('${r.id}')">Delete</button>`
-        : ""
-    }
-
-    </div>
-
-    ${comments}
-
-    </div>`;
-}
-
-function likeReel(id){
-
-    let r=reels.find(x=>x.id===id);
-    if(!r)return;
-
-    if(r.likedBy.includes(currentUserId)){
-
-        r.likedBy=r.likedBy.filter(x=>x!==currentUserId);
-        r.likes--;
-
-    }else{
-
-        r.likedBy.push(currentUserId);
-        r.likes++;
-
-        if(r.userId!==currentUserId){
-            addNotification(
-                r.userId,
-                currentUser().name+" liked your Reel"
-            );
-        }
-    }
-
-    saveAll();
-    loadReels();
-}
-
-function addReelComment(id){
-
-    let text=prompt("Comment লিখুন");
-
-    if(!text)return;
-
-    let r=reels.find(x=>x.id===id);
-
-    r.comments.push({
-        id:uid(),
-        userId:currentUserId,
-        name:currentUser().name,
-        text:text,
-        time:now()
-    });
-
-    if(r.userId!==currentUserId){
-        addNotification(
-            r.userId,
-            currentUser().name+" commented on your Reel"
-        );
-    }
-
-    saveAll();
-    loadReels();
-}
-
-function shareReel(id){
-
-    let r=reels.find(x=>x.id===id);
-    if(!r)return;
-
-    r.shares++;
-
-    saveAll();
-
-    if(navigator.share){
-
-        navigator.share({
-            title:"My Social App Reel",
-            text:r.text || "Check this Reel"
-        }).catch(()=>{});
-
-    }else{
-        alert("Reel shared");
-    }
-
-    loadReels();
-}
-
-function deleteReel(id){
-
-    if(!confirm("এই Reel Delete করবেন?"))return;
-
-    reels=reels.filter(r=>r.id!==id);
-
-    saveAll();
-    loadReels();
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchUsers(){
-
-    let q=document.getElementById("searchInput").value
-        .toLowerCase()
-        .trim();
-
-    let result=users.filter(u=>
-        u.name.toLowerCase().includes(q)
-        && u.id!==currentUserId
-        && !u.adminBlocked
-    );
-
-    document.getElementById("searchResults").innerHTML=
-        result.map(renderSearchUser).join("");
-}
-
-function renderSearchUser(u){
-
-    let me=currentUser();
-
-    let following=me.following.includes(u.id);
-    let friend=me.friends.includes(u.id);
-
-    return `
-    <div class="card">
-
-    <img class="small-photo"
-    src="${u.profilePhoto || "https://via.placeholder.com/50"}">
-
-    <b onclick="openUserProfile('${u.id}')">
-    ${esc(u.name)}
-    </b>
-
-    <br><br>
-
-    <button class="blue"
-    onclick="openUserProfile('${u.id}')">
-    Profile
-    </button>
-
-    ${
-        friend
-        ? `<button class="gray">Friends</button>`
-        : `<button class="green"
-        onclick="sendFriendRequest('${u.id}')">
-        Add Friend
-        </button>`
-    }
-
-    ${
-        following
-        ? `<button class="gray"
-        onclick="unfollowUser('${u.id}')">
-        Following
-        </button>`
-        : `<button class="blue"
-        onclick="followUser('${u.id}')">
-        Follow
-        </button>`
-    }
-
-    </div>`;
-}
-
-function followUser(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    if(!me.following.includes(id))
-        me.following.push(id);
-
-    if(!u.followers.includes(me.id))
-        u.followers.push(me.id);
-
-    addNotification(id,me.name+" followed you");
-
-    saveAll();
-    searchUsers();
-}
-
-function unfollowUser(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    me.following=me.following.filter(x=>x!==id);
-    u.followers=u.followers.filter(x=>x!==me.id);
-
-    saveAll();
-    searchUsers();
-}
-
-
-/* =========================
-   OTHER PROFILE
-========================= */
-
-function openUserProfile(id){
-
-    let u=getUser(id);
-
-    if(!u)return;
-
-    hideAllPages();
-
-    document.getElementById("userProfilePage")
-        .classList.add("active");
-
-    loadOtherProfile(id);
-}
-
-function loadOtherProfile(id){
-
-    let u=getUser(id);
-    let me=currentUser();
-
-    let following=me.following.includes(id);
-    let friend=me.friends.includes(id);
-
-    let privateText="";
-
-    if(u.privateProfile && !friend && id!==currentUserId){
-
-        privateText=`
-        <div class="card center">
-        🔒 This profile is private
-        </div>`;
-    }
-
-    let userPosts=posts.filter(p=>p.userId===id);
-
-    document.getElementById("otherProfile").innerHTML=`
-
-    <div class="card center">
-
-    <div class="profile-cover"
-    style="background-image:url('${u.coverPhoto || "https://via.placeholder.com/800x300"}')">
-    </div>
-
-    <img class="profile-photo"
-    src="${u.profilePhoto || "https://via.placeholder.com/150"}">
-
-    <h2>${esc(u.name)}</h2>
-
-    <p>${esc(u.bio||"No bio")}</p>
-
-    <div class="stats">
-    <div><b>${u.followers.length}</b>Followers</div>
-    <div><b>${u.following.length}</b>Following</div>
-    <div><b>${u.friends.length}</b>Friends</div>
-    </div>
-
-    <button class="${following?"gray":"blue"}"
-    onclick="${following?"unfollowUser":"followUser"}('${u.id}')">
-    ${following?"Following":"Follow"}
-    </button>
-
-    ${
-        friend
-        ? `<button class="gray">Friends</button>`
-        : `<button class="green"
-        onclick="sendFriendRequest('${u.id}')">
-        Add Friend
-        </button>`
-    }
-
-    <button class="blue"
-    onclick="openChat('${u.id}')">
-    💬 Message
-    </button>
-
-    </div>
-
-    ${privateText}
-
-    ${
-        !u.privateProfile || friend || id===currentUserId
-        ? `<h3>Posts</h3>
-        ${userPosts.map(renderPost).join("")}`
-        : ""
-    }
-    `;
-}
-
-
-/* =========================
-   FRIENDS
-========================= */
-
-function sendFriendRequest(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    if(!u)return;
-
-    if(me.friendRequests.includes(id)){
-        alert("Already requested");
-        return;
-    }
-
-    if(me.friends.includes(id)){
-        alert("Already friends");
-        return;
-    }
-
-    me.sentRequests.push(id);
-    u.friendRequests.push(me.id);
-
-    addNotification(id,me.name+" sent you a friend request");
-
-    saveAll();
-
-    alert("Friend request sent");
-}
-
-function acceptFriendRequest(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    me.friendRequests=me.friendRequests.filter(x=>x!==id);
-    u.sentRequests=u.sentRequests.filter(x=>x!==me.id);
-
-    if(!me.friends.includes(id))
-        me.friends.push(id);
-
-    if(!u.friends.includes(me.id))
-        u.friends.push(me.id);
-
-    addNotification(id,me.name+" accepted your friend request");
-
-    saveAll();
-
-    renderFriends();
-}
-
-function rejectFriendRequest(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    me.friendRequests=me.friendRequests.filter(x=>x!==id);
-    u.sentRequests=u.sentRequests.filter(x=>x!==me.id);
-
-    saveAll();
-
-    renderFriends();
-}
-
-function cancelFriendRequest(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    me.sentRequests=me.sentRequests.filter(x=>x!==id);
-    u.friendRequests=u.friendRequests.filter(x=>x!==me.id);
-
-    saveAll();
-
-    renderFriends();
-}
-
-function unfriend(id){
-
-    let me=currentUser();
-    let u=getUser(id);
-
-    me.friends=me.friends.filter(x=>x!==id);
-    u.friends=u.friends.filter(x=>x!==me.id);
-
-    saveAll();
-
-    renderFriends();
-}
-
-function renderFriends(){
-
-    let me=currentUser();
-
-    document.getElementById("friendsList").innerHTML=
-        me.friends.map(id=>{
-
-            let u=getUser(id);
-
-            if(!u)return "";
-
-            return `
-            <div class="card">
-            <img class="small-photo"
-            src="${u.profilePhoto || "https://via.placeholder.com/50"}">
-
-            <b>${esc(u.name)}</b>
-
-            <br><br>
-
-            <button class="blue"
-            onclick="openUserProfile('${u.id}')">
-            Profile
-            </button>
-
-            <button class="blue"
-            onclick="openChat('${u.id}')">
-            Chat
-            </button>
-
-            <button class="red"
-            onclick="unfriend('${u.id}')">
-            Unfriend
-            </button>
-            </div>`;
-        }).join("") ||
-        `<div class="card center">No friends yet</div>`;
-}
-
-function showFriendRequests(){
-
-    let me=currentUser();
-
-    let html=me.friendRequests.map(id=>{
-
-        let u=getUser(id);
-
-        return `
-        <div class="card">
-        <b>${esc(u.name)}</b><br><br>
-
-        <button class="green"
-        onclick="acceptFriendRequest('${id}')">
-        Accept
-        </button>
-
-        <button class="red"
-        onclick="rejectFriendRequest('${id}')">
-        Reject
-        </button>
-        </div>`;
-    }).join("");
-
-    document.getElementById("friendsList").innerHTML=
-        html || `<div class="card">No requests</div>`;
-}
-
-function showSentRequests(){
-
-    let me=currentUser();
-
-    document.getElementById("friendsList").innerHTML=
-        me.sentRequests.map(id=>{
-
-            let u=getUser(id);
-
-            return `
-            <div class="card">
-            <b>${esc(u.name)}</b>
-
-            <button class="red"
-            onclick="cancelFriendRequest('${id}')">
-            Cancel
-            </button>
-            </div>`;
-        }).join("") ||
-        `<div class="card">No sent requests</div>`;
-}
-
-
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-function addNotification(receiverId,text){
-
-    notifications.unshift({
-        id:uid(),
-        receiverId:receiverId,
-        text:text,
-        read:false,
-        time:now()
-    });
-
-    saveAll();
-}
-
-function toggleNotifications(){
-
-    let list=notifications.filter(
-        n=>n.receiverId===currentUserId
-    );
-
-    document.getElementById("notificationList").innerHTML=
-        list.map(n=>`
-        <div class="card">
-        ${esc(n.text)}
-        <br>
-        <small>${esc(n.time)}</small>
-        </div>
-        `).join("") ||
-        `<p>No notifications</p>`;
-
-    list.forEach(n=>n.read=true);
-
-    saveAll();
-
-    document.getElementById("notificationModal")
-        .style.display="flex";
-}
-
-function closeNotifications(){
-    document.getElementById("notificationModal")
-        .style.display="none";
-}
-
-
-/* =========================
-   CHAT
-========================= */
-
-function openChat(id){
-
-    currentChatUserId=id;
-
-    hideAllPages();
-
-    document.getElementById("chatPage")
-        .classList.add("active");
-
-    let u=getUser(id);
-
-    document.getElementById("chatTitle").textContent=u.name;
-
-    updateChatStatus();
-    loadMessages();
-}
-
-function updateChatStatus(){
-
-    let u=getUser(currentChatUserId);
-
-    let online=localStorage.getItem("online_"+u.id)==="true";
-
-    if(u.showOnline && online){
-
-        document.getElementById("chatStatus").innerHTML=
-            `<span class="online">● Online</span>`;
-
-    }else{
-
-        document.getElementById("chatStatus").innerHTML=
-            `<span class="offline">● Offline</span>`;
-    }
-}
-
-function messageKey(a,b){
-
-    return [a,b].sort().join("_");
-}
-
-function loadMessages(){
-
-    let html="";
-
-    messages
-    .filter(m=>
-        (m.senderId===currentUserId &&
-         m.receiverId===currentChatUserId)
-        ||
-        (m.senderId===currentChatUserId &&
-         m.receiverId===currentUserId)
-    )
-    .forEach(m=>{
-
-        let mine=m.senderId===currentUserId;
-
-        html+=`
-        <div class="card"
-        style="text-align:${mine?"right":"left"}">
-
-        <p>${esc(m.text)}</p>
-
-        <small>${esc(m.time)}</small>
-
-        ${
-            mine
-            ? `<button class="red"
-            onclick="deleteMessage('${m.id}')">
-            Delete
-            </button>`
-            : ""
-        }
-
-        </div>`;
-    });
-
-    document.getElementById("messages").innerHTML=
-        html || `<div class="card center">No messages</div>`;
-}
-
-function sendMessage(){
-
-    let input=document.getElementById("messageInput");
-    let text=input.value.trim();
-
-    if(!text)return;
-
-    messages.push({
-        id:uid(),
-        senderId:currentUserId,
-        receiverId:currentChatUserId,
-        text:text,
-        time:now()
-    });
-
-    addNotification(
-        currentChatUserId,
-        currentUser().name+" sent you a message"
-    );
-
-    saveAll();
-
-    input.value="";
-    loadMessages();
-}
-
-function deleteMessage(id){
-
-    messages=messages.filter(m=>m.id!==id);
-
-    saveAll();
-    loadMessages();
-}
-
-function renderChatList(){
-
-    let q=(document.getElementById("chatSearch").value||"")
-        .toLowerCase();
-
-    let ids=new Set();
-
-    messages.forEach(m=>{
-
-        if(m.senderId===currentUserId)
-            ids.add(m.receiverId);
-
-        if(m.receiverId===currentUserId)
-            ids.add(m.senderId);
-    });
-
-    users.forEach(u=>{
-        if(u.id!==currentUserId &&
-           u.name.toLowerCase().includes(q))
-            ids.add(u.id);
-    });
-
-    document.getElementById("chatList").innerHTML=
-        [...ids].map(id=>{
-
-            let u=getUser(id);
-
-            if(!u || u.adminBlocked)return "";
-
-            return `
-            <div class="card"
-            onclick="openChat('${u.id}')"
-            style="cursor:pointer">
-
-            <img class="small-photo"
-            src="${u.profilePhoto || "https://via.placeholder.com/50"}">
-
-            <b>${esc(u.name)}</b>
-
-            </div>`;
-        }).join("");
-}
-
-
-/* =========================
-   PRIVACY
-========================= */
-
-function openPrivacySettings(){
-
-    let u=currentUser();
-
-    document.getElementById("privateBtn").textContent=
-        u.privateProfile?"ON":"OFF";
-
-    document.getElementById("privateBtn").className=
-        u.privateProfile?"green":"gray";
-
-    document.getElementById("onlineBtn").textContent=
-        u.showOnline?"ON":"OFF";
-
-    document.getElementById("onlineBtn").className=
-        u.showOnline?"green":"gray";
-
-    document.getElementById("privacyModal")
-        .style.display="flex";
-}
-
-function closePrivacySettings(){
-    document.getElementById("privacyModal")
-        .style.display="none";
-}
-
-function togglePrivate(){
-
-    let u=currentUser();
-
-    u.privateProfile=!u.privateProfile;
-
-    saveAll();
-
-    openPrivacySettings();
-}
-
-function toggleOnlineStatus(){
-
-    let u=currentUser();
-
-    u.showOnline=!u.showOnline;
-
-    saveAll();
-
-    openPrivacySettings();
-}
-
-
-/* =========================
-   BLOCK
-========================= */
-
-function blockUser(id){
-
-    let me=currentUser();
-
-    if(!me.blocked.includes(id))
-        me.blocked.push(id);
-
-    saveAll();
-
-    alert("User blocked");
-
-    showBlockedUsers();
-}
-
-function showBlockedUsers(){
-
-    let me=currentUser();
-
-    document.getElementById("blockedList").innerHTML=
-        me.blocked.map(id=>{
-
-            let u=getUser(id);
-
-            if(!u)return "";
-
-            return `
-            <div class="card">
-            <b>${esc(u.name)}</b>
-
-            <button class="green"
-            onclick="unblockUser('${u.id}')">
-            Unblock
-            </button>
-            </div>`;
-        }).join("") ||
-        `<p>No blocked users</p>`;
-
-    document.getElementById("blockedModal")
-        .style.display="flex";
-}
-
-function closeBlockedUsers(){
-    document.getElementById("blockedModal")
-        .style.display="none";
-}
-
-function unblockUser(id){
-
-    let me=currentUser();
-
-    me.blocked=me.blocked.filter(x=>x!==id);
-
-    saveAll();
-
-    showBlockedUsers();
-}
-
-
-/* =========================
-   ACTIVITY
-========================= */
-
-function showMyActivity(){
-
-    let u=currentUser();
-
-    let myPosts=posts.filter(p=>p.userId===u.id).length;
-    let myReels=reels.filter(r=>r.userId===u.id).length;
-    let myComments=0;
-
-    posts.forEach(p=>{
-        p.comments.forEach(c=>{
-            if(c.userId===u.id)myComments++;
-        });
-    });
-
-    reels.forEach(r=>{
-        r.comments.forEach(c=>{
-            if(c.userId===u.id)myComments++;
-        });
-    });
-
-    document.getElementById("activityContent").innerHTML=`
-    <p>📝 Posts: <b>${myPosts}</b></p>
-    <p>🎬 Reels: <b>${myReels}</b></p>
-    <p>💬 Comments: <b>${myComments}</b></p>
-    <p>👥 Friends: <b>${u.friends.length}</b></p>
-    <p>❤️ Followers: <b>${u.followers.length}</b></p>
-    `;
-
-    document.getElementById("activityModal")
-        .style.display="flex";
-}
-
-function closeActivity(){
-    document.getElementById("activityModal")
-        .style.display="none";
-}
-
-
-/* =========================
-   DELETE ACCOUNT
-========================= */
-
-function deleteAccount(){
-
-    if(!confirm(
-        "আপনার Account এবং আপনার Data Delete করবেন?"
-    ))return;
-
-    let id=currentUserId;
-
-    users=users.filter(u=>u.id!==id);
-    posts=posts.filter(p=>p.userId!==id);
-    reels=reels.filter(r=>r.userId!==id);
-
-    messages=messages.filter(
-        m=>m.senderId!==id && m.receiverId!==id
-    );
-
-    notifications=notifications.filter(
-        n=>n.receiverId!==id
-    );
-
-    users.forEach(u=>{
-
-        u.followers=u.followers.filter(x=>x!==id);
-        u.following=u.following.filter(x=>x!==id);
-        u.friends=u.friends.filter(x=>x!==id);
-        u.friendRequests=u.friendRequests.filter(x=>x!==id);
-        u.sentRequests=u.sentRequests.filter(x=>x!==id);
-        u.blocked=u.blocked.filter(x=>x!==id);
-
-    });
-
-    saveAll();
-
-    logout();
-}
-
-
-/* =========================
-   ONLINE
-========================= */
-
-function setOnline(value){
-
-    if(!currentUserId)return;
-
-    localStorage.setItem(
-        "online_"+currentUserId,
-        value?"true":"false"
-    );
-}
-
-
-/* ==================================================
-   ADMIN PANEL
-================================================== */
-
-function showAdminLogin(){
-
-    hideAllPages();
-
-    document.getElementById("adminLoginPage")
-        .classList.add("active");
-}
-
-function adminLogin(){
-
-    let email=document.getElementById("adminEmail").value.trim();
-    let password=document.getElementById("adminPassword").value;
 
     /*
-      DEMO ADMIN LOGIN
-
-      Email:
-      admin@mysocial.com
-
-      Password:
-      admin123
+    যদি email confirmation OFF থাকে,
+    তখন session পাওয়া যাবে।
     */
 
-    if(
-        email==="admin@mysocial.com"
-        &&
-        password==="admin123"
-    ){
+    if(data.user){
 
-        isAdmin=true;
+        if(data.session){
 
-        document.getElementById("appArea")
-            .classList.remove("hidden");
+            await createProfile(
+                data.user.id,
+                name
+            );
 
-        showAdminPanel();
+            $("registerMsg").textContent =
+                "Account তৈরি হয়েছে।";
+
+            await startApp(data.user);
+
+        }else{
+
+            $("registerMsg").textContent =
+                "Account তৈরি হয়েছে। Email verify করে Login করুন।";
+
+        }
+
+    }
+
+}
+
+
+async function login(){
+
+    const email =
+        $("loginEmail").value.trim();
+
+    const password =
+        $("loginPassword").value;
+
+    $("loginMsg").textContent =
+        "Logging in...";
+
+    if(!email || !password){
+
+        $("loginMsg").textContent =
+            "Email এবং Password দিন।";
+
+        return;
+    }
+
+    const {data,error} =
+        await supabaseClient.auth.signInWithPassword({
+
+            email:email,
+            password:password
+
+        });
+
+    if(error){
+
+        $("loginMsg").textContent =
+            error.message;
+
+        return;
+    }
+
+    if(data.user){
+
+        await startApp(data.user);
+
+    }
+
+}
+
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+    currentProfile = null;
+
+    $("app").classList.add("hidden");
+    $("authPage").classList.remove("hidden");
+
+}
+
+
+async function createProfile(userId,name){
+
+    const {data,error} =
+        await supabaseClient
+        .from("profiles")
+        .insert({
+
+            id:userId,
+            name:name,
+            bio:"",
+            profile_photo:"",
+            cover_photo:""
+
+        })
+        .select()
+        .single();
+
+    return {
+        data,
+        error
+    };
+}
+
+
+async function loadCurrentProfile(){
+
+    if(!currentUser){
+        return null;
+    }
+
+    let {data,error} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id",currentUser.id)
+        .maybeSingle();
+
+    if(!data && !error){
+
+        const result =
+            await createProfile(
+                currentUser.id,
+                currentUser.user_metadata?.name ||
+                currentUser.email?.split("@")[0] ||
+                "User"
+            );
+
+        data = result.data;
+    }
+
+    currentProfile = data;
+
+    return data;
+}
+
+
+async function startApp(user){
+
+    currentUser = user;
+
+    $("authPage").classList.add("hidden");
+    $("app").classList.remove("hidden");
+
+    await loadCurrentProfile();
+
+    showSection("homeSection");
+
+    await loadFeed();
+
+}
+
+
+/* =========================================================
+   SESSION CHECK
+========================================================= */
+
+async function checkSession(){
+
+    const {data} =
+        await supabaseClient.auth.getSession();
+
+    if(data.session?.user){
+
+        await startApp(
+            data.session.user
+        );
 
     }else{
 
-        alert("Admin Email অথবা Password ভুল");
+        $("authPage").classList.remove("hidden");
+        $("app").classList.add("hidden");
+
     }
+
 }
 
-function showAdminPanel(){
 
-    isAdmin=true;
+supabaseClient.auth.onAuthStateChange(
+    async (event,session)=>{
 
-    hideAllPages();
+        if(event === "SIGNED_IN" &&
+           session?.user &&
+           !currentUser){
 
-    document.getElementById("adminPage")
-        .classList.add("active");
+            await startApp(session.user);
 
-    updateAdminDashboard();
-    renderAdminUsers();
-    renderAdminPosts();
-    renderAdminReels();
-}
+        }
 
-function openAdminFromApp(){
+        if(event === "SIGNED_OUT"){
 
-    let email=prompt(
-        "Admin Email লিখুন"
-    );
+            currentUser = null;
 
-    if(email===null)return;
+        }
 
-    let password=prompt(
-        "Admin Password লিখুন"
-    );
-
-    if(
-        email==="admin@mysocial.com"
-        &&
-        password==="admin123"
-    ){
-
-        isAdmin=true;
-        showAdminPanel();
-
-    }else{
-
-        alert("Admin Login তথ্য ভুল");
     }
-}
-
-function updateAdminDashboard(){
-
-    document.getElementById("adminUsers").textContent=
-        users.length;
-
-    document.getElementById("adminPosts").textContent=
-        posts.length;
-
-    document.getElementById("adminReels").textContent=
-        reels.length;
-
-    document.getElementById("adminMessages").textContent=
-        messages.length;
-}
+);
 
 
-/* =========================
-   ADMIN USERS
-========================= */
+/* =========================================================
+   STORAGE
+========================================================= */
 
-function renderAdminUsers(){
+async function uploadFile(
+    file,
+    folder
+){
 
-    let q=(document.getElementById("adminUserSearch").value||"")
-        .toLowerCase();
+    if(!file){
+        return null;
+    }
 
-    let result=users.filter(u=>
-        u.name.toLowerCase().includes(q)
-        ||
-        u.email.toLowerCase().includes(q)
-    );
+    const ext =
+        file.name.split(".").pop();
 
-    document.getElementById("adminUsersList").innerHTML=
-        result.map(u=>{
+    const path =
+        folder +
+        "/" +
+        currentUser.id +
+        "_" +
+        Date.now() +
+        "." +
+        ext;
 
-            return `
-            <div class="admin-item">
-
-            <img class="small-photo"
-            src="${u.profilePhoto || "https://via.placeholder.com/50"}">
-
-            <b>${esc(u.name)}</b>
-
-            <br>
-
-            <small>${esc(u.email)}</small>
-
-            <p>
-            Followers: ${u.followers.length}
-            |
-            Friends: ${u.friends.length}
-            </p>
-
-            <p>
-            Status:
-            ${
-                u.adminBlocked
-                ? `<b style="color:red">Blocked</b>`
-                : `<b style="color:green">Active</b>`
+    const {error} =
+        await supabaseClient
+        .storage
+        .from("media")
+        .upload(
+            path,
+            file,
+            {
+                upsert:false,
+                contentType:file.type
             }
-            </p>
+        );
+
+    if(error){
+
+        console.error(error);
+
+        throw new Error(
+            "File upload failed: " +
+            error.message
+        );
+
+    }
+
+    const {data} =
+        supabaseClient
+        .storage
+        .from("media")
+        .getPublicUrl(path);
+
+    return data.publicUrl;
+}
+
+
+/* =========================================================
+   POSTS
+========================================================= */
+
+async function createPost(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const text =
+        $("postText").value.trim();
+
+    const file =
+        $("postImage").files[0];
+
+    $("postMsg").textContent =
+        "Posting...";
+
+    if(!text && !file){
+
+        $("postMsg").textContent =
+            "লেখা অথবা ছবি দিন।";
+
+        return;
+    }
+
+    try{
+
+        let imageUrl = "";
+
+        if(file){
+
+            imageUrl =
+                await uploadFile(
+                    file,
+                    "posts"
+                );
+
+        }
+
+        const {error} =
+            await supabaseClient
+            .from("posts")
+            .insert({
+
+                id:makeId(),
+
+                user_id:currentUser.id,
+
+                text:text,
+
+                image_url:imageUrl
+
+            });
+
+        if(error){
+            throw error;
+        }
+
+        $("postText").value = "";
+        $("postImage").value = "";
+
+        $("postMsg").textContent =
+            "Post published.";
+
+        await loadFeed();
+
+    }catch(error){
+
+        $("postMsg").textContent =
+            error.message;
+
+    }
+
+}
+
+
+async function loadFeed(){
+
+    const feed =
+        $("feed");
+
+    feed.innerHTML =
+        '<div class="loading">Loading...</div>';
+
+    const {data:posts,error} =
+        await supabaseClient
+        .from("posts")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    if(error){
+
+        feed.innerHTML =
+            '<div class="empty">' +
+            escapeHTML(error.message) +
+            '</div>';
+
+        return;
+    }
+
+    if(!posts || posts.length === 0){
+
+        feed.innerHTML =
+            '<div class="empty">কোনো Post নেই।</div>';
+
+        return;
+    }
+
+    const userIds =
+        [...new Set(posts.map(p=>p.user_id))];
+
+    let profiles = [];
+
+    if(userIds.length){
+
+        const result =
+            await supabaseClient
+            .from("profiles")
+            .select("*")
+            .in("id",userIds);
+
+        profiles =
+            result.data || [];
+
+    }
+
+    const profileMap = {};
+
+    profiles.forEach(p=>{
+        profileMap[p.id] = p;
+    });
+
+
+    let html = "";
+
+    for(const post of posts){
+
+        const profile =
+            profileMap[post.user_id] || {};
+
+        html +=
+            await renderPost(
+                post,
+                profile
+            );
+
+    }
+
+    feed.innerHTML = html;
+
+    await loadPostExtras(posts);
+
+}
+
+
+async function renderPost(post,profile){
+
+    const avatar =
+        profile.profile_photo ||
+        "https://via.placeholder.com/100";
+
+    const liked =
+        await hasLiked(post.id);
+
+    const likeCount =
+        await getLikeCount(post.id);
+
+    const commentCount =
+        await getCommentCount(post.id);
+
+    let imageHTML = "";
+
+    if(post.image_url){
+
+        imageHTML =
+            `<img
+                class="postImage"
+                src="${escapeHTML(post.image_url)}"
+                alt="post"
+            >`;
+
+    }
+
+    return `
+
+    <div class="post">
+
+        <div class="postHeader">
+
+            <img
+                class="avatar"
+                src="${escapeHTML(avatar)}"
+                onclick="openProfile('${post.user_id}')"
+            >
+
+            <div>
+
+                <div
+                    class="postName"
+                    onclick="openProfile('${post.user_id}')"
+                >
+                    ${escapeHTML(
+                        profile.name || "User"
+                    )}
+                </div>
+
+                <div class="postDate">
+                    ${formatDate(post.created_at)}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="postText">
+            ${escapeHTML(post.text)}
+        </div>
+
+        ${imageHTML}
+
+        <div class="postActions">
+
+            <button
+                onclick="toggleLike(${post.id})"
+            >
+                ${liked ? "❤️" : "👍"} Like
+                <span id="likes-${post.id}">
+                    ${likeCount}
+                </span>
+            </button>
+
+            <button
+                onclick="toggleComments(${post.id})"
+            >
+                💬 Comment
+                <span id="comments-${post.id}">
+                    ${commentCount}
+                </span>
+            </button>
+
+            <button
+                onclick="sharePost(${post.id})"
+            >
+                ↗ Share
+            </button>
 
             ${
-                u.adminBlocked
+                post.user_id === currentUser.id
                 ?
-                `<button class="green"
-                onclick="adminUnblockUser('${u.id}')">
-                Unblock
+                `<button
+                    onclick="deletePost(${post.id})"
+                >
+                    🗑
                 </button>`
                 :
-                `<button class="red"
-                onclick="adminBlockUser('${u.id}')">
-                Block
-                </button>`
+                ""
             }
 
-            <button class="blue"
-            onclick="adminViewUser('${u.id}')">
-            View
-            </button>
+        </div>
 
-            <button class="red"
-            onclick="adminDeleteUser('${u.id}')">
-            Delete
-            </button>
+        <div
+            id="comment-area-${post.id}"
+            class="hidden"
+        >
 
-            </div>`;
-        }).join("") ||
-        `<p>No users found</p>`;
-}
+            <div
+                id="comments-list-${post.id}"
+            >
+                Loading...
+            </div>
 
-function adminBlockUser(id){
+            <div class="commentBox">
 
-    if(!confirm("এই User-কে Block করবেন?"))
-        return;
+                <input
+                    id="comment-input-${post.id}"
+                    placeholder="Write a comment..."
+                >
 
-    let u=getUser(id);
+                <button
+                    onclick="addComment(${post.id})"
+                >
+                    Send
+                </button>
 
-    if(!u)return;
+            </div>
 
-    u.adminBlocked=true;
+        </div>
 
-    saveAll();
+    </div>
 
-    updateAdminDashboard();
-    renderAdminUsers();
-    renderAdminPosts();
-    renderAdminReels();
-}
+    `;
 
-function adminUnblockUser(id){
-
-    let u=getUser(id);
-
-    if(!u)return;
-
-    u.adminBlocked=false;
-
-    saveAll();
-
-    updateAdminDashboard();
-    renderAdminUsers();
-    renderAdminPosts();
-    renderAdminReels();
-}
-
-function adminViewUser(id){
-
-    let u=getUser(id);
-
-    if(!u)return;
-
-    alert(
-        "Name: "+u.name+
-        "\nEmail: "+u.email+
-        "\nFollowers: "+u.followers.length+
-        "\nFollowing: "+u.following.length+
-        "\nFriends: "+u.friends.length+
-        "\nPosts: "+posts.filter(p=>p.userId===id).length+
-        "\nReels: "+reels.filter(r=>r.userId===id).length
-    );
-}
-
-function adminDeleteUser(id){
-
-    if(!confirm(
-        "এই User এবং তার Posts/Reels/Delete Data মুছে ফেলবেন?"
-    ))return;
-
-    users=users.filter(u=>u.id!==id);
-
-    posts=posts.filter(p=>p.userId!==id);
-
-    reels=reels.filter(r=>r.userId!==id);
-
-    messages=messages.filter(
-        m=>m.senderId!==id && m.receiverId!==id
-    );
-
-    notifications=notifications.filter(
-        n=>n.receiverId!==id
-    );
-
-    users.forEach(u=>{
-
-        u.followers=u.followers.filter(x=>x!==id);
-        u.following=u.following.filter(x=>x!==id);
-        u.friends=u.friends.filter(x=>x!==id);
-        u.friendRequests=u.friendRequests.filter(x=>x!==id);
-        u.sentRequests=u.sentRequests.filter(x=>x!==id);
-        u.blocked=u.blocked.filter(x=>x!==id);
-
-    });
-
-    saveAll();
-
-    updateAdminDashboard();
-    renderAdminUsers();
-    renderAdminPosts();
-    renderAdminReels();
 }
 
 
-/* =========================
-   ADMIN POSTS
-========================= */
+async function loadPostExtras(posts){
 
-function renderAdminPosts(){
-
-    let html="";
-
-    posts.forEach(p=>{
-
-        let u=getUser(p.userId);
-
-        html+=`
-        <div class="admin-item">
-
-        <b>${esc(u ? u.name : "Unknown User")}</b>
-
-        <p>${esc(p.text || "(Photo Post)")}</p>
-
-        <small>${esc(p.time)}</small>
-
-        <br><br>
-
-        <button class="red"
-        onclick="adminDeletePost('${p.id}')">
-        🗑️ Delete Post
-        </button>
-
-        </div>`;
-    });
-
-    document.getElementById("adminPostsList").innerHTML=
-        html || "<p>No posts</p>";
-}
-
-function adminDeletePost(id){
-
-    if(!confirm("এই Post Delete করবেন?"))
-        return;
-
-    posts=posts.filter(p=>p.id!==id);
-
-    saveAll();
-
-    updateAdminDashboard();
-    renderAdminPosts();
+    /*
+    আলাদা করে এখন comment count/like count
+    already renderPost-এ load হচ্ছে।
+    */
 }
 
 
-/* =========================
-   ADMIN REELS
-========================= */
+async function getLikeCount(postId){
 
-function renderAdminReels(){
+    const {count,error} =
+        await supabaseClient
+        .from("post_likes")
+        .select("*",{count:"exact",head:true})
+        .eq("post_id",postId);
 
-    let html="";
+    if(error){
+        return 0;
+    }
 
-    reels.forEach(r=>{
-
-        let u=getUser(r.userId);
-
-        html+=`
-        <div class="admin-item">
-
-        <b>${esc(u ? u.name : "Unknown User")}</b>
-
-        <p>${esc(r.text || "(Reel)")}</p>
-
-        <small>${esc(r.time)}</small>
-
-        <br><br>
-
-        <button class="red"
-        onclick="adminDeleteReel('${r.id}')">
-        🗑️ Delete Reel
-        </button>
-
-        </div>`;
-    });
-
-    document.getElementById("adminReelsList").innerHTML=
-        html || "<p>No reels</p>";
-}
-
-function adminDeleteReel(id){
-
-    if(!confirm("এই Reel Delete করবেন?"))
-        return;
-
-    reels=reels.filter(r=>r.id!==id);
-
-    saveAll();
-
-    updateAdminDashboard();
-    renderAdminReels();
+    return count || 0;
 }
 
 
-/* =========================
-   ADMIN ANNOUNCEMENT
-========================= */
+async function hasLiked(postId){
 
-function sendAnnouncement(){
+    if(!currentUser){
+        return false;
+    }
 
-    let text=document
-        .getElementById("announcementText")
-        .value.trim();
+    const {data} =
+        await supabaseClient
+        .from("post_likes")
+        .select("post_id")
+        .eq("post_id",postId)
+        .eq("user_id",currentUser.id)
+        .maybeSingle();
 
-    if(!text){
-        alert("Announcement লিখুন");
+    return !!data;
+}
+
+
+async function toggleLike(postId){
+
+    if(!currentUser){
         return;
     }
 
-    users.forEach(u=>{
+    const liked =
+        await hasLiked(postId);
 
-        notifications.unshift({
+    if(liked){
 
-            id:uid(),
+        await supabaseClient
+        .from("post_likes")
+        .delete()
+        .eq("post_id",postId)
+        .eq("user_id",currentUser.id);
 
-            receiverId:u.id,
+    }else{
 
-            text:"📢 Admin Announcement: "+text,
+        await supabaseClient
+        .from("post_likes")
+        .insert({
+
+            post_id:postId,
+            user_id:currentUser.id,
+            created_at:new Date().toISOString()
+
+        });
+
+    }
+
+    const count =
+        await getLikeCount(postId);
+
+    const el =
+        $("likes-"+postId);
+
+    if(el){
+        el.textContent = count;
+    }
+
+    await loadFeed();
+
+}
+
+
+async function getCommentCount(postId){
+
+    const {count,error} =
+        await supabaseClient
+        .from("comments")
+        .select("*",{count:"exact",head:true})
+        .eq("post_id",postId);
+
+    if(error){
+        return 0;
+    }
+
+    return count || 0;
+}
+
+
+async function toggleComments(postId){
+
+    const area =
+        $("comment-area-"+postId);
+
+    if(!area){
+        return;
+    }
+
+    area.classList.toggle("hidden");
+
+    if(!area.classList.contains("hidden")){
+
+        await loadComments(postId);
+
+    }
+
+}
+
+
+async function loadComments(postId){
+
+    const box =
+        $("comments-list-"+postId);
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("comments")
+        .select("*")
+        .eq("post_id",postId)
+        .order("created_at",{ascending:true});
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">No comments yet.</div>';
+
+        return;
+    }
+
+    const ids =
+        [...new Set(data.map(c=>c.user_id))];
+
+    const {data:profiles} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",ids);
+
+    const map = {};
+
+    (profiles || []).forEach(p=>{
+        map[p.id] = p;
+    });
+
+    box.innerHTML =
+        data.map(c=>{
+
+            const p =
+                map[c.user_id] || {};
+
+            return `
+
+            <div class="comment">
+
+                <span class="commentName">
+                    ${escapeHTML(
+                        p.name || "User"
+                    )}
+                </span>
+
+                ${escapeHTML(c.text)}
+
+            </div>
+
+            `;
+
+        }).join("");
+
+}
+
+
+async function addComment(postId){
+
+    const input =
+        $("comment-input-"+postId);
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("comments")
+        .insert({
+
+            id:makeId(),
+
+            post_id:postId,
+
+            user_id:currentUser.id,
+
+            text:text,
+
+            created_at:new Date().toISOString()
+
+        });
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+    input.value = "";
+
+    await loadComments(postId);
+
+    const count =
+        await getCommentCount(postId);
+
+    const countEl =
+        $("comments-"+postId);
+
+    if(countEl){
+        countEl.textContent = count;
+    }
+
+}
+
+
+async function deletePost(postId){
+
+    if(!confirm("এই Post delete করবেন?")){
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("posts")
+        .delete()
+        .eq("id",postId)
+        .eq("user_id",currentUser.id);
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+    await loadFeed();
+
+}
+
+
+async function sharePost(postId){
+
+    const url =
+        window.location.href +
+        "#post-" +
+        postId;
+
+    try{
+
+        await navigator.clipboard.writeText(url);
+
+        alert("Post link copied.");
+
+    }catch(e){
+
+        alert("Share link: " + url);
+
+    }
+
+}
+
+
+/* =========================================================
+   USER SEARCH
+========================================================= */
+
+async function loadUsers(){
+
+    $("userSearch").value = "";
+
+    await searchUsers();
+
+}
+
+
+async function searchUsers(){
+
+    const q =
+        $("userSearch").value.trim();
+
+    let query =
+        supabaseClient
+        .from("profiles")
+        .select("*")
+        .neq("id",currentUser.id)
+        .limit(30);
+
+    if(q){
+
+        query =
+            query.ilike(
+                "name",
+                "%" + q + "%"
+            );
+
+    }
+
+    const {data,error} =
+        await query;
+
+    if(error){
+
+        $("usersList").innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        $("usersList").innerHTML =
+            '<div class="empty">User পাওয়া যায়নি।</div>';
+
+        return;
+    }
+
+    let html = "";
+
+    for(const user of data){
+
+        const relation =
+            await getFriendRelation(user.id);
+
+        let action = "";
+
+        if(relation === "friends"){
+
+            action =
+                `<button class="gray">
+                    Friends
+                </button>`;
+
+        }else if(relation === "sent"){
+
+            action =
+                `<button class="gray">
+                    Request Sent
+                </button>`;
+
+        }else if(relation === "received"){
+
+            action =
+                `<button
+                    class="green"
+                    onclick="acceptRequestByUser('${user.id}')"
+                >
+                    Accept
+                </button>`;
+
+        }else{
+
+            action =
+                `<button
+                    class="blue"
+                    onclick="sendFriendRequest('${user.id}')"
+                >
+                    Add Friend
+                </button>`;
+
+        }
+
+        html += `
+
+        <div class="userCard">
+
+            <img
+                class="avatar"
+                src="${escapeHTML(
+                    user.profile_photo ||
+                    "https://via.placeholder.com/100"
+                )}"
+            >
+
+            <div class="userCardInfo">
+
+                <b>
+                    ${escapeHTML(
+                        user.name || "User"
+                    )}
+                </b>
+
+                <div>
+                    ${escapeHTML(
+                        user.bio || ""
+                    )}
+                </div>
+
+            </div>
+
+            ${action}
+
+            <button
+                class="gray"
+                onclick="openProfile('${user.id}')"
+            >
+                View
+            </button>
+
+        </div>
+
+        `;
+
+    }
+
+    $("usersList").innerHTML = html;
+
+}
+
+
+/* =========================================================
+   FRIENDS
+========================================================= */
+
+async function getFriendRelation(userId){
+
+    const {data} =
+        await supabaseClient
+        .from("friend_requests")
+        .select("*")
+        .or(
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`
+        );
+
+    if(!data || !data.length){
+        return "none";
+    }
+
+    const row =
+        data.find(x=>x.status === "accepted");
+
+    if(row){
+        return "friends";
+    }
+
+    const pending =
+        data.find(x=>x.status === "pending");
+
+    if(!pending){
+        return "none";
+    }
+
+    if(pending.sender_id === currentUser.id){
+        return "sent";
+    }
+
+    return "received";
+}
+
+
+async function sendFriendRequest(receiverId){
+
+    if(receiverId === currentUser.id){
+        return;
+    }
+
+    const relation =
+        await getFriendRelation(receiverId);
+
+    if(relation !== "none"){
+
+        alert("Already connected/requested.");
+
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("friend_requests")
+        .insert({
+
+            id:makeId(),
+
+            sender_id:currentUser.id,
+
+            receiver_id:receiverId,
+
+            status:"pending",
+
+            created_at:new Date().toISOString()
+
+        });
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+    await createNotification(
+        receiverId,
+        (currentProfile?.name || "Someone") +
+        " sent you a friend request."
+    );
+
+    alert("Friend request sent.");
+
+    await searchUsers();
+
+}
+
+
+async function acceptRequestByUser(senderId){
+
+    const {data,error} =
+        await supabaseClient
+        .from("friend_requests")
+        .select("*")
+        .eq("sender_id",senderId)
+        .eq("receiver_id",currentUser.id)
+        .eq("status","pending")
+        .limit(1)
+        .maybeSingle();
+
+    if(error || !data){
+
+        alert("Request not found.");
+
+        return;
+    }
+
+    const {error:updateError} =
+        await supabaseClient
+        .from("friend_requests")
+        .update({
+            status:"accepted"
+        })
+        .eq("id",data.id);
+
+    if(updateError){
+
+        alert(updateError.message);
+
+        return;
+    }
+
+    await createNotification(
+        senderId,
+        (currentProfile?.name || "Someone") +
+        " accepted your friend request."
+    );
+
+    await loadFriends();
+
+}
+
+
+async function loadFriends(){
+
+    await loadFriendRequests();
+    await loadMyFriends();
+
+}
+
+
+async function loadFriendRequests(){
+
+    const box =
+        $("friendRequests");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("friend_requests")
+        .select("*")
+        .eq("receiver_id",currentUser.id)
+        .eq("status","pending")
+        .order("created_at",{ascending:false});
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">No friend requests.</div>';
+
+        return;
+    }
+
+    const ids =
+        data.map(x=>x.sender_id);
+
+    const {data:profiles} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",ids);
+
+    const map = {};
+
+    (profiles || []).forEach(p=>{
+        map[p.id] = p;
+    });
+
+    box.innerHTML =
+        data.map(r=>{
+
+            const p =
+                map[r.sender_id] || {};
+
+            return `
+
+            <div class="userCard">
+
+                <img
+                    class="avatar"
+                    src="${escapeHTML(
+                        p.profile_photo ||
+                        "https://via.placeholder.com/100"
+                    )}"
+                >
+
+                <div class="userCardInfo">
+
+                    <b>
+                        ${escapeHTML(
+                            p.name || "User"
+                        )}
+                    </b>
+
+                </div>
+
+                <button
+                    class="green"
+                    onclick="acceptRequestByUser('${r.sender_id}')"
+                >
+                    Accept
+                </button>
+
+            </div>
+
+            `;
+
+        }).join("");
+
+}
+
+
+async function loadMyFriends(){
+
+    const box =
+        $("friendsList");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("friend_requests")
+        .select("*")
+        .eq("status","accepted")
+        .or(
+            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+        );
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">আপনার এখনো কোনো Friend নেই।</div>';
+
+        return;
+    }
+
+    const ids =
+        data.map(r=>
+            r.sender_id === currentUser.id
+            ? r.receiver_id
+            : r.sender_id
+        );
+
+    const {data:profiles} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",ids);
+
+    box.innerHTML =
+        (profiles || []).map(p=>`
+
+        <div class="userCard">
+
+            <img
+                class="avatar"
+                src="${escapeHTML(
+                    p.profile_photo ||
+                    "https://via.placeholder.com/100"
+                )}"
+            >
+
+            <div class="userCardInfo">
+
+                <b>
+                    ${escapeHTML(p.name || "User")}
+                </b>
+
+            </div>
+
+            <button
+                class="blue"
+                onclick="openChat('${p.id}','${escapeHTML(p.name || "User")}')"
+            >
+                Message
+            </button>
+
+        </div>
+
+        `).join("");
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function createNotification(
+    receiverId,
+    text
+){
+
+    /*
+    এখানে notifications_insert policy
+    receiver_id = auth.uid() হওয়ায়
+    client থেকে অন্য user-এর notification insert
+    RLS-এর কারণে block হতে পারে।
+
+    তাই fail হলে app থামাবে না।
+    */
+    try{
+
+        await supabaseClient
+        .from("notifications")
+        .insert({
+
+            id:makeId(),
+
+            receiver_id:receiverId,
+
+            text:text,
 
             read:false,
 
-            time:now()
+            created_at:new Date().toISOString()
+
         });
 
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+
+async function loadNotifications(){
+
+    const box =
+        $("notificationsList");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("notifications")
+        .select("*")
+        .eq("receiver_id",currentUser.id)
+        .order("created_at",{ascending:false})
+        .limit(50);
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">কোনো notification নেই।</div>';
+
+        return;
+    }
+
+    box.innerHTML =
+        data.map(n=>`
+
+        <div
+            class="notification ${n.read ? "" : "unread"}"
+            onclick="markNotification(${n.id})"
+        >
+
+            ${escapeHTML(n.text)}
+
+            <div class="postDate">
+                ${formatDate(n.created_at)}
+            </div>
+
+        </div>
+
+        `).join("");
+
+}
+
+
+async function markNotification(id){
+
+    await supabaseClient
+    .from("notifications")
+    .update({
+        read:true
+    })
+    .eq("id",id)
+    .eq("receiver_id",currentUser.id);
+
+}
+
+
+/* =========================================================
+   MESSENGER
+========================================================= */
+
+async function loadChatUsers(){
+
+    const box =
+        $("chatUsers");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("friend_requests")
+        .select("*")
+        .eq("status","accepted")
+        .or(
+            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+        );
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">Chat করার জন্য Friend নেই।</div>';
+
+        return;
+    }
+
+    const ids =
+        data.map(r=>
+            r.sender_id === currentUser.id
+            ? r.receiver_id
+            : r.sender_id
+        );
+
+    const {data:profiles} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",ids);
+
+    box.innerHTML =
+        (profiles || []).map(p=>`
+
+        <div
+            class="chatUser"
+            onclick="openChat(
+                '${p.id}',
+                '${escapeHTML(p.name || "User")}'
+            )"
+        >
+
+            <b>
+                ${escapeHTML(p.name || "User")}
+            </b>
+
+            <div>
+                ${escapeHTML(p.bio || "")}
+            </div>
+
+        </div>
+
+        `).join("");
+
+}
+
+
+async function openChat(userId,name){
+
+    currentChatUser = {
+        id:userId,
+        name:name
+    };
+
+    $("chatArea").classList.remove("hidden");
+
+    $("chatTitle").textContent =
+        "Chat with " + name;
+
+    await loadMessages();
+
+}
+
+
+async function loadMessages(){
+
+    if(!currentChatUser){
+        return;
+    }
+
+    const box =
+        $("chatWindow");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("messages")
+        .select("*")
+        .or(
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChatUser.id}),and(sender_id.eq.${currentChatUser.id},receiver_id.eq.${currentUser.id})`
+        )
+        .order("created_at",{ascending:true});
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">No messages.</div>';
+
+        return;
+    }
+
+    box.innerHTML =
+        data.map(m=>{
+
+            const mine =
+                m.sender_id === currentUser.id;
+
+            return `
+
+            <div
+                class="message ${
+                    mine
+                    ? "messageMine"
+                    : "messageOther"
+                }"
+            >
+
+                ${escapeHTML(m.text)}
+
+                <div class="messageTime">
+                    ${formatDate(m.created_at)}
+                </div>
+
+            </div>
+
+            `;
+
+        }).join("");
+
+    box.scrollTop =
+        box.scrollHeight;
+
+}
+
+
+async function sendMessage(){
+
+    if(!currentChatUser){
+        alert("একজন Friend নির্বাচন করুন।");
+        return;
+    }
+
+    const input =
+        $("messageInput");
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("messages")
+        .insert({
+
+            id:makeId(),
+
+            sender_id:currentUser.id,
+
+            receiver_id:currentChatUser.id,
+
+            text:text,
+
+            created_at:new Date().toISOString()
+
+        });
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+    input.value = "";
+
+    await loadMessages();
+
+}
+
+
+/* =========================================================
+   REELS
+========================================================= */
+
+async function uploadReel(){
+
+    const file =
+        $("reelFile").files[0];
+
+    const caption =
+        $("reelCaption").value.trim();
+
+    $("reelMsg").textContent =
+        "Uploading...";
+
+    if(!file){
+
+        $("reelMsg").textContent =
+            "Video নির্বাচন করুন।";
+
+        return;
+    }
+
+    if(!file.type.startsWith("video/")){
+
+        $("reelMsg").textContent =
+            "শুধু video file দিন।";
+
+        return;
+    }
+
+    try{
+
+        const videoUrl =
+            await uploadFile(
+                file,
+                "reels"
+            );
+
+        const {error} =
+            await supabaseClient
+            .from("reels")
+            .insert({
+
+                id:makeId(),
+
+                user_id:currentUser.id,
+
+                video_url:videoUrl,
+
+                caption:caption,
+
+                views:0,
+
+                created_at:new Date().toISOString()
+
+            });
+
+        if(error){
+            throw error;
+        }
+
+        $("reelFile").value = "";
+        $("reelCaption").value = "";
+
+        $("reelMsg").textContent =
+            "Reel uploaded.";
+
+        await loadReels();
+
+    }catch(error){
+
+        $("reelMsg").textContent =
+            error.message;
+
+    }
+
+}
+
+
+async function loadReels(){
+
+    const box =
+        $("reelsList");
+
+    box.innerHTML =
+        "Loading...";
+
+    const {data,error} =
+        await supabaseClient
+        .from("reels")
+        .select("*")
+        .order("created_at",{ascending:false})
+        .limit(30);
+
+    if(error){
+
+        box.innerHTML =
+            escapeHTML(error.message);
+
+        return;
+    }
+
+    if(!data || !data.length){
+
+        box.innerHTML =
+            '<div class="empty">কোনো Reel নেই।</div>';
+
+        return;
+    }
+
+    const ids =
+        [...new Set(data.map(r=>r.user_id))];
+
+    const {data:profiles} =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",ids);
+
+    const map = {};
+
+    (profiles || []).forEach(p=>{
+        map[p.id] = p;
     });
 
-    saveAll();
+    box.innerHTML =
+        data.map(r=>{
 
-    document.getElementById("announcementText").value="";
+            const p =
+                map[r.user_id] || {};
 
-    alert("Announcement সব User-এর কাছে পাঠানো হয়েছে");
+            return `
+
+            <div class="reel">
+
+                <video
+                    controls
+                    playsinline
+                    preload="metadata"
+                    src="${escapeHTML(r.video_url)}"
+                    onplay="increaseReelView(${r.id},${r.views || 0})"
+                ></video>
+
+                <div class="reelInfo">
+
+                    <b>
+                        ${escapeHTML(
+                            p.name || "User"
+                        )}
+                    </b>
+
+                    <div>
+                        ${escapeHTML(r.caption || "")}
+                    </div>
+
+                    <div>
+                        👁 ${r.views || 0} views
+                    </div>
+
+                    ${
+                        r.user_id === currentUser.id
+                        ?
+                        `<button
+                            class="red"
+                            onclick="deleteReel(${r.id})"
+                        >
+                            Delete
+                        </button>`
+                        :
+                        ""
+                    }
+
+                </div>
+
+            </div>
+
+            `;
+
+        }).join("");
+
 }
 
 
-/* =========================
-   EXIT ADMIN
-========================= */
+async function increaseReelView(
+    reelId,
+    currentViews
+){
 
-function exitAdmin(){
+    /*
+    একই video বারবার count না করার জন্য
+    browser session storage ব্যবহার করছি।
+    */
 
-    isAdmin=false;
+    const key =
+        "viewed_reel_" + reelId;
 
-    showHome();
-}
-
-
-/* =========================
-   STARTUP
-========================= */
-
-migrate();
-
-window.addEventListener("load",function(){
-
-    if(currentUserId){
-        openApp();
-    }else{
-        showLogin();
+    if(sessionStorage.getItem(key)){
+        return;
     }
-});
 
-</script>
+    sessionStorage.setItem(key,"1");
 
-</body>
-   </html>
+    await supabaseClient
+    .from("reels")
+    .update({
+        views:(currentViews || 0) + 1
+    })
+    .eq("id",reelId);
+
+}
+
+
+async function deleteReel(id){
+
+    if(!confirm("এই Reel delete করবেন?")){
+        return;
+    }
+
+    const {error} =
+        await supabaseClient
+        .from("reels")
+        .delete()
+        .eq("id",id)
+        .eq("user_id",currentUser.id);
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+    await loadReels();
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async
