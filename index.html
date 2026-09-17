@@ -2,447 +2,343 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>My Social App</title>
 
 <link rel="manifest" href="./manifest.json">
+
 <meta name="theme-color" content="#1877f2">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}
+
+*{
+box-sizing:border-box;
+}
+
 body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f0f2f5;
-  color:#1c1e21
+margin:0;
+font-family:Arial,"Noto Sans Bengali",sans-serif;
+background:#f0f2f5;
+color:#1c1e21;
 }
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
 
-.top{
-  position:sticky;
-  top:0;
-  z-index:100;
-  height:58px;
-  background:#1877f2;
-  color:white;
-  display:flex;
-  align-items:center;
-  padding:8px 12px;
-  gap:10px
+button,
+input,
+textarea,
+select{
+font:inherit;
 }
+
+button{
+cursor:pointer;
+border:0;
+}
+
+.header{
+position:sticky;
+top:0;
+z-index:100;
+height:60px;
+background:#1877f2;
+color:white;
+display:flex;
+align-items:center;
+gap:10px;
+padding:8px 15px;
+box-shadow:0 2px 5px #0003;
+}
+
 .logo{
-  font-size:22px;
-  font-weight:bold;
-  flex:1
-}
-.top button{
-  border:0;
-  border-radius:20px;
-  padding:8px 14px;
-  background:white;
-  color:#1877f2
+font-size:23px;
+font-weight:bold;
+white-space:nowrap;
 }
 
-.nav{
-  position:sticky;
-  top:58px;
-  z-index:90;
-  display:flex;
-  overflow-x:auto;
-  background:white;
-  border-bottom:1px solid #ddd
+.search{
+flex:1;
+max-width:450px;
+padding:10px 15px;
+border-radius:25px;
+border:0;
+outline:none;
 }
-.nav button{
-  border:0;
-  background:white;
-  padding:13px 14px;
-  white-space:nowrap
-}
-.nav button.active{
-  color:#1877f2;
-  font-weight:bold;
-  border-bottom:3px solid #1877f2
+
+.header-btn{
+width:40px;
+height:40px;
+border-radius:50%;
+background:#ffffff22;
+color:white;
+font-size:18px;
 }
 
 .container{
-  max-width:700px;
-  margin:auto;
-  padding:10px
+max-width:850px;
+margin:auto;
+padding:15px;
 }
 
 .card{
-  background:#fff;
-  border-radius:10px;
-  margin-bottom:10px;
-  padding:12px;
-  box-shadow:0 1px 2px #0002
+background:white;
+border-radius:12px;
+padding:15px;
+margin-bottom:12px;
+box-shadow:0 1px 3px #0002;
 }
 
 .row{
-  display:flex;
-  align-items:center;
-  gap:9px
+display:flex;
+align-items:center;
+gap:10px;
 }
-.space{
-  justify-content:space-between
+
+.between{
+justify-content:space-between;
 }
+
 .avatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#ddd
-}
-.bigavatar{
-  width:52px;
-  height:52px
+width:45px;
+height:45px;
+border-radius:50%;
+object-fit:cover;
+background:#ddd;
 }
 
-.muted{
-  color:#65676b;
-  font-size:13px
+.avatar-large{
+width:95px;
+height:95px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid white;
 }
 
-input,textarea,select{
-  width:100%;
-  border:1px solid #ddd;
-  border-radius:8px;
-  padding:10px;
-  margin:5px 0;
-  outline:none
-}
-textarea{
-  min-height:80px;
-  resize:none
+.cover{
+height:220px;
+background:#ddd center/cover no-repeat;
+border-radius:12px 12px 0 0;
 }
 
 .primary{
-  background:#1877f2;
-  color:white;
-  border:0;
-  border-radius:7px;
-  padding:9px 15px
+background:#1877f2;
+color:white;
+padding:10px 16px;
+border-radius:8px;
 }
-.secondary{
-  background:#e4e6eb;
-  color:#1c1e21;
-  border:0;
-  border-radius:7px;
-  padding:9px 15px
+
+.light{
+background:#e4e6eb;
+color:#111;
+padding:10px 16px;
+border-radius:8px;
 }
+
 .danger{
-  background:#e41e3f;
-  color:white;
-  border:0;
-  border-radius:7px;
-  padding:8px 12px
-}
-.success{
-  background:#42b72a;
-  color:white;
-  border:0;
-  border-radius:7px;
-  padding:8px 12px
+background:#e41e3f;
+color:white;
+padding:10px 16px;
+border-radius:8px;
 }
 
-.post-box{
-  display:flex;
-  gap:10px;
-  align-items:center
-}
-.post-input{
-  flex:1;
-  background:#f0f2f5;
-  border:0;
-  border-radius:25px;
-  padding:13px 16px;
-  color:#65676b;
-  cursor:pointer
+.input{
+width:100%;
+padding:11px;
+border:1px solid #ccd0d5;
+border-radius:8px;
+outline:none;
+margin-top:7px;
 }
 
-.post-actions{
-  display:flex;
-  border-top:1px solid #eee;
-  margin-top:10px;
-  padding-top:8px;
-  gap:5px
-}
-.post-actions button{
-  flex:1;
-  border:0;
-  background:white;
-  padding:9px 4px;
-  border-radius:7px
-}
-.post-actions button:hover{
-  background:#f0f2f5
+textarea.input{
+resize:vertical;
 }
 
-.post-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between
+.actions{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+margin-top:10px;
 }
 
-.post-author{
-  display:flex;
-  align-items:center;
-  gap:9px
-}
-.post-author img{
-  cursor:pointer
-}
-.post-author-name{
-  font-weight:bold;
-  cursor:pointer
-}
-
-.verify{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:17px;
-  height:17px;
-  background:#1877f2;
-  color:white;
-  border-radius:50%;
-  font-size:11px
+.actions button{
+flex:1;
+background:#f0f2f5;
+padding:10px;
+border-radius:8px;
+min-width:100px;
 }
 
 .post-text{
-  margin:12px 0;
-  white-space:pre-wrap;
-  word-break:break-word;
-  font-size:15px;
-  line-height:1.5
+white-space:pre-wrap;
+margin-top:12px;
+font-size:16px;
 }
 
 .post-image{
-  width:100%;
-  max-height:650px;
-  object-fit:cover;
-  display:block;
-  border-radius:7px;
-  margin-top:8px
+width:100%;
+max-height:600px;
+object-fit:cover;
+border-radius:10px;
+margin-top:10px;
 }
 
 .post-video{
-  width:100%;
-  max-height:650px;
-  border-radius:7px;
-  margin-top:8px;
-  background:#000
-}
-
-.multi-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:3px;
-  margin-top:8px
-}
-.multi-grid img,
-.multi-grid video{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  background:#000
-}
-.multi-grid.one{
-  grid-template-columns:1fr
-}
-.multi-grid.one img{
-  height:auto;
-  max-height:650px
-}
-
-.post-stats{
-  display:flex;
-  justify-content:space-between;
-  color:#65676b;
-  font-size:13px;
-  padding:8px 2px
-}
-
-.post-buttons{
-  display:flex;
-  border-top:1px solid #ddd;
-  border-bottom:1px solid #ddd;
-  padding:3px 0
-}
-.post-buttons button{
-  flex:1;
-  border:0;
-  background:white;
-  padding:9px 3px;
-  border-radius:5px;
-  color:#65676b
-}
-.post-buttons button:hover{
-  background:#f0f2f5
-}
-.post-buttons button.active{
-  color:#1877f2;
-  font-weight:bold
-}
-
-.comment-box{
-  display:flex;
-  gap:7px;
-  margin-top:8px
-}
-.comment-box input{
-  margin:0;
-  border-radius:20px;
-  background:#f0f2f5;
-  border:0
-}
-
-.comment{
-  background:#f0f2f5;
-  border-radius:12px;
-  padding:7px 10px;
-  margin-top:6px
-}
-
-.reaction-menu{
-  position:absolute;
-  bottom:45px;
-  left:0;
-  background:white;
-  border-radius:25px;
-  padding:6px;
-  box-shadow:0 2px 12px #0004;
-  display:flex;
-  gap:3px;
-  z-index:20
-}
-.reaction-wrap{
-  position:relative;
-  flex:1
-}
-
-.reaction-menu button{
-  border:0;
-  background:white;
-  font-size:23px;
-  padding:3px 6px;
-  border-radius:50%
-}
-.reaction-menu button:hover{
-  background:#eee
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0008;
-  z-index:1000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px
-}
-.modal-box{
-  width:min(620px,100%);
-  max-height:92vh;
-  overflow:auto;
-  background:white;
-  border-radius:12px;
-  padding:15px
-}
-.close{
-  float:right;
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:50%;
-  background:#eee;
-  font-size:20px
-}
-
-.bg-preview{
-  padding:30px 15px;
-  border-radius:10px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-  margin:8px 0
-}
-
-.story-list{
-  display:flex;
-  gap:8px;
-  overflow-x:auto
-}
-.story{
-  min-width:105px;
-  height:150px;
-  position:relative;
-  overflow:hidden;
-  border-radius:10px;
-  background:#ddd
-}
-.story img,.story video{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-.story-name{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:6px;
-  color:white;
-  background:#0008;
-  font-size:12px
-}
-
-.stat{
-  display:flex;
-  justify-content:space-around;
-  text-align:center;
-  padding:12px
-}
-.stat b{
-  display:block;
-  font-size:20px
-}
-
-.user{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid #eee
-}
-.user-info{
-  flex:1
-}
-
-.auth{
-  max-width:420px;
-  margin:50px auto;
-  padding:15px
+width:100%;
+max-height:600px;
+border-radius:10px;
+margin-top:10px;
+background:#000;
 }
 
 .hidden{
-  display:none!important
+display:none !important;
 }
 
-@media(max-width:500px){
-  .container{
-    padding:5px
-  }
-  .card{
-    border-radius:7px
-  }
-  .multi-grid img,
-  .multi-grid video{
-    height:170px
-  }
+.muted{
+color:#65676b;
+font-size:13px;
 }
+
+.empty{
+text-align:center;
+padding:30px;
+color:#777;
+}
+
+.profile-info{
+padding:0 15px 15px;
+margin-top:-45px;
+position:relative;
+}
+
+.profile-name{
+font-size:25px;
+font-weight:bold;
+margin-top:7px;
+}
+
+.stats{
+display:flex;
+gap:25px;
+margin-top:10px;
+}
+
+.stats b{
+font-size:18px;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:60px;
+background:white;
+border-top:1px solid #ddd;
+display:flex;
+justify-content:space-around;
+align-items:center;
+z-index:90;
+}
+
+.nav button{
+background:white;
+color:#555;
+padding:8px;
+border-radius:8px;
+}
+
+.nav button.active{
+color:#1877f2;
+font-weight:bold;
+}
+
+body{
+padding-bottom:65px;
+}
+
+.auth{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+.auth-box{
+width:100%;
+max-width:430px;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 3px 15px #0002;
+}
+
+.auth-title{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#1877f2;
+margin-bottom:20px;
+}
+
+.tab{
+display:flex;
+gap:5px;
+margin-bottom:15px;
+}
+
+.tab button{
+flex:1;
+padding:10px;
+background:#e4e6eb;
+border-radius:8px;
+}
+
+.tab button.active{
+background:#1877f2;
+color:white;
+}
+
+.toast{
+position:fixed;
+bottom:80px;
+left:50%;
+transform:translateX(-50%);
+background:#222;
+color:white;
+padding:10px 18px;
+border-radius:20px;
+display:none;
+z-index:999;
+}
+
+@media(max-width:600px){
+
+.header{
+padding:8px;
+}
+
+.logo{
+font-size:19px;
+}
+
+.search{
+display:none;
+}
+
+.container{
+padding:8px;
+}
+
+.cover{
+height:170px;
+}
+
+}
+
 </style>
 </head>
 
@@ -450,2513 +346,1764 @@ textarea{
 
 <div id="app"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="toast" class="toast"></div>
 
 <script>
-const SUPABASE_URL="https://skereuaizdczbvjplisi.supabase.co";
-const SUPABASE_KEY="sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
-
-const db=supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-const $=id=>document.getElementById(id);
-
-let me=null;
-let profile=null;
-let currentSection="home";
-let currentProfileId=null;
-let openReactionMenu=null;
-
-function escapeHTML(v){
-  return String(v??"")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
-}
-
-function avatar(url){
-  return url ||
-  "https://via.placeholder.com/100?text=User";
-}
-
-function dateText(date){
-  return new Date(date).toLocaleString("bn-BD",{
-    dateStyle:"medium",
-    timeStyle:"short"
-  });
-}
 
 /* =========================
-LOGIN
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://skereuaizdczbvjplisi.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* =========================
+   GLOBAL
+========================= */
+
+let me = null;
+let profile = null;
+let posts = [];
+let currentPage = "home";
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function escapeHTML(text){
+
+return String(text ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function showToast(message){
+
+const box =
+document.getElementById("toast");
+
+box.textContent = message;
+
+box.style.display = "block";
+
+setTimeout(()=>{
+box.style.display="none";
+},2500);
+
+}
+
+
+function formatDate(date){
+
+return new Date(date)
+.toLocaleString("bn-BD",{
+dateStyle:"medium",
+timeStyle:"short"
+});
+
+}
+
+
+function getAvatar(user){
+
+if(user && user.profile_photo){
+
+return user.profile_photo;
+
+}
+
+const name =
+user?.name || "User";
+
+return "https://ui-avatars.com/api/?name="
++encodeURIComponent(name)
++"&background=1877f2&color=fff";
+
+}
+
+
+/* =========================
+   AUTH SCREEN
 ========================= */
 
 function showLogin(){
-  document.body.innerHTML=`
-  <div class="auth">
-    <div class="card">
-      <h1 style="text-align:center;color:#1877f2">
-        My Social App
-      </h1>
 
-      <input id="loginEmail"
-        type="email"
-        placeholder="Email">
+document.getElementById("app").innerHTML = `
 
-      <input id="loginPassword"
-        type="password"
-        placeholder="Password">
+<div class="auth">
 
-      <button class="primary"
-        style="width:100%"
-        onclick="login()">
-        Login
-      </button>
+<div class="auth-box">
 
-      <p id="loginMsg" class="muted"></p>
+<div class="auth-title">
+My Social App
+</div>
 
-      <hr>
+<div class="tab">
 
-      <button class="secondary"
-        style="width:100%"
-        onclick="showRegister()">
-        Create new account
-      </button>
-    </div>
-  </div>`;
+<button
+id="loginTab"
+class="active"
+onclick="showLoginForm()">
+Login
+</button>
+
+<button
+id="registerTab"
+onclick="showRegisterForm()">
+Create Account
+</button>
+
+</div>
+
+<div id="authForm"></div>
+
+</div>
+
+</div>
+
+`;
+
+showLoginForm();
+
 }
 
-function showRegister(){
-  document.body.innerHTML=`
-  <div class="auth">
-    <div class="card">
-      <h1 style="text-align:center;color:#1877f2">
-        Create Account
-      </h1>
-
-      <input id="regName"
-        placeholder="আপনার নাম">
-
-      <input id="regEmail"
-        type="email"
-        placeholder="Email">
-
-      <input id="regPassword"
-        type="password"
-        placeholder="Password">
-
-      <button class="primary"
-        style="width:100%"
-        onclick="register()">
-        Create Account
-      </button>
-
-      <p id="regMsg" class="muted"></p>
-
-      <hr>
-
-      <button class="secondary"
-        style="width:100%"
-        onclick="showLogin()">
-        Login
-      </button>
-    </div>
-  </div>`;
-}
-
-async function register(){
-  const name=$("regName").value.trim();
-  const email=$("regEmail").value.trim();
-  const password=$("regPassword").value;
-
-  if(!name||!email||!password){
-    $("regMsg").textContent="সব তথ্য দিন";
-    return;
-  }
-
-  const {data,error}=await db.auth.signUp({
-    email,
-    password
-  });
-
-  if(error){
-    $("regMsg").textContent=error.message;
-    return;
-  }
-
-  if(data.user){
-    await db.from("profiles").upsert({
-      id:data.user.id,
-      name,
-      bio:"",
-      role:"user",
-      verified:false,
-      followers_count:0,
-      following_count:0,
-      last_seen:new Date().toISOString()
-    });
-  }
-
-  $("regMsg").textContent=
-    "Account তৈরি হয়েছে।";
-
-  setTimeout(showLogin,1200);
-}
-
-async function login(){
-  const email=$("loginEmail").value.trim();
-  const password=$("loginPassword").value;
-
-  $("loginMsg").textContent="Login হচ্ছে...";
-
-  const {error}=await db.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if(error){
-    $("loginMsg").textContent=error.message;
-    return;
-  }
-
-  await startApp();
-}
-
-async function logout(){
-  await db.auth.signOut();
-  location.reload();
-}
 
 /* =========================
-START
+   LOGIN FORM
+========================= */
+
+function showLoginForm(){
+
+document.getElementById("loginTab")
+.classList.add("active");
+
+document.getElementById("registerTab")
+.classList.remove("active");
+
+document.getElementById("authForm").innerHTML = `
+
+<input
+id="loginEmail"
+class="input"
+type="email"
+placeholder="Email">
+
+<input
+id="loginPassword"
+class="input"
+type="password"
+placeholder="Password">
+
+<button
+class="primary"
+style="width:100%;margin-top:10px"
+onclick="login()">
+
+Login
+
+</button>
+
+`;
+
+}
+
+
+/* =========================
+   REGISTER FORM
+========================= */
+
+function showRegisterForm(){
+
+document.getElementById("loginTab")
+.classList.remove("active");
+
+document.getElementById("registerTab")
+.classList.add("active");
+
+document.getElementById("authForm").innerHTML = `
+
+<input
+id="registerName"
+class="input"
+placeholder="Your name">
+
+<input
+id="registerEmail"
+class="input"
+type="email"
+placeholder="Email">
+
+<input
+id="registerPassword"
+class="input"
+type="password"
+placeholder="Password">
+
+<button
+class="primary"
+style="width:100%;margin-top:10px"
+onclick="register()">
+
+Create Account
+
+</button>
+
+`;
+
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+async function login(){
+
+const email =
+document.getElementById("loginEmail")
+.value.trim();
+
+const password =
+document.getElementById("loginPassword")
+.value;
+
+if(!email || !password){
+
+showToast("Email এবং Password দিন");
+
+return;
+
+}
+
+const {data,error} =
+await supabaseClient.auth
+.signInWithPassword({
+email,
+password
+});
+
+if(error){
+
+showToast(error.message);
+
+return;
+
+}
+
+await startApp();
+
+}
+
+
+/* =========================
+   REGISTER
+========================= */
+
+async function register(){
+
+const name =
+document.getElementById("registerName")
+.value.trim();
+
+const email =
+document.getElementById("registerEmail")
+.value.trim();
+
+const password =
+document.getElementById("registerPassword")
+.value;
+
+if(!name){
+
+showToast("নাম দিন");
+
+return;
+
+}
+
+if(password.length < 6){
+
+showToast("Password কমপক্ষে ৬ অক্ষর দিন");
+
+return;
+
+}
+
+const {data,error} =
+await supabaseClient.auth.signUp({
+
+email,
+password,
+
+options:{
+data:{
+name:name
+}
+}
+
+});
+
+if(error){
+
+showToast(error.message);
+
+return;
+
+}
+
+if(data.user){
+
+await supabaseClient
+.from("profiles")
+.upsert({
+
+id:data.user.id,
+name:name
+
+});
+
+}
+
+if(data.session){
+
+await startApp();
+
+}else{
+
+showToast(
+"Account তৈরি হয়েছে। Email confirmation চাইলে email confirm করে Login করুন।"
+);
+
+}
+
+}
+
+
+/* =========================
+   START APP
 ========================= */
 
 async function startApp(){
-  const {data:{session}}=
-    await db.auth.getSession();
 
-  if(!session){
-    showLogin();
-    return;
-  }
+const {data:{user}} =
+await supabaseClient.auth.getUser();
 
-  me=session.user;
+if(!user){
 
-  await loadProfile();
+showLogin();
 
-  renderApp();
+return;
 
-  await loadFeed();
 }
 
-async function loadProfile(){
-  const {data}=await db
-    .from("profiles")
-    .select("*")
-    .eq("id",me.id)
-    .maybeSingle();
+me = user;
 
-  if(data){
-    profile=data;
-    return;
-  }
 
-  const newProfile={
-    id:me.id,
-    name:me.email?.split("@")[0]||"User",
-    bio:"",
-    role:"user",
-    verified:false,
-    followers_count:0,
-    following_count:0,
-    last_seen:new Date().toISOString()
-  };
+/* PROFILE */
 
-  await db.from("profiles")
-    .upsert(newProfile);
+let {data:p} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.eq("id",user.id)
+.maybeSingle();
 
-  profile=newProfile;
+
+if(!p){
+
+const {data:newProfile} =
+await supabaseClient
+.from("profiles")
+.insert({
+
+id:user.id,
+
+name:
+user.user_metadata?.name ||
+user.email?.split("@")[0] ||
+"User"
+
+})
+.select()
+.single();
+
+p = newProfile;
+
 }
+
+profile = p;
+
+
+/* LAST SEEN */
+
+await supabaseClient
+.from("profiles")
+.update({
+last_seen:new Date().toISOString()
+})
+.eq("id",me.id)
+.catch(()=>{});
+
+
+renderLayout();
+
+goHome();
+
+}
+
 
 /* =========================
-APP
+   MAIN LAYOUT
 ========================= */
 
-function renderApp(){
-  document.body.innerHTML=`
-  <header class="top">
-    <div class="logo">My Social App</div>
-    <button onclick="logout()">Logout</button>
-  </header>
+function renderLayout(){
 
-  <nav class="nav">
-    <button id="nav-home"
-      onclick="section('home')">
-      Home
-    </button>
+document.getElementById("app").innerHTML = `
 
-    <button id="nav-search"
-      onclick="section('search')">
-      🔎 Search
-    </button>
+<header class="header">
 
-    <button id="nav-stories"
-      onclick="section('stories')">
-      Stories
-    </button>
+<div class="logo">
+My Social
+</div>
 
-    <button id="nav-profile"
-      onclick="section('profile')">
-      Profile
-    </button>
+<input
+class="search"
+placeholder="Search people..."
+oninput="searchPeople(this.value)">
 
-    <button id="nav-friends"
-      onclick="section('friends')">
-      Friends
-    </button>
+<button
+class="header-btn"
+onclick="goHome()">
+🏠
+</button>
 
-    <button id="nav-messages"
-      onclick="section('messages')">
-      Messenger
-    </button>
+<button
+class="header-btn"
+onclick="showMyProfile()">
+👤
+</button>
 
-    <button id="nav-notifications"
-      onclick="section('notifications')">
-      Notifications
-    </button>
+<button
+class="header-btn"
+onclick="logout()">
+🚪
+</button>
 
-    <button id="nav-creator"
-      onclick="section('creator')">
-      Creator
-    </button>
+</header>
 
-    ${
-      profile.role==="admin"
-      ? `<button id="nav-admin"
-           onclick="section('admin')">
-           Admin
-         </button>`
-      :""
-    }
-  </nav>
 
-  <main class="container">
-    <div id="content"></div>
-  </main>
+<main class="container">
 
-  <div id="modalRoot"></div>
-  `;
+<div id="page"></div>
 
-  section("home");
+</main>
+
+
+<nav class="nav">
+
+<button
+id="navHome"
+onclick="goHome()">
+🏠<br>Home
+</button>
+
+<button
+id="navReels"
+onclick="showComingSoon('Reels')">
+🎬<br>Reels
+</button>
+
+<button
+id="navFriends"
+onclick="showComingSoon('Friends')">
+👥<br>Friends
+</button>
+
+<button
+id="navMessages"
+onclick="showComingSoon('Messenger')">
+💬<br>Message
+</button>
+
+<button
+id="navProfile"
+onclick="showMyProfile()">
+👤<br>Profile
+</button>
+
+</nav>
+
+`;
+
 }
 
-function activeNav(name){
-  document.querySelectorAll(".nav button")
-    .forEach(x=>x.classList.remove("active"));
-
-  const x=$("nav-"+name);
-  if(x)x.classList.add("active");
-}
-
-async function section(name,arg=null){
-  currentSection=name;
-  activeNav(name);
-
-  if(name==="home")await renderHome();
-  if(name==="search")await renderSearch();
-  if(name==="stories")await renderStories();
-  if(name==="profile")await renderProfile(arg||me.id);
-  if(name==="friends")await renderFriends();
-  if(name==="messages")await renderMessages();
-  if(name==="notifications")await renderNotifications();
-  if(name==="creator")await renderCreator();
-  if(name==="admin")await renderAdmin();
-}
 
 /* =========================
-HOME
+   NAVIGATION
 ========================= */
 
-async function renderHome(){
-  $("content").innerHTML=`
+function setActiveNav(name){
 
-  <div class="card">
+document
+.querySelectorAll(".nav button")
+.forEach(btn=>{
+btn.classList.remove("active");
+});
 
-    <div class="post-box">
+const btn =
+document.getElementById("nav"+name);
 
-      <img class="avatar bigavatar"
-        src="${avatar(profile.profile_photo)}">
+if(btn){
 
-      <div class="post-input"
-        onclick="openPostComposer()">
-        ${escapeHTML(profile.name||"User")},
-        what’s on your mind?
-      </div>
+btn.classList.add("active");
 
-    </div>
-
-    <div class="post-actions">
-
-      <button onclick="openPostComposer('photo')">
-        📷 Photo/Video
-      </button>
-
-      <button onclick="openPostComposer('feeling')">
-        😊 Feeling
-      </button>
-
-      <button onclick="openPostComposer('checkin')">
-        📍 Check in
-      </button>
-
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="row space">
-      <b>Stories</b>
-      <button class="secondary"
-        onclick="section('stories')">
-        See all
-      </button>
-    </div>
-
-    <div id="miniStories"
-      style="margin-top:10px">
-    </div>
-  </div>
-
-  <div id="feed"></div>
-  `;
-
-  await loadMiniStories();
-  await loadFeed();
 }
 
+}
+
+
 /* =========================
-POST COMPOSER
+   HOME
 ========================= */
 
-function openPostComposer(type=""){
-  $("modalRoot").innerHTML=`
-  <div class="modal">
-    <div class="modal-box">
+async function goHome(){
 
-      <button class="close"
-        onclick="closeModal()">×</button>
+currentPage="home";
 
-      <h3 style="text-align:center">
-        Create post
-      </h3>
+setActiveNav("Home");
 
-      <div class="row">
-        <img class="avatar"
-          src="${avatar(profile.profile_photo)}">
+const page =
+document.getElementById("page");
 
-        <div>
-          <b>${escapeHTML(profile.name)}</b>
-          ${
-            profile.verified
-            ? `<span class="verify">✓</span>`
-            :""
-          }
-        </div>
-      </div>
+page.innerHTML = `
 
-      <textarea id="newPostText"
-        placeholder="What's on your mind?">
-      </textarea>
+<div class="card">
 
-      <div id="backgroundPreview"
-        class="bg-preview hidden">
-        আপনার পোস্ট
-      </div>
+<div class="row">
 
-      <select id="postPrivacy">
-        <option value="public">
-          🌎 Public
-        </option>
-        <option value="friends">
-          👥 Friends
-        </option>
-      </select>
+<img
+class="avatar"
+src="${getAvatar(profile)}">
 
-      <select id="postFeeling">
-        <option value="">😊 Feeling/Activity</option>
-        <option value="happy">😊 Feeling happy</option>
-        <option value="sad">😢 Feeling sad</option>
-        <option value="love">❤️ Feeling loved</option>
-        <option value="excited">🤩 Feeling excited</option>
-        <option value="blessed">🙏 Feeling blessed</option>
-        <option value="tired">😴 Feeling tired</option>
-      </select>
+<textarea
+id="postText"
+class="input"
+rows="2"
+placeholder="আপনার মনে কী আছে?">
+</textarea>
 
-      <input id="postLocation"
-        placeholder="📍 Check in / Location">
+</div>
 
-      <label>
-        📷 Photo/Video
-      </label>
 
-      <input id="postFiles"
-        type="file"
-        accept="image/*,video/*"
-        multiple>
+<div class="actions">
 
-      <div class="row"
-        style="margin-top:8px;gap:5px">
+<button
+onclick="document.getElementById('postFiles').click()">
 
-        <button class="secondary"
-          onclick="choosePostBackground()">
-          🎨 Background
-        </button>
+📷 Photo/Video
 
-        <button class="secondary"
-          onclick="clearPostBackground()">
-          Clear
-        </button>
+</button>
 
-      </div>
+<button
+onclick="showComingSoon('Story')">
 
-      <button class="primary"
-        style="width:100%;margin-top:12px"
-        onclick="publishPost()">
-        Post
-      </button>
+⭕ Story
 
-    </div>
-  </div>`;
+</button>
+
+</div>
+
+
+<input
+id="postFiles"
+class="hidden"
+type="file"
+accept="image/*,video/*"
+multiple
+onchange="showSelectedFiles(this)">
+
+
+<div
+id="selectedFiles"
+class="muted">
+</div>
+
+
+<button
+class="primary"
+style="width:100%;margin-top:10px"
+onclick="createPost()">
+
+Post
+
+</button>
+
+</div>
+
+
+<div id="feed">
+
+<div class="empty">
+Loading posts...
+</div>
+
+</div>
+
+`;
+
+await loadFeed();
+
 }
 
-function choosePostBackground(){
-  const colors=[
-    "#1877f2",
-    "#8e44ad",
-    "#e74c3c",
-    "#16a085",
-    "#f39c12"
-  ];
-
-  const color=
-    colors[Math.floor(Math.random()*colors.length)];
-
-  const box=$("backgroundPreview");
-
-  box.style.background=color;
-  box.style.color="white";
-  box.classList.remove("hidden");
-  box.dataset.color=color;
-}
-
-function clearPostBackground(){
-  const box=$("backgroundPreview");
-  box.classList.add("hidden");
-  delete box.dataset.color;
-}
-
-async function publishPost(){
-
-  const text=$("newPostText").value.trim();
-  const files=[...$("postFiles").files];
-  const privacy=$("postPrivacy").value;
-  const feeling=$("postFeeling").value;
-  const location=$("postLocation").value.trim();
-
-  const bg=$("backgroundPreview");
-  const background=bg.dataset.color||"";
-
-  if(!text&&!files.length){
-    alert("Post লিখুন অথবা Photo/Video দিন");
-    return;
-  }
-
-  const {data:post,error}=await db
-    .from("posts")
-    .insert({
-      user_id:me.id,
-      text,
-      image_url:"",
-      privacy,
-      feeling,
-      location
-    })
-    .select()
-    .single();
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  if(background){
-    await db.from("posts")
-      .update({
-        image_url:`bg:${background}`
-      })
-      .eq("id",post.id);
-  }
-
-  for(let i=0;i<files.length;i++){
-
-    const file=files[i];
-
-    const path=
-      `posts/${me.id}/${Date.now()}_${i}_${file.name}`;
-
-    const {error:uploadError}=
-      await db.storage
-      .from("media")
-      .upload(path,file);
-
-    if(uploadError){
-      console.error(uploadError);
-      continue;
-    }
-
-    const publicUrl=
-      db.storage
-      .from("media")
-      .getPublicUrl(path)
-      .data.publicUrl;
-
-    await db.from("post_media").insert({
-      post_id:post.id,
-      media_url:publicUrl,
-      media_type:file.type.startsWith("video/")
-        ?"video"
-        :"image",
-      sort_order:i
-    });
-
-    if(i===0 && !background){
-      await db.from("posts")
-        .update({
-          image_url:publicUrl
-        })
-        .eq("id",post.id);
-    }
-  }
-
-  closeModal();
-
-  await loadFeed();
-}
 
 /* =========================
-FEED
+   SELECTED FILES
+========================= */
+
+function showSelectedFiles(input){
+
+const files =
+Array.from(input.files);
+
+document.getElementById(
+"selectedFiles"
+).textContent =
+files.map(f=>f.name).join(", ");
+
+}
+
+
+/* =========================
+   UPLOAD FILE
+========================= */
+
+async function uploadFile(file){
+
+const extension =
+file.name.split(".").pop();
+
+const path =
+"posts/"
++me.id+"/"
++Date.now()
++"_"
++Math.random()
+.toString(36)
+.substring(2)
++"."+extension;
+
+
+const {error} =
+await supabaseClient
+.storage
+.from("media")
+.upload(
+path,
+file,
+{
+upsert:false,
+contentType:file.type
+}
+);
+
+
+if(error){
+
+throw error;
+
+}
+
+
+const {data} =
+supabaseClient
+.storage
+.from("media")
+.getPublicUrl(path);
+
+
+return data.publicUrl;
+
+}
+
+
+/* =========================
+   CREATE POST
+========================= */
+
+async function createPost(){
+
+const text =
+document.getElementById("postText")
+.value.trim();
+
+const files =
+Array.from(
+document.getElementById("postFiles")
+.files
+);
+
+
+if(!text && files.length===0){
+
+showToast(
+"কিছু লিখুন অথবা ছবি/ভিডিও দিন"
+);
+
+return;
+
+}
+
+
+try{
+
+showToast("Post হচ্ছে...");
+
+
+const {data:post,error} =
+await supabaseClient
+.from("posts")
+.insert({
+
+user_id:me.id,
+
+text:text,
+
+image_url:""
+
+})
+.select()
+.single();
+
+
+if(error){
+
+throw error;
+
+}
+
+
+/* FILE UPLOAD */
+
+let firstURL="";
+
+
+for(let i=0;i<files.length;i++){
+
+const file=files[i];
+
+const url =
+await uploadFile(file);
+
+if(i===0){
+
+firstURL=url;
+
+}
+
+
+/* MULTIPLE MEDIA */
+
+await supabaseClient
+.from("post_media")
+.insert({
+
+post_id:post.id,
+
+media_url:url,
+
+media_type:
+file.type.startsWith("video")
+?"video"
+:"image",
+
+sort_order:i
+
+});
+
+}
+
+
+/* OLD IMAGE_URL SUPPORT */
+
+if(firstURL){
+
+await supabaseClient
+.from("posts")
+.update({
+image_url:firstURL
+})
+.eq("id",post.id);
+
+}
+
+
+showToast("Post হয়েছে");
+
+goHome();
+
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message ||
+"Post failed"
+);
+
+}
+
+}
+
+
+/* =========================
+   LOAD FEED
 ========================= */
 
 async function loadFeed(){
 
-  const box=$("feed");
-  if(!box)return;
+const feed =
+document.getElementById("feed");
 
-  box.innerHTML=
-    `<div class="card">Loading Feed...</div>`;
+const {data,error} =
+await supabaseClient
+.from("posts")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(50);
 
-  const {data:posts,error}=
-    await db
-    .from("posts")
-    .select("*")
-    .order("created_at",{ascending:false})
-    .limit(100);
 
-  if(error){
-    box.innerHTML=
-      `<div class="card">${escapeHTML(error.message)}</div>`;
-    return;
-  }
+if(error){
 
-  if(!posts?.length){
-    box.innerHTML=
-      `<div class="card">
-        এখনো কোনো post নেই।
-       </div>`;
-    return;
-  }
+feed.innerHTML = `
 
-  const ids=[...new Set(
-    posts.map(p=>p.user_id)
-  )];
+<div class="card empty">
 
-  const {data:users}=
-    await db.from("profiles")
-    .select("*")
-    .in("id",ids);
+${escapeHTML(error.message)}
 
-  const userMap={};
-  (users||[]).forEach(u=>{
-    userMap[u.id]=u;
-  });
+</div>
 
-  const postIds=posts.map(p=>p.id);
+`;
 
-  const {data:reactions}=
-    await db.from("post_reactions")
-    .select("*")
-    .in("post_id",postIds);
+return;
 
-  const {data:comments}=
-    await db.from("comments")
-    .select("*")
-    .in("post_id",postIds);
-
-  const {data:following}=
-    await db.from("follows")
-    .select("following_id")
-    .eq("follower_id",me.id);
-
-  const followSet=new Set(
-    (following||[]).map(x=>x.following_id)
-  );
-
-  const reactionMap={};
-  const myReaction={};
-
-  (reactions||[]).forEach(r=>{
-    if(!reactionMap[r.post_id])
-      reactionMap[r.post_id]=[];
-
-    reactionMap[r.post_id].push(r);
-
-    if(r.user_id===me.id)
-      myReaction[r.post_id]=r.reaction;
-  });
-
-  const commentMap={};
-
-  (comments||[]).forEach(c=>{
-    if(!commentMap[c.post_id])
-      commentMap[c.post_id]=[];
-
-    commentMap[c.post_id].push(c);
-  });
-
-  const mediaRes=
-    await db.from("post_media")
-    .select("*")
-    .in("post_id",postIds)
-    .order("sort_order",{ascending:true});
-
-  const mediaMap={};
-
-  (mediaRes.data||[]).forEach(m=>{
-    if(!mediaMap[m.post_id])
-      mediaMap[m.post_id]=[];
-
-    mediaMap[m.post_id].push(m);
-  });
-
-  const now=Date.now();
-
-  const ranked=posts.map(p=>{
-
-    const hours=Math.max(
-      .1,
-      (now-new Date(p.created_at).getTime())/
-      3600000
-    );
-
-    const reactionsCount=
-      (reactionMap[p.id]||[]).length;
-
-    const commentsCount=
-      (commentMap[p.id]||[]).length;
-
-    let score=
-      50/(1+hours);
-
-    score+=reactionsCount*4;
-    score+=commentsCount*5;
-
-    if(followSet.has(p.user_id))
-      score+=25;
-
-    if(p.user_id===me.id)
-      score+=10;
-
-    return {
-      ...p,
-      author:userMap[p.user_id],
-      reactions:reactionMap[p.id]||[],
-      comments:commentMap[p.id]||[],
-      media:mediaMap[p.id]||[],
-      myReaction:myReaction[p.id]||"",
-      score
-    };
-  });
-
-  ranked.sort((a,b)=>b.score-a.score);
-
-  box.innerHTML=
-    ranked.map(renderPost).join("");
-
-  await loadPostComments(ranked);
 }
 
-function renderPost(p){
 
-  const u=p.author||{
-    name:"User",
-    profile_photo:""
-  };
+posts=data || [];
 
-  let mediaHTML="";
 
-  if(p.media.length){
+if(posts.length===0){
 
-    if(p.media.length===1){
+feed.innerHTML = `
 
-      const m=p.media[0];
+<div class="card empty">
 
-      mediaHTML=
-        m.media_type==="video"
-        ? `<video class="post-video"
-             src="${escapeHTML(m.media_url)}"
-             controls></video>`
-        : `<img class="post-image"
-             src="${escapeHTML(m.media_url)}">`;
+এখনও কোনো পোস্ট নেই।<br>
 
-    }else{
+প্রথম পোস্টটি আপনি দিন।
 
-      mediaHTML=`
-      <div class="multi-grid">
+</div>
 
-        ${p.media.map(m=>
-          m.media_type==="video"
-          ? `<video src="${escapeHTML(m.media_url)}"
-               controls></video>`
-          : `<img src="${escapeHTML(m.media_url)}">`
-        ).join("")}
+`;
 
-      </div>`;
-    }
+return;
 
-  }else if(p.image_url){
-
-    if(p.image_url.startsWith("bg:")){
-
-      const bg=p.image_url.substring(3);
-
-      mediaHTML=`
-      <div class="bg-preview"
-        style="background:${escapeHTML(bg)};
-               color:white;
-               padding:60px 20px">
-        ${escapeHTML(p.text||"")}
-      </div>`;
-
-    }else{
-
-      mediaHTML=
-        `<img class="post-image"
-          src="${escapeHTML(p.image_url)}">`;
-    }
-  }
-
-  const reactionCount=p.reactions.length;
-  const commentCount=p.comments.length;
-
-  return `
-  <article class="card"
-    id="post-${p.id}">
-
-    <div class="post-header">
-
-      <div class="post-author">
-
-        <img class="avatar"
-          src="${avatar(u.profile_photo)}"
-          onclick="section('profile','${p.user_id}')">
-
-        <div>
-
-          <div>
-            <span class="post-author-name"
-              onclick="section('profile','${p.user_id}')">
-              ${escapeHTML(u.name||"User")}
-            </span>
-
-            ${
-              u.verified
-              ? `<span class="verify">✓</span>`
-              :""
-            }
-          </div>
-
-          <div class="muted">
-            ${dateText(p.created_at)}
-            · ${p.privacy==="friends"?"👥":"🌎"}
-          </div>
-
-        </div>
-      </div>
-
-      <button class="secondary"
-        onclick="postMenu(${p.id},${p.user_id==='${me.id}'})">
-        ⋯
-      </button>
-
-    </div>
-
-    ${
-      p.feeling
-      ? `<div class="muted" style="margin-top:8px">
-          ${
-            p.feeling==="happy"?"😊 Feeling happy":
-            p.feeling==="sad"?"😢 Feeling sad":
-            p.feeling==="love"?"❤️ Feeling loved":
-            p.feeling==="excited"?"🤩 Feeling excited":
-            p.feeling==="blessed"?"🙏 Feeling blessed":
-            p.feeling==="tired"?"😴 Feeling tired":
-            ""
-          }
-        </div>`
-      :""
-    }
-
-    ${
-      p.location
-      ? `<div class="muted">
-          📍 ${escapeHTML(p.location)}
-        </div>`
-      :""
-    }
-
-    ${
-      p.text && !p.image_url?.startsWith("bg:")
-      ? `<div class="post-text">
-          ${escapeHTML(p.text)}
-         </div>`
-      :""
-    }
-
-    ${mediaHTML}
-
-    <div class="post-stats">
-
-      <span>
-        ${reactionCount?`❤️ ${reactionCount}`:""}
-      </span>
-
-      <span>
-        ${commentCount} comments
-      </span>
-
-      <span>
-        Share
-      </span>
-
-    </div>
-
-    <div class="post-buttons">
-
-      <div class="reaction-wrap">
-
-        <button
-          class="${p.myReaction?'active':''}"
-          onclick="reactPost(${p.id},'${p.myReaction||'like'}')"
-          oncontextmenu="showReactions(event,${p.id});return false">
-
-          ${
-            p.myReaction==="love"
-            ?"❤️ Love"
-            :p.myReaction==="haha"
-            ?"😂 Haha"
-            :p.myReaction==="wow"
-            ?"😮 Wow"
-            :p.myReaction==="sad"
-            ?"😢 Sad"
-            :p.myReaction==="angry"
-            ?"😡 Angry"
-            :"👍 Like"
-          }
-
-        </button>
-
-        <div id="reaction-${p.id}"
-          class="reaction-menu hidden">
-
-          <button onclick="reactPost(${p.id},'like')">
-            👍
-          </button>
-
-          <button onclick="reactPost(${p.id},'love')">
-            ❤️
-          </button>
-
-          <button onclick="reactPost(${p.id},'haha')">
-            😂
-          </button>
-
-          <button onclick="reactPost(${p.id},'wow')">
-            😮
-          </button>
-
-          <button onclick="reactPost(${p.id},'sad')">
-            😢
-          </button>
-
-          <button onclick="reactPost(${p.id},'angry')">
-            😡
-          </button>
-
-        </div>
-
-      </div>
-
-      <button onclick="focusComment(${p.id})">
-        💬 Comment
-      </button>
-
-      <button onclick="sharePost(${p.id})">
-        ↗ Share
-      </button>
-
-    </div>
-
-    <div id="comments-${p.id}"></div>
-
-    <div class="comment-box">
-
-      <input id="comment-${p.id}"
-        placeholder="Write a comment...">
-
-      <button class="primary"
-        onclick="addComment(${p.id})">
-        Send
-      </button>
-
-    </div>
-
-  </article>`;
 }
 
-function showReactions(e,id){
-  e.preventDefault();
 
-  document
-    .querySelectorAll(".reaction-menu")
-    .forEach(x=>x.classList.add("hidden"));
+/* GET USERS */
 
-  $("reaction-"+id)
-    ?.classList.remove("hidden");
+const ids =
+[
+...new Set(
+posts.map(p=>p.user_id)
+)
+];
+
+
+const {data:profiles} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.in("id",ids);
+
+
+const profileMap =
+Object.fromEntries(
+(profiles || [])
+.map(p=>[p.id,p])
+);
+
+
+feed.innerHTML =
+posts
+.map(post=>
+createPostHTML(
+post,
+profileMap[post.user_id]
+)
+)
+.join("");
+
+
+/* MEDIA */
+
+for(const post of posts){
+
+await loadPostMedia(post.id);
+
 }
 
-async function reactPost(postId,reaction){
-
-  const {data:old}=
-    await db.from("post_reactions")
-    .select("*")
-    .eq("post_id",postId)
-    .eq("user_id",me.id)
-    .maybeSingle();
-
-  if(old){
-
-    if(old.reaction===reaction){
-
-      await db.from("post_reactions")
-        .delete()
-        .eq("id",old.id);
-
-    }else{
-
-      await db.from("post_reactions")
-        .update({reaction})
-        .eq("id",old.id);
-    }
-
-  }else{
-
-    await db.from("post_reactions")
-      .insert({
-        post_id:postId,
-        user_id:me.id,
-        reaction
-      });
-  }
-
-  await loadFeed();
 }
 
-function focusComment(id){
-  const x=$("comment-"+id);
-
-  if(x){
-    x.focus();
-    x.scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
-  }
-}
-
-async function addComment(postId){
-
-  const input=$("comment-"+postId);
-  const text=input.value.trim();
-
-  if(!text)return;
-
-  const {error}=await db
-    .from("comments")
-    .insert({
-      post_id:postId,
-      user_id:me.id,
-      text
-    });
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  input.value="";
-
-  await loadFeed();
-}
-
-async function loadPostComments(posts){
-
-  const ids=[
-    ...new Set(
-      posts.flatMap(p=>
-        p.comments.map(c=>c.user_id)
-      )
-    )
-  ];
-
-  if(!ids.length)return;
-
-  const {data:users}=
-    await db.from("profiles")
-    .select("id,name,profile_photo")
-    .in("id",ids);
-
-  const map={};
-  (users||[]).forEach(u=>map[u.id]=u);
-
-  posts.forEach(p=>{
-
-    const box=$("comments-"+p.id);
-
-    if(!box)return;
-
-    const comments=p.comments.slice(-5);
-
-    box.innerHTML=comments.map(c=>{
-
-      const u=map[c.user_id]||{
-        name:"User"
-      };
-
-      return `
-      <div class="comment">
-        <b>${escapeHTML(u.name)}</b>
-        <div>${escapeHTML(c.text)}</div>
-      </div>`;
-
-    }).join("");
-  });
-}
 
 /* =========================
-POST MENU
+   POST HTML
 ========================= */
 
-function postMenu(id,isMine){
+function createPostHTML(post,user){
 
-  $("modalRoot").innerHTML=`
-  <div class="modal">
-    <div class="modal-box">
+return `
 
-      <button class="close"
-        onclick="closeModal()">×</button>
+<article
+class="card"
+id="post-${post.id}">
 
-      <h3>Post options</h3>
 
-      ${
-        isMine
-        ? `
-        <button class="secondary"
-          style="width:100%;margin:4px"
-          onclick="editPost(${id})">
-          ✏️ Edit post
-        </button>
+<div class="row between">
 
-        <button class="danger"
-          style="width:100%;margin:4px"
-          onclick="deletePost(${id})">
-          🗑️ Delete post
-        </button>`
-        : `
-        <button class="secondary"
-          style="width:100%;margin:4px"
-          onclick="reportPost(${id})">
-          🚩 Report post
-        </button>`
-      }
+<div class="row">
 
-    </div>
-  </div>`;
+<img
+class="avatar"
+src="${getAvatar(user)}">
+
+<div>
+
+<b>
+
+${escapeHTML(
+user?.name || "User"
+)}
+
+</b>
+
+${user?.verified
+?" ✓"
+:""}
+
+<div class="muted">
+
+${formatDate(
+post.created_at
+)}
+
+</div>
+
+</div>
+
+</div>
+
+
+${
+post.user_id===me.id
+
+?
+
+`<button
+class="light"
+onclick="deleteMyPost(${post.id})">
+
+🗑
+
+</button>`
+
+:
+
+""
+
 }
 
-async function editPost(id){
+</div>
 
-  const {data:p}=await db
-    .from("posts")
-    .select("*")
-    .eq("id",id)
-    .maybeSingle();
 
-  if(!p)return;
+${
+post.text
 
-  closeModal();
+?
 
-  $("modalRoot").innerHTML=`
-  <div class="modal">
-    <div class="modal-box">
+`<div class="post-text">
 
-      <button class="close"
-        onclick="closeModal()">×</button>
+${escapeHTML(post.text)}
 
-      <h3>Edit post</h3>
+</div>`
 
-      <textarea id="editPostText">
-${escapeHTML(p.text||"")}</textarea>
+:
 
-      <select id="editPrivacy">
-        <option value="public"
-          ${p.privacy==="public"?"selected":""}>
-          🌎 Public
-        </option>
+""
 
-        <option value="friends"
-          ${p.privacy==="friends"?"selected":""}>
-          👥 Friends
-        </option>
-      </select>
-
-      <button class="primary"
-        onclick="saveEditPost(${id})">
-        Save
-      </button>
-
-    </div>
-  </div>`;
 }
 
-async function saveEditPost(id){
 
-  const text=$("editPostText").value.trim();
-  const privacy=$("editPrivacy").value;
+<div id="media-${post.id}">
 
-  const {error}=await db
-    .from("posts")
-    .update({
-      text,
-      privacy,
-      edited_at:new Date().toISOString()
-    })
-    .eq("id",id)
-    .eq("user_id",me.id);
+${
+post.image_url
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+?
 
-  closeModal();
-  await loadFeed();
+(
+
+/\.(mp4|webm|mov|m4v)(\?|$)/i
+.test(post.image_url)
+
+?
+
+`<video
+class="post-video"
+controls
+src="${post.image_url}">
+</video>`
+
+:
+
+`<img
+class="post-image"
+src="${post.image_url}">`
+
+)
+
+:
+
+""
+
 }
 
-async function deletePost(id){
+</div>
 
-  if(!confirm("এই post delete করবেন?"))
-    return;
 
-  const {error}=await db
-    .from("posts")
-    .delete()
-    .eq("id",id);
+<div
+class="actions">
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+<button
+onclick="likePost(${post.id})">
 
-  closeModal();
-  await loadFeed();
+👍 Like
+
+</button>
+
+<button
+onclick="showComingSoon('Comment')">
+
+💬 Comment
+
+</button>
+
+<button
+onclick="sharePost(${post.id})">
+
+↗ Share
+
+</button>
+
+</div>
+
+
+</article>
+
+`;
+
 }
 
-async function reportPost(id){
 
-  const reason=prompt(
-    "Post report করার কারণ লিখুন:"
-  );
+/* =========================
+   LOAD MULTIPLE MEDIA
+========================= */
 
-  if(!reason)return;
+async function loadPostMedia(postId){
 
-  const {error}=await db
-    .from("reports")
-    .insert({
-      reporter_id:me.id,
-      post_id:id,
-      reason
-    });
+const box =
+document.getElementById(
+"media-"+postId
+);
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+if(!box)return;
 
-  closeModal();
-  alert("Report পাঠানো হয়েছে");
+
+const {data,error} =
+await supabaseClient
+.from("post_media")
+.select("*")
+.eq("post_id",postId)
+.order("sort_order");
+
+
+if(error || !data || !data.length){
+
+return;
+
 }
+
+
+box.innerHTML =
+data
+.map(media=>{
+
+if(media.media_type==="video"){
+
+return `
+
+<video
+class="post-video"
+controls
+playsinline
+src="${media.media_url}">
+</video>
+
+`;
+
+}
+
+return `
+
+<img
+class="post-image"
+src="${media.media_url}">
+
+`;
+
+})
+.join("");
+
+}
+
+
+/* =========================
+   LIKE
+========================= */
+
+async function likePost(postId){
+
+const {data} =
+await supabaseClient
+.from("post_likes")
+.select("*")
+.eq("post_id",postId)
+.eq("user_id",me.id)
+.maybeSingle();
+
+
+if(data){
+
+await supabaseClient
+.from("post_likes")
+.delete()
+.eq("post_id",postId)
+.eq("user_id",me.id);
+
+showToast("Like removed");
+
+}else{
+
+await supabaseClient
+.from("post_likes")
+.insert({
+
+post_id:postId,
+
+user_id:me.id
+
+});
+
+showToast("Liked ❤️");
+
+}
+
+}
+
+
+/* =========================
+   SHARE
+========================= */
 
 async function sharePost(id){
 
-  const url=
-    location.href.split("#")[0]+
-    "#post-"+id;
+const url =
+location.href
+.split("#")[0]
++"#post-"+id;
 
-  if(navigator.share){
 
-    await navigator.share({
-      title:"My Social App",
-      text:"এই post দেখুন",
-      url
-    });
+if(navigator.share){
 
-  }else{
+await navigator.share({
 
-    try{
-      await navigator.clipboard.writeText(url);
-      alert("Post link copy হয়েছে");
-    }catch{
-      alert(url);
-    }
-  }
+title:"My Social App",
+
+text:"Check this post",
+
+url:url
+
+});
+
+}else{
+
+try{
+
+await navigator.clipboard
+.writeText(url);
+
+showToast("Post link copied");
+
+}catch{
+
+showToast(url);
+
 }
 
-function closeModal(){
-  $("modalRoot").innerHTML="";
 }
+
+}
+
 
 /* =========================
-FOLLOW
+   DELETE
 ========================= */
 
-async function isFollowing(id){
+async function deleteMyPost(id){
 
-  const {data}=await db
-    .from("follows")
-    .select("id")
-    .eq("follower_id",me.id)
-    .eq("following_id",id)
-    .maybeSingle();
+if(!confirm(
+"এই পোস্টটি Delete করবেন?"
+))return;
 
-  return !!data;
+
+const {error} =
+await supabaseClient
+.from("posts")
+.delete()
+.eq("id",id)
+.eq("user_id",me.id);
+
+
+if(error){
+
+showToast(error.message);
+
+return;
+
 }
 
-async function toggleFollow(id){
 
-  if(id===me.id)return;
+showToast("Post deleted");
 
-  const yes=await isFollowing(id);
+goHome();
 
-  if(yes){
-
-    await db.from("follows")
-      .delete()
-      .eq("follower_id",me.id)
-      .eq("following_id",id);
-
-  }else{
-
-    const {error}=await db
-      .from("follows")
-      .insert({
-        follower_id:me.id,
-        following_id:id
-      });
-
-    if(error){
-      alert(error.message);
-      return;
-    }
-
-    await db.from("notifications")
-      .insert({
-        receiver_id:id,
-        text:`${profile.name} আপনাকে follow করেছে`
-      });
-  }
-
-  await updateFollowCount(id);
-
-  if(currentSection==="profile")
-    await renderProfile(id);
-
-  if(currentSection==="search")
-    await searchAll();
 }
 
-async function updateFollowCount(id){
-
-  const {count:f}=await db
-    .from("follows")
-    .select("*",{count:"exact",head:true})
-    .eq("following_id",id);
-
-  const {count:g}=await db
-    .from("follows")
-    .select("*",{count:"exact",head:true})
-    .eq("follower_id",id);
-
-  await db.from("profiles")
-    .update({
-      followers_count:f||0,
-      following_count:g||0
-    })
-    .eq("id",id);
-}
 
 /* =========================
-SEARCH
+   PROFILE
 ========================= */
 
-async function renderSearch(){
+async function showMyProfile(){
 
-  $("content").innerHTML=`
-  <div class="card">
+await showProfile(me.id);
 
-    <h3>🔎 Search</h3>
-
-    <input id="searchInput"
-      placeholder="Search people or posts..."
-      oninput="searchAll()">
-
-    <div id="searchResults"></div>
-
-  </div>`;
-
-  await searchAll();
 }
 
-async function searchAll(){
-
-  const q=$("searchInput")?.value.trim();
-  const box=$("searchResults");
-
-  if(!box)return;
-
-  if(!q){
-
-    box.innerHTML=`
-      <div class="muted">
-        User বা post search করুন।
-      </div>`;
-
-    return;
-  }
-
-  const {data:users}=
-    await db.from("profiles")
-    .select("*")
-    .ilike("name",`%${q}%`)
-    .limit(30);
-
-  const {data:posts}=
-    await db.from("posts")
-    .select("*")
-    .ilike("text",`%${q}%`)
-    .order("created_at",{ascending:false})
-    .limit(30);
-
-  let html="<h4>People</h4>";
-
-  if(users?.length){
-
-    for(const u of users){
-
-      const following=
-        await isFollowing(u.id);
-
-      html+=`
-      <div class="user">
-
-        <img class="avatar"
-          src="${avatar(u.profile_photo)}">
-
-        <div class="user-info">
-
-          <b onclick="section('profile','${u.id}')"
-             style="cursor:pointer">
-
-            ${escapeHTML(u.name)}
-
-            ${
-              u.verified
-              ? `<span class="verify">✓</span>`
-              :""
-            }
-
-          </b>
-
-          <div class="muted">
-            ${u.followers_count||0} followers
-          </div>
-
-        </div>
-
-        ${
-          u.id!==me.id
-          ? `<button
-              class="${following?'secondary':'primary'}"
-              onclick="toggleFollow('${u.id}')">
-              ${following?"Following":"Follow"}
-             </button>`
-          :""
-        }
-
-      </div>`;
-    }
-
-  }else{
-
-    html+=`
-      <div class="muted">
-        কোনো user পাওয়া যায়নি
-      </div>`;
-  }
-
-  html+="<hr><h4>Posts</h4>";
-
-  if(posts?.length){
-
-    html+=posts.map(p=>`
-      <div class="card">
-        <div class="post-text">
-          ${escapeHTML(p.text||"")}
-        </div>
-        <div class="muted">
-          ${dateText(p.created_at)}
-        </div>
-      </div>
-    `).join("");
-
-  }else{
-
-    html+=`
-      <div class="muted">
-        কোনো post পাওয়া যায়নি
-      </div>`;
-  }
-
-  box.innerHTML=html;
-}
 
 /* =========================
-PROFILE
+   SHOW PROFILE
 ========================= */
 
-async function renderProfile(id){
+async function showProfile(userId){
 
-  currentProfileId=id;
+currentPage="profile";
 
-  const {data:u}=await db
-    .from("profiles")
-    .select("*")
-    .eq("id",id)
-    .maybeSingle();
+setActiveNav("Profile");
 
-  if(!u){
-    $("content").innerHTML=
-      `<div class="card">Profile পাওয়া যায়নি</div>`;
-    return;
-  }
 
-  const {count:followers}=
-    await db.from("follows")
-    .select("*",{count:"exact",head:true})
-    .eq("following_id",id);
+const page =
+document.getElementById("page");
 
-  const {count:following}=
-    await db.from("follows")
-    .select("*",{count:"exact",head:true})
-    .eq("follower_id",id);
 
-  const followingMe=
-    id===me.id
-    ? false
-    : await isFollowing(id);
+const {data:user,error} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.eq("id",userId)
+.single();
 
-  $("content").innerHTML=`
 
-  <div class="card">
+if(error){
 
-    ${
-      u.cover_photo
-      ? `<img class="post-image"
-           src="${escapeHTML(u.cover_photo)}">`
-      : `<div style="
-           height:170px;
-           background:#1877f2;
-           border-radius:8px">
-         </div>`
-    }
+page.innerHTML =
+`<div class="card">${error.message}</div>`;
 
-    <div style="margin-top:-35px;margin-left:15px">
+return;
 
-      <img class="avatar"
-        style="
-          width:80px;
-          height:80px;
-          border:4px solid white"
-        src="${avatar(u.profile_photo)}">
-
-    </div>
-
-    <h2>
-      ${escapeHTML(u.name)}
-      ${
-        u.verified
-        ? `<span class="verify">✓</span>`
-        :""
-      }
-    </h2>
-
-    <p>${escapeHTML(u.bio||"")}</p>
-
-    <div class="stat">
-
-      <div>
-        <b>${followers||0}</b>
-        Followers
-      </div>
-
-      <div>
-        <b>${following||0}</b>
-        Following
-      </div>
-
-    </div>
-
-    ${
-      id===me.id
-      ? `<button class="primary"
-           onclick="editProfile()">
-           Edit Profile
-         </button>`
-      : `<button
-          class="${followingMe?'secondary':'primary'}"
-          onclick="toggleFollow('${id}')">
-          ${followingMe?"Following":"Follow"}
-         </button>`
-    }
-
-  </div>
-
-  <div id="profilePosts"></div>
-  `;
-
-  const {data:posts}=
-    await db.from("posts")
-    .select("*")
-    .eq("user_id",id)
-    .order("created_at",{ascending:false});
-
-  $("profilePosts").innerHTML=
-    posts?.map(p=>`
-      <div class="card">
-        <div class="post-text">
-          ${escapeHTML(p.text||"")}
-        </div>
-
-        ${
-          p.image_url &&
-          !p.image_url.startsWith("bg:")
-          ? `<img class="post-image"
-              src="${escapeHTML(p.image_url)}">`
-          :""
-        }
-
-        <div class="muted">
-          ${dateText(p.created_at)}
-        </div>
-      </div>
-    `).join("")
-    ||
-    `<div class="card">
-      কোনো post নেই।
-     </div>`;
 }
 
-function editProfile(){
 
-  $("modalRoot").innerHTML=`
-  <div class="modal">
-    <div class="modal-box">
+/* COUNTS */
 
-      <button class="close"
-        onclick="closeModal()">×</button>
+const {count:followers} =
+await supabaseClient
+.from("follows")
+.select("*",{
+count:"exact",
+head:true
+})
+.eq("following_id",userId);
 
-      <h3>Edit Profile</h3>
 
-      <input id="editName"
-        value="${escapeHTML(profile.name||"")}"
-        placeholder="Name">
+const {count:following} =
+await supabaseClient
+.from("follows")
+.select("*",{
+count:"exact",
+head:true
+})
+.eq("follower_id",userId);
 
-      <textarea id="editBio"
-        placeholder="Bio">${escapeHTML(profile.bio||"")}</textarea>
 
-      <label>Profile Photo</label>
-      <input id="editProfilePhoto"
-        type="file"
-        accept="image/*">
+page.innerHTML = `
 
-      <label>Cover Photo</label>
-      <input id="editCoverPhoto"
-        type="file"
-        accept="image/*">
+<div class="card" style="padding:0;overflow:hidden">
 
-      <button class="primary"
-        onclick="saveProfile()">
-        Save
-      </button>
+<div
+class="cover"
+style="
+background-image:url('${user.cover_photo || ""}')
+">
+</div>
 
-    </div>
-  </div>`;
+
+<div class="profile-info">
+
+<div class="row between">
+
+<img
+class="avatar-large"
+src="${getAvatar(user)}">
+
+
+${
+userId===me.id
+
+?
+
+`<button
+class="primary"
+onclick="editMyProfile()">
+
+Edit Profile
+
+</button>`
+
+:
+
+""
+
 }
 
-async function saveProfile(){
+</div>
 
-  const name=$("editName").value.trim();
-  const bio=$("editBio").value.trim();
 
-  let photo=profile.profile_photo||"";
-  let cover=profile.cover_photo||"";
+<div class="profile-name">
 
-  const pf=$("editProfilePhoto").files[0];
-  const cf=$("editCoverPhoto").files[0];
+${escapeHTML(user.name)}
 
-  if(pf){
+${user.verified?" ✓":""}
 
-    const path=
-      `profiles/${me.id}/profile_${Date.now()}_${pf.name}`;
+</div>
 
-    const {error}=await db.storage
-      .from("media")
-      .upload(path,pf);
 
-    if(error){
-      alert(error.message);
-      return;
-    }
+<div class="muted">
 
-    photo=db.storage
-      .from("media")
-      .getPublicUrl(path)
-      .data.publicUrl;
-  }
+${escapeHTML(
+user.bio || "No bio"
+)}
 
-  if(cf){
+</div>
 
-    const path=
-      `profiles/${me.id}/cover_${Date.now()}_${cf.name}`;
 
-    const {error}=await db.storage
-      .from("media")
-      .upload(path,cf);
+<div class="stats">
 
-    if(error){
-      alert(error.message);
-      return;
-    }
+<div>
 
-    cover=db.storage
-      .from("media")
-      .getPublicUrl(path)
-      .data.publicUrl;
-  }
+<b>${followers || 0}</b>
 
-  const {data,error}=
-    await db.from("profiles")
-    .update({
-      name,
-      bio,
-      profile_photo:photo,
-      cover_photo:cover
-    })
-    .eq("id",me.id)
-    .select()
-    .single();
+<br>
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+<span class="muted">
+Followers
+</span>
 
-  profile=data;
+</div>
 
-  closeModal();
 
-  renderApp();
-  await section("profile");
+<div>
+
+<b>${following || 0}</b>
+
+<br>
+
+<span class="muted">
+Following
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<b>Posts</b>
+
+</div>
+
+
+<div id="profilePosts">
+
+<div class="empty">
+Loading...
+</div>
+
+</div>
+
+`;
+
+
+/* USER POSTS */
+
+const {data:userPosts} =
+await supabaseClient
+.from("posts")
+.select("*")
+.eq("user_id",userId)
+.order(
+"created_at",
+{
+ascending:false
 }
+)
+.limit(50);
+
+
+const box =
+document.getElementById(
+"profilePosts"
+);
+
+
+if(!userPosts?.length){
+
+box.innerHTML = `
+
+<div class="card empty">
+
+No posts yet.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+box.innerHTML =
+userPosts
+.map(post=>
+createPostHTML(
+post,
+user
+)
+)
+.join("");
+
+
+for(const post of userPosts){
+
+await loadPostMedia(post.id);
+
+}
+
+}
+
 
 /* =========================
-STORIES
+   EDIT PROFILE
 ========================= */
 
-async function loadMiniStories(){
+async function editMyProfile(){
 
-  const box=$("miniStories");
-  if(!box)return;
+const name =
+prompt(
+"আপনার নাম:",
+profile.name
+);
 
-  const {data:stories}=
-    await db.from("stories")
-    .select("*")
-    .gt("expires_at",new Date().toISOString())
-    .order("created_at",{ascending:false})
-    .limit(12);
+if(name===null)return;
 
-  if(!stories?.length){
 
-    box.innerHTML=`
-      <div class="muted">
-        কোনো Story নেই।
-      </div>`;
+const bio =
+prompt(
+"Bio:",
+profile.bio || ""
+);
 
-    return;
-  }
+if(bio===null)return;
 
-  const ids=[
-    ...new Set(stories.map(s=>s.user_id))
-  ];
 
-  const {data:users}=
-    await db.from("profiles")
-    .select("id,name,profile_photo")
-    .in("id",ids);
+const {error} =
+await supabaseClient
+.from("profiles")
+.update({
 
-  const map={};
+name:name,
 
-  (users||[]).forEach(u=>map[u.id]=u);
+bio:bio
 
-  window.storyCache=stories;
+})
+.eq("id",me.id);
 
-  box.innerHTML=`
-  <div class="story-list">
 
-    ${stories.map(s=>{
+if(error){
 
-      const u=map[s.user_id]||{
-        name:"User"
-      };
+showToast(error.message);
 
-      return `
-      <div class="story"
-        onclick="viewStory(${s.id})">
+return;
 
-        ${
-          s.media_type==="video"
-          ? `<video src="${escapeHTML(s.media_url)}"></video>`
-          : `<img src="${escapeHTML(s.media_url)}">`
-        }
-
-        <div class="story-name">
-          ${escapeHTML(u.name)}
-        </div>
-
-      </div>`;
-    }).join("")}
-
-  </div>`;
 }
 
-async function renderStories(){
 
-  $("content").innerHTML=`
+profile =
+await getMyProfile();
 
-  <div class="card">
 
-    <h3>Create Story</h3>
+showToast(
+"Profile updated"
+);
 
-    <input id="storyFile"
-      type="file"
-      accept="image/*,video/*">
+showMyProfile();
 
-    <input id="storyCaption"
-      placeholder="Story caption">
-
-    <button class="primary"
-      onclick="createStory()">
-      Add Story
-    </button>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Active Stories</h3>
-
-    <div id="storyList">
-      Loading...
-    </div>
-
-  </div>`;
-
-  await loadStories();
 }
 
-async function loadStories(){
-
-  const {data:stories}=
-    await db.from("stories")
-    .select("*")
-    .gt("expires_at",new Date().toISOString())
-    .order("created_at",{ascending:false});
-
-  window.storyCache=stories||[];
-
-  const box=$("storyList");
-
-  if(!stories?.length){
-
-    box.innerHTML=
-      `<div class="muted">কোনো Story নেই</div>`;
-
-    return;
-  }
-
-  const ids=[
-    ...new Set(stories.map(s=>s.user_id))
-  ];
-
-  const {data:users}=
-    await db.from("profiles")
-    .select("id,name,profile_photo")
-    .in("id",ids);
-
-  const map={};
-
-  (users||[]).forEach(u=>map[u.id]=u);
-
-  box.innerHTML=`
-  <div class="story-list">
-
-    ${stories.map(s=>{
-
-      const u=map[s.user_id]||{
-        name:"User"
-      };
-
-      return `
-      <div class="story"
-        onclick="viewStory(${s.id})">
-
-        ${
-          s.media_type==="video"
-          ? `<video src="${escapeHTML(s.media_url)}"></video>`
-          : `<img src="${escapeHTML(s.media_url)}">`
-        }
-
-        <div class="story-name">
-          ${escapeHTML(u.name)}
-        </div>
-
-      </div>`;
-    }).join("")}
-
-  </div>`;
-}
-
-async function createStory(){
-
-  const file=$("storyFile").files[0];
-
-  if(!file){
-    alert("ছবি অথবা ভিডিও দিন");
-    return;
-  }
-
-  const type=
-    file.type.startsWith("video/")
-    ?"video"
-    :"image";
-
-  const path=
-    `stories/${me.id}/${Date.now()}_${file.name}`;
-
-  const {error}=await db.storage
-    .from("media")
-    .upload(path,file);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  const url=
-    db.storage
-    .from("media")
-    .getPublicUrl(path)
-    .data.publicUrl;
-
-  await db.from("stories").insert({
-    user_id:me.id,
-    media_url:url,
-    media_type:type,
-    caption:$("storyCaption").value,
-    expires_at:
-      new Date(Date.now()+86400000).toISOString()
-  });
-
-  await renderStories();
-}
-
-async function viewStory(id){
-
-  const s=(window.storyCache||[])
-    .find(x=>x.id===id);
-
-  if(!s)return;
-
-  await db.from("story_views")
-    .upsert({
-      story_id:id,
-      viewer_id:me.id
-    },{
-      onConflict:"story_id,viewer_id"
-    });
-
-  const {data:u}=await db
-    .from("profiles")
-    .select("*")
-    .eq("id",s.user_id)
-    .maybeSingle();
-
-  $("modalRoot").innerHTML=`
-  <div class="modal">
-
-    <div class="modal-box">
-
-      <button class="close"
-        onclick="closeModal()">×</button>
-
-      <div class="row">
-
-        <img class="avatar"
-          src="${avatar(u?.profile_photo)}">
-
-        <b>${escapeHTML(u?.name||"User")}</b>
-
-      </div>
-
-      ${
-        s.media_type==="video"
-        ? `<video
-             class="post-video"
-             src="${escapeHTML(s.media_url)}"
-             controls autoplay>
-           </video>`
-        : `<img
-             class="post-image"
-             src="${escapeHTML(s.media_url)}">`
-      }
-
-      <p>${escapeHTML(s.caption||"")}</p>
-
-      ${
-        s.user_id===me.id
-        ? `<button class="danger"
-             onclick="deleteStory(${s.id})">
-             Delete
-           </button>`
-        :""
-      }
-
-    </div>
-
-  </div>`;
-}
-
-async function deleteStory(id){
-
-  await db.from("stories")
-    .delete()
-    .eq("id",id);
-
-  closeModal();
-
-  await renderStories();
-}
 
 /* =========================
-FRIENDS
+   GET PROFILE
 ========================= */
 
-async function renderFriends(){
+async function getMyProfile(){
 
-  $("content").innerHTML=`
+const {data} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.eq("id",me.id)
+.single();
 
-  <div class="card">
+return data;
 
-    <h3>Friends</h3>
-
-    <input id="friendSearch"
-      placeholder="Search user..."
-      oninput="searchFriends()">
-
-    <div id="friendResults"></div>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Friend Requests</h3>
-
-    <div id="requests"></div>
-
-  </div>
-
-  <div class="card">
-
-    <h3>My Friends</h3>
-
-    <div id="myFriends"></div>
-
-  </div>`;
-
-  await searchFriends();
-  await loadRequests();
-  await loadFriends();
 }
 
-async function searchFriends(){
-
-  const q=$("friendSearch")?.value.trim()||"";
-
-  const box=$("friendResults");
-
-  let query=db.from("profiles")
-    .select("*")
-    .neq("id",me.id)
-    .limit(30);
-
-  if(q)
-    query=query.ilike("name",`%${q}%`);
-
-  const {data}=await query;
-
-  box.innerHTML=(data||[]).map(u=>`
-
-    <div class="user">
-
-      <img class="avatar"
-        src="${avatar(u.profile_photo)}">
-
-      <div class="user-info">
-        <b>${escapeHTML(u.name)}</b>
-      </div>
-
-      <button class="primary"
-        onclick="toggleFollow('${u.id}')">
-        Follow
-      </button>
-
-    </div>
-
-  `).join("")||"No users";
-}
-
-async function loadRequests(){
-
-  const box=$("requests");
-
-  const {data}=await db
-    .from("friend_requests")
-    .select("*")
-    .eq("receiver_id",me.id)
-    .eq("status","pending");
-
-  if(!data?.length){
-    box.innerHTML=
-      `<div class="muted">No requests</div>`;
-    return;
-  }
-
-  const ids=data.map(x=>x.sender_id);
-
-  const {data:users}=await db
-    .from("profiles")
-    .select("*")
-    .in("id",ids);
-
-  const map={};
-
-  (users||[]).forEach(u=>map[u.id]=u);
-
-  box.innerHTML=data.map(r=>{
-
-    const u=map[r.sender_id];
-
-    return `
-    <div class="user">
-
-      <img class="avatar"
-        src="${avatar(u?.profile_photo)}">
-
-      <div class="user-info">
-        <b>${escapeHTML(u?.name||"User")}</b>
-      </div>
-
-      <button class="success"
-        onclick="acceptRequest(${r.id},'${r.sender_id}')">
-        Accept
-      </button>
-
-    </div>`;
-  }).join("");
-}
-
-async function acceptRequest(id,friendId){
-
-  await db.from("friend_requests")
-    .update({status:"accepted"})
-    .eq("id",id);
-
-  await db.from("friends").upsert({
-    user_id:me.id,
-    friend_id:friendId
-  });
-
-  await db.from("friends").upsert({
-    user_id:friendId,
-    friend_id:me.id
-  });
-
-  await renderFriends();
-}
-
-async function loadFriends(){
-
-  const box=$("myFriends");
-
-  const {data}=await db
-    .from("friends")
-    .select("*")
-    .or(
-      `user_id.eq.${me.id},friend_id.eq.${me.id}`
-    );
-
-  const ids=(data||[]).map(x=>
-    x.user_id===me.id
-    ?x.friend_id
-    :x.user_id
-  );
-
-  if(!ids.length){
-    box.innerHTML=
-      `<div class="muted">No friends</div>`;
-    return;
-  }
-
-  const {data:users}=await db
-    .from("profiles")
-    .select("*")
-    .in("id",ids);
-
-  box.innerHTML=(users||[]).map(u=>`
-    <div class="user">
-
-      <img class="avatar"
-        src="${avatar(u.profile_photo)}">
-
-      <div class="user-info">
-        <b>${escapeHTML(u.name)}</b>
-      </div>
-
-      <button class="secondary"
-        onclick="section('profile','${u.id}')">
-        Profile
-      </button>
-
-    </div>
-  `).join("");
-}
 
 /* =========================
-MESSENGER
+   SEARCH
 ========================= */
 
-async function renderMessages(){
+let searchTimer;
 
-  $("content").innerHTML=`
 
-  <div class="card">
+function searchPeople(text){
 
-    <h3>Messenger</h3>
+clearTimeout(searchTimer);
 
-    <input id="receiverId"
-      placeholder="Receiver User ID">
 
-    <div id="chat"></div>
+if(!text.trim()){
 
-    <input id="messageText"
-      placeholder="Message">
+return;
 
-    <button class="primary"
-      onclick="sendMessage()">
-      Send
-    </button>
-
-  </div>`;
-
-  await loadMessages();
 }
 
-async function sendMessage(){
 
-  const receiver=$("receiverId").value.trim();
-  const text=$("messageText").value.trim();
+searchTimer =
+setTimeout(
+async()=>{
 
-  if(!receiver||!text)return;
+const {data} =
+await supabaseClient
+.from("profiles")
+.select("*")
+.ilike(
+"name",
+"%"+text.trim()+"%"
+)
+.limit(20);
 
-  const {error}=await db
-    .from("messages")
-    .insert({
-      sender_id:me.id,
-      receiver_id:receiver,
-      text,
-      seen:false
-    });
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+const page =
+document.getElementById("page");
 
-  $("messageText").value="";
 
-  await loadMessages();
+page.innerHTML = `
+
+<div class="card">
+
+<b>
+Search Results
+</b>
+
+</div>
+
+${
+(data || [])
+.map(user=>`
+
+<div
+class="card row"
+onclick="showProfile('${user.id}')">
+
+<img
+class="avatar"
+src="${getAvatar(user)}">
+
+<div>
+
+<b>
+${escapeHTML(user.name)}
+</b>
+
+<div class="muted">
+${escapeHTML(user.bio || "")}
+</div>
+
+</div>
+
+</div>
+
+`)
+.join("")
+
+||
+
+`<div class="card empty">
+
+কোনো User পাওয়া যায়নি।
+
+</div>`
+
+`;
+
+},
+300
+);
+
 }
 
-async function loadMessages(){
-
-  const {data}=await db
-    .from("messages")
-    .select("*")
-    .or(
-      `sender_id.eq.${me.id},receiver_id.eq.${me.id}`
-    )
-    .order("created_at",{ascending:true})
-    .limit(100);
-
-  $("chat").innerHTML=(data||[])
-    .map(m=>`
-      <div class="comment">
-        <b>
-          ${m.sender_id===me.id?"You":"User"}
-        </b>
-        <div>${escapeHTML(m.text)}</div>
-      </div>
-    `).join("");
-}
 
 /* =========================
-NOTIFICATIONS
+   LOGOUT
 ========================= */
 
-async function renderNotifications(){
+async function logout(){
 
-  const {data}=await db
-    .from("notifications")
-    .select("*")
-    .eq("receiver_id",me.id)
-    .order("created_at",{ascending:false})
-    .limit(100);
+await supabaseClient
+.auth
+.signOut();
 
-  $("content").innerHTML=`
+location.reload();
 
-  <div class="card">
-
-    <h3>🔔 Notifications</h3>
-
-    ${
-      data?.length
-      ? data.map(n=>`
-        <div class="comment">
-          ${escapeHTML(n.text)}
-          <div class="muted">
-            ${dateText(n.created_at)}
-          </div>
-        </div>
-      `).join("")
-      : `<div class="muted">
-          No notifications
-         </div>`
-    }
-
-  </div>`;
 }
+
 
 /* =========================
-CREATOR
+   COMING SOON
 ========================= */
 
-async function renderCreator(){
+function showComingSoon(name){
 
-  const {data}=await db
-    .from("creator_earnings")
-    .select("*")
-    .eq("user_id",me.id)
-    .order("created_at",{ascending:false});
+showToast(
+name+" Part 2/3-তে আসবে"
+);
 
-  const total=(data||[])
-    .reduce((a,x)=>a+Number(x.amount||0),0);
-
-  $("content").innerHTML=`
-
-  <div class="card">
-
-    <h2>Creator Monetization</h2>
-
-    <h1>$${total.toFixed(2)}</h1>
-
-    <div class="muted">
-      Current earnings
-    </div>
-
-  </div>
-
-  <div class="card">
-
-    ${
-      data?.map(x=>`
-        <div class="comment">
-          $${Number(x.amount||0).toFixed(2)}
-          · ${escapeHTML(x.source||"content")}
-        </div>
-      `).join("")
-      ||"No earnings"
-    }
-
-  </div>`;
 }
+
 
 /* =========================
-ADMIN
+   INIT
 ========================= */
 
-async function renderAdmin(){
+async function init(){
 
-  if(profile.role!=="admin"){
-    $("content").innerHTML=
-      `<div class="card">Access denied</div>`;
-    return;
-  }
+const {data:{session}} =
+await supabaseClient
+.auth
+.getSession();
 
-  const {data:users}=await db
-    .from("profiles")
-    .select("*")
-    .order("created_at",{ascending:false});
 
-  $("content").innerHTML=`
+if(session){
 
-  <div class="card">
-    <h2>Admin Panel</h2>
-    <p>Total users:
-      <b>${users?.length||0}</b>
-    </p>
-  </div>
+await startApp();
 
-  <div class="card">
+}else{
 
-    <h3>Users</h3>
+showLogin();
 
-    ${
-      users?.map(u=>`
-      <div class="user">
-
-        <img class="avatar"
-          src="${avatar(u.profile_photo)}">
-
-        <div class="user-info">
-
-          <b>
-            ${escapeHTML(u.name)}
-            ${
-              u.verified
-              ? `<span class="verify">✓</span>`
-              :""
-            }
-          </b>
-
-          <div class="muted">
-            Role: ${escapeHTML(u.role||"user")}
-          </div>
-
-        </div>
-
-        <button class="secondary"
-          onclick="toggleVerification(
-            '${u.id}',
-            ${!!u.verified}
-          )">
-
-          ${u.verified
-            ?"Unverify"
-            :"Verify"}
-
-        </button>
-
-      </div>
-      `).join("")||""
-    }
-
-  </div>`;
 }
 
-async function toggleVerification(id,current){
-
-  const {error}=await db
-    .from("profiles")
-    .update({
-      verified:!current
-    })
-    .eq("id",id);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  await renderAdmin();
 }
+
+
+init();
+
 
 /* =========================
-SERVICE WORKER
+   SERVICE WORKER
 ========================= */
 
-if("serviceWorker" in navigator){
+if(
+"serviceWorker"
+in navigator
+){
 
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker
-      .register("./sw.js")
-      .catch(console.error);
-  });
+navigator.serviceWorker
+.register("./sw.js")
+.catch(()=>{});
 
 }
 
-startApp();
 </script>
 
 </body>
-  </html>
+</html>
