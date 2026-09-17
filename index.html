@@ -1532,3 +1532,1534 @@ async function showUserAction(userId){
         document.getElementById(
             "user-action-" + userId
         );
+
+
+    if(!box){
+
+        return;
+
+    }
+
+
+    const {
+        data:friend
+    } =
+    await supabaseClient
+    .from("friends")
+    .select("id")
+    .eq(
+        "user_id",
+        currentUser.id
+    )
+    .eq(
+        "friend_id",
+        userId
+    )
+    .maybeSingle();
+
+
+    if(friend){
+
+        box.innerHTML =
+        '<button class="remove-button" onclick="removeFriend(\'' +
+        userId +
+        '\')">✓ Friend</button>';
+
+        return;
+
+    }
+
+
+    const {
+        data:sent
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .select("id,status")
+    .eq(
+        "sender_id",
+        currentUser.id
+    )
+    .eq(
+        "receiver_id",
+        userId
+    )
+    .eq(
+        "status",
+        "pending"
+    )
+    .maybeSingle();
+
+
+    if(sent){
+
+        box.innerHTML =
+        '<button class="reject-button" disabled>Request Sent</button>';
+
+        return;
+
+    }
+
+
+    const {
+        data:received
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .select("id,status")
+    .eq(
+        "sender_id",
+        userId
+    )
+    .eq(
+        "receiver_id",
+        currentUser.id
+    )
+    .eq(
+        "status",
+        "pending"
+    )
+    .maybeSingle();
+
+
+    if(received){
+
+        box.innerHTML =
+        '<button class="accept-button" onclick="acceptRequest(' +
+        received.id +
+        ',\'' +
+        userId +
+        '\')">Accept</button>';
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+    '<button class="friend-button" onclick="sendFriendRequest(\'' +
+    userId +
+    '\')">➕ Add Friend</button>';
+
+}
+
+
+/* =====================================================
+   SEND FRIEND REQUEST
+===================================================== */
+
+async function sendFriendRequest(receiverId){
+
+    if(!currentUser){
+
+        alert("আগে Login করুন।");
+
+        return;
+
+    }
+
+
+    if(receiverId === currentUser.id){
+
+        return;
+
+    }
+
+
+    const {
+        data:existing
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .select("id,status")
+    .or(
+        "and(sender_id.eq." +
+        currentUser.id +
+        ",receiver_id.eq." +
+        receiverId +
+        "),and(sender_id.eq." +
+        receiverId +
+        ",receiver_id.eq." +
+        currentUser.id +
+        ")"
+    )
+    .eq(
+        "status",
+        "pending"
+    );
+
+
+    if(existing && existing.length>0){
+
+        alert("Friend Request already আছে।");
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .insert({
+
+        sender_id:currentUser.id,
+
+        receiver_id:receiverId,
+
+        status:"pending"
+
+    });
+
+
+    if(error){
+
+        alert(
+            "Request Error: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "Friend Request পাঠানো হয়েছে ✅"
+    );
+
+
+    await searchUsers();
+
+    await loadFriendRequests();
+
+}
+
+
+/* =====================================================
+   LOAD FRIEND REQUESTS
+===================================================== */
+
+async function loadFriendRequests(){
+
+    const box =
+        document.getElementById(
+            "friendRequests"
+        );
+
+
+    if(!box || !currentUser){
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+    '<div class="loading">Loading...</div>';
+
+
+    const {
+        data:requests,
+        error
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .select("*")
+    .eq(
+        "receiver_id",
+        currentUser.id
+    )
+    .eq(
+        "status",
+        "pending"
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(error){
+
+        box.innerHTML =
+        '<div class="empty">Request Error: ' +
+        escapeHtml(error.message) +
+        '</div>';
+
+        return;
+
+    }
+
+
+    if(!requests || requests.length===0){
+
+        box.innerHTML =
+        '<div class="empty">কোনো Friend Request নেই।</div>';
+
+        return;
+
+    }
+
+
+    box.innerHTML="";
+
+
+    for(const request of requests){
+
+        const {
+            data:user
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+            "id",
+            request.sender_id
+        )
+        .maybeSingle();
+
+
+        if(!user){
+
+            continue;
+
+        }
+
+
+        const div =
+        document.createElement("div");
+
+        div.className="request-item";
+
+
+        const photo =
+        user.profile_photo ||
+        DEFAULT_PROFILE;
+
+
+        div.innerHTML=`
+
+            <img src="${escapeHtml(photo)}">
+
+            <div class="request-info">
+
+                <div class="request-name">
+                    ${escapeHtml(user.name || "User")}
+                </div>
+
+                <div class="small">
+                    wants to be your friend
+                </div>
+
+            </div>
+
+            <div class="request-buttons">
+
+                <button
+                    class="accept-button"
+                    onclick="acceptRequest(
+                        ${request.id},
+                        '${user.id}'
+                    )"
+                >
+                    Accept
+                </button>
+
+                <button
+                    class="reject-button"
+                    onclick="rejectRequest(${request.id})"
+                >
+                    Reject
+                </button>
+
+            </div>
+
+        `;
+
+
+        box.appendChild(div);
+
+    }
+
+}
+
+
+/* =====================================================
+   ACCEPT REQUEST
+===================================================== */
+
+async function acceptRequest(
+    requestId,
+    senderId
+){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    const {
+        error:updateError
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .update({
+        status:"accepted"
+    })
+    .eq(
+        "id",
+        requestId
+    )
+    .eq(
+        "receiver_id",
+        currentUser.id
+    );
+
+
+    if(updateError){
+
+        alert(
+            "Accept Error: " +
+            updateError.message
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error:friendError
+    } =
+    await supabaseClient
+    .from("friends")
+    .insert([
+
+        {
+            user_id:currentUser.id,
+            friend_id:senderId
+        },
+
+        {
+            user_id:senderId,
+            friend_id:currentUser.id
+        }
+
+    ]);
+
+
+    if(friendError){
+
+        alert(
+            "Friend তৈরি Error: " +
+            friendError.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "Friend Request accepted ✅"
+    );
+
+
+    await loadFriendRequests();
+
+    await loadFriends();
+
+}
+
+
+/* =====================================================
+   REJECT REQUEST
+===================================================== */
+
+async function rejectRequest(requestId){
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("friend_requests")
+    .update({
+        status:"rejected"
+    })
+    .eq(
+        "id",
+        requestId
+    )
+    .eq(
+        "receiver_id",
+        currentUser.id
+    );
+
+
+    if(error){
+
+        alert(
+            "Reject Error: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadFriendRequests();
+
+}
+
+
+/* =====================================================
+   LOAD FRIENDS
+===================================================== */
+
+async function loadFriends(){
+
+    const box =
+        document.getElementById(
+            "friendsList"
+        );
+
+
+    if(!box || !currentUser){
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+    '<div class="loading">Loading...</div>';
+
+
+    const {
+        data:friends,
+        error
+    } =
+    await supabaseClient
+    .from("friends")
+    .select("*")
+    .or(
+        "user_id.eq." +
+        currentUser.id +
+        ",friend_id.eq." +
+        currentUser.id
+    );
+
+
+    if(error){
+
+        box.innerHTML =
+        '<div class="empty">Friends Error: ' +
+        escapeHtml(error.message) +
+        '</div>';
+
+        return;
+
+    }
+
+
+    if(!friends || friends.length===0){
+
+        box.innerHTML =
+        '<div class="empty">এখনো কোনো Friend নেই।</div>';
+
+        return;
+
+    }
+
+
+    box.innerHTML="";
+
+
+    const added = new Set();
+
+
+    for(const friendship of friends){
+
+        const friendId =
+            friendship.user_id === currentUser.id
+            ? friendship.friend_id
+            : friendship.user_id;
+
+
+        if(added.has(friendId)){
+
+            continue;
+
+        }
+
+
+        added.add(friendId);
+
+
+        const {
+            data:user
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+            "id",
+            friendId
+        )
+        .maybeSingle();
+
+
+        if(!user){
+
+            continue;
+
+        }
+
+
+        const div =
+        document.createElement("div");
+
+        div.className="friend-item";
+
+
+        const photo =
+        user.profile_photo ||
+        DEFAULT_PROFILE;
+
+
+        div.innerHTML=`
+
+            <img src="${escapeHtml(photo)}">
+
+            <div class="friend-info">
+
+                <div class="friend-name">
+                    ${escapeHtml(user.name || "User")}
+                </div>
+
+                <div class="small">
+                    ${escapeHtml(user.bio || "")}
+                </div>
+
+            </div>
+
+            <button
+                class="remove-button"
+                onclick="removeFriend('${user.id}')"
+            >
+                Remove
+            </button>
+
+        `;
+
+
+        box.appendChild(div);
+
+    }
+
+}
+
+
+/* =====================================================
+   REMOVE FRIEND
+===================================================== */
+
+async function removeFriend(friendId){
+
+    const ok =
+        confirm(
+            "এই Friend-কে Remove করবেন?"
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    const first =
+    await supabaseClient
+    .from("friends")
+    .delete()
+    .eq(
+        "user_id",
+        currentUser.id
+    )
+    .eq(
+        "friend_id",
+        friendId
+    );
+
+
+    if(first.error){
+
+        alert(
+            "Remove Error: " +
+            first.error.message
+        );
+
+        return;
+
+    }
+
+
+    const second =
+    await supabaseClient
+    .from("friends")
+    .delete()
+    .eq(
+        "user_id",
+        friendId
+    )
+    .eq(
+        "friend_id",
+        currentUser.id
+    );
+
+
+    if(second.error){
+
+        alert(
+            "Remove Error: " +
+            second.error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "Friend Remove হয়েছে।"
+    );
+
+
+    await loadFriends();
+
+    await searchUsersIfNeeded();
+
+}
+
+
+/* =====================================================
+   SEARCH REFRESH
+===================================================== */
+
+async function searchUsersIfNeeded(){
+
+    const input =
+        document.getElementById(
+            "userSearchInput"
+        );
+
+
+    if(
+        input &&
+        input.value.trim()
+    ){
+
+        await searchUsers();
+
+    }
+
+}
+
+
+/* =====================================================
+   CREATE POST
+===================================================== */
+
+async function createPost(){
+
+    const message =
+        document.getElementById(
+            "postMessage"
+        );
+
+
+    message.style.color="#1877f2";
+
+    message.innerText =
+    "Post হচ্ছে...";
+
+
+    const {
+        data:userData,
+        error:userError
+    } =
+    await supabaseClient.auth.getUser();
+
+
+    if(
+        userError ||
+        !userData ||
+        !userData.user
+    ){
+
+        message.style.color="red";
+
+        message.innerText =
+        "আপনি Login অবস্থায় নেই। আবার Login করুন।";
+
+        return;
+
+    }
+
+
+    const user =
+    userData.user;
+
+
+    currentUser=user;
+
+
+    const text =
+        document
+        .getElementById("postText")
+        .value.trim();
+
+
+    const file =
+        document
+        .getElementById("postImage")
+        .files[0];
+
+
+    if(!text && !file){
+
+        message.style.color="red";
+
+        message.innerText =
+        "Post-এ কিছু লিখুন অথবা ছবি দিন।";
+
+        return;
+
+    }
+
+
+    let imageUrl="";
+
+
+    if(file){
+
+        imageUrl =
+        await uploadMedia(
+            file,
+            "posts"
+        );
+
+
+        if(!imageUrl){
+
+            message.style.color="red";
+
+            message.innerText =
+            "ছবি upload হয়নি।";
+
+            return;
+
+        }
+
+    }
+
+
+    const {
+        data:postData,
+        error:postError
+    } =
+    await supabaseClient
+    .from("posts")
+    .insert({
+
+        user_id:user.id,
+        text:text,
+        image_url:imageUrl
+
+    })
+    .select()
+    .single();
+
+
+    if(postError){
+
+        console.error(
+            "POST ERROR:",
+            postError
+        );
+
+        message.style.color="red";
+
+        message.innerText =
+        "Post Error: " +
+        postError.message;
+
+        return;
+
+    }
+
+
+    console.log(
+        "POST SUCCESS:",
+        postData
+    );
+
+
+    document
+        .getElementById("postText")
+        .value="";
+
+    document
+        .getElementById("postImage")
+        .value="";
+
+
+    message.style.color="green";
+
+    message.innerText =
+    "Post published successfully!";
+
+
+    await loadFeed();
+
+}
+
+
+/* =====================================================
+   LOAD FEED
+===================================================== */
+
+async function loadFeed(){
+
+    const feed =
+        document.getElementById("feed");
+
+
+    feed.innerHTML =
+    '<div class="loading">Loading posts...</div>';
+
+
+    const {
+        data:posts,
+        error
+    } =
+    await supabaseClient
+    .from("posts")
+    .select("*")
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(error){
+
+        feed.innerHTML =
+        '<div class="card">Feed Error: ' +
+        escapeHtml(error.message) +
+        '</div>';
+
+        return;
+
+    }
+
+
+    if(!posts || posts.length===0){
+
+        feed.innerHTML =
+        '<div class="card loading">এখনো কোনো Post নেই।</div>';
+
+        return;
+
+    }
+
+
+    feed.innerHTML="";
+
+
+    for(const post of posts){
+
+        await renderPost(
+            post,
+            feed
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RENDER POST
+===================================================== */
+
+async function renderPost(
+    post,
+    feed
+){
+
+    const {
+        data:profile
+    } =
+    await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq(
+        "id",
+        post.user_id
+    )
+    .maybeSingle();
+
+
+    const card =
+        document.createElement("div");
+
+
+    card.className="card";
+
+
+    const userName =
+        profile && profile.name
+        ? profile.name
+        : "User";
+
+
+    const userPhoto =
+        profile && profile.profile_photo
+        ? profile.profile_photo
+        : DEFAULT_PROFILE;
+
+
+    const date =
+        post.created_at
+        ? new Date(
+            post.created_at
+        ).toLocaleString("bn-BD")
+        : "";
+
+
+    let html=`
+
+        <div class="post-user">
+
+            <img
+                src="${escapeHtml(userPhoto)}"
+            >
+
+            <div>
+
+                <div class="post-name">
+                    ${escapeHtml(userName)}
+                </div>
+
+                <div class="post-date">
+                    ${escapeHtml(date)}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="post-text">
+            ${escapeHtml(post.text || "")}
+        </div>
+
+    `;
+
+
+    if(post.image_url){
+
+        html+=`
+
+            <img
+                class="post-image"
+                src="${escapeHtml(post.image_url)}"
+            >
+
+        `;
+
+    }
+
+
+    html+=`
+
+        <div class="actions">
+
+            <button
+                onclick="likePost(${post.id})"
+            >
+                ❤️ Like
+            </button>
+
+            <button
+                onclick="toggleComments(${post.id})"
+            >
+                💬 Comment
+            </button>
+
+            <button
+                onclick="sharePost(${post.id})"
+            >
+                ↗ Share
+            </button>
+
+        </div>
+
+        <div
+            id="comments-${post.id}"
+            class="comment-box"
+        >
+
+            <input
+                id="commentInput-${post.id}"
+                placeholder="Write a comment..."
+            >
+
+            <button
+                class="primary"
+                onclick="addComment(${post.id})"
+            >
+                Comment
+            </button>
+
+            <div
+                id="commentList-${post.id}"
+            ></div>
+
+        </div>
+
+    `;
+
+
+    if(
+        currentUser &&
+        currentUser.id === post.user_id
+    ){
+
+        html+=`
+
+            <button
+                style="
+                width:100%;
+                margin-top:10px;
+                border:0;
+                background:#ffdddd;
+                color:red;
+                padding:10px;
+                border-radius:6px;
+                "
+                onclick="deletePost(${post.id})"
+            >
+                🗑 Delete Post
+            </button>
+
+        `;
+
+    }
+
+
+    card.innerHTML=html;
+
+    feed.appendChild(card);
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+
+    return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   LIKE
+===================================================== */
+
+async function likePost(postId){
+
+    if(!currentUser){
+
+        alert("আগে Login করুন।");
+
+        return;
+
+    }
+
+
+    const {
+        data:existing
+    } =
+    await supabaseClient
+    .from("post_likes")
+    .select("*")
+    .eq(
+        "post_id",
+        postId
+    )
+    .eq(
+        "user_id",
+        currentUser.id
+    )
+    .maybeSingle();
+
+
+    if(existing){
+
+        await supabaseClient
+        .from("post_likes")
+        .delete()
+        .eq(
+            "post_id",
+            postId
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
+    }else{
+
+        await supabaseClient
+        .from("post_likes")
+        .insert({
+
+            post_id:postId,
+            user_id:currentUser.id
+
+        });
+
+    }
+
+
+    alert(
+        existing
+        ? "Like removed"
+        : "Liked ❤️"
+    );
+
+}
+
+
+/* =====================================================
+   COMMENTS
+===================================================== */
+
+async function toggleComments(postId){
+
+    const box =
+        document.getElementById(
+            "comments-" + postId
+        );
+
+
+    if(
+        box.style.display === "block"
+    ){
+
+        box.style.display="none";
+
+        return;
+
+    }
+
+
+    box.style.display="block";
+
+    await loadComments(postId);
+
+}
+
+
+async function loadComments(postId){
+
+    const list =
+        document.getElementById(
+            "commentList-" + postId
+        );
+
+
+    if(!list){
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+    "Loading comments...";
+
+
+    const {
+        data:comments,
+        error
+    } =
+    await supabaseClient
+    .from("comments")
+    .select("*")
+    .eq(
+        "post_id",
+        postId
+    )
+    .order(
+        "created_at",
+        {
+            ascending:true
+        }
+    );
+
+
+    if(error){
+
+        list.innerHTML =
+        "Comment Error: " +
+        error.message;
+
+        return;
+
+    }
+
+
+    list.innerHTML="";
+
+
+    if(
+        !comments ||
+        comments.length===0
+    ){
+
+        list.innerHTML =
+        '<div class="small">No comments yet.</div>';
+
+        return;
+
+    }
+
+
+    for(const comment of comments){
+
+        const div =
+        document.createElement("div");
+
+
+        div.className="comment";
+
+        div.innerText =
+        comment.text || "";
+
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+async function addComment(postId){
+
+    if(!currentUser){
+
+        alert("আগে Login করুন।");
+
+        return;
+
+    }
+
+
+    const input =
+        document.getElementById(
+            "commentInput-" + postId
+        );
+
+
+    const text =
+        input.value.trim();
+
+
+    if(!text){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("comments")
+    .insert({
+
+        post_id:postId,
+        user_id:currentUser.id,
+        text:text
+
+    });
+
+
+    if(error){
+
+        alert(
+            "Comment Error: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    input.value="";
+
+    await loadComments(postId);
+
+}
+
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+async function sharePost(postId){
+
+    const url =
+        window.location.href +
+        "?post=" +
+        postId;
+
+
+    if(navigator.share){
+
+        try{
+
+            await navigator.share({
+
+                title:"My Social App",
+                text:"Check this post",
+                url:url
+
+            });
+
+        }catch(e){}
+
+    }else{
+
+        try{
+
+            await navigator.clipboard.writeText(url);
+
+            alert("Post link copied!");
+
+        }catch(e){
+
+            prompt(
+                "Copy this link:",
+                url
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   DELETE POST
+===================================================== */
+
+async function deletePost(postId){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    const confirmDelete =
+        confirm(
+            "এই Post delete করবেন?"
+        );
+
+
+    if(!confirmDelete){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("posts")
+    .delete()
+    .eq(
+        "id",
+        postId
+    )
+    .eq(
+        "user_id",
+        currentUser.id
+    );
+
+
+    if(error){
+
+        alert(
+            "Delete Error: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadFeed();
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+checkSession();
+
+</script>
+
+</body>
+    </html>
