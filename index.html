@@ -9,9 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -30,7 +28,7 @@ header{
 }
 
 .header{
-  max-width:900px;
+  max-width:1000px;
   margin:auto;
   display:flex;
   justify-content:space-between;
@@ -61,8 +59,12 @@ button.red{
   background:#e41e3f;
 }
 
+button.green{
+  background:#31a24c;
+}
+
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:20px auto;
   padding:0 10px;
 }
@@ -248,6 +250,77 @@ img{
 .error{
   color:red;
 }
+
+.admin-title{
+  background:#111827;
+  color:white;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.admin-stat{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.stat{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.12);
+}
+
+.stat b{
+  display:block;
+  font-size:25px;
+  margin-top:5px;
+}
+
+.admin-post{
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:12px;
+  margin:10px 0;
+}
+
+.report{
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:12px;
+  margin:10px 0;
+  background:#fff8f8;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:12px;
+  background:#e4e6eb;
+  font-size:12px;
+}
+
+.badge-admin{
+  background:#111827;
+  color:white;
+}
+
+@media(max-width:600px){
+  .admin-stat{
+    grid-template-columns:1fr;
+  }
+
+  .header{
+    padding:0 5px;
+  }
+
+  .logo{
+    font-size:18px;
+  }
+}
 </style>
 </head>
 
@@ -284,7 +357,6 @@ img{
     <p id="loginMessage"></p>
 
   </div>
-
 
   <div id="registerForm" class="hidden">
 
@@ -333,6 +405,14 @@ img{
     <button onclick="showSection('notifications')">
       🔔 Notifications
       <span id="notificationCount"></span>
+    </button>
+
+    <!-- ADMIN BUTTON -->
+    <button
+      id="adminButton"
+      class="hidden"
+      onclick="showSection('admin')">
+      👑 Admin Panel
     </button>
 
   </div>
@@ -389,6 +469,13 @@ img{
         <h2 id="profileName">Name</h2>
 
         <p id="profileBio">Bio</p>
+
+        <p class="small">
+          User ID:
+          <span id="myUserId"></span>
+        </p>
+
+        <p id="myRole"></p>
 
       </div>
 
@@ -450,7 +537,6 @@ img{
 
     </div>
 
-
     <div class="card">
 
       <h3>📩 Friend Requests</h3>
@@ -458,7 +544,6 @@ img{
       <div id="friendRequests"></div>
 
     </div>
-
 
     <div class="card">
 
@@ -487,7 +572,6 @@ img{
       <div id="messageUserResults"></div>
 
     </div>
-
 
     <div class="card">
 
@@ -548,6 +632,92 @@ img{
 
   </div>
 
+
+  <!-- =========================
+       ADMIN PANEL
+  ========================== -->
+  <div id="adminSection" class="hidden">
+
+    <div class="admin-title">
+
+      <h2>👑 Admin Panel</h2>
+
+      <p>
+        My Social App Administration
+      </p>
+
+    </div>
+
+
+    <div class="admin-stat">
+
+      <div class="stat">
+        👥 Users
+        <b id="adminUserCount">0</b>
+      </div>
+
+      <div class="stat">
+        📝 Posts
+        <b id="adminPostCount">0</b>
+      </div>
+
+      <div class="stat">
+        🚨 Reports
+        <b id="adminReportCount">0</b>
+      </div>
+
+    </div>
+
+
+    <!-- USERS -->
+    <div class="card">
+
+      <h3>👥 All Users</h3>
+
+      <button
+        class="gray"
+        onclick="loadAdminUsers()">
+        Refresh Users
+      </button>
+
+      <div id="adminUsers"></div>
+
+    </div>
+
+
+    <!-- POSTS -->
+    <div class="card">
+
+      <h3>📝 All Posts</h3>
+
+      <button
+        class="gray"
+        onclick="loadAdminPosts()">
+        Refresh Posts
+      </button>
+
+      <div id="adminPosts"></div>
+
+    </div>
+
+
+    <!-- REPORTS -->
+    <div class="card">
+
+      <h3>🚨 Reports</h3>
+
+      <button
+        class="gray"
+        onclick="loadAdminReports()">
+        Refresh Reports
+      </button>
+
+      <div id="adminReports"></div>
+
+    </div>
+
+  </div>
+
 </div>
 
 </div>
@@ -595,6 +765,7 @@ function showRegister(){
 
 }
 
+
 function showLogin(){
 
   document.getElementById("registerForm")
@@ -628,11 +799,13 @@ async function register(){
     return;
   }
 
+
   const {data,error} =
     await supabaseClient.auth.signUp({
       email:email,
       password:password
     });
+
 
   if(error){
 
@@ -641,6 +814,7 @@ async function register(){
 
     return;
   }
+
 
   if(data.user){
 
@@ -655,6 +829,7 @@ async function register(){
         cover_photo:""
       });
 
+
     if(profileError){
 
       msg.innerHTML =
@@ -664,7 +839,9 @@ async function register(){
 
       return;
     }
+
   }
+
 
   msg.innerHTML =
     "<span class='success'>Account তৈরি হয়েছে। Email verify করে Login করুন।</span>";
@@ -683,11 +860,13 @@ async function login(){
   const msg =
     document.getElementById("loginMessage");
 
+
   const {data,error} =
     await supabaseClient.auth.signInWithPassword({
       email:email,
       password:password
     });
+
 
   if(error){
 
@@ -696,6 +875,7 @@ async function login(){
 
     return;
   }
+
 
   currentUser = data.user;
 
@@ -764,22 +944,30 @@ async function startApp(){
    SECTION
 ============================== */
 
-function showSection(section){
+function hideAllSections(){
 
-  document.getElementById("homeSection")
-    .classList.add("hidden");
+  const sections = [
+    "homeSection",
+    "profileSection",
+    "friendsSection",
+    "messagesSection",
+    "notificationsSection",
+    "adminSection"
+  ];
 
-  document.getElementById("profileSection")
-    .classList.add("hidden");
+  sections.forEach(id => {
 
-  document.getElementById("friendsSection")
-    .classList.add("hidden");
+    document.getElementById(id)
+      .classList.add("hidden");
 
-  document.getElementById("messagesSection")
-    .classList.add("hidden");
+  });
 
-  document.getElementById("notificationsSection")
-    .classList.add("hidden");
+}
+
+
+async function showSection(section){
+
+  hideAllSections();
 
 
   if(section==="home"){
@@ -787,28 +975,31 @@ function showSection(section){
     document.getElementById("homeSection")
       .classList.remove("hidden");
 
-    loadFeed();
+    await loadFeed();
 
   }
+
 
   if(section==="profile"){
 
     document.getElementById("profileSection")
       .classList.remove("hidden");
 
-    loadProfile();
+    await loadProfile();
 
   }
+
 
   if(section==="friends"){
 
     document.getElementById("friendsSection")
       .classList.remove("hidden");
 
-    loadFriends();
-    loadFriendRequests();
+    await loadFriends();
+    await loadFriendRequests();
 
   }
+
 
   if(section==="messages"){
 
@@ -817,12 +1008,30 @@ function showSection(section){
 
   }
 
+
   if(section==="notifications"){
 
     document.getElementById("notificationsSection")
       .classList.remove("hidden");
 
-    loadNotifications();
+    await loadNotifications();
+
+  }
+
+
+  if(section==="admin"){
+
+    if(currentProfile?.role !== "admin"){
+
+      alert("Admin access denied.");
+      return;
+
+    }
+
+    document.getElementById("adminSection")
+      .classList.remove("hidden");
+
+    await loadAdminPanel();
 
   }
 
@@ -844,6 +1053,7 @@ async function uploadImage(file){
     "_" +
     file.name.replace(/\s/g,"_");
 
+
   const {error} =
     await supabaseClient
     .storage
@@ -853,6 +1063,7 @@ async function uploadImage(file){
       file
     );
 
+
   if(error){
 
     console.log(error);
@@ -861,11 +1072,13 @@ async function uploadImage(file){
 
   }
 
+
   const {data} =
     supabaseClient
     .storage
     .from("media")
     .getPublicUrl(fileName);
+
 
   return data.publicUrl;
 
@@ -880,6 +1093,7 @@ async function loadProfile(){
 
   if(!currentUser) return;
 
+
   let {data,error} =
     await supabaseClient
     .from("profiles")
@@ -887,12 +1101,14 @@ async function loadProfile(){
     .eq("id",currentUser.id)
     .maybeSingle();
 
+
   if(error){
 
     console.log(error);
     return;
 
   }
+
 
   if(!data){
 
@@ -913,23 +1129,42 @@ async function loadProfile(){
 
   }
 
+
   currentProfile = data;
+
 
   document.getElementById("profileName")
     .innerText =
       data.name || "User";
 
+
   document.getElementById("profileBio")
     .innerText =
       data.bio || "No bio";
+
 
   document.getElementById("editName")
     .value =
       data.name || "";
 
+
   document.getElementById("editBio")
     .value =
       data.bio || "";
+
+
+  document.getElementById("myUserId")
+    .innerText =
+      currentUser.id;
+
+
+  document.getElementById("myRole")
+    .innerHTML =
+      data.role==="admin"
+      ?
+      "<span class='badge badge-admin'>👑 ADMIN</span>"
+      :
+      "<span class='badge'>USER</span>";
 
 
   document.getElementById("profilePhoto")
@@ -937,10 +1172,28 @@ async function loadProfile(){
       data.profile_photo ||
       "https://via.placeholder.com/100";
 
+
   document.getElementById("coverPhoto")
     .src =
       data.cover_photo ||
       "https://via.placeholder.com/900x180";
+
+
+  /* ADMIN BUTTON */
+
+  const adminButton =
+    document.getElementById("adminButton");
+
+
+  if(data.role==="admin"){
+
+    adminButton.classList.remove("hidden");
+
+  }else{
+
+    adminButton.classList.add("hidden");
+
+  }
 
 }
 
@@ -962,6 +1215,7 @@ async function updateProfile(){
   const coverFile =
     document.getElementById("coverPhotoInput")
       .files[0];
+
 
   let profilePhoto =
     currentProfile?.profile_photo || "";
@@ -1007,6 +1261,7 @@ async function updateProfile(){
   const msg =
     document.getElementById("profileMessage");
 
+
   if(error){
 
     msg.innerHTML =
@@ -1016,8 +1271,10 @@ async function updateProfile(){
 
   }
 
+
   msg.innerHTML =
     "<span class='success'>Profile updated successfully!</span>";
+
 
   await loadProfile();
 
@@ -1041,7 +1298,9 @@ async function createPost(){
   const msg =
     document.getElementById("postMessage");
 
+
   let imageUrl = "";
+
 
   if(file){
 
@@ -1049,6 +1308,7 @@ async function createPost(){
       await uploadImage(file);
 
   }
+
 
   if(!text && !imageUrl){
 
@@ -1086,8 +1346,10 @@ async function createPost(){
   document.getElementById("postImage")
     .value="";
 
+
   msg.innerHTML =
     "<span class='success'>Post published!</span>";
+
 
   await loadFeed();
 
@@ -1097,6 +1359,7 @@ async function createPost(){
 async function loadFeed(){
 
   if(!currentUser) return;
+
 
   const {data:posts,error} =
     await supabaseClient
@@ -1131,16 +1394,12 @@ async function loadFeed(){
 
   for(const post of posts){
 
-    let profile = null;
-
-    const result =
+    const {data:profile} =
       await supabaseClient
       .from("profiles")
       .select("*")
       .eq("id",post.user_id)
       .maybeSingle();
-
-    profile=result.data;
 
 
     const {data:likes} =
@@ -1152,6 +1411,7 @@ async function loadFeed(){
 
     const likeCount =
       likes ? likes.length : 0;
+
 
     const liked =
       likes?.some(
@@ -1286,6 +1546,7 @@ async function toggleLike(postId){
 
   }
 
+
   await loadFeed();
 
 }
@@ -1296,11 +1557,22 @@ async function deletePost(postId){
   if(!confirm("এই পোস্টটি Delete করবেন?"))
     return;
 
-  await supabaseClient
+
+  const {error} =
+    await supabaseClient
     .from("posts")
     .delete()
     .eq("id",postId)
     .eq("user_id",currentUser.id);
+
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
 
   await loadFeed();
 
@@ -1314,7 +1586,9 @@ async function toggleComments(postId){
       "comments-"+postId
     );
 
+
   box.classList.toggle("hidden");
+
 
   if(!box.classList.contains("hidden")){
 
@@ -1331,6 +1605,7 @@ async function loadComments(postId){
     document.getElementById(
       "comments-"+postId
     );
+
 
   const {data:comments} =
     await supabaseClient
@@ -1390,8 +1665,10 @@ async function addComment(postId){
       "commentInput-"+postId
     );
 
+
   const text =
     input.value.trim();
+
 
   if(!text) return;
 
@@ -1413,6 +1690,7 @@ async function addComment(postId){
 
   }
 
+
   await loadComments(postId);
 
 }
@@ -1425,6 +1703,7 @@ function sharePost(text){
 
   const shareText =
     decodeURIComponent(text);
+
 
   if(navigator.share){
 
@@ -1457,8 +1736,10 @@ async function searchUsers(){
     document.getElementById("friendSearch")
       .value.trim();
 
+
   const resultBox =
     document.getElementById("searchResults");
+
 
   if(!q){
 
@@ -1497,6 +1778,7 @@ async function searchUsers(){
 
     row.className="user-row";
 
+
     row.innerHTML=`
 
       <img
@@ -1518,6 +1800,7 @@ async function searchUsers(){
       </button>
 
     `;
+
 
     resultBox.appendChild(row);
 
@@ -1582,6 +1865,7 @@ async function loadFriendRequests(){
 
   const box =
     document.getElementById("friendRequests");
+
 
   if(!box) return;
 
@@ -1741,6 +2025,7 @@ async function rejectRequest(requestId){
 
   }
 
+
   await loadFriendRequests();
 
 }
@@ -1750,6 +2035,7 @@ async function loadFriends(){
 
   const box =
     document.getElementById("friendsList");
+
 
   if(!box || !currentUser)
     return;
@@ -1881,8 +2167,10 @@ async function searchMessageUsers(){
     document.getElementById("messageUserSearch")
       .value.trim();
 
+
   const box =
     document.getElementById("messageUserResults");
+
 
   if(!q){
 
@@ -1969,6 +2257,7 @@ async function openChat(userId,userName){
   document.getElementById("messageUserSearch")
     .value="";
 
+
   document.getElementById("messageUserResults")
     .innerHTML="";
 
@@ -2030,6 +2319,7 @@ async function loadMessages(){
     const div =
       document.createElement("div");
 
+
     div.className =
       "message "+
       (
@@ -2053,6 +2343,7 @@ async function loadMessages(){
 
 
     box.appendChild(div);
+
 
     const clear =
       document.createElement("div");
@@ -2096,8 +2387,10 @@ async function sendMessage(){
   const input =
     document.getElementById("messageInput");
 
+
   const text =
     input.value.trim();
+
 
   if(!text)
     return;
@@ -2218,6 +2511,7 @@ async function loadNotifications(){
     const div =
       document.createElement("div");
 
+
     div.className =
       "notification "+
       (!notification.read ? "unread" : "");
@@ -2271,7 +2565,456 @@ async function markNotificationsRead(){
 
 
 /* ==============================
-   SECURITY / HTML
+   ADMIN PANEL
+============================== */
+
+async function loadAdminPanel(){
+
+  if(currentProfile?.role !== "admin"){
+
+    alert("Admin access denied.");
+    return;
+
+  }
+
+
+  await loadAdminUsers();
+  await loadAdminPosts();
+  await loadAdminReports();
+
+}
+
+
+/* ==============================
+   ADMIN USERS
+============================== */
+
+async function loadAdminUsers(){
+
+  const box =
+    document.getElementById("adminUsers");
+
+
+  box.innerHTML =
+    "<p>Loading users...</p>";
+
+
+  const {data,error} =
+    await supabaseClient
+    .from("profiles")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+
+  if(error){
+
+    box.innerHTML =
+      "<p class='error'>"+error.message+"</p>";
+
+    return;
+
+  }
+
+
+  document.getElementById("adminUserCount")
+    .innerText =
+      data?.length || 0;
+
+
+  box.innerHTML="";
+
+
+  if(!data?.length){
+
+    box.innerHTML =
+      "<p>No users found.</p>";
+
+    return;
+
+  }
+
+
+  for(const user of data){
+
+    const row =
+      document.createElement("div");
+
+    row.className="user-row";
+
+
+    row.innerHTML=`
+
+      <img
+        class="user-avatar"
+        src="${
+          user.profile_photo ||
+          "https://via.placeholder.com/50"
+        }"
+      >
+
+      <div class="user-info">
+
+        <b>
+          ${escapeHtml(user.name || "User")}
+        </b>
+
+        <div class="small">
+          ID: ${escapeHtml(user.id)}
+        </div>
+
+        <div class="small">
+          Role:
+          ${
+            user.role==="admin"
+            ?
+            "👑 Admin"
+            :
+            "User"
+          }
+        </div>
+
+      </div>
+
+    `;
+
+
+    box.appendChild(row);
+
+  }
+
+}
+
+
+/* ==============================
+   ADMIN POSTS
+============================== */
+
+async function loadAdminPosts(){
+
+  const box =
+    document.getElementById("adminPosts");
+
+
+  box.innerHTML =
+    "<p>Loading posts...</p>";
+
+
+  const {data:posts,error} =
+    await supabaseClient
+    .from("posts")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+
+  if(error){
+
+    box.innerHTML =
+      "<p class='error'>"+error.message+"</p>";
+
+    return;
+
+  }
+
+
+  document.getElementById("adminPostCount")
+    .innerText =
+      posts?.length || 0;
+
+
+  box.innerHTML="";
+
+
+  if(!posts?.length){
+
+    box.innerHTML =
+      "<p>No posts found.</p>";
+
+    return;
+
+  }
+
+
+  for(const post of posts){
+
+    const {data:user} =
+      await supabaseClient
+      .from("profiles")
+      .select("name,profile_photo")
+      .eq("id",post.user_id)
+      .maybeSingle();
+
+
+    const div =
+      document.createElement("div");
+
+    div.className="admin-post";
+
+
+    let html=`
+
+      <div class="user-row">
+
+        <img
+          class="user-avatar"
+          src="${
+            user?.profile_photo ||
+            "https://via.placeholder.com/50"
+          }"
+        >
+
+        <div class="user-info">
+
+          <b>
+            ${escapeHtml(user?.name || "User")}
+          </b>
+
+          <div class="small">
+            ${new Date(post.created_at).toLocaleString()}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    if(post.text){
+
+      html +=
+        `<p>${escapeHtml(post.text)}</p>`;
+
+    }
+
+
+    if(post.image_url){
+
+      html +=
+        `<img class="post-image" src="${post.image_url}">`;
+
+    }
+
+
+    html += `
+
+      <button
+        class="red"
+        onclick="adminDeletePost(${post.id})">
+        🗑️ Delete Post
+      </button>
+
+    `;
+
+
+    div.innerHTML=html;
+
+    box.appendChild(div);
+
+  }
+
+}
+
+
+async function adminDeletePost(postId){
+
+  if(currentProfile?.role !== "admin"){
+
+    alert("Admin access denied.");
+    return;
+
+  }
+
+
+  if(!confirm(
+    "Admin হিসেবে এই Post Delete করবেন?"
+  )){
+
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+    .from("posts")
+    .delete()
+    .eq("id",postId);
+
+
+  if(error){
+
+    alert(
+      "Delete failed: "+
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  alert("Post deleted successfully.");
+
+  await loadAdminPosts();
+  await loadFeed();
+
+}
+
+
+/* ==============================
+   ADMIN REPORTS
+============================== */
+
+async function loadAdminReports(){
+
+  const box =
+    document.getElementById("adminReports");
+
+
+  box.innerHTML =
+    "<p>Loading reports...</p>";
+
+
+  const {data:reports,error} =
+    await supabaseClient
+    .from("reports")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+
+  if(error){
+
+    box.innerHTML =
+      "<p class='error'>"+error.message+"</p>";
+
+    return;
+
+  }
+
+
+  document.getElementById("adminReportCount")
+    .innerText =
+      reports?.length || 0;
+
+
+  box.innerHTML="";
+
+
+  if(!reports?.length){
+
+    box.innerHTML =
+      "<p>No reports found.</p>";
+
+    return;
+
+  }
+
+
+  for(const report of reports){
+
+    let reporterName="User";
+
+
+    const {data:reporter} =
+      await supabaseClient
+      .from("profiles")
+      .select("name")
+      .eq("id",report.reporter_id)
+      .maybeSingle();
+
+
+    reporterName =
+      reporter?.name || "User";
+
+
+    const div =
+      document.createElement("div");
+
+    div.className="report";
+
+
+    div.innerHTML=`
+
+      <b>🚨 Report</b>
+
+      <p>
+        Reporter:
+        <b>${escapeHtml(reporterName)}</b>
+      </p>
+
+      <p>
+        Reason:
+        ${escapeHtml(report.reason)}
+      </p>
+
+      <p class="small">
+        Post ID:
+        ${report.post_id || "N/A"}
+      </p>
+
+      <p class="small">
+        Status:
+        ${escapeHtml(report.status || "pending")}
+      </p>
+
+      ${
+        report.status!=="resolved"
+        ?
+        `
+        <button
+          class="green"
+          onclick="resolveReport(${report.id})">
+          ✅ Resolve
+        </button>
+        `
+        :
+        `<span class="badge">Resolved</span>`
+      }
+
+    `;
+
+
+    box.appendChild(div);
+
+  }
+
+}
+
+
+async function resolveReport(reportId){
+
+  if(currentProfile?.role !== "admin"){
+
+    alert("Admin access denied.");
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+    .from("reports")
+    .update({
+      status:"resolved"
+    })
+    .eq("id",reportId);
+
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+
+  await loadAdminReports();
+
+}
+
+
+/* ==============================
+   SECURITY
 ============================== */
 
 function escapeHtml(value){
@@ -2295,4 +3038,4 @@ checkSession();
 </script>
 
 </body>
-    </html>
+  </html>
