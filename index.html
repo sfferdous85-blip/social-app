@@ -2,509 +2,391 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#1877f2">
-<title>FriendBook - Reels</title>
+<title>FriendBook</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-html,body{
- margin:0;
- padding:0;
- width:100%;
- height:100%;
- font-family:Arial,Helvetica,sans-serif;
- background:#000;
- color:#fff;
- overflow:hidden;
-}
-button,input,textarea{
- font-family:inherit;
-}
-button{
- border:0;
- cursor:pointer;
-}
+html,body{margin:0;font-family:Arial,sans-serif;background:#f0f2f5;color:#111}
+button,input,textarea,select{font:inherit}
+button{border:0;cursor:pointer}
 .hidden{display:none!important}
+a{text-decoration:none;color:inherit}
 
-/* LOGIN */
+:root{
+ --blue:#1877f2;
+ --green:#42b72a;
+ --bg:#f0f2f5;
+ --card:#fff;
+ --text:#111;
+ --muted:#65676b;
+ --line:#ddd;
+}
+
+body.dark{
+ --bg:#18191a;
+ --card:#242526;
+ --text:#e4e6eb;
+ --muted:#b0b3b8;
+ --line:#3a3b3c;
+}
+
+body{background:var(--bg);color:var(--text)}
+
 #loginPage{
- width:100%;
- height:100%;
- background:#f0f2f5;
- color:#111;
+ min-height:100vh;
  display:flex;
- align-items:center;
  justify-content:center;
+ align-items:center;
  padding:20px;
 }
 .loginBox{
- width:100%;
- max-width:420px;
- background:#fff;
+ width:min(420px,100%);
+ background:var(--card);
  padding:25px;
- border-radius:16px;
- box-shadow:0 4px 25px #0002;
+ border-radius:18px;
+ box-shadow:0 5px 25px #0002;
 }
 .loginBox h1{
- color:#1877f2;
+ color:var(--blue);
  text-align:center;
- margin:0 0 20px;
+ margin-top:0;
+ font-size:32px;
 }
 .loginBox input{
  width:100%;
  padding:14px;
- margin:7px 0;
- border:1px solid #ddd;
+ margin:6px 0;
+ border:1px solid var(--line);
  border-radius:10px;
- font-size:16px;
+ background:var(--card);
+ color:var(--text);
 }
-.loginBtn{
+.btn{
  width:100%;
- background:#1877f2;
- color:#fff;
- padding:14px;
- border-radius:10px;
- font-size:17px;
- margin-top:8px;
+ padding:13px;
+ border-radius:9px;
+ margin-top:7px;
 }
-.signupBtn{
- width:100%;
- background:#42b72a;
- color:#fff;
- padding:14px;
- border-radius:10px;
- font-size:17px;
- margin-top:8px;
-}
+.blue{background:var(--blue);color:#fff}
+.green{background:var(--green);color:#fff}
+.gray{background:#e4e6eb;color:#111}
 
-/* APP */
-#app{
- width:100%;
- height:100%;
- display:none;
- background:#000;
- position:relative;
-}
+#app{display:none;min-height:100vh}
 
-/* TOP */
 .topbar{
- position:absolute;
+ height:60px;
+ position:sticky;
  top:0;
- left:0;
- right:0;
- height:58px;
  z-index:50;
+ background:var(--card);
+ border-bottom:1px solid var(--line);
  display:flex;
  align-items:center;
- justify-content:space-between;
+ gap:10px;
  padding:8px 12px;
- background:linear-gradient(#000b,transparent);
- pointer-events:none;
 }
 .logo{
  font-size:22px;
  font-weight:bold;
- pointer-events:auto;
+ color:var(--blue);
 }
-.topActions{
- display:flex;
- gap:8px;
- pointer-events:auto;
+.search{
+ flex:1;
+ max-width:500px;
+ border:1px solid var(--line);
+ background:var(--bg);
+ color:var(--text);
+ border-radius:22px;
+ padding:10px 15px;
 }
-.iconBtn{
+.topButton{
  width:40px;
  height:40px;
  border-radius:50%;
- background:#0008;
- color:#fff;
- font-size:20px;
+ background:var(--bg);
+ color:var(--text);
 }
 
-/* REELS */
-#reelsContainer{
- width:100%;
- height:100%;
- overflow-y:auto;
- overflow-x:hidden;
- scroll-snap-type:y mandatory;
+.nav{
+ position:sticky;
+ top:60px;
+ z-index:45;
+ background:var(--card);
+ border-bottom:1px solid var(--line);
+ display:flex;
+ overflow-x:auto;
  scrollbar-width:none;
 }
-#reelsContainer::-webkit-scrollbar{display:none}
-
-.reel{
- position:relative;
- width:100%;
- height:100dvh;
- min-height:100vh;
- scroll-snap-align:start;
- background:#111;
- overflow:hidden;
+.nav::-webkit-scrollbar{display:none}
+.nav button{
+ white-space:nowrap;
+ padding:13px 15px;
+ background:var(--card);
+ color:var(--text);
+}
+.nav button.active{
+ color:var(--blue);
+ border-bottom:3px solid var(--blue);
+ font-weight:bold;
 }
 
-.reelVideo{
- width:100%;
- height:100%;
- object-fit:cover;
- background:#111;
+.page{
+ width:min(950px,100%);
+ margin:auto;
+ padding:12px;
 }
 
-/* fallback */
-.videoOverlay{
- position:absolute;
- inset:0;
- pointer-events:none;
- background:linear-gradient(
-   transparent 35%,
-   transparent 45%,
-   #0002 65%,
-   #000b 100%
- );
+.card{
+ background:var(--card);
+ border-radius:12px;
+ padding:14px;
+ margin-bottom:12px;
+ box-shadow:0 1px 3px #0001;
 }
 
-/* right buttons */
-.reelRight{
- position:absolute;
- right:10px;
- bottom:105px;
- display:flex;
- flex-direction:column;
- align-items:center;
- gap:15px;
- z-index:10;
-}
-.reelAction{
- display:flex;
- flex-direction:column;
- align-items:center;
- color:#fff;
- background:none;
- font-size:13px;
- text-shadow:0 1px 4px #000;
-}
-.reelAction .circle{
- width:48px;
- height:48px;
- border-radius:50%;
- background:#0008;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:25px;
- margin-bottom:3px;
-}
-.reelAction.active .circle{
- background:#1877f2;
-}
-.reelAction.loved .circle{
- background:#e91e63;
-}
-
-/* bottom info */
-.reelInfo{
- position:absolute;
- left:12px;
- right:75px;
- bottom:22px;
- z-index:10;
- text-shadow:0 1px 5px #000;
-}
-.creatorRow{
+.row{
  display:flex;
  align-items:center;
  gap:10px;
- margin-bottom:10px;
 }
-.creatorAvatar{
- width:42px;
- height:42px;
+.avatar{
+ width:45px;
+ height:45px;
  border-radius:50%;
  object-fit:cover;
- background:#333;
- border:2px solid #fff;
+ background:#ddd;
 }
-.creatorName{
- font-weight:bold;
- font-size:16px;
+.cover{
+ width:100%;
+ height:220px;
+ object-fit:cover;
+ border-radius:12px;
+ background:#bbb;
 }
-.followBtn{
- background:#1877f2;
- color:#fff;
- padding:7px 13px;
- border-radius:7px;
- font-weight:bold;
+.muted{color:var(--muted)}
+.small{font-size:12px}
+
+textarea,input,select{
+ background:var(--card);
+ color:var(--text);
+ border:1px solid var(--line);
+ border-radius:9px;
+ padding:11px;
 }
-.followBtn.following{
- background:#444;
-}
-.caption{
- font-size:15px;
- line-height:1.4;
- margin-bottom:8px;
-}
-.audio{
- font-size:13px;
- opacity:.95;
- display:flex;
- align-items:center;
- gap:5px;
+textarea{resize:vertical}
+
+.composer textarea{
+ width:100%;
+ margin-top:10px;
 }
 
-/* sound */
-.soundBtn{
+.postImage{
+ width:100%;
+ max-height:650px;
+ object-fit:cover;
+ border-radius:10px;
+ margin-top:10px;
+}
+
+.actions{
+ display:flex;
+ border-top:1px solid var(--line);
+ margin-top:10px;
+ padding-top:7px;
+ gap:4px;
+}
+.actions button{
+ flex:1;
+ background:transparent;
+ color:var(--text);
+ padding:10px 4px;
+ border-radius:7px;
+}
+.actions button:hover{background:var(--bg)}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:10px;
+}
+
+.item{
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:12px;
+}
+
+/* REELS */
+.reels{
+ height:calc(100vh - 116px);
+ overflow-y:auto;
+ scroll-snap-type:y mandatory;
+ background:#000;
+}
+.reel{
+ height:calc(100vh - 116px);
+ min-height:500px;
+ position:relative;
+ scroll-snap-align:start;
+ background:#111;
+ color:#fff;
+ overflow:hidden;
+}
+.reel video{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ background:#111;
+}
+.reelShade{
  position:absolute;
- top:68px;
+ inset:0;
+ background:linear-gradient(
+   transparent 35%,
+   transparent 50%,
+   #000b 100%
+ );
+ pointer-events:none;
+}
+.reelSound{
+ position:absolute;
  right:12px;
- z-index:15;
- width:42px;
- height:42px;
+ top:12px;
+ z-index:10;
+ width:44px;
+ height:44px;
  border-radius:50%;
  background:#0009;
  color:#fff;
  font-size:20px;
 }
-
-/* pause */
-.pauseIcon{
+.reelSide{
  position:absolute;
- left:50%;
- top:50%;
- transform:translate(-50%,-50%);
- width:70px;
- height:70px;
- border-radius:50%;
- background:#0008;
- display:none;
- align-items:center;
- justify-content:center;
- font-size:35px;
- z-index:20;
-}
-.reel.paused .pauseIcon{
- display:flex;
-}
-
-/* top badge */
-.reelBadge{
- position:absolute;
- top:72px;
- left:12px;
- z-index:10;
- background:#0008;
- border-radius:20px;
- padding:6px 11px;
- font-size:13px;
-}
-
-/* UPLOAD */
-.uploadPanel{
- position:absolute;
- left:10px;
  right:10px;
- top:65px;
- z-index:100;
- background:#fff;
- color:#111;
- border-radius:15px;
- padding:16px;
- box-shadow:0 5px 30px #0008;
- max-height:80vh;
- overflow:auto;
-}
-.uploadPanel h3{
- margin:0 0 12px;
-}
-.uploadPanel input,
-.uploadPanel textarea{
- width:100%;
- border:1px solid #ddd;
- border-radius:10px;
- padding:12px;
- margin:6px 0;
- font-size:15px;
-}
-.uploadBtn{
- width:100%;
- background:#1877f2;
- color:#fff;
- padding:13px;
- border-radius:10px;
- font-size:16px;
- margin-top:8px;
-}
-.cancelBtn{
- width:100%;
- background:#eee;
- color:#111;
- padding:12px;
- border-radius:10px;
- margin-top:7px;
-}
-
-/* COMMENTS */
-.modal{
- position:absolute;
- inset:0;
- z-index:200;
- background:#0008;
- display:none;
- align-items:flex-end;
-}
-.commentBox{
- width:100%;
- max-height:78%;
- background:#fff;
- color:#111;
- border-radius:20px 20px 0 0;
- overflow:hidden;
+ bottom:105px;
+ z-index:10;
  display:flex;
  flex-direction:column;
+ gap:10px;
 }
-.commentHeader{
- padding:14px;
- border-bottom:1px solid #ddd;
- display:flex;
- align-items:center;
- justify-content:space-between;
- font-weight:bold;
-}
-.commentList{
- flex:1;
- overflow-y:auto;
- padding:10px;
-}
-.comment{
- display:flex;
- gap:8px;
- margin-bottom:14px;
-}
-.commentAvatar{
- width:36px;
- height:36px;
+.reelSide button{
+ width:48px;
+ height:48px;
  border-radius:50%;
- object-fit:cover;
- background:#ddd;
- flex:none;
-}
-.commentBody{
- background:#f0f2f5;
- padding:8px 10px;
- border-radius:12px;
- max-width:85%;
-}
-.commentName{
- font-weight:bold;
- font-size:13px;
-}
-.commentText{
- font-size:14px;
- margin-top:3px;
-}
-.commentTools{
- margin-top:5px;
- display:flex;
- gap:12px;
- font-size:12px;
- color:#65676b;
-}
-.replyBox{
- margin-left:45px;
- margin-top:7px;
- display:none;
-}
-.commentInputRow{
- display:flex;
- gap:7px;
- padding:10px;
- border-top:1px solid #ddd;
-}
-.commentInput{
- flex:1;
- border:1px solid #ddd;
- border-radius:22px;
- padding:11px 15px;
- font-size:15px;
-}
-.sendComment{
- width:45px;
- height:45px;
- border-radius:50%;
- background:#1877f2;
+ background:#0009;
  color:#fff;
- font-size:18px;
+ font-size:20px;
+}
+.reelInfo{
+ position:absolute;
+ left:13px;
+ right:70px;
+ bottom:18px;
+ z-index:10;
+ text-shadow:0 1px 5px #000;
+}
+.follow{
+ background:var(--blue);
+ color:#fff;
+ padding:7px 12px;
+ border-radius:7px;
+}
+.following{background:#555}
+
+/* STORIES */
+.storyRow{
+ display:flex;
+ gap:10px;
+ overflow-x:auto;
+}
+.story{
+ min-width:105px;
+ height:155px;
+ border-radius:12px;
+ background:#555;
+ color:#fff;
+ display:flex;
+ align-items:flex-end;
+ justify-content:center;
+ padding:10px;
+ background-size:cover;
+ background-position:center;
 }
 
-/* reaction menu */
-.reactionMenu{
- position:absolute;
- right:65px;
- bottom:250px;
- z-index:80;
- background:#fff;
- color:#111;
- padding:7px;
- border-radius:30px;
- box-shadow:0 4px 20px #0008;
- display:none;
- gap:4px;
-}
-.reactionMenu button{
- width:42px;
- height:42px;
- border-radius:50%;
- background:#f0f2f5;
- font-size:22px;
-}
-.reactionMenu.show{
+/* MODAL */
+.modal{
+ position:fixed;
+ inset:0;
+ z-index:100;
+ background:#0008;
  display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+.modalBox{
+ width:min(650px,100%);
+ max-height:90vh;
+ overflow:auto;
+ background:var(--card);
+ color:var(--text);
+ border-radius:15px;
+ padding:18px;
+}
+.close{
+ float:right;
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
 }
 
 /* TOAST */
 #toast{
- position:absolute;
+ display:none;
+ position:fixed;
+ z-index:300;
+ bottom:20px;
  left:50%;
- bottom:75px;
  transform:translateX(-50%);
  background:#222;
  color:#fff;
- padding:11px 16px;
- border-radius:10px;
- z-index:500;
- display:none;
+ padding:11px 17px;
+ border-radius:9px;
  max-width:90%;
  text-align:center;
 }
 
-/* loading */
-.loading{
- position:absolute;
- inset:0;
- display:flex;
- align-items:center;
- justify-content:center;
- background:#000;
- z-index:300;
- font-size:18px;
+/* COMMENT */
+.comment{
+ padding:10px;
+ border-radius:10px;
+ background:var(--bg);
+ margin-bottom:8px;
 }
 
-/* empty */
-.empty{
- height:100%;
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
- text-align:center;
- padding:25px;
+/* PROFILE */
+.profileHead{text-align:center}
+.profilePhoto{
+ width:110px;
+ height:110px;
+ border-radius:50%;
+ object-fit:cover;
+ border:4px solid var(--card);
+ margin-top:-55px;
 }
-.empty button{
- background:#1877f2;
- color:#fff;
- padding:12px 20px;
- border-radius:10px;
- margin-top:15px;
+
+/* MOBILE */
+@media(max-width:600px){
+ .logo{font-size:19px}
+ .topbar{padding:7px}
+ .nav button{padding:12px 11px;font-size:13px}
+ .cover{height:170px}
 }
 </style>
 </head>
@@ -513,98 +395,160 @@ button{
 
 <!-- LOGIN -->
 <div id="loginPage">
-  <div class="loginBox">
-    <h1>FriendBook</h1>
+ <div class="loginBox">
 
-    <input id="loginEmail" type="email" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
+  <h1>FriendBook</h1>
 
-    <button class="loginBtn" onclick="login()">Login</button>
-    <button class="signupBtn" onclick="signup()">Create New Account</button>
+  <input id="email" type="email" placeholder="Email">
 
-    <div id="loginMsg" style="text-align:center;margin-top:12px;color:#e41e3f"></div>
-  </div>
+  <input id="password" type="password" placeholder="Password">
+
+  <button class="btn blue" onclick="login()">
+   Login
+  </button>
+
+  <button class="btn green" onclick="signup()">
+   Create New Account
+  </button>
+
+  <p id="loginMessage" class="muted"></p>
+
+ </div>
 </div>
+
 
 <!-- APP -->
 <div id="app">
 
-  <div class="topbar">
-    <div class="logo">FriendBook</div>
+<header class="topbar">
 
-    <div class="topActions">
-      <button class="iconBtn" onclick="openUpload()">＋</button>
-      <button class="iconBtn" onclick="logout()">↪</button>
-    </div>
-  </div>
+ <b class="logo">FriendBook</b>
 
-  <div id="reelsContainer">
-    <div class="loading" id="loading">Reels লোড হচ্ছে...</div>
-  </div>
+ <input
+  id="globalSearch"
+  class="search"
+  placeholder="Search FriendBook"
+  onkeydown="if(event.key==='Enter')searchAll()">
 
-  <!-- UPLOAD PANEL -->
-  <div id="uploadPanel" class="uploadPanel hidden">
+ <button class="topButton" onclick="openCreate()">
+  ＋
+ </button>
 
-    <h3>🎬 Create Reel</h3>
+ <button class="topButton" onclick="toggleDark()">
+  🌙
+ </button>
 
-    <input id="reelVideoUrl"
-           type="url"
-           placeholder="Video URL দিন (https://...)">
+ <button class="topButton" onclick="logout()">
+  ↪
+ </button>
 
-    <input id="reelAudio"
-           type="text"
-           placeholder="🎵 Audio name">
+</header>
 
-    <textarea id="reelCaption"
-              rows="4"
-              placeholder="আপনার Reel সম্পর্কে লিখুন... #reels #friendbook"></textarea>
 
-    <button class="uploadBtn" onclick="uploadReel()">
-      🚀 Post Reel
-    </button>
+<nav class="nav">
 
-    <button class="cancelBtn" onclick="closeUpload()">
-      Cancel
-    </button>
+ <button data-tab="home" onclick="tab('home')">🏠 Home</button>
+ <button data-tab="reels" onclick="tab('reels')">🎬 Reels</button>
+ <button data-tab="stories" onclick="tab('stories')">📖 Stories</button>
+ <button data-tab="friends" onclick="tab('friends')">👥 Friends</button>
+ <button data-tab="messages" onclick="tab('messages')">💬 Messenger</button>
+ <button data-tab="notifications" onclick="tab('notifications')">🔔 Notifications</button>
+ <button data-tab="groups" onclick="tab('groups')">👥 Groups</button>
+ <button data-tab="pages" onclick="tab('pages')">📄 Pages</button>
+ <button data-tab="market" onclick="tab('market')">🛒 Marketplace</button>
+ <button data-tab="events" onclick="tab('events')">📅 Events</button>
+ <button data-tab="profile" onclick="tab('profile')">👤 Profile</button>
+ <button data-tab="creator" onclick="tab('creator')">💰 Creator</button>
+ <button data-tab="settings" onclick="tab('settings')">⚙️ Settings</button>
 
-  </div>
+</nav>
 
-  <!-- COMMENTS MODAL -->
-  <div id="commentModal" class="modal">
 
-    <div class="commentBox">
-
-      <div class="commentHeader">
-        <span>💬 Comments</span>
-        <button onclick="closeComments()">✕</button>
-      </div>
-
-      <div id="commentList" class="commentList">
-      </div>
-
-      <div class="commentInputRow">
-        <input
-          id="commentInput"
-          class="commentInput"
-          placeholder="Write a comment..."
-          onkeydown="if(event.key==='Enter')sendComment()">
-
-        <button class="sendComment" onclick="sendComment()">➤</button>
-      </div>
-
-    </div>
-
-  </div>
-
-  <div id="toast"></div>
+<main id="main"></main>
 
 </div>
 
+
+<!-- CREATE MODAL -->
+<div id="createModal" class="modal hidden">
+
+ <div class="modalBox">
+
+  <button class="close" onclick="closeModal('createModal')">✕</button>
+
+  <h2>Create</h2>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('home')">
+   📝 Post
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('reels')">
+   🎬 Reel
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('stories')">
+   📖 Story
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('friends')">
+   👥 Friend
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('groups')">
+   👥 Group
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('pages')">
+   📄 Page
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('market')">
+   🛒 Marketplace
+  </button>
+
+  <button class="btn blue" onclick="closeModal('createModal');tab('events')">
+   📅 Event
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- COMMENT MODAL -->
+<div id="commentModal" class="modal hidden">
+
+ <div class="modalBox">
+
+  <button class="close" onclick="closeModal('commentModal')">✕</button>
+
+  <h2>💬 Comments</h2>
+
+  <div id="commentList"></div>
+
+  <input
+   id="commentInput"
+   style="width:100%"
+   placeholder="Write a comment..."
+   onkeydown="if(event.key==='Enter')sendComment()">
+
+  <button class="btn blue" onclick="sendComment()">
+   Comment
+  </button>
+
+ </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+
 <script>
 
-/* =========================
-   SUPABASE
-========================= */
+/* =========================================================
+ SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
 "https://skereuaizdczbvjplisi.supabase.co";
@@ -612,1566 +556,3061 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-const sb =
+const db =
 supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+ SUPABASE_URL,
+ SUPABASE_KEY
 );
 
 
-/* =========================
-   GLOBAL
-========================= */
+/* =========================================================
+ GLOBAL
+========================================================= */
 
-let currentUser = null;
-let reels = [];
-let currentCommentReel = null;
-
-const reactions = {
-  like:"👍",
-  love:"❤️",
-  haha:"😂",
-  wow:"😮",
-  sad:"😢",
-  angry:"😡"
-};
+let me=null;
+let currentPost=null;
+let currentReel=null;
+let currentTab="home";
 
 
-/* =========================
-   INIT
-========================= */
-
-window.addEventListener("load", async()=>{
-
-  const {data} =
-    await sb.auth.getSession();
-
-  if(data && data.session){
-
-    currentUser =
-      data.session.user;
-
-    showApp();
-
-  }else{
-
-    showLogin();
-
-  }
-
-});
+const $=id=>document.getElementById(id);
 
 
-/* =========================
-   AUTH
-========================= */
+function esc(v){
+
+ return String(v ?? "")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+
+}
+
+
+function avatar(url,name){
+
+ return url ||
+ "https://ui-avatars.com/api/?name="+
+ encodeURIComponent(name || "User")+
+ "&background=1877f2&color=fff";
+
+}
+
+
+function toast(text){
+
+ const x=$("toast");
+
+ x.textContent=text;
+ x.style.display="block";
+
+ clearTimeout(window.toastTimer);
+
+ window.toastTimer=setTimeout(()=>{
+  x.style.display="none";
+ },2500);
+
+}
+
+
+/* =========================================================
+ AUTH
+========================================================= */
 
 async function login(){
 
-  const email =
-    document.getElementById("loginEmail").value.trim();
+ const email=$("email").value.trim();
+ const password=$("password").value;
 
-  const password =
-    document.getElementById("loginPassword").value;
+ if(!email || !password){
 
-  if(!email || !password){
+  $("loginMessage").textContent=
+   "Email এবং Password দিন";
 
-    showLoginMsg("Email এবং Password দিন");
-    return;
-  }
+  return;
+ }
 
-  const {data,error} =
-    await sb.auth.signInWithPassword({
-      email,
-      password
-    });
+ const {data,error}=
+  await db.auth.signInWithPassword({
+   email,
+   password
+  });
 
-  if(error){
+ if(error){
 
-    showLoginMsg(error.message);
-    return;
-  }
+  $("loginMessage").textContent=
+   error.message;
 
-  currentUser = data.user;
+  return;
+ }
 
-  showApp();
+ me=data.user;
+
+ await updateOnline();
+
+ startApp();
+
 }
 
 
 async function signup(){
 
-  const email =
-    document.getElementById("loginEmail").value.trim();
+ const email=$("email").value.trim();
+ const password=$("password").value;
 
-  const password =
-    document.getElementById("loginPassword").value;
+ if(!email || !password){
 
-  if(!email || !password){
+  $("loginMessage").textContent=
+   "Email এবং Password দিন";
 
-    showLoginMsg("Email এবং Password দিন");
-    return;
-  }
+  return;
+ }
 
-  if(password.length < 6){
+ if(password.length<6){
 
-    showLoginMsg(
-      "Password কমপক্ষে ৬ অক্ষরের হতে হবে"
-    );
+  $("loginMessage").textContent=
+   "Password কমপক্ষে ৬ অক্ষরের হতে হবে";
 
-    return;
-  }
+  return;
+ }
 
-  const {data,error} =
-    await sb.auth.signUp({
-      email,
-      password
-    });
+ const {data,error}=
+  await db.auth.signUp({
+   email,
+   password
+  });
 
-  if(error){
+ if(error){
 
-    showLoginMsg(error.message);
-    return;
-  }
+  $("loginMessage").textContent=
+   error.message;
 
-  if(data.user){
+  return;
+ }
 
-    currentUser = data.user;
+ if(!data.user){
 
-    /* profile create */
+  $("loginMessage").textContent=
+   "Email verification প্রয়োজন হতে পারে";
 
-    await sb
-      .from("fb_profiles")
-      .upsert({
-        id:data.user.id,
-        name:email.split("@")[0],
-        username:email.split("@")[0],
-        bio:"",
-        created_at:new Date().toISOString(),
-        updated_at:new Date().toISOString(),
-        online:true,
-        last_seen:new Date().toISOString()
-      });
+  return;
+ }
 
-    showApp();
+ me=data.user;
 
-  }else{
+ const name=
+  email.split("@")[0];
 
-    showLoginMsg(
-      "Account তৈরি হয়েছে। Email verification প্রয়োজন হতে পারে।"
-    );
+ await db
+  .from("fb_profiles")
+  .upsert({
+   id:me.id,
+   name:name,
+   username:name,
+   bio:"",
+   created_at:new Date().toISOString(),
+   updated_at:new Date().toISOString(),
+   online:true,
+   last_seen:new Date().toISOString()
+  });
 
-  }
+ startApp();
 
 }
 
 
 async function logout(){
 
-  await sb.auth.signOut();
+ if(me){
 
-  currentUser = null;
+  await db
+   .from("fb_profiles")
+   .update({
+    online:false,
+    last_seen:new Date().toISOString()
+   })
+   .eq("id",me.id);
 
-  showLogin();
+ }
 
-}
+ await db.auth.signOut();
 
-
-/* =========================
-   SCREEN
-========================= */
-
-function showLogin(){
-
-  document.getElementById("loginPage")
-    .style.display="flex";
-
-  document.getElementById("app")
-    .style.display="none";
+ location.reload();
 
 }
 
 
-function showApp(){
+async function updateOnline(){
 
-  document.getElementById("loginPage")
-    .style.display="none";
+ if(!me)return;
 
-  document.getElementById("app")
-    .style.display="block";
-
-  loadReels();
-
-}
-
-
-function showLoginMsg(text){
-
-  document.getElementById("loginMsg")
-    .textContent=text;
+ await db
+  .from("fb_profiles")
+  .update({
+   online:true,
+   last_seen:new Date().toISOString()
+  })
+  .eq("id",me.id);
 
 }
 
 
-/* =========================
-   PROFILE
-========================= */
+function startApp(){
 
-const profileCache = {};
+ $("loginPage").style.display="none";
+ $("app").style.display="block";
 
-async function getProfile(userId){
-
-  if(profileCache[userId])
-    return profileCache[userId];
-
-  const {data,error} =
-    await sb
-      .from("fb_profiles")
-      .select("*")
-      .eq("id",userId)
-      .maybeSingle();
-
-  if(error){
-
-    console.log("profile error",error);
-  }
-
-  const profile =
-    data || {
-      id:userId,
-      name:"User",
-      username:"user",
-      profile_photo:""
-    };
-
-  profileCache[userId]=profile;
-
-  return profile;
-}
-
-
-function avatar(profile){
-
-  if(profile.profile_photo){
-
-    return profile.profile_photo;
-
-  }
-
-  return "https://ui-avatars.com/api/?name="+
-    encodeURIComponent(profile.name || "User")+
-    "&background=1877f2&color=fff";
-}
-
-
-/* =========================
-   LOAD REELS
-========================= */
-
-async function loadReels(){
-
-  const container =
-    document.getElementById("reelsContainer");
-
-  container.innerHTML =
-    `<div class="loading">Reels লোড হচ্ছে...</div>`;
-
-  const {data,error} =
-    await sb
-      .from("fb_reels")
-      .select("*")
-      .order("created_at",{ascending:false});
-
-  if(error){
-
-    console.error(error);
-
-    container.innerHTML=`
-      <div class="empty">
-        <div>❌ Reels লোড হয়নি</div>
-        <small>${escapeHtml(error.message)}</small>
-        <button onclick="loadReels()">Retry</button>
-      </div>
-    `;
-
-    return;
-  }
-
-  reels = data || [];
-
-  if(!reels.length){
-
-    container.innerHTML=`
-      <div class="empty">
-        <div style="font-size:55px">🎬</div>
-        <h2>এখনো কোনো Reel নেই</h2>
-        <p>প্রথম Reel আপনিই পোস্ট করুন।</p>
-        <button onclick="openUpload()">＋ Create Reel</button>
-      </div>
-    `;
-
-    return;
-  }
-
-  container.innerHTML="";
-
-  for(const reel of reels){
-
-    const profile =
-      await getProfile(reel.user_id);
-
-    const el =
-      await createReelElement(
-        reel,
-        profile
-      );
-
-    container.appendChild(el);
-  }
-
-  setupVideoObserver();
+ tab("home");
 
 }
 
 
-/* =========================
-   CREATE REEL
-========================= */
+/* =========================================================
+ TAB
+========================================================= */
 
-async function createReelElement(
-  reel,
-  profile
-){
+function tab(t){
 
-  const div =
-    document.createElement("div");
+ currentTab=t;
 
-  div.className="reel";
-
-  div.dataset.id=reel.id;
-
-  const isMine =
-    currentUser &&
-    reel.user_id === currentUser.id;
-
-  const avatarUrl =
-    avatar(profile);
-
-  const caption =
-    reel.caption || "";
-
-  const audio =
-    reel.audio_name ||
-    "Original audio";
-
-  const views =
-    Number(reel.views || 0);
-
-  div.innerHTML=`
-
-    <video
-      class="reelVideo"
-      src="${escapeAttr(reel.video_url || "")}"
-      playsinline
-      loop
-      preload="metadata">
-    </video>
-
-    <div class="videoOverlay"></div>
-
-    <button
-      class="soundBtn"
-      onclick="toggleSound(event,this)">
-      🔇
-    </button>
-
-    <div class="pauseIcon">▶</div>
-
-    <div class="reelBadge">
-      🎬 REELS
-    </div>
-
-    <div class="reelRight">
-
-      <button
-        class="reelAction"
-        onclick="openReactionMenu(event,this)">
-        <span class="circle">👍</span>
-        <span>Like</span>
-      </button>
-
-      <button
-        class="reelAction"
-        onclick="quickLove(event,this)">
-        <span class="circle">❤️</span>
-        <span>Love</span>
-      </button>
-
-      <button
-        class="reelAction"
-        onclick="openComments(${reel.id})">
-        <span class="circle">💬</span>
-        <span>Comment</span>
-      </button>
-
-      <button
-        class="reelAction"
-        onclick="shareReel(${reel.id})">
-        <span class="circle">↗</span>
-        <span>Share</span>
-      </button>
-
-      <button
-        class="reelAction"
-        onclick="saveReel(${reel.id})">
-        <span class="circle">🔖</span>
-        <span>Save</span>
-      </button>
-
-      ${
-        isMine
-        ?
-        `
-        <button
-          class="reelAction"
-          onclick="deleteReel(${reel.id})">
-          <span class="circle">🗑️</span>
-          <span>Delete</span>
-        </button>
-        `
-        :
-        ""
-      }
-
-    </div>
-
-    <div class="reactionMenu">
-
-      <button onclick="selectReaction(event,'like',${reel.id})">👍</button>
-      <button onclick="selectReaction(event,'love',${reel.id})">❤️</button>
-      <button onclick="selectReaction(event,'haha',${reel.id})">😂</button>
-      <button onclick="selectReaction(event,'wow',${reel.id})">😮</button>
-      <button onclick="selectReaction(event,'sad',${reel.id})">😢</button>
-      <button onclick="selectReaction(event,'angry',${reel.id})">😡</button>
-
-    </div>
-
-    <div class="reelInfo">
-
-      <div class="creatorRow">
-
-        <img
-          class="creatorAvatar"
-          src="${escapeAttr(avatarUrl)}">
-
-        <div class="creatorName">
-          ${escapeHtml(profile.name || "User")}
-        </div>
-
-        <button
-          class="followBtn"
-          onclick="followUser('${reel.user_id}',this)">
-          Follow
-        </button>
-
-      </div>
-
-      <div class="caption">
-        ${formatCaption(caption)}
-      </div>
-
-      <div class="audio">
-        🎵 ${escapeHtml(audio)}
-        &nbsp; • &nbsp;
-        👁 ${views}
-      </div>
-
-    </div>
-  `;
-
-
-  /* video click */
-
-  const video =
-    div.querySelector(".reelVideo");
-
-  video.addEventListener("click",()=>{
-
-    if(video.paused){
-
-      video.play().catch(()=>{});
-
-      div.classList.remove("paused");
-
-    }else{
-
-      video.pause();
-
-      div.classList.add("paused");
-
-    }
-
+ document
+  .querySelectorAll(".nav button")
+  .forEach(b=>{
+   b.classList.toggle(
+    "active",
+    b.dataset.tab===t
+   );
   });
 
-
-  return div;
-}
-
-
-/* =========================
-   VIDEO OBSERVER
-========================= */
-
-function setupVideoObserver(){
-
-  const videos =
-    document.querySelectorAll(".reel");
-
-  const observer =
-    new IntersectionObserver(
-      entries=>{
-
-        entries.forEach(entry=>{
-
-          const reel =
-            entry.target;
-
-          const video =
-            reel.querySelector(".reelVideo");
-
-          if(entry.isIntersecting){
-
-            document
-              .querySelectorAll(".reelVideo")
-              .forEach(v=>{
-
-                if(v !== video){
-
-                  v.pause();
-
-                }
-
-              });
-
-            video.muted=true;
-
-            video.play()
-              .catch(()=>{});
-
-            const sound =
-              reel.querySelector(".soundBtn");
-
-            if(sound)
-              sound.textContent="🔇";
-
-            countView(
-              reel.dataset.id
-            );
-
-          }else{
-
-            video.pause();
-
-          }
-
-        });
-
-      },
-      {
-        threshold:.65
-      }
-    );
-
-
-  videos.forEach(v=>observer.observe(v));
+ if(t==="home")home();
+ if(t==="reels")reelsPage();
+ if(t==="stories")storiesPage();
+ if(t==="friends")friendsPage();
+ if(t==="messages")messagesPage();
+ if(t==="notifications")notificationsPage();
+ if(t==="groups")groupsPage();
+ if(t==="pages")pagesPage();
+ if(t==="market")marketPage();
+ if(t==="events")eventsPage();
+ if(t==="profile")profilePage(me.id);
+ if(t==="creator")creatorPage();
+ if(t==="settings")settingsPage();
 
 }
 
 
-/* =========================
-   SOUND
-========================= */
+/* =========================================================
+ HOME
+========================================================= */
 
-function toggleSound(event,button){
+function home(){
 
-  event.stopPropagation();
+ $("main").innerHTML=`
 
-  const reel =
-    button.closest(".reel");
+ <div class="page">
 
-  const video =
-    reel.querySelector(".reelVideo");
+  <div class="card composer">
 
-  video.muted =
-    !video.muted;
+   <div class="row">
 
-  button.textContent =
-    video.muted ? "🔇" : "🔊";
+    <img
+     class="avatar"
+     src="${avatar("",me.email)}">
 
-}
+    <b>What's on your mind?</b>
 
+   </div>
 
-/* =========================
-   VIEW COUNT
-========================= */
+   <textarea
+    id="postText"
+    rows="4"
+    placeholder="আপনার মনের কথা লিখুন...">
+   </textarea>
 
-const viewedReels =
-  new Set();
+   <input
+    id="postImage"
+    style="width:100%;margin-top:7px"
+    placeholder="Image URL (optional)">
 
-async function countView(reelId){
+   <select
+    id="postPrivacy"
+    style="width:100%;margin-top:7px">
 
-  if(viewedReels.has(reelId))
-    return;
+    <option value="public">🌎 Public</option>
+    <option value="friends">👥 Friends</option>
+    <option value="only_me">🔒 Only me</option>
 
-  viewedReels.add(reelId);
+   </select>
 
-  if(!currentUser)
-    return;
+   <input
+    id="postFeeling"
+    style="width:100%;margin-top:7px"
+    placeholder="😊 Feeling / Activity">
 
-  try{
+   <input
+    id="postLocation"
+    style="width:100%;margin-top:7px"
+    placeholder="📍 Location">
 
-    await sb
-      .from("fb_reel_views")
-      .insert({
-        reel_id:Number(reelId),
-        user_id:currentUser.id
-      });
+   <button
+    class="btn blue"
+    onclick="createPost()">
+    Post
+   </button>
 
-  }catch(e){
-
-    console.log("view insert",e);
-
-  }
-
-  const reel =
-    reels.find(
-      r=>String(r.id)===String(reelId)
-    );
-
-  if(!reel)
-    return;
-
-  const newViews =
-    Number(reel.views || 0)+1;
-
-  reel.views=newViews;
-
-  await sb
-    .from("fb_reels")
-    .update({
-      views:newViews
-    })
-    .eq("id",reelId);
-
-}
+  </div>
 
 
-/* =========================
-   REACTION MENU
-========================= */
+  <div class="card">
 
-function openReactionMenu(
-  event,
-  button
-){
+   <div class="row">
 
-  event.stopPropagation();
+    <button class="btn blue"
+     style="width:auto"
+     onclick="loadPosts('recent')">
+     Recent
+    </button>
 
-  const reel =
-    button.closest(".reel");
+    <button class="btn gray"
+     style="width:auto"
+     onclick="loadPosts('latest')">
+     Most Relevant
+    </button>
 
-  document
-    .querySelectorAll(".reactionMenu")
-    .forEach(m=>{
+   </div>
 
-      if(
-        !reel.contains(m)
-      )
-        m.classList.remove("show");
+  </div>
 
-    });
 
-  const menu =
-    reel.querySelector(".reactionMenu");
+  <div id="feed">
+   Loading...
+  </div>
 
-  menu.classList.toggle("show");
+ </div>
+ `;
+
+ loadPosts();
 
 }
 
 
-async function selectReaction(
-  event,
-  reaction,
-  reelId
-){
+async function createPost(){
 
-  event.stopPropagation();
+ const text=$("postText").value.trim();
+ const image=$("postImage").value.trim();
 
-  const reel =
-    event.target.closest(".reel");
+ if(!text && !image){
 
-  const menu =
-    reel.querySelector(".reactionMenu");
+  toast("Post content দিন");
+  return;
 
-  menu.classList.remove("show");
+ }
 
-  await reactToReel(
-    reelId,
-    reaction
+ const payload={
+  user_id:me.id,
+  text:text,
+  image_url:image || null,
+  privacy:$("postPrivacy").value,
+  feeling:$("postFeeling").value,
+  location:$("postLocation").value
+ };
+
+ const {error}=
+  await db
+   .from("fb_posts")
+   .insert(payload);
+
+ if(error){
+
+  toast(
+   "Post failed: "+error.message
   );
 
-}
+  console.error(error);
 
+  return;
+ }
 
-async function quickLove(
-  event,
-  button
-){
+ toast("✅ Post published");
 
-  event.stopPropagation();
+ $("postText").value="";
+ $("postImage").value="";
+ $("postFeeling").value="";
+ $("postLocation").value="";
 
-  const reel =
-    button.closest(".reel");
-
-  const reelId =
-    reel.dataset.id;
-
-  await reactToReel(
-    reelId,
-    "love"
-  );
+ loadPosts();
 
 }
 
 
-/* =========================
-   REACT
-========================= */
+async function loadPosts(){
 
-async function reactToReel(
-  reelId,
-  reaction
-){
+ const {data,error}=
+  await db
+   .from("fb_posts")
+   .select("*")
+   .order("created_at",{
+    ascending:false
+   })
+   .limit(50);
 
-  if(!currentUser){
+ if(error){
 
-    toast("Login করুন");
-    return;
+  $("feed").innerHTML=
+   `<div class="card">
+    ❌ ${esc(error.message)}
+   </div>`;
 
-  }
+  return;
+ }
 
-  const {data:old} =
-    await sb
-      .from("fb_reel_reactions")
-      .select("id,reaction")
-      .eq("reel_id",reelId)
-      .eq("user_id",currentUser.id)
-      .maybeSingle();
+ renderPosts(data || []);
 
-  let error=null;
+}
 
-  if(old){
 
-    if(old.reaction===reaction){
+async function renderPosts(posts){
 
-      const res =
-        await sb
-          .from("fb_reel_reactions")
-          .delete()
-          .eq("id",old.id);
+ const feed=$("feed");
 
-      error=res.error;
+ if(!posts.length){
 
-    }else{
+  feed.innerHTML=
+   `<div class="card">
+    এখনো কোনো Post নেই।
+   </div>`;
 
-      const res =
-        await sb
-          .from("fb_reel_reactions")
-          .update({
-            reaction:reaction
-          })
-          .eq("id",old.id);
+  return;
+ }
 
-      error=res.error;
+ let html="";
 
-    }
+ for(const p of posts){
+
+  const {data:u}=
+   await db
+    .from("fb_profiles")
+    .select("*")
+    .eq("id",p.user_id)
+    .maybeSingle();
+
+  const name=u?.name || "User";
+
+  html+=`
+
+  <article class="card">
+
+   <div class="row">
+
+    <img
+     class="avatar"
+     src="${esc(
+      avatar(u?.profile_photo,name)
+     )}">
+
+    <div>
+
+     <b>${esc(name)}</b>
+
+     <div class="small muted">
+      ${esc(p.created_at || "")}
+     </div>
+
+    </div>
+
+   </div>
+
+   ${
+    p.text
+    ?
+    `<p>${esc(p.text)}</p>`
+    :
+    ""
+   }
+
+   ${
+    p.feeling
+    ?
+    `<span>😊 ${esc(p.feeling)}</span>`
+    :
+    ""
+   }
+
+   ${
+    p.location
+    ?
+    `<span> 📍 ${esc(p.location)}</span>`
+    :
+    ""
+   }
+
+   ${
+    p.image_url
+    ?
+    `<img
+      class="postImage"
+      src="${esc(p.image_url)}"
+      onerror="this.style.display='none'">`
+    :
+    ""
+   }
+
+   <div class="actions">
+
+    <button onclick="reactPost(${p.id},'like')">
+     👍 Like
+    </button>
+
+    <button onclick="reactPost(${p.id},'love')">
+     ❤️ Love
+    </button>
+
+    <button onclick="openPostComments(${p.id})">
+     💬 Comment
+    </button>
+
+    <button onclick="shareContent('post',${p.id})">
+     ↗ Share
+    </button>
+
+    <button onclick="savePost(${p.id})">
+     🔖 Save
+    </button>
+
+   </div>
+
+  </article>
+  `;
+ }
+
+ feed.innerHTML=html;
+
+}
+
+
+/* =========================================================
+ POST REACTION
+========================================================= */
+
+async function reactPost(id,reaction){
+
+ const {data:old}=
+  await db
+   .from("fb_post_reactions")
+   .select("id,reaction")
+   .eq("post_id",id)
+   .eq("user_id",me.id)
+   .maybeSingle();
+
+ let result;
+
+ if(old){
+
+  if(old.reaction===reaction){
+
+   result=
+    await db
+     .from("fb_post_reactions")
+     .delete()
+     .eq("id",old.id);
 
   }else{
 
-    const res =
-      await sb
-        .from("fb_reel_reactions")
-        .insert({
-          reel_id:Number(reelId),
-          user_id:currentUser.id,
-          reaction:reaction
-        });
-
-    error=res.error;
+   result=
+    await db
+     .from("fb_post_reactions")
+     .update({
+      reaction:reaction
+     })
+     .eq("id",old.id);
 
   }
 
-  if(error){
+ }else{
 
-    console.error(error);
+  result=
+   await db
+    .from("fb_post_reactions")
+    .insert({
+     post_id:id,
+     user_id:me.id,
+     reaction:reaction
+    });
 
-    toast(
-      "Reaction কাজ করেনি: "+
-      error.message
-    );
+ }
 
-    return;
+ if(result.error){
 
-  }
+  toast(result.error.message);
 
-  toast(
-    reactions[reaction] +
-    " Reaction হয়েছে"
-  );
+  return;
+ }
+
+ toast(
+  reaction==="love"
+  ?"❤️ Love"
+  :"👍 Like"
+ );
 
 }
 
 
-/* =========================
-   COMMENTS
-========================= */
+/* =========================================================
+ COMMENTS
+========================================================= */
 
-async function openComments(
-  reelId
-){
+async function openPostComments(id){
 
-  currentCommentReel =
-    Number(reelId);
+ currentPost=id;
+ currentReel=null;
 
-  document
-    .getElementById("commentModal")
-    .style.display="flex";
+ $("commentInput").value="";
 
-  document
-    .getElementById("commentList")
-    .innerHTML=
-      "<div style='padding:20px;text-align:center'>Loading...</div>";
+ await loadPostComments();
 
-  await loadComments(reelId);
+ openModal("commentModal");
 
 }
 
 
-function closeComments(){
+async function loadPostComments(){
 
-  document
-    .getElementById("commentModal")
-    .style.display="none";
+ const {data,error}=
+  await db
+   .from("fb_comments")
+   .select("*")
+   .eq("post_id",currentPost)
+   .order("created_at",{
+    ascending:true
+   });
 
-  currentCommentReel=null;
+ if(error){
 
-}
+  $("commentList").innerHTML=
+   `<p>${esc(error.message)}</p>`;
 
+  return;
+ }
 
-async function loadComments(
-  reelId
-){
+ if(!data?.length){
 
-  const list =
-    document.getElementById(
-      "commentList"
-    );
+  $("commentList").innerHTML=
+   `<p class="muted">
+    এখনো কোনো comment নেই।
+   </p>`;
 
-  const {data,error} =
-    await sb
-      .from("fb_reel_comments")
-      .select("*")
-      .eq("reel_id",reelId)
-      .order("created_at",{
-        ascending:true
-      });
+  return;
+ }
 
-  if(error){
+ $("commentList").innerHTML=
+  data.map(c=>`
 
-    list.innerHTML=
-      `<div style="padding:15px;color:red">
-        ${escapeHtml(error.message)}
-      </div>`;
+   <div class="comment">
 
-    return;
+    <b>
+     ${c.user_id===me.id
+      ?"You"
+      :"User"}
+    </b>
 
-  }
+    <div>
+     ${esc(c.text)}
+    </div>
 
-  if(!data || !data.length){
+    <div class="small muted">
+     👍 Like · Reply
+    </div>
 
-    list.innerHTML=
-      `<div style="padding:30px;text-align:center;color:#777">
-        এখনো কোনো comment নেই।
-        <br>
-        প্রথম comment করুন।
-      </div>`;
+   </div>
 
-    return;
-
-  }
-
-  list.innerHTML="";
-
-  for(const comment of data){
-
-    const profile =
-      await getProfile(
-        comment.user_id
-      );
-
-    const div =
-      document.createElement("div");
-
-    div.className="comment";
-
-    div.innerHTML=`
-
-      <img
-        class="commentAvatar"
-        src="${escapeAttr(avatar(profile))}">
-
-      <div>
-
-        <div class="commentBody">
-
-          <div class="commentName">
-            ${escapeHtml(profile.name || "User")}
-          </div>
-
-          <div class="commentText">
-            ${escapeHtml(comment.text || "")}
-          </div>
-
-        </div>
-
-        <div class="commentTools">
-
-          <button
-            onclick="likeComment(${comment.id})">
-            👍 Like
-          </button>
-
-          <button
-            onclick="showReplyInput(${comment.id})">
-            Reply
-          </button>
-
-        </div>
-
-        <div
-          id="reply-${comment.id}"
-          class="replyBox">
-
-          <input
-            style="width:100%;padding:9px;border:1px solid #ddd;border-radius:10px"
-            placeholder="Reply লিখুন..."
-            onkeydown="
-              if(event.key==='Enter')
-              sendReply(${comment.id},this)
-            ">
-
-        </div>
-
-      </div>
-
-    `;
-
-    list.appendChild(div);
-
-  }
+  `).join("");
 
 }
 
 
 async function sendComment(){
 
-  const input =
-    document.getElementById(
-      "commentInput"
-    );
+ const text=
+  $("commentInput").value.trim();
 
-  const text =
-    input.value.trim();
+ if(!text)return;
 
-  if(!text)
-    return;
+ if(currentPost){
 
-  if(!currentUser){
-
-    toast("Login করুন");
-    return;
-
-  }
-
-  const {error} =
-    await sb
-      .from("fb_reel_comments")
-      .insert({
-        reel_id:currentCommentReel,
-        user_id:currentUser.id,
-        text:text,
-        parent_id:null
-      });
+  const {error}=
+   await db
+    .from("fb_comments")
+    .insert({
+     post_id:currentPost,
+     user_id:me.id,
+     text:text,
+     parent_id:null
+    });
 
   if(error){
 
-    toast(
-      "Comment failed: "+
-      error.message
-    );
-
-    console.error(error);
-
-    return;
-
+   toast(error.message);
+   return;
   }
 
-  input.value="";
+  $("commentInput").value="";
 
-  await loadComments(
-    currentCommentReel
-  );
+  await loadPostComments();
 
-}
+ }
 
+ if(currentReel){
 
-function showReplyInput(id){
-
-  const box =
-    document.getElementById(
-      "reply-"+id
-    );
-
-  if(box)
-    box.style.display=
-      box.style.display==="block"
-      ? "none"
-      : "block";
-
-}
-
-
-async function sendReply(
-  commentId,
-  input
-){
-
-  const text =
-    input.value.trim();
-
-  if(!text)
-    return;
-
-  const {error} =
-    await sb
-      .from("fb_reel_comments")
-      .insert({
-        reel_id:currentCommentReel,
-        user_id:currentUser.id,
-        text:text,
-        parent_id:commentId
-      });
+  const {error}=
+   await db
+    .from("fb_reel_comments")
+    .insert({
+     reel_id:currentReel,
+     user_id:me.id,
+     text:text,
+     parent_id:null
+    });
 
   if(error){
 
-    toast(
-      "Reply failed: "+
-      error.message
-    );
-
-    return;
-
+   toast(error.message);
+   return;
   }
 
-  input.value="";
+  $("commentInput").value="";
 
-  await loadComments(
-    currentCommentReel
-  );
+  await loadReelComments();
+
+ }
 
 }
 
 
-async function likeComment(
-  commentId
-){
+async function loadReelComments(){
 
-  if(!currentUser)
-    return;
+ const {data,error}=
+  await db
+   .from("fb_reel_comments")
+   .select("*")
+   .eq("reel_id",currentReel)
+   .order("created_at",{
+    ascending:true
+   });
 
-  const {error} =
-    await sb
-      .from("fb_comment_likes")
-      .insert({
-        comment_id:commentId,
-        user_id:currentUser.id
-      });
+ if(error){
 
-  if(error){
+  $("commentList").innerHTML=
+   `<p>${esc(error.message)}</p>`;
 
-    console.log(error);
+  return;
+ }
 
-  }else{
+ $("commentList").innerHTML=
+  (data||[]).map(c=>`
 
-    toast("👍 Comment liked");
+   <div class="comment">
 
-  }
+    <b>
+     ${c.user_id===me.id
+      ?"You"
+      :"User"}
+    </b>
 
-}
+    <div>${esc(c.text)}</div>
 
-
-/* =========================
-   SHARE
-========================= */
-
-async function shareReel(
-  reelId
-){
-
-  const url =
-    location.href.split("#")[0]+
-    "#reel-"+reelId;
-
-  if(
-    navigator.share
-  ){
-
-    try{
-
-      await navigator.share({
-        title:"FriendBook Reel",
-        text:"এই Reel টি দেখুন",
-        url:url
-      });
-
-    }catch(e){}
-
-  }else{
-
-    try{
-
-      await navigator.clipboard.writeText(
-        url
-      );
-
-      toast(
-        "Reel link copied"
-      );
-
-    }catch(e){
-
-      toast(url);
-
+    ${
+     c.parent_id
+     ?
+     `<div class="small muted">
+       ↳ Reply
+      </div>`
+     :
+     `
+     <button
+      onclick="replyToReelComment(${c.id})">
+      Reply
+     </button>
+     `
     }
 
-  }
+   </div>
+
+  `).join("")
+  ||
+  "<p>No comments yet.</p>";
 
 }
 
 
-/* =========================
-   SAVE
-========================= */
+async function replyToReelComment(id){
 
-async function saveReel(
-  reelId
-){
+ const text=
+  prompt("Reply লিখুন:");
 
-  if(!currentUser){
+ if(!text)return;
 
-    toast("Login করুন");
-    return;
+ const {error}=
+  await db
+   .from("fb_reel_comments")
+   .insert({
+    reel_id:currentReel,
+    user_id:me.id,
+    text:text,
+    parent_id:id
+   });
 
-  }
+ if(error)
+  toast(error.message);
+ else
+  loadReelComments();
 
-  const {error} =
-    await sb
-      .from("fb_saved_reels")
-      .insert({
-        reel_id:Number(reelId),
-        user_id:currentUser.id
-      });
+}
 
-  if(error){
 
-    /* table না থাকলেও app বন্ধ হবে না */
+/* =========================================================
+ SAVE POST
+========================================================= */
 
-    console.log(
-      "save reel:",
-      error
-    );
+async function savePost(id){
 
-    toast(
-      "Save table সেটআপ করুন"
-    );
+ const {error}=
+  await db
+   .from("fb_saved_posts")
+   .insert({
+    post_id:id,
+    user_id:me.id
+   });
 
-    return;
+ toast(
+  error
+  ?error.message
+  :"🔖 Saved"
+ );
 
-  }
+}
 
-  toast(
-    "🔖 Reel saved"
+
+/* =========================================================
+ REELS
+========================================================= */
+
+async function reelsPage(){
+
+ $("main").innerHTML=`
+
+ <div
+  class="reels"
+  id="reelsBox">
+
+  <div style="
+   color:white;
+   padding:30px;
+   text-align:center">
+   Loading Reels...
+  </div>
+
+ </div>
+ `;
+
+ const {data,error}=
+  await db
+   .from("fb_reels")
+   .select("*")
+   .order("created_at",{
+    ascending:false
+   });
+
+ if(error){
+
+  $("reelsBox").innerHTML=
+   `<div style="color:white;padding:25px">
+    ❌ ${esc(error.message)}
+   </div>`;
+
+  return;
+ }
+
+ if(!data?.length){
+
+  $("reelsBox").innerHTML=`
+
+   <div style="
+    height:100%;
+    color:white;
+    display:grid;
+    place-items:center;
+    text-align:center">
+
+    <div>
+
+     <div style="font-size:60px">
+      🎬
+     </div>
+
+     <h2>No Reels Yet</h2>
+
+     <button
+      class="btn blue"
+      onclick="newReel()">
+      ＋ Create Reel
+     </button>
+
+    </div>
+
+   </div>
+
+  `;
+
+  return;
+ }
+
+ let html="";
+
+ data.forEach((r,i)=>{
+
+  html+=`
+
+  <section
+   class="reel"
+   data-id="${r.id}">
+
+   <video
+    id="video-${r.id}"
+    src="${esc(r.video_url)}"
+    playsinline
+    muted
+    loop
+    preload="metadata">
+   </video>
+
+   <div class="reelShade"></div>
+
+   <button
+    class="reelSound"
+    onclick="toggleReelSound(${r.id},this)">
+    🔇
+   </button>
+
+   <div class="reelSide">
+
+    <button
+     onclick="reactReel(${r.id},'like')">
+     👍
+    </button>
+
+    <button
+     onclick="reactReel(${r.id},'love')">
+     ❤️
+    </button>
+
+    <button
+     onclick="reactReel(${r.id},'haha')">
+     😂
+    </button>
+
+    <button
+     onclick="openReelComments(${r.id})">
+     💬
+    </button>
+
+    <button
+     onclick="shareContent('reel',${r.id})">
+     ↗
+    </button>
+
+    <button
+     onclick="saveReel(${r.id})">
+     🔖
+    </button>
+
+    ${
+     r.user_id===me.id
+     ?
+     `<button onclick="deleteReel(${r.id})">
+       🗑
+      </button>`
+     :
+     ""
+    }
+
+   </div>
+
+   <div class="reelInfo">
+
+    <div class="row">
+
+     <b>
+      👤 Creator
+     </b>
+
+     ${
+      r.user_id!==me.id
+      ?
+      `<button
+       class="follow"
+       onclick="followUser('${r.user_id}',this)">
+       Follow
+       </button>`
+      :
+      ""
+     }
+
+    </div>
+
+    <p>
+     ${formatHashtags(r.caption||"")}
+    </p>
+
+    <div>
+     🎵 ${esc(r.audio_name||"Original audio")}
+     ·
+     👁 ${Number(r.views||0)}
+    </div>
+
+   </div>
+
+  </section>
+
+  `;
+
+ });
+
+ $("reelsBox").innerHTML=html;
+
+ setupReelObserver();
+
+}
+
+
+function formatHashtags(text){
+
+ return esc(text)
+  .replace(
+   /(#[\w\u0980-\u09FF]+)/g,
+   '<span style="color:#60a5fa">$1</span>'
   );
 
 }
 
 
-/* =========================
-   FOLLOW
-========================= */
+function setupReelObserver(){
 
-async function followUser(
-  userId,
-  button
-){
+ const observer=
+  new IntersectionObserver(
+   entries=>{
 
-  if(!currentUser){
+    entries.forEach(entry=>{
 
-    toast("Login করুন");
-    return;
+     const reel=entry.target;
 
-  }
+     const video=
+      reel.querySelector("video");
 
-  if(
-    userId === currentUser.id
-  ){
-
-    toast(
-      "নিজেকে Follow করা যাবে না"
-    );
-
-    return;
-
-  }
-
-  const {data:existing} =
-    await sb
-      .from("fb_follows")
-      .select("id")
-      .eq("follower_id",currentUser.id)
-      .eq("following_id",userId)
-      .maybeSingle();
-
-  if(existing){
-
-    const {error} =
-      await sb
-        .from("fb_follows")
-        .delete()
-        .eq("id",existing.id);
-
-    if(!error){
-
-      button.textContent="Follow";
-      button.classList.remove(
-        "following"
-      );
-
-      toast("Unfollow করা হয়েছে");
-
-    }
-
-  }else{
-
-    const {error} =
-      await sb
-        .from("fb_follows")
-        .insert({
-          follower_id:currentUser.id,
-          following_id:userId
-        });
-
-    if(!error){
-
-      button.textContent="Following";
-      button.classList.add(
-        "following"
-      );
-
-      toast("Following");
-
-    }else{
-
-      toast(
-        "Follow failed: "+
-        error.message
-      );
-
-    }
-
-  }
-
-}
-
-
-/* =========================
-   DELETE REEL
-========================= */
-
-async function deleteReel(
-  reelId
-){
-
-  if(!confirm(
-    "এই Reel টি Delete করবেন?"
-  ))
-    return;
-
-  const {error} =
-    await sb
-      .from("fb_reels")
-      .delete()
-      .eq("id",reelId)
-      .eq("user_id",currentUser.id);
-
-  if(error){
-
-    toast(
-      "Delete failed: "+
-      error.message
-    );
-
-    return;
-
-  }
-
-  toast("Reel deleted");
-
-  await loadReels();
-
-}
-
-
-/* =========================
-   UPLOAD REEL
-========================= */
-
-function openUpload(){
-
-  document
-    .getElementById("uploadPanel")
-    .classList.remove("hidden");
-
-}
-
-
-function closeUpload(){
-
-  document
-    .getElementById("uploadPanel")
-    .classList.add("hidden");
-
-}
-
-
-async function uploadReel(){
-
-  const videoUrl =
-    document
-      .getElementById("reelVideoUrl")
-      .value
-      .trim();
-
-  const audio =
-    document
-      .getElementById("reelAudio")
-      .value
-      .trim();
-
-  const caption =
-    document
-      .getElementById("reelCaption")
-      .value
-      .trim();
-
-  if(!videoUrl){
-
-    toast(
-      "Video URL দিন"
-    );
-
-    return;
-
-  }
-
-  if(!currentUser){
-
-    toast("Login করুন");
-    return;
-
-  }
-
-  const button =
-    document.querySelector(
-      ".uploadBtn"
-    );
-
-  button.disabled=true;
-  button.textContent=
-    "Posting...";
-
-  const {error} =
-    await sb
-      .from("fb_reels")
-      .insert({
-        user_id:currentUser.id,
-        video_url:videoUrl,
-        caption:caption,
-        audio_name:audio,
-        views:0
-      });
-
-  button.disabled=false;
-  button.textContent=
-    "🚀 Post Reel";
-
-  if(error){
-
-    console.error(error);
-
-    toast(
-      "Post failed: "+
-      error.message
-    );
-
-    return;
-
-  }
-
-  document
-    .getElementById("reelVideoUrl")
-    .value="";
-
-  document
-    .getElementById("reelAudio")
-    .value="";
-
-  document
-    .getElementById("reelCaption")
-    .value="";
-
-  closeUpload();
-
-  toast(
-    "🎬 Reel পোস্ট হয়েছে"
-  );
-
-  await loadReels();
-
-}
-
-
-/* =========================
-   CAPTION
-========================= */
-
-function formatCaption(text){
-
-  let safe =
-    escapeHtml(text || "");
-
-  safe =
-    safe.replace(
-      /(#[\w\u0980-\u09FF]+)/g,
-      '<span style="color:#60a5fa">$1</span>'
-    );
-
-  return safe;
-
-}
-
-
-/* =========================
-   ESCAPE
-========================= */
-
-function escapeHtml(text){
-
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-function escapeAttr(text){
-
-  return escapeHtml(text);
-
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-let toastTimer;
-
-function toast(text){
-
-  const el =
-    document.getElementById("toast");
-
-  el.textContent=text;
-
-  el.style.display="block";
-
-  clearTimeout(toastTimer);
-
-  toastTimer =
-    setTimeout(()=>{
-      el.style.display="none";
-    },2500);
-
-}
-
-
-/* =========================
-   OUTSIDE CLICK
-========================= */
-
-document.addEventListener(
-  "click",
-  e=>{
-
-    if(
-      !e.target.closest(".reactionMenu") &&
-      !e.target.closest(".reelAction")
-    ){
+     if(entry.isIntersecting){
 
       document
-        .querySelectorAll(".reactionMenu")
-        .forEach(m=>
-          m.classList.remove("show")
-        );
+       .querySelectorAll(".reel video")
+       .forEach(v=>{
+        if(v!==video)
+         v.pause();
+       });
 
-    }
+      video.muted=true;
+
+      video.play()
+       .catch(()=>{});
+
+      countReelView(
+       reel.dataset.id
+      );
+
+     }else{
+
+      video.pause();
+
+     }
+
+    });
+
+   },
+   {
+    threshold:.7
+   }
+  );
+
+ document
+  .querySelectorAll(".reel")
+  .forEach(r=>observer.observe(r));
+
+}
+
+
+function toggleReelSound(id,button){
+
+ const video=$("video-"+id);
+
+ video.muted=!video.muted;
+
+ button.textContent=
+  video.muted
+  ?"🔇"
+  :"🔊";
+
+ if(video.paused)
+  video.play().catch(()=>{});
+
+}
+
+
+async function countReelView(id){
+
+ const {data:old}=
+  await db
+   .from("fb_reel_views")
+   .select("id")
+   .eq("reel_id",Number(id))
+   .eq("user_id",me.id)
+   .maybeSingle();
+
+ if(old)return;
+
+ await db
+  .from("fb_reel_views")
+  .insert({
+   reel_id:Number(id),
+   user_id:me.id
+  });
+
+ const {data:r}=
+  await db
+   .from("fb_reels")
+   .select("views")
+   .eq("id",Number(id))
+   .maybeSingle();
+
+ if(r){
+
+  await db
+   .from("fb_reels")
+   .update({
+    views:Number(r.views||0)+1
+   })
+   .eq("id",Number(id));
+
+ }
+
+}
+
+
+async function reactReel(id,reaction){
+
+ const {data:old}=
+  await db
+   .from("fb_reel_reactions")
+   .select("id,reaction")
+   .eq("reel_id",id)
+   .eq("user_id",me.id)
+   .maybeSingle();
+
+ let result;
+
+ if(old){
+
+  if(old.reaction===reaction){
+
+   result=
+    await db
+     .from("fb_reel_reactions")
+     .delete()
+     .eq("id",old.id);
+
+  }else{
+
+   result=
+    await db
+     .from("fb_reel_reactions")
+     .update({
+      reaction:reaction
+     })
+     .eq("id",old.id);
 
   }
-);
+
+ }else{
+
+  result=
+   await db
+    .from("fb_reel_reactions")
+    .insert({
+     reel_id:id,
+     user_id:me.id,
+     reaction:reaction
+    });
+
+ }
+
+ if(result.error)
+  toast(result.error.message);
+ else
+  toast("Reaction saved");
+
+}
 
 
-/* =========================
-   AUTH STATE
-========================= */
+async function openReelComments(id){
 
-sb.auth.onAuthStateChange(
-  (event,session)=>{
+ currentReel=id;
+ currentPost=null;
 
-    if(session){
+ await loadReelComments();
 
-      currentUser =
-        session.user;
+ openModal("commentModal");
 
-    }else{
+}
 
-      currentUser=null;
 
-    }
+async function saveReel(id){
+
+ const {error}=
+  await db
+   .from("fb_saved_reels")
+   .insert({
+    reel_id:id,
+    user_id:me.id
+   });
+
+ toast(
+  error
+  ?error.message
+  :"🔖 Reel saved"
+ );
+
+}
+
+
+async function deleteReel(id){
+
+ if(!confirm(
+  "এই Reel Delete করবেন?"
+ ))return;
+
+ const {error}=
+  await db
+   .from("fb_reels")
+   .delete()
+   .eq("id",id)
+   .eq("user_id",me.id);
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ toast("Reel deleted");
+
+ reelsPage();
+
+}
+
+
+function newReel(){
+
+ $("main").insertAdjacentHTML(
+  "afterbegin",
+
+  `
+
+  <div
+   class="modal"
+   id="reelCreateModal">
+
+   <div class="modalBox">
+
+    <button
+     class="close"
+     onclick="closeModal('reelCreateModal')">
+     ✕
+    </button>
+
+    <h2>🎬 Create Reel</h2>
+
+    <p class="muted">
+     Direct MP4/WebM video URL দিন।
+    </p>
+
+    <input
+     id="reelURL"
+     style="width:100%"
+     placeholder="https://example.com/video.mp4">
+
+    <input
+     id="reelAudio"
+     style="width:100%;margin-top:7px"
+     placeholder="🎵 Audio name">
+
+    <textarea
+     id="reelCaption"
+     style="width:100%;margin-top:7px"
+     rows="4"
+     placeholder="Caption #reels #friendbook">
+    </textarea>
+
+    <button
+     class="btn blue"
+     onclick="publishReel()">
+     🚀 Post Reel
+    </button>
+
+   </div>
+
+  </div>
+
+  `
+ );
+
+}
+
+
+async function publishReel(){
+
+ const video_url=
+  $("reelURL").value.trim();
+
+ if(!video_url){
+
+  toast(
+   "Direct video URL দিন"
+  );
+
+  return;
+ }
+
+ const {error}=
+  await db
+   .from("fb_reels")
+   .insert({
+    user_id:me.id,
+    video_url:video_url,
+    caption:$("reelCaption").value,
+    audio_name:$("reelAudio").value,
+    views:0
+   });
+
+ if(error){
+
+  toast(
+   "Reel failed: "+
+   error.message
+  );
+
+  return;
+ }
+
+ toast("🎬 Reel posted");
+
+ closeModal("reelCreateModal");
+
+ reelsPage();
+
+}
+
+
+/* =========================================================
+ FOLLOW
+========================================================= */
+
+async function followUser(uid,button){
+
+ if(uid===me.id)return;
+
+ const {data:old}=
+  await db
+   .from("fb_follows")
+   .select("id")
+   .eq("follower_id",me.id)
+   .eq("following_id",uid)
+   .maybeSingle();
+
+ if(old){
+
+  const {error}=
+   await db
+    .from("fb_follows")
+    .delete()
+    .eq("id",old.id);
+
+  if(!error){
+
+   button.textContent="Follow";
+   button.classList.remove("following");
 
   }
+
+ }else{
+
+  const {error}=
+   await db
+    .from("fb_follows")
+    .insert({
+     follower_id:me.id,
+     following_id:uid
+    });
+
+  if(!error){
+
+   button.textContent="Following";
+   button.classList.add("following");
+
+  }else{
+
+   toast(error.message);
+
+  }
+
+ }
+
+
+}
+
+
+/* =========================================================
+ STORIES
+========================================================= */
+
+function storiesPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>📖 Stories</h2>
+
+   <button
+    class="btn blue"
+    onclick="createStory()">
+    ＋ Create Story
+   </button>
+
+  </div>
+
+  <div class="card">
+
+   <div class="storyRow">
+
+    <div class="story">
+     ＋ Your Story
+    </div>
+
+    <div class="story">
+     Friend Story
+    </div>
+
+    <div class="story">
+     Friend Story
+    </div>
+
+   </div>
+
+  </div>
+
+  <div class="card">
+
+   <h3>Story Features</h3>
+
+   <p>📷 Photo Story</p>
+   <p>🎬 Video Story</p>
+   <p>✍️ Text Story</p>
+   <p>❤️ Reaction</p>
+   <p>💬 Reply</p>
+   <p>👁 Viewers</p>
+   <p>🔒 Story Privacy</p>
+   <p>⭐ Highlights</p>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+function createStory(){
+
+ $("main").insertAdjacentHTML(
+  "afterbegin",
+
+  `
+
+  <div
+   class="modal"
+   id="storyModal">
+
+   <div class="modalBox">
+
+    <button
+     class="close"
+     onclick="closeModal('storyModal')">
+     ✕
+    </button>
+
+    <h2>📖 Create Story</h2>
+
+    <input
+     id="storyMedia"
+     style="width:100%"
+     placeholder="Photo/Video URL">
+
+    <input
+     id="storyText"
+     style="width:100%;margin-top:7px"
+     placeholder="Story text">
+
+    <button
+     class="btn blue"
+     onclick="publishStory()">
+     Publish Story
+    </button>
+
+   </div>
+
+  </div>
+
+  `
+ );
+
+}
+
+
+async function publishStory(){
+
+ /*
+  Story table-এর exact schema আপনার database-এ
+  এখন নিশ্চিত না হওয়ায় এখানে UI রাখা হয়েছে।
+ */
+
+ toast(
+  "Story UI ready — Story table schema সেটআপ হলে publish চালু হবে"
+ );
+
+ closeModal("storyModal");
+
+}
+
+
+/* =========================================================
+ FRIENDS
+========================================================= */
+
+function friendsPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>👥 Friends</h2>
+
+   <input
+    id="friendUID"
+    style="width:100%"
+    placeholder="Receiver User UUID">
+
+   <button
+    class="btn blue"
+    onclick="sendFriendRequest()">
+    Add Friend
+   </button>
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">
+    <h3>Friend Requests</h3>
+    <p>Accept · Reject · Cancel</p>
+   </div>
+
+   <div class="card">
+    <h3>My Friends</h3>
+    <p>Friends · Mutual Friends</p>
+   </div>
+
+   <div class="card">
+    <h3>Following</h3>
+    <p>Follow · Unfollow</p>
+   </div>
+
+   <div class="card">
+    <h3>Blocked</h3>
+    <p>Block · Unblock</p>
+   </div>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+async function sendFriendRequest(){
+
+ const receiver=
+  $("friendUID").value.trim();
+
+ if(!receiver){
+
+  toast("User UUID দিন");
+  return;
+
+ }
+
+ const {error}=
+  await db
+   .from("fb_friend_requests")
+   .insert({
+    sender_id:me.id,
+    receiver_id:receiver,
+    status:"pending"
+   });
+
+ toast(
+  error
+  ?error.message
+  :"👥 Friend request sent"
+ );
+
+}
+
+
+/* =========================================================
+ MESSAGES
+========================================================= */
+
+function messagesPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>💬 Messenger</h2>
+
+   <input
+    id="messageReceiver"
+    style="width:100%"
+    placeholder="Receiver UUID">
+
+   <textarea
+    id="messageText"
+    style="width:100%;margin-top:7px"
+    rows="3"
+    placeholder="Write a message...">
+   </textarea>
+
+   <button
+    class="btn blue"
+    onclick="sendMessage()">
+    Send
+   </button>
+
+  </div>
+
+  <div
+   id="messageList">
+   Loading...
+  </div>
+
+ </div>
+
+ `;
+
+ loadMessages();
+
+}
+
+
+async function sendMessage(){
+
+ const receiver=
+  $("messageReceiver").value.trim();
+
+ const text=
+  $("messageText").value.trim();
+
+ if(!receiver || !text){
+
+  toast("Receiver এবং message দিন");
+  return;
+
+ }
+
+ const {error}=
+  await db
+   .from("fb_messages")
+   .insert({
+    sender_id:me.id,
+    receiver_id:receiver,
+    text:text,
+    seen:false
+   });
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ $("messageText").value="";
+
+ toast("Message sent");
+
+ loadMessages();
+
+}
+
+
+async function loadMessages(){
+
+ const {data,error}=
+  await db
+   .from("fb_messages")
+   .select("*")
+   .or(
+    `sender_id.eq.${me.id},receiver_id.eq.${me.id}`
+   )
+   .order("created_at",{
+    ascending:false
+   })
+   .limit(50);
+
+ if(error){
+
+  $("messageList").innerHTML=
+   `<div class="card">${esc(error.message)}</div>`;
+
+  return;
+ }
+
+ $("messageList").innerHTML=
+  (data||[]).map(m=>`
+
+   <div class="card">
+
+    <b>
+     ${m.sender_id===me.id
+      ?"You"
+      :"User"}
+    </b>
+
+    <p>
+     ${esc(m.text||"")}
+    </p>
+
+    <small class="muted">
+     ${m.seen?"✓ Seen":"Sent"}
+    </small>
+
+   </div>
+
+  `).join("")
+  ||
+  `<div class="card">
+   No messages yet.
+  </div>`;
+
+}
+
+
+/* =========================================================
+ NOTIFICATIONS
+========================================================= */
+
+async function notificationsPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>🔔 Notifications</h2>
+
+   <div id="notifications">
+    Loading...
+   </div>
+
+  </div>
+
+ </div>
+
+ `;
+
+ const {data,error}=
+  await db
+   .from("fb_notifications")
+   .select("*")
+   .eq("receiver_id",me.id)
+   .order("created_at",{
+    ascending:false
+   });
+
+ if(error){
+
+  $("notifications").innerHTML=
+   esc(error.message);
+
+  return;
+ }
+
+ $("notifications").innerHTML=
+  (data||[]).map(n=>`
+
+   <div class="item">
+
+    <b>
+     ${esc(
+      n.type ||
+      "Notification"
+     )}
+    </b>
+
+    <p>
+     ${esc(
+      n.message ||
+      n.text ||
+      ""
+     )}
+    </p>
+
+   </div>
+
+  `).join("")
+  ||
+  "No notifications.";
+
+}
+
+
+/* =========================================================
+ GROUPS
+========================================================= */
+
+function groupsPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>👥 Groups</h2>
+
+   <input
+    id="groupName"
+    style="width:100%"
+    placeholder="Group name">
+
+   <textarea
+    id="groupDescription"
+    style="width:100%;margin-top:7px"
+    placeholder="Description">
+   </textarea>
+
+   <select
+    id="groupPrivacy"
+    style="width:100%;margin-top:7px">
+
+    <option value="public">Public</option>
+    <option value="private">Private</option>
+
+   </select>
+
+   <button
+    class="btn blue"
+    onclick="createGroup()">
+    Create Group
+   </button>
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">
+    <h3>Public Groups</h3>
+    <p>Join · Leave</p>
+   </div>
+
+   <div class="card">
+    <h3>My Groups</h3>
+    <p>Members · Admin · Moderator</p>
+   </div>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+async function createGroup(){
+
+ const {error}=
+  await db
+   .from("fb_groups")
+   .insert({
+    owner_id:me.id,
+    name:$("groupName").value,
+    description:$("groupDescription").value,
+    privacy:$("groupPrivacy").value
+   });
+
+ toast(
+  error
+  ?error.message
+  :"👥 Group created"
+ );
+
+}
+
+
+/* =========================================================
+ PAGES
+========================================================= */
+
+function pagesPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>📄 Create Page</h2>
+
+   <input
+    id="pageName"
+    style="width:100%"
+    placeholder="Page name">
+
+   <input
+    id="pageUsername"
+    style="width:100%;margin-top:7px"
+    placeholder="Username">
+
+   <input
+    id="pageCategory"
+    style="width:100%;margin-top:7px"
+    placeholder="Category">
+
+   <textarea
+    id="pageDescription"
+    style="width:100%;margin-top:7px"
+    placeholder="Description">
+   </textarea>
+
+   <button
+    class="btn blue"
+    onclick="createPage()">
+    Create Page
+   </button>
+
+  </div>
+
+  <div class="card">
+
+   <h3>Page Features</h3>
+
+   <p>📸 Profile & Cover</p>
+   <p>👥 Followers</p>
+   <p>📝 Page Posts</p>
+   <p>👑 Page Admin</p>
+   <p>🏷️ Category</p>
+   <p>🔗 Username</p>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+async function createPage(){
+
+ const {error}=
+  await db
+   .from("fb_pages")
+   .insert({
+    owner_id:me.id,
+    name:$("pageName").value,
+    username:$("pageUsername").value,
+    category:$("pageCategory").value,
+    description:$("pageDescription").value
+   });
+
+ toast(
+  error
+  ?error.message
+  :"📄 Page created"
+ );
+
+}
+
+
+/* =========================================================
+ MARKETPLACE
+========================================================= */
+
+function marketPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>🛒 Marketplace</h2>
+
+   <input
+    id="productTitle"
+    style="width:100%"
+    placeholder="Product name">
+
+   <input
+    id="productPrice"
+    type="number"
+    style="width:100%;margin-top:7px"
+    placeholder="Price">
+
+   <input
+    id="productLocation"
+    style="width:100%;margin-top:7px"
+    placeholder="Location">
+
+   <input
+    id="productImage"
+    style="width:100%;margin-top:7px"
+    placeholder="Image URL">
+
+   <textarea
+    id="productDescription"
+    style="width:100%;margin-top:7px"
+    placeholder="Description">
+   </textarea>
+
+   <button
+    class="btn blue"
+    onclick="createListing()">
+    Sell Product
+   </button>
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">
+    🛒 Product
+   </div>
+
+   <div class="card">
+    💰 Price
+   </div>
+
+   <div class="card">
+    📍 Location
+   </div>
+
+   <div class="card">
+    👤 Seller
+   </div>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+async function createListing(){
+
+ const {error}=
+  await db
+   .from("fb_marketplace_items")
+   .insert({
+    seller_id:me.id,
+    title:$("productTitle").value,
+    description:$("productDescription").value,
+    price:Number(
+     $("productPrice").value
+    ),
+    location:$("productLocation").value,
+    image_url:$("productImage").value,
+    status:"available"
+   });
+
+ toast(
+  error
+  ?error.message
+  :"🛒 Product listed"
+ );
+
+}
+
+
+/* =========================================================
+ EVENTS
+========================================================= */
+
+function eventsPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>📅 Create Event</h2>
+
+   <input
+    id="eventName"
+    style="width:100%"
+    placeholder="Event name">
+
+   <textarea
+    id="eventDescription"
+    style="width:100%;margin-top:7px"
+    placeholder="Description">
+   </textarea>
+
+   <input
+    id="eventLocation"
+    style="width:100%;margin-top:7px"
+    placeholder="Location">
+
+   <input
+    id="eventDate"
+    type="datetime-local"
+    style="width:100%;margin-top:7px">
+
+   <button
+    class="btn blue"
+    onclick="createEvent()">
+    Create Event
+   </button>
+
+  </div>
+
+  <div class="card">
+
+   <h3>Event Features</h3>
+
+   <p>📅 Date & Time</p>
+   <p>📍 Location</p>
+   <p>👍 Interested</p>
+   <p>✅ Going</p>
+   <p>👥 Members</p>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+async function createEvent(){
+
+ const date=$("eventDate").value;
+
+ const {error}=
+  await db
+   .from("fb_events")
+   .insert({
+    creator_id:me.id,
+    name:$("eventName").value,
+    description:$("eventDescription").value,
+    location:$("eventLocation").value,
+    event_date:
+     date
+     ?new Date(date).toISOString()
+     :null
+   });
+
+ toast(
+  error
+  ?error.message
+  :"📅 Event created"
+ );
+
+}
+
+
+/* =========================================================
+ PROFILE
+========================================================= */
+
+async function profilePage(uid){
+
+ const {data:p}=
+  await db
+   .from("fb_profiles")
+   .select("*")
+   .eq("id",uid)
+   .maybeSingle();
+
+ const name=p?.name||"User";
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card" style="padding:0">
+
+   <img
+    class="cover"
+    src="${esc(
+     p?.cover_photo ||
+     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
+    )}">
+
+   <div
+    class="profileHead"
+    style="padding:10px">
+
+    <img
+     class="profilePhoto"
+     src="${esc(
+      avatar(p?.profile_photo,name)
+     )}">
+
+    <h2>${esc(name)}</h2>
+
+    <p class="muted">
+     @${esc(p?.username||"")}
+    </p>
+
+    <p>
+     ${esc(p?.bio||"")}
+    </p>
+
+    ${
+     uid===me.id
+     ?
+     `<button
+       class="btn blue"
+       style="width:auto"
+       onclick="editProfile()">
+       Edit Profile
+      </button>`
+     :
+     `<button
+       class="btn blue"
+       style="width:auto"
+       onclick="followUser('${uid}',this)">
+       Follow
+      </button>`
+    }
+
+   </div>
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">
+    👥 Followers
+    <h2 id="followersCount">-</h2>
+   </div>
+
+   <div class="card">
+    👥 Following
+    <h2 id="followingCount">-</h2>
+   </div>
+
+   <div class="card">
+    📝 Posts
+    <h2 id="postCount">-</h2>
+   </div>
+
+  </div>
+
+  <div id="profilePosts"></div>
+
+ </div>
+
+ `;
+
+ loadProfileStats(uid);
+ loadProfilePosts(uid);
+
+}
+
+
+async function loadProfileStats(uid){
+
+ const {count:followers}=
+  await db
+   .from("fb_follows")
+   .select("*",{count:"exact",head:true})
+   .eq("following_id",uid);
+
+ const {count:following}=
+  await db
+   .from("fb_follows")
+   .select("*",{count:"exact",head:true})
+   .eq("follower_id",uid);
+
+ const {count:posts}=
+  await db
+   .from("fb_posts")
+   .select("*",{count:"exact",head:true})
+   .eq("user_id",uid);
+
+ if($("followersCount"))
+  $("followersCount").textContent=
+   followers||0;
+
+ if($("followingCount"))
+  $("followingCount").textContent=
+   following||0;
+
+ if($("postCount"))
+  $("postCount").textContent=
+   posts||0;
+
+}
+
+
+async function loadProfilePosts(uid){
+
+ const {data,error}=
+  await db
+   .from("fb_posts")
+   .select("*")
+   .eq("user_id",uid)
+   .order("created_at",{
+    ascending:false
+   });
+
+ if(error){
+
+  $("profilePosts").innerHTML=
+   `<div class="card">
+    ${esc(error.message)}
+   </div>`;
+
+  return;
+ }
+
+ let oldFeed=$("feed");
+
+ if(!oldFeed){
+
+  $("profilePosts").innerHTML=
+   `<div id="profileFeed"></div>`;
+
+ }
+
+ const target=
+  $("profileFeed") ||
+  $("profilePosts");
+
+ let html="";
+
+ for(const p of data||[]){
+
+  html+=`
+
+  <div class="card">
+
+   <p>
+    ${esc(p.text||"")}
+   </p>
+
+   ${
+    p.image_url
+    ?
+    `<img
+     class="postImage"
+     src="${esc(p.image_url)}">`
+    :
+    ""
+   }
+
+   <div class="actions">
+
+    <button onclick="reactPost(${p.id},'like')">
+     👍 Like
+    </button>
+
+    <button onclick="openPostComments(${p.id})">
+     💬 Comment
+    </button>
+
+    <button onclick="shareContent('post',${p.id})">
+     ↗ Share
+    </button>
+
+   </div>
+
+  </div>
+
+  `;
+
+ }
+
+ target.innerHTML=
+  html ||
+  `<div class="card">
+   No posts.
+  </div>`;
+
+}
+
+
+async function editProfile(){
+
+ const {data:p}=
+  await db
+   .from("fb_profiles")
+   .select("*")
+   .eq("id",me.id)
+   .maybeSingle();
+
+ $("main").insertAdjacentHTML(
+  "afterbegin",
+
+  `
+
+  <div
+   class="modal"
+   id="profileEditModal">
+
+   <div class="modalBox">
+
+    <button
+     class="close"
+     onclick="closeModal('profileEditModal')">
+     ✕
+    </button>
+
+    <h2>👤 Edit Profile</h2>
+
+    <input
+     id="editName"
+     style="width:100%"
+     value="${esc(p?.name||"")}"
+     placeholder="Name">
+
+    <input
+     id="editUsername"
+     style="width:100%;margin-top:7px"
+     value="${esc(p?.username||"")}"
+     placeholder="Username">
+
+    <textarea
+     id="editBio"
+     style="width:100%;margin-top:7px"
+     placeholder="Bio">${esc(p?.bio||"")}</textarea>
+
+    <input
+     id="editPhoto"
+     style="width:100%;margin-top:7px"
+     value="${esc(p?.profile_photo||"")}"
+     placeholder="Profile photo URL">
+
+    <input
+     id="editCover"
+     style="width:100%;margin-top:7px"
+     value="${esc(p?.cover_photo||"")}"
+     placeholder="Cover photo URL">
+
+    <button
+     class="btn blue"
+     onclick="saveProfile()">
+     Save
+    </button>
+
+   </div>
+
+  </div>
+
+  `
+ );
+
+}
+
+
+async function saveProfile(){
+
+ const {error}=
+  await db
+   .from("fb_profiles")
+   .update({
+    name:$("editName").value,
+    username:$("editUsername").value,
+    bio:$("editBio").value,
+    profile_photo:$("editPhoto").value,
+    cover_photo:$("editCover").value,
+    updated_at:new Date().toISOString()
+   })
+   .eq("id",me.id);
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ toast("Profile updated");
+
+ closeModal("profileEditModal");
+
+ profilePage(me.id);
+
+}
+
+
+/* =========================================================
+ CREATOR
+========================================================= */
+
+async function creatorPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>💰 Creator Dashboard</h2>
+
+   <p>
+    Creator Mode · Monetization · Earnings
+   </p>
+
+   <button
+    class="btn blue"
+    onclick="enableCreator()">
+    Enable Creator Mode
+   </button>
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">
+    👁 Views
+    <h2 id="creatorViews">0</h2>
+   </div>
+
+   <div class="card">
+    ❤️ Engagement
+    <h2 id="creatorEngagement">0</h2>
+   </div>
+
+   <div class="card">
+    👥 Followers
+    <h2 id="creatorFollowers">0</h2>
+   </div>
+
+   <div class="card">
+    💵 Earnings
+    <h2 id="creatorEarnings">0</h2>
+   </div>
+
+  </div>
+
+  <div class="card">
+
+   <h3>Creator Features</h3>
+
+   <p>📊 Analytics</p>
+   <p>💰 Earnings</p>
+   <p>💳 Payout Method</p>
+   <p>📈 Post Performance</p>
+   <p>🎬 Reel Performance</p>
+   <p>⭐ Monetization</p>
+   <p>📢 Promoted Posts</p>
+
+  </div>
+
+ </div>
+
+ `;
+
+ loadCreatorStats();
+
+}
+
+
+async function enableCreator(){
+
+ const {data}=await db
+  .from("fb_creator_settings")
+  .select("user_id")
+  .eq("user_id",me.id)
+  .maybeSingle();
+
+ let result;
+
+ if(data){
+
+  result=
+   await db
+    .from("fb_creator_settings")
+    .update({
+     monetization_enabled:true,
+     updated_at:new Date().toISOString()
+    })
+    .eq("user_id",me.id);
+
+ }else{
+
+  result=
+   await db
+    .from("fb_creator_settings")
+    .insert({
+     user_id:me.id,
+     monetization_enabled:true
+    });
+
+ }
+
+ toast(
+  result.error
+  ?result.error.message
+  :"💰 Creator Mode enabled"
+ );
+
+}
+
+
+async function loadCreatorStats(){
+
+ const {count:followers}=
+  await db
+   .from("fb_follows")
+   .select("*",{count:"exact",head:true})
+   .eq("following_id",me.id);
+
+ const {data:earnings}=
+  await db
+   .from("fb_creator_earnings")
+   .select("amount")
+   .eq("user_id",me.id);
+
+ const total=
+  (earnings||[])
+   .reduce(
+    (a,b)=>a+Number(b.amount||0),
+    0
+   );
+
+ $("creatorFollowers").textContent=
+  followers||0;
+
+ $("creatorEarnings").textContent=
+  total;
+
+}
+
+
+/* =========================================================
+ SETTINGS
+========================================================= */
+
+function settingsPage(){
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>⚙️ Settings & Privacy</h2>
+
+   <button
+    class="btn blue"
+    onclick="toggleDark()">
+    🌙 Dark / Light Mode
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="toast('Privacy settings ready')">
+    🔒 Privacy
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="toast('Notification settings ready')">
+    🔔 Notifications
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="toast('Blocked users')">
+    🚫 Blocked Users
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="toast('Security settings')">
+    🔐 Security & Login
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="downloadMyData()">
+    ⬇️ Download My Data
+   </button>
+
+   <button
+    class="btn blue"
+    onclick="toast('Account deactivate option')">
+    ⏸️ Deactivate Account
+   </button>
+
+   <button
+    class="btn"
+    style="background:#e41e3f;color:#fff"
+    onclick="confirmDeleteAccount()">
+    🗑️ Delete Account
+   </button>
+
+   <button
+    class="btn gray"
+    onclick="logout()">
+    Logout
+   </button>
+
+  </div>
+
+  <div class="card">
+
+   <h3>Advanced Features</h3>
+
+   <p>🌎 Multi-language</p>
+   <p>📱 PWA / Install App</p>
+   <p>🔔 Push Notifications</p>
+   <p>📡 Realtime</p>
+   <p>🤖 Personalized Feed Algorithm</p>
+   <p>🔥 Trending</p>
+   <p>⭐ Badges</p>
+   <p>✔️ Verification</p>
+   <p>🔴 Live Streaming</p>
+   <p>📢 Ads</p>
+   <p>💎 Subscription</p>
+   <p>🎁 Virtual Gifts</p>
+   <p>🪙 Coins</p>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+function toggleDark(){
+
+ document.body.classList.toggle("dark");
+
+ localStorage.setItem(
+  "friendbook_dark",
+  document.body.classList.contains("dark")
+ );
+
+}
+
+
+function downloadMyData(){
+
+ const data={
+  id:me.id,
+  email:me.email,
+  downloaded_at:new Date().toISOString()
+ };
+
+ const blob=
+  new Blob(
+   [JSON.stringify(data,null,2)],
+   {type:"application/json"}
+  );
+
+ const url=
+  URL.createObjectURL(blob);
+
+ const a=
+  document.createElement("a");
+
+ a.href=url;
+ a.download="friendbook-data.json";
+
+ a.click();
+
+ URL.revokeObjectURL(url);
+
+}
+
+
+function confirmDeleteAccount(){
+
+ toast(
+  "Account deletion requires server-side/admin handling"
+ );
+
+}
+
+
+/* =========================================================
+ SEARCH
+========================================================= */
+
+async function searchAll(){
+
+ const q=
+  $("globalSearch").value.trim();
+
+ if(!q)return;
+
+ const {data:people}=
+  await db
+   .from("fb_profiles")
+   .select("*")
+   .or(
+    `name.ilike.%${q}%,username.ilike.%${q}%`
+   )
+   .limit(20);
+
+ const {data:posts}=
+  await db
+   .from("fb_posts")
+   .select("*")
+   .ilike("text","%"+q+"%")
+   .limit(20);
+
+ $("main").innerHTML=`
+
+ <div class="page">
+
+  <div class="card">
+
+   <h2>
+    🔎 Search:
+    ${esc(q)}
+   </h2>
+
+  </div>
+
+  <div class="card">
+
+   <h3>👤 People</h3>
+
+   ${
+    (people||[]).map(p=>`
+
+     <div
+      class="item"
+      style="margin-bottom:7px"
+      onclick="profilePage('${p.id}')">
+
+      <div class="row">
+
+       <img
+        class="avatar"
+        src="${esc(
+         avatar(
+          p.profile_photo,
+          p.name
+         )
+        )}">
+
+       <div>
+
+        <b>${esc(p.name||"User")}</b>
+
+        <div class="muted">
+         @${esc(p.username||"")}
+        </div>
+
+       </div>
+
+      </div>
+
+     </div>
+
+    `).join("")
+    ||
+    "No people found."
+   }
+
+  </div>
+
+  <div class="card">
+
+   <h3>📝 Posts</h3>
+
+   ${
+    (posts||[]).map(p=>`
+
+     <div class="item">
+      ${esc(p.text||"")}
+     </div>
+
+    `).join("")
+    ||
+    "No posts found."
+   }
+
+  </div>
+
+  <div class="grid">
+
+   <div class="card">🎬 Reels</div>
+   <div class="card">👥 Groups</div>
+   <div class="card">📄 Pages</div>
+   <div class="card">🛒 Marketplace</div>
+   <div class="card">📅 Events</div>
+
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+/* =========================================================
+ SHARE
+========================================================= */
+
+async function shareContent(type,id){
+
+ const url=
+  location.href.split("#")[0]+
+  "#"+type+"-"+id;
+
+ if(navigator.share){
+
+  try{
+
+   await navigator.share({
+    title:"FriendBook",
+    text:"FriendBook content",
+    url:url
+   });
+
+  }catch(e){}
+
+ }else{
+
+  try{
+
+   await navigator.clipboard.writeText(url);
+
+   toast("🔗 Link copied");
+
+  }catch(e){
+
+   toast(url);
+
+  }
+
+ }
+
+}
+
+
+/* =========================================================
+ MODALS
+========================================================= */
+
+function openModal(id){
+
+ $(id).classList.remove("hidden");
+
+}
+
+
+function closeModal(id){
+
+ const el=$(id);
+
+ if(el)
+  el.classList.add("hidden");
+
+}
+
+
+function openCreate(){
+
+ openModal("createModal");
+
+}
+
+
+/* =========================================================
+ INITIAL
+========================================================= */
+
+(async function(){
+
+ if(
+  localStorage.getItem(
+   "friendbook_dark"
+  )==="true"
+ ){
+
+  document.body.classList.add("dark");
+
+ }
+
+ const {data}=
+  await db.auth.getSession();
+
+ if(data.session){
+
+  me=data.session.user;
+
+  startApp();
+
+ }
+
+})();
+
+
+db.auth.onAuthStateChange(
+ (event,session)=>{
+
+  if(session){
+
+   me=session.user;
+
+  }
+
+ }
 );
 
 </script>
