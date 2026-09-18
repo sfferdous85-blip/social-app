@@ -7,352 +7,928 @@
 <title>My Social App</title>
 
 <link rel="manifest" href="./manifest.json">
-
 <meta name="theme-color" content="#1877f2">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
-box-sizing:border-box;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
 body{
-margin:0;
-font-family:Arial,"Noto Sans Bengali",sans-serif;
-background:#f0f2f5;
-color:#1c1e21;
+  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  background:#f0f2f5;
+  color:#1c1e21;
 }
 
-button,
-input,
-textarea,
-select{
-font:inherit;
+button,input,textarea,select{
+  font-family:inherit;
 }
 
 button{
-cursor:pointer;
-border:0;
-}
-
-.header{
-position:sticky;
-top:0;
-z-index:100;
-height:60px;
-background:#1877f2;
-color:white;
-display:flex;
-align-items:center;
-gap:10px;
-padding:8px 15px;
-box-shadow:0 2px 5px #0003;
-}
-
-.logo{
-font-size:23px;
-font-weight:bold;
-white-space:nowrap;
-}
-
-.search{
-flex:1;
-max-width:450px;
-padding:10px 15px;
-border-radius:25px;
-border:0;
-outline:none;
-}
-
-.header-btn{
-width:40px;
-height:40px;
-border-radius:50%;
-background:#ffffff22;
-color:white;
-font-size:18px;
-}
-
-.container{
-max-width:850px;
-margin:auto;
-padding:15px;
-}
-
-.card{
-background:white;
-border-radius:12px;
-padding:15px;
-margin-bottom:12px;
-box-shadow:0 1px 3px #0002;
-}
-
-.row{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.between{
-justify-content:space-between;
-}
-
-.avatar{
-width:45px;
-height:45px;
-border-radius:50%;
-object-fit:cover;
-background:#ddd;
-}
-
-.avatar-large{
-width:95px;
-height:95px;
-border-radius:50%;
-object-fit:cover;
-border:4px solid white;
-}
-
-.cover{
-height:220px;
-background:#ddd center/cover no-repeat;
-border-radius:12px 12px 0 0;
-}
-
-.primary{
-background:#1877f2;
-color:white;
-padding:10px 16px;
-border-radius:8px;
-}
-
-.light{
-background:#e4e6eb;
-color:#111;
-padding:10px 16px;
-border-radius:8px;
-}
-
-.danger{
-background:#e41e3f;
-color:white;
-padding:10px 16px;
-border-radius:8px;
-}
-
-.input{
-width:100%;
-padding:11px;
-border:1px solid #ccd0d5;
-border-radius:8px;
-outline:none;
-margin-top:7px;
-}
-
-textarea.input{
-resize:vertical;
-}
-
-.actions{
-display:flex;
-gap:6px;
-flex-wrap:wrap;
-margin-top:10px;
-}
-
-.actions button{
-flex:1;
-background:#f0f2f5;
-padding:10px;
-border-radius:8px;
-min-width:100px;
-}
-
-.post-text{
-white-space:pre-wrap;
-margin-top:12px;
-font-size:16px;
-}
-
-.post-image{
-width:100%;
-max-height:600px;
-object-fit:cover;
-border-radius:10px;
-margin-top:10px;
-}
-
-.post-video{
-width:100%;
-max-height:600px;
-border-radius:10px;
-margin-top:10px;
-background:#000;
+  cursor:pointer;
 }
 
 .hidden{
-display:none !important;
+  display:none!important;
 }
 
-.muted{
-color:#65676b;
-font-size:13px;
+/* AUTH */
+
+#authPage{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  background:linear-gradient(135deg,#1877f2,#42b72a);
 }
 
-.empty{
-text-align:center;
-padding:30px;
-color:#777;
-}
-
-.profile-info{
-padding:0 15px 15px;
-margin-top:-45px;
-position:relative;
-}
-
-.profile-name{
-font-size:25px;
-font-weight:bold;
-margin-top:7px;
-}
-
-.stats{
-display:flex;
-gap:25px;
-margin-top:10px;
-}
-
-.stats b{
-font-size:18px;
-}
-
-.nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:60px;
-background:white;
-border-top:1px solid #ddd;
-display:flex;
-justify-content:space-around;
-align-items:center;
-z-index:90;
-}
-
-.nav button{
-background:white;
-color:#555;
-padding:8px;
-border-radius:8px;
-}
-
-.nav button.active{
-color:#1877f2;
-font-weight:bold;
-}
-
-body{
-padding-bottom:65px;
-}
-
-.auth{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-}
-
-.auth-box{
-width:100%;
-max-width:430px;
-background:white;
-padding:25px;
-border-radius:15px;
-box-shadow:0 3px 15px #0002;
-}
-
-.auth-title{
-text-align:center;
-font-size:30px;
-font-weight:bold;
-color:#1877f2;
-margin-bottom:20px;
-}
-
-.tab{
-display:flex;
-gap:5px;
-margin-bottom:15px;
-}
-
-.tab button{
-flex:1;
-padding:10px;
-background:#e4e6eb;
-border-radius:8px;
-}
-
-.tab button.active{
-background:#1877f2;
-color:white;
-}
-
-.toast{
-position:fixed;
-bottom:80px;
-left:50%;
-transform:translateX(-50%);
-background:#222;
-color:white;
-padding:10px 18px;
-border-radius:20px;
-display:none;
-z-index:999;
-}
-
-@media(max-width:600px){
-
-.header{
-padding:8px;
+.authBox{
+  width:100%;
+  max-width:420px;
+  background:white;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 10px 35px #0003;
 }
 
 .logo{
-font-size:19px;
+  text-align:center;
+  color:#1877f2;
+  font-size:34px;
+  font-weight:bold;
+  margin-bottom:8px;
 }
 
-.search{
-display:none;
+.subtitle{
+  text-align:center;
+  color:#666;
+  margin-bottom:20px;
 }
 
-.container{
-padding:8px;
+.authBox input{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:16px;
 }
+
+.primary{
+  background:#1877f2;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.green{
+  background:#42b72a;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:12px 18px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.full{
+  width:100%;
+  margin-top:8px;
+}
+
+.authSwitch{
+  text-align:center;
+  margin-top:18px;
+  color:#1877f2;
+  cursor:pointer;
+}
+
+/* HEADER */
+
+#app{
+  min-height:100vh;
+}
+
+.header{
+  height:62px;
+  background:white;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  gap:12px;
+}
+
+.headerLogo{
+  color:#1877f2;
+  font-size:23px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.searchBox{
+  flex:1;
+  max-width:420px;
+}
+
+.searchBox input{
+  width:100%;
+  border:0;
+  background:#f0f2f5;
+  padding:11px 15px;
+  border-radius:25px;
+  outline:none;
+}
+
+.headerActions{
+  margin-left:auto;
+  display:flex;
+  gap:7px;
+}
+
+.iconBtn{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:#f0f2f5;
+  font-size:19px;
+}
+
+.logoutBtn{
+  background:#ffe5e5;
+  color:#d00;
+}
+
+/* LAYOUT */
+
+.main{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:230px 1fr 260px;
+  gap:18px;
+  padding:18px 10px;
+}
+
+.sidebar,
+.rightbar{
+  position:sticky;
+  top:80px;
+  height:max-content;
+}
+
+.sideCard{
+  background:white;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
+}
+
+.navItem{
+  width:100%;
+  border:0;
+  background:white;
+  padding:13px 10px;
+  text-align:left;
+  border-radius:8px;
+  font-size:15px;
+}
+
+.navItem:hover{
+  background:#f0f2f5;
+}
+
+.profileMini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
+}
+
+.avatarSmall{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
+}
+
+.feed{
+  min-width:0;
+}
+
+/* CARDS */
+
+.card{
+  background:white;
+  border-radius:12px;
+  margin-bottom:14px;
+  box-shadow:0 1px 2px #0001;
+  overflow:hidden;
+}
+
+.cardPad{
+  padding:15px;
+}
+
+.composerTop{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.composerTop textarea{
+  flex:1;
+  border:0;
+  background:#f0f2f5;
+  border-radius:20px;
+  padding:12px 15px;
+  resize:none;
+  outline:none;
+}
+
+.composerTools{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.toolBtn{
+  border:0;
+  background:#f0f2f5;
+  padding:9px 12px;
+  border-radius:8px;
+}
+
+.postHeader{
+  padding:13px 15px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.postUser{
+  font-weight:bold;
+}
+
+.postDate{
+  color:#777;
+  font-size:12px;
+}
+
+.postMenu{
+  margin-left:auto;
+  border:0;
+  background:white;
+  font-size:22px;
+}
+
+.postText{
+  padding:0 15px 12px;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.postImage{
+  width:100%;
+  max-height:600px;
+  object-fit:cover;
+  display:block;
+}
+
+.postVideo{
+  width:100%;
+  max-height:600px;
+  display:block;
+  background:#000;
+}
+
+.postStats{
+  display:flex;
+  justify-content:space-between;
+  padding:9px 15px;
+  color:#666;
+  font-size:14px;
+}
+
+.postActions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid #eee;
+}
+
+.postActions button{
+  border:0;
+  background:white;
+  padding:11px 5px;
+  font-size:14px;
+}
+
+.postActions button:hover{
+  background:#f0f2f5;
+}
+
+.reactionRow{
+  padding:8px 15px;
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+
+.reactionBtn{
+  border:0;
+  border-radius:20px;
+  padding:6px 10px;
+  background:#f0f2f5;
+}
+
+/* COMMENTS */
+
+.commentBox{
+  padding:10px 15px;
+  border-top:1px solid #eee;
+}
+
+.commentInput{
+  display:flex;
+  gap:7px;
+}
+
+.commentInput input{
+  flex:1;
+  padding:9px 12px;
+  border:1px solid #ddd;
+  border-radius:20px;
+}
+
+.comment{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.commentBody{
+  background:#f0f2f5;
+  border-radius:12px;
+  padding:8px 11px;
+}
+
+/* STORIES */
+
+.storyRow{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:12px;
+}
+
+.story{
+  min-width:105px;
+  height:160px;
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
+  background:#1877f2;
+  color:white;
+  cursor:pointer;
+}
+
+.story img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.storyName{
+  position:absolute;
+  bottom:7px;
+  left:7px;
+  right:7px;
+  font-size:12px;
+  font-weight:bold;
+  text-shadow:0 1px 4px #000;
+}
+
+/* PROFILE */
 
 .cover{
-height:170px;
+  height:250px;
+  background:#1877f2;
+  position:relative;
 }
 
+.cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
+.profileInfo{
+  padding:15px;
+  text-align:center;
+}
+
+.profileLarge{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  border:5px solid white;
+  object-fit:cover;
+  margin-top:-65px;
+  position:relative;
+  background:#ddd;
+}
+
+.profileButtons{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.stats{
+  display:flex;
+  justify-content:center;
+  gap:35px;
+  margin:15px 0;
+}
+
+.stat{
+  text-align:center;
+}
+
+.stat strong{
+  display:block;
+  font-size:20px;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:3000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+
+.modalBox{
+  width:100%;
+  max-width:550px;
+  max-height:90vh;
+  overflow:auto;
+  background:white;
+  border-radius:14px;
+  padding:20px;
+}
+
+.modalHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.close{
+  border:0;
+  background:#eee;
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  font-size:20px;
+}
+
+.formGroup{
+  margin-bottom:12px;
+}
+
+.formGroup label{
+  display:block;
+  margin-bottom:5px;
+  font-weight:bold;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select{
+  width:100%;
+  padding:11px;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+.previewGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  margin-top:10px;
+}
+
+.previewGrid img,
+.previewGrid video{
+  width:100%;
+  height:110px;
+  object-fit:cover;
+}
+
+/* CHAT */
+
+.chatList{
+  max-height:350px;
+  overflow:auto;
+}
+
+.chatUser{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.chatWindow{
+  height:400px;
+  display:flex;
+  flex-direction:column;
+}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:10px;
+  background:#f0f2f5;
+}
+
+.msg{
+  max-width:75%;
+  padding:9px 12px;
+  border-radius:15px;
+  margin:5px 0;
+}
+
+.msg.mine{
+  margin-left:auto;
+  background:#1877f2;
+  color:white;
+}
+
+.msg.theirs{
+  background:white;
+}
+
+.sendBox{
+  display:flex;
+  gap:6px;
+  padding-top:10px;
+}
+
+.sendBox input{
+  flex:1;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:20px;
+}
+
+/* SEARCH */
+
+.searchResults{
+  position:fixed;
+  top:62px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(600px,95%);
+  background:white;
+  z-index:1500;
+  border-radius:0 0 12px 12px;
+  box-shadow:0 5px 20px #0003;
+  max-height:400px;
+  overflow:auto;
+}
+
+.searchResult{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+  .main{
+    grid-template-columns:1fr;
+    max-width:700px;
+  }
+
+  .sidebar,
+  .rightbar{
+    display:none;
+  }
+}
+
+@media(max-width:600px){
+  .header{
+    padding:0 8px;
+  }
+
+  .headerLogo{
+    font-size:18px;
+  }
+
+  .searchBox{
+    max-width:none;
+  }
+
+  .headerActions .hideMobile{
+    display:none;
+  }
+
+  .main{
+    padding:8px 4px;
+  }
+
+  .card{
+    border-radius:8px;
+  }
+
+  .postActions button{
+    font-size:12px;
+  }
+}
+
+/* TOAST */
+
+#toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#222;
+  color:white;
+  padding:12px 18px;
+  border-radius:25px;
+  z-index:5000;
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<div id="app"></div>
+<!-- AUTH -->
 
-<div id="toast" class="toast"></div>
+<section id="authPage">
+
+  <div class="authBox">
+
+    <div class="logo">My Social App</div>
+
+    <div class="subtitle">
+      Connect with friends and share your world
+    </div>
+
+    <div id="loginForm">
+
+      <input id="loginEmail" type="email" placeholder="Email">
+
+      <input id="loginPassword" type="password" placeholder="Password">
+
+      <button class="primary full" onclick="login()">
+        Login
+      </button>
+
+      <div class="authSwitch" onclick="showRegister()">
+        Create new account
+      </div>
+
+    </div>
+
+    <div id="registerForm" class="hidden">
+
+      <input id="regName" type="text" placeholder="আপনার নাম">
+
+      <input id="regEmail" type="email" placeholder="Email">
+
+      <input id="regPassword" type="password" placeholder="Password">
+
+      <button class="green full" onclick="register()">
+        Create Account
+      </button>
+
+      <div class="authSwitch" onclick="showLogin()">
+        Already have an account? Login
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- APP -->
+
+<section id="app" class="hidden">
+
+  <header class="header">
+
+    <div class="headerLogo">
+      My Social
+    </div>
+
+    <div class="searchBox">
+      <input
+        id="searchInput"
+        placeholder="Search people..."
+        oninput="searchUsers(this.value)"
+      >
+    </div>
+
+    <div class="headerActions">
+
+      <button class="iconBtn" onclick="showHome()">🏠</button>
+
+      <button class="iconBtn hideMobile" onclick="openMessenger()">
+        💬
+      </button>
+
+      <button class="iconBtn hideMobile" onclick="showNotifications()">
+        🔔
+      </button>
+
+      <button class="iconBtn logoutBtn" onclick="logout()">
+        ↪
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <div id="searchResults" class="searchResults hidden"></div>
+
+
+  <main class="main">
+
+    <!-- LEFT -->
+
+    <aside class="sidebar">
+
+      <div class="sideCard">
+
+        <div class="profileMini">
+
+          <img id="miniAvatar" class="avatar">
+
+          <div>
+            <b id="miniName">User</b>
+          </div>
+
+        </div>
+
+        <button class="navItem" onclick="showProfile()">
+          👤 Profile
+        </button>
+
+        <button class="navItem" onclick="showHome()">
+          🏠 Home
+        </button>
+
+        <button class="navItem" onclick="openMessenger()">
+          💬 Messenger
+        </button>
+
+        <button class="navItem" onclick="showFriends()">
+          👥 Friends
+        </button>
+
+        <button class="navItem" onclick="showNotifications()">
+          🔔 Notifications
+        </button>
+
+        <button class="navItem" onclick="showReels()">
+          🎬 Reels
+        </button>
+
+        <button class="navItem" onclick="showEarnings()">
+          💰 Creator Earnings
+        </button>
+
+        <button
+          id="adminNav"
+          class="navItem hidden"
+          onclick="showAdmin()"
+        >
+          🛡️ Admin Panel
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- FEED -->
+
+    <section id="content" class="feed">
+
+    </section>
+
+
+    <!-- RIGHT -->
+
+    <aside class="rightbar">
+
+      <div class="sideCard">
+
+        <h3>My Social App</h3>
+
+        <p style="color:#777;margin-top:8px">
+          Connect, share and communicate.
+        </p>
+
+      </div>
+
+      <div class="sideCard">
+
+        <h3>Quick Menu</h3>
+
+        <button class="navItem" onclick="openStoryModal()">
+          ➕ Add Story
+        </button>
+
+        <button class="navItem" onclick="openPostModal()">
+          📝 Create Post
+        </button>
+
+        <button class="navItem" onclick="openReelModal()">
+          🎬 Upload Reel
+        </button>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+</section>
+
+
+<!-- MODAL -->
+
+<div id="modal" class="modal hidden">
+
+  <div class="modalBox">
+
+    <div class="modalHeader">
+
+      <h2 id="modalTitle">Modal</h2>
+
+      <button class="close" onclick="closeModal()">×</button>
+
+    </div>
+
+    <div id="modalBody"></div>
+
+  </div>
+
+</div>
+
+
+<div id="toast"></div>
+
 
 <script>
 
-/* =========================
+/* =========================================================
    SUPABASE
-========================= */
+========================================================= */
 
 const SUPABASE_URL =
 "https://skereuaizdczbvjplisi.supabase.co";
@@ -362,1748 +938,3448 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const BUCKET = "media";
+
+let me = null;
+let myProfile = null;
+let currentChatUser = null;
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const {
+    data:{
+      session
+    }
+  } = await supabaseClient.auth.getSession();
+
+  if(session){
+
+    me = session.user;
+
+    await loadProfile();
+
+    showApp();
+
+  }
+
+});
+
+
+supabaseClient.auth.onAuthStateChange(
+  async (event, session) => {
+
+    if(session && !me){
+
+      me = session.user;
+
+      await loadProfile();
+
+      showApp();
+
+    }
+
+  }
 );
 
 
-/* =========================
-   GLOBAL
-========================= */
+/* =========================================================
+   AUTH
+========================================================= */
 
-let me = null;
-let profile = null;
-let posts = [];
-let currentPage = "home";
+function showLogin(){
 
+  document.getElementById("loginForm")
+    .classList.remove("hidden");
 
-/* =========================
-   HELPERS
-========================= */
-
-function escapeHTML(text){
-
-return String(text ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+  document.getElementById("registerForm")
+    .classList.add("hidden");
 
 }
 
 
-function showToast(message){
+function showRegister(){
 
-const box =
-document.getElementById("toast");
+  document.getElementById("loginForm")
+    .classList.add("hidden");
 
-box.textContent = message;
+  document.getElementById("registerForm")
+    .classList.remove("hidden");
 
-box.style.display = "block";
+}
 
-setTimeout(()=>{
-box.style.display="none";
-},2500);
+
+async function register(){
+
+  const name =
+    document.getElementById("regName").value.trim();
+
+  const email =
+    document.getElementById("regEmail").value.trim();
+
+  const password =
+    document.getElementById("regPassword").value;
+
+  if(!name || !email || !password){
+
+    toast("সব তথ্য দিন");
+
+    return;
+  }
+
+  if(password.length < 6){
+
+    toast("Password কমপক্ষে ৬ অক্ষরের হতে হবে");
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signUp({
+
+    email,
+    password,
+
+    options:{
+      data:{
+        name
+      }
+    }
+
+  });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  if(data.user){
+
+    const {
+      error:profileError
+    } = await supabaseClient
+      .from("profiles")
+      .upsert({
+
+        id:data.user.id,
+        name:name,
+        bio:"",
+        profile_photo:"",
+        cover_photo:"",
+        role:"user"
+
+      });
+
+    if(profileError){
+
+      console.log(profileError);
+
+    }
+
+  }
+
+  toast("Account তৈরি হয়েছে");
+
+  showLogin();
+
+}
+
+
+async function login(){
+
+  const email =
+    document.getElementById("loginEmail").value.trim();
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  if(!email || !password){
+
+    toast("Email এবং Password দিন");
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signInWithPassword({
+
+    email,
+    password
+
+  });
+
+  if(error){
+
+    toast("Email অথবা Password ভুল");
+
+    return;
+  }
+
+  me = data.user;
+
+  await loadProfile();
+
+  showApp();
+
+}
+
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  me = null;
+  myProfile = null;
+
+  document.getElementById("app")
+    .classList.add("hidden");
+
+  document.getElementById("authPage")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function loadProfile(){
+
+  if(!me) return;
+
+  let {
+    data,
+    error
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id",me.id)
+    .maybeSingle();
+
+  if(error){
+
+    console.log(error);
+
+    return;
+  }
+
+  if(!data){
+
+    const {
+      data:newProfile
+    } = await supabaseClient
+      .from("profiles")
+      .insert({
+
+        id:me.id,
+        name:me.user_metadata?.name || "User",
+        bio:"",
+        profile_photo:"",
+        cover_photo:"",
+        role:"user"
+
+      })
+      .select()
+      .single();
+
+    data = newProfile;
+
+  }
+
+  myProfile = data;
+
+}
+
+
+function showApp(){
+
+  document.getElementById("authPage")
+    .classList.add("hidden");
+
+  document.getElementById("app")
+    .classList.remove("hidden");
+
+  updateMiniProfile();
+
+  showHome();
+
+}
+
+
+function updateMiniProfile(){
+
+  if(!myProfile) return;
+
+  document.getElementById("miniName")
+    .textContent = myProfile.name || "User";
+
+  document.getElementById("miniAvatar").src =
+    myProfile.profile_photo ||
+    "https://ui-avatars.com/api/?name="+
+    encodeURIComponent(myProfile.name || "User");
+
+  if(myProfile.role === "admin"){
+
+    document
+      .getElementById("adminNav")
+      .classList.remove("hidden");
+
+  }
+
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+async function showHome(){
+
+  const content =
+    document.getElementById("content");
+
+  content.innerHTML = `
+
+    <div class="card">
+
+      <div class="cardPad">
+
+        <div class="composerTop">
+
+          <img
+            class="avatar"
+            src="${
+              myProfile?.profile_photo ||
+              "https://ui-avatars.com/api/?name=User"
+            }"
+          >
+
+          <textarea
+            id="quickPostText"
+            rows="1"
+            placeholder="What's on your mind?"
+          ></textarea>
+
+        </div>
+
+        <div class="composerTools">
+
+          <button
+            class="toolBtn"
+            onclick="openPostModal()"
+          >
+            📷 Photo/Video
+          </button>
+
+          <button
+            class="toolBtn"
+            onclick="openStoryModal()"
+          >
+            🟣 Story
+          </button>
+
+          <button
+            class="toolBtn"
+            onclick="openReelModal()"
+          >
+            🎬 Reel
+          </button>
+
+          <button
+            class="primary"
+            onclick="quickPost()"
+          >
+            Post
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3 style="padding:12px 15px">
+        Stories
+      </h3>
+
+      <div id="storiesContainer">
+        Loading...
+      </div>
+
+    </div>
+
+
+    <div id="feedContainer">
+      Loading posts...
+    </div>
+
+  `;
+
+  await loadStories();
+
+  await loadFeed();
+
+}
+
+
+async function quickPost(){
+
+  const input =
+    document.getElementById("quickPostText");
+
+  const text = input.value.trim();
+
+  if(!text){
+
+    toast("Post লিখুন");
+
+    return;
+  }
+
+  const {
+    error
+  } = await supabaseClient
+    .from("posts")
+    .insert({
+
+      user_id:me.id,
+      text:text,
+      image_url:"",
+      privacy:"public",
+      feeling:"",
+      location:""
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  input.value="";
+
+  toast("Post হয়েছে");
+
+  await loadFeed();
+
+}
+
+
+/* =========================================================
+   POSTS
+========================================================= */
+
+async function loadFeed(){
+
+  const container =
+    document.getElementById("feedContainer");
+
+  if(!container) return;
+
+  const {
+    data:posts,
+    error
+  } = await supabaseClient
+    .from("posts")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(50);
+
+  if(error){
+
+    container.innerHTML =
+      `<div class="card cardPad">
+        ${escapeHtml(error.message)}
+      </div>`;
+
+    return;
+  }
+
+  if(!posts || posts.length===0){
+
+    container.innerHTML = `
+      <div class="card cardPad">
+        এখনো কোনো Post নেই।
+      </div>
+    `;
+
+    return;
+  }
+
+  const ids =
+    posts.map(p=>p.user_id);
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  const profileMap={};
+
+  (profiles||[]).forEach(p=>{
+    profileMap[p.id]=p;
+  });
+
+  let html="";
+
+  for(const p of posts){
+
+    html += await renderPost(
+      p,
+      profileMap[p.user_id]
+    );
+
+  }
+
+  container.innerHTML=html;
+
+}
+
+
+async function renderPost(p,profile){
+
+  const name =
+    profile?.name || "User";
+
+  const avatar =
+    profile?.profile_photo ||
+    "https://ui-avatars.com/api/?name="+
+    encodeURIComponent(name);
+
+  let media="";
+
+  if(p.image_url){
+
+    const urls =
+      p.image_url
+        .split("|||")
+        .filter(Boolean);
+
+    if(urls.length===1){
+
+      const url=urls[0];
+
+      if(isVideo(url)){
+
+        media=`
+          <video
+            class="postVideo"
+            controls
+            src="${safeAttr(url)}"
+          ></video>
+        `;
+
+      }else{
+
+        media=`
+          <img
+            class="postImage"
+            src="${safeAttr(url)}"
+          >
+        `;
+
+      }
+
+    }else if(urls.length>1){
+
+      media=`
+        <div class="previewGrid">
+
+          ${urls.map(url=>{
+
+            if(isVideo(url)){
+
+              return `
+                <video
+                  controls
+                  src="${safeAttr(url)}"
+                ></video>
+              `;
+
+            }
+
+            return `
+              <img
+                src="${safeAttr(url)}"
+              >
+            `;
+
+          }).join("")}
+
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  const {
+    count:likeCount
+  } = await supabaseClient
+    .from("post_reactions")
+    .select("*",{count:"exact",head:true})
+    .eq("post_id",p.id);
+
+  const {
+    count:commentCount
+  } = await supabaseClient
+    .from("comments")
+    .select("*",{count:"exact",head:true})
+    .eq("post_id",p.id);
+
+  const {
+    data:myReaction
+  } = await supabaseClient
+    .from("post_reactions")
+    .select("reaction")
+    .eq("post_id",p.id)
+    .eq("user_id",me.id)
+    .maybeSingle();
+
+  return `
+
+    <article class="card" id="post-${p.id}">
+
+      <div class="postHeader">
+
+        <img
+          class="avatarSmall"
+          src="${safeAttr(avatar)}"
+        >
+
+        <div>
+
+          <div class="postUser">
+            ${escapeHtml(name)}
+            ${profile?.verified ? " ☑️" : ""}
+          </div>
+
+          <div class="postDate">
+            ${formatDate(p.created_at)}
+            ${p.privacy ? " · "+escapeHtml(p.privacy):""}
+          </div>
+
+        </div>
+
+        <button
+          class="postMenu"
+          onclick="postMenu(${p.id},${p.user_id === me.id})"
+        >
+          ⋯
+        </button>
+
+      </div>
+
+      ${
+        p.feeling
+        ? `<div class="postText">
+             Feeling ${escapeHtml(p.feeling)}
+           </div>`
+        :""
+      }
+
+      ${
+        p.location
+        ? `<div class="postText">
+             📍 ${escapeHtml(p.location)}
+           </div>`
+        :""
+      }
+
+      ${
+        p.text
+        ? `<div class="postText">
+             ${escapeHtml(p.text)}
+           </div>`
+        :""
+      }
+
+      ${media}
+
+      <div class="postStats">
+
+        <span>
+          ❤️ ${likeCount || 0}
+        </span>
+
+        <span>
+          💬 ${commentCount || 0}
+        </span>
+
+      </div>
+
+      <div class="reactionRow">
+
+        <button
+          class="reactionBtn"
+          onclick="reactToPost(${p.id},'like')"
+        >
+          👍 Like
+        </button>
+
+        <button
+          class="reactionBtn"
+          onclick="reactToPost(${p.id},'love')"
+        >
+          ❤️ Love
+        </button>
+
+        <button
+          class="reactionBtn"
+          onclick="reactToPost(${p.id},'haha')"
+        >
+          😂 Haha
+        </button>
+
+        ${
+          myReaction
+          ? `<span style="padding:6px">
+              Your reaction: ${escapeHtml(myReaction.reaction)}
+             </span>`
+          :""
+        }
+
+      </div>
+
+      <div class="postActions">
+
+        <button onclick="reactToPost(${p.id},'like')">
+          👍 Like
+        </button>
+
+        <button onclick="toggleComments(${p.id})">
+          💬 Comment
+        </button>
+
+        <button onclick="sharePost(${p.id})">
+          ↗ Share
+        </button>
+
+        <button onclick="reportPost(${p.id})">
+          🚩 Report
+        </button>
+
+      </div>
+
+      <div
+        id="comments-${p.id}"
+        class="commentBox hidden"
+      >
+
+        <div class="commentInput">
+
+          <input
+            id="commentInput-${p.id}"
+            placeholder="Write a comment..."
+          >
+
+          <button
+            class="primary"
+            onclick="addComment(${p.id})"
+          >
+            Send
+          </button>
+
+        </div>
+
+        <div id="commentList-${p.id}"></div>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+/* =========================================================
+   CREATE POST
+========================================================= */
+
+function openPostModal(){
+
+  openModal(
+    "Create Post",
+    `
+
+      <div class="formGroup">
+
+        <label>What's on your mind?</label>
+
+        <textarea
+          id="postText"
+          rows="5"
+          placeholder="Write something..."
+        ></textarea>
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Photo / Video</label>
+
+        <input
+          id="postFiles"
+          type="file"
+          accept="image/*,video/*"
+          multiple
+          onchange="previewFiles(this,'postPreview')"
+        >
+
+        <div
+          id="postPreview"
+          class="previewGrid"
+        ></div>
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Feeling</label>
+
+        <input
+          id="postFeeling"
+          placeholder="😊 Happy"
+        >
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Location</label>
+
+        <input
+          id="postLocation"
+          placeholder="Dhaka"
+        >
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Privacy</label>
+
+        <select id="postPrivacy">
+
+          <option value="public">
+            Public
+          </option>
+
+          <option value="friends">
+            Friends
+          </option>
+
+          <option value="only_me">
+            Only me
+          </option>
+
+        </select>
+
+      </div>
+
+      <button
+        class="primary full"
+        onclick="createPost()"
+      >
+        Publish Post
+      </button>
+
+    `
+  );
+
+}
+
+
+async function createPost(){
+
+  const text =
+    document.getElementById("postText")
+      .value.trim();
+
+  const feeling =
+    document.getElementById("postFeeling")
+      .value.trim();
+
+  const location =
+    document.getElementById("postLocation")
+      .value.trim();
+
+  const privacy =
+    document.getElementById("postPrivacy")
+      .value;
+
+  const files =
+    [...document.getElementById("postFiles").files];
+
+  let urls=[];
+
+  for(const file of files){
+
+    const url =
+      await uploadFile(file,"posts");
+
+    if(url) urls.push(url);
+
+  }
+
+  const {
+    error
+  } = await supabaseClient
+    .from("posts")
+    .insert({
+
+      user_id:me.id,
+      text:text,
+      image_url:urls.join("|||"),
+      privacy:privacy,
+      feeling:feeling,
+      location:location
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  closeModal();
+
+  toast("Post published");
+
+  showHome();
+
+}
+
+
+/* =========================================================
+   REACTIONS
+========================================================= */
+
+async function reactToPost(postId,reaction){
+
+  const {
+    data:existing
+  } = await supabaseClient
+    .from("post_reactions")
+    .select("*")
+    .eq("post_id",postId)
+    .eq("user_id",me.id)
+    .maybeSingle();
+
+  if(existing){
+
+    if(existing.reaction===reaction){
+
+      await supabaseClient
+        .from("post_reactions")
+        .delete()
+        .eq("id",existing.id);
+
+    }else{
+
+      await supabaseClient
+        .from("post_reactions")
+        .update({reaction})
+        .eq("id",existing.id);
+
+    }
+
+  }else{
+
+    await supabaseClient
+      .from("post_reactions")
+      .insert({
+
+        post_id:postId,
+        user_id:me.id,
+        reaction
+
+      });
+
+  }
+
+  loadFeed();
+
+}
+
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+async function toggleComments(postId){
+
+  const box =
+    document.getElementById(
+      "comments-"+postId
+    );
+
+  box.classList.toggle("hidden");
+
+  if(!box.classList.contains("hidden")){
+
+    await loadComments(postId);
+
+  }
+
+}
+
+
+async function loadComments(postId){
+
+  const list =
+    document.getElementById(
+      "commentList-"+postId
+    );
+
+  const {
+    data
+  } = await supabaseClient
+    .from("comments")
+    .select("*")
+    .eq("post_id",postId)
+    .order("created_at",{ascending:true});
+
+  if(!data || !data.length){
+
+    list.innerHTML =
+      `<p style="color:#777;margin-top:10px">
+        No comments yet
+      </p>`;
+
+    return;
+  }
+
+  const ids=data.map(x=>x.user_id);
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  const map={};
+
+  (profiles||[]).forEach(x=>{
+    map[x.id]=x;
+  });
+
+  list.innerHTML =
+    data.map(c=>{
+
+      const p=map[c.user_id];
+
+      return `
+        <div class="comment">
+
+          <img
+            class="avatarSmall"
+            src="${
+              safeAttr(
+                p?.profile_photo ||
+                "https://ui-avatars.com/api/?name=User"
+              )
+            }"
+          >
+
+          <div class="commentBody">
+
+            <b>
+              ${escapeHtml(p?.name || "User")}
+            </b>
+
+            <div>
+              ${escapeHtml(c.text)}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+async function addComment(postId){
+
+  const input =
+    document.getElementById(
+      "commentInput-"+postId
+    );
+
+  const text=input.value.trim();
+
+  if(!text) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("comments")
+    .insert({
+
+      post_id:postId,
+      user_id:me.id,
+      text
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  input.value="";
+
+  await loadComments(postId);
+
+}
+
+
+/* =========================================================
+   SHARE
+========================================================= */
+
+async function sharePost(postId){
+
+  const url =
+    location.href.split("#")[0]+
+    "#post-"+postId;
+
+  if(navigator.share){
+
+    try{
+
+      await navigator.share({
+
+        title:"My Social App",
+        text:"Check this post",
+        url
+
+      });
+
+    }catch(e){}
+
+  }else{
+
+    await navigator.clipboard.writeText(url);
+
+    toast("Post link copied");
+
+  }
+
+}
+
+
+/* =========================================================
+   POST MENU
+========================================================= */
+
+function postMenu(postId,isMine){
+
+  openModal(
+    "Post Options",
+    `
+
+      ${
+        isMine
+        ? `
+          <button
+            class="primary full"
+            onclick="editPost(${postId})"
+          >
+            ✏️ Edit Post
+          </button>
+
+          <button
+            class="full"
+            style="
+              margin-top:8px;
+              padding:12px;
+              border:0;
+              border-radius:8px;
+              background:#ffe5e5;
+              color:red;
+            "
+            onclick="deletePost(${postId})"
+          >
+            🗑️ Delete Post
+          </button>
+        `
+        : `
+          <button
+            class="primary full"
+            onclick="reportPost(${postId});closeModal()"
+          >
+            🚩 Report Post
+          </button>
+        `
+      }
+
+    `
+  );
+
+}
+
+
+async function deletePost(postId){
+
+  if(!confirm("Post delete করবেন?")) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("posts")
+    .delete()
+    .eq("id",postId);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  closeModal();
+
+  toast("Post deleted");
+
+  loadFeed();
+
+}
+
+
+async function editPost(postId){
+
+  const {
+    data
+  } = await supabaseClient
+    .from("posts")
+    .select("*")
+    .eq("id",postId)
+    .single();
+
+  if(!data) return;
+
+  openModal(
+    "Edit Post",
+    `
+
+      <textarea
+        id="editPostText"
+        rows="6"
+        style="
+          width:100%;
+          padding:10px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        "
+      >${escapeHtml(data.text || "")}</textarea>
+
+      <button
+        class="primary full"
+        onclick="saveEditPost(${postId})"
+      >
+        Save Changes
+      </button>
+
+    `
+  );
+
+}
+
+
+async function saveEditPost(postId){
+
+  const text =
+    document.getElementById("editPostText")
+      .value.trim();
+
+  const {
+    error
+  } = await supabaseClient
+    .from("posts")
+    .update({
+
+      text:text,
+      edited_at:new Date().toISOString()
+
+    })
+    .eq("id",postId)
+    .eq("user_id",me.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  closeModal();
+
+  toast("Post updated");
+
+  loadFeed();
+
+}
+
+
+/* =========================================================
+   REPORT
+========================================================= */
+
+async function reportPost(postId){
+
+  const reason =
+    prompt(
+      "Report করার কারণ লিখুন:",
+      "Spam"
+    );
+
+  if(!reason) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("reports")
+    .insert({
+
+      reporter_id:me.id,
+      post_id:postId,
+      reason
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  toast("Report submitted");
+
+}
+
+
+/* =========================================================
+   FOLLOW
+========================================================= */
+
+async function followUser(userId){
+
+  if(userId===me.id){
+
+    toast("নিজেকে follow করা যাবে না");
+
+    return;
+  }
+
+  const {
+    data
+  } = await supabaseClient
+    .from("follows")
+    .select("id")
+    .eq("follower_id",me.id)
+    .eq("following_id",userId)
+    .maybeSingle();
+
+  if(data){
+
+    await supabaseClient
+      .from("follows")
+      .delete()
+      .eq("id",data.id);
+
+    toast("Unfollowed");
+
+  }else{
+
+    await supabaseClient
+      .from("follows")
+      .insert({
+
+        follower_id:me.id,
+        following_id:userId
+
+      });
+
+    toast("Following");
+
+  }
+
+}
+
+
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+async function showProfile(userId=me.id){
+
+  const {
+    data:profile
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id",userId)
+    .single();
+
+  if(!profile) return;
+
+  const {
+    count:followers
+  } = await supabaseClient
+    .from("follows")
+    .select("*",{count:"exact",head:true})
+    .eq("following_id",userId);
+
+  const {
+    count:following
+  } = await supabaseClient
+    .from("follows")
+    .select("*",{count:"exact",head:true})
+    .eq("follower_id",userId);
+
+  let followingMe=false;
+
+  if(userId!==me.id){
+
+    const {
+      data
+    } = await supabaseClient
+      .from("follows")
+      .select("id")
+      .eq("follower_id",me.id)
+      .eq("following_id",userId)
+      .maybeSingle();
+
+    followingMe=!!data;
+
+  }
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card">
+
+      <div class="cover">
+
+        ${
+          profile.cover_photo
+          ? `
+            <img
+              src="${safeAttr(profile.cover_photo)}"
+            >
+          `
+          :""
+        }
+
+      </div>
+
+      <div class="profileInfo">
+
+        <img
+          class="profileLarge"
+          src="${
+            safeAttr(
+              profile.profile_photo ||
+              "https://ui-avatars.com/api/?name="+
+              encodeURIComponent(profile.name || "User")
+            )
+          }"
+        >
+
+        <h2>
+          ${escapeHtml(profile.name || "User")}
+          ${profile.verified ? " ☑️":""}
+        </h2>
+
+        <p style="color:#666;margin-top:6px">
+          ${escapeHtml(profile.bio || "")}
+        </p>
+
+        <div class="stats">
+
+          <div class="stat">
+            <strong>${followers || 0}</strong>
+            Followers
+          </div>
+
+          <div class="stat">
+            <strong>${following || 0}</strong>
+            Following
+          </div>
+
+        </div>
+
+        <div class="profileButtons">
+
+          ${
+            userId===me.id
+            ? `
+              <button
+                class="primary"
+                onclick="editProfile()"
+              >
+                ✏️ Edit Profile
+              </button>
+
+              <button
+                class="toolBtn"
+                onclick="changeProfilePhoto()"
+              >
+                📷 Profile Photo
+              </button>
+
+              <button
+                class="toolBtn"
+                onclick="changeCoverPhoto()"
+              >
+                🖼️ Cover Photo
+              </button>
+            `
+            : `
+              <button
+                class="primary"
+                onclick="followUser('${userId}')"
+              >
+                ${followingMe ? "Unfollow":"Follow"}
+              </button>
+
+              <button
+                class="toolBtn"
+                onclick="startChat('${userId}')"
+              >
+                💬 Message
+              </button>
+            `
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="cardPad">
+
+        <h3>
+          ${userId===me.id ? "My Posts":"Posts"}
+        </h3>
+
+      </div>
+
+    </div>
+
+    <div id="profilePosts"></div>
+
+  `;
+
+  await loadUserPosts(userId);
+
+}
+
+
+async function loadUserPosts(userId){
+
+  const container =
+    document.getElementById("profilePosts");
+
+  const {
+    data:posts
+  } = await supabaseClient
+    .from("posts")
+    .select("*")
+    .eq("user_id",userId)
+    .order("created_at",{ascending:false});
+
+  if(!posts?.length){
+
+    container.innerHTML = `
+      <div class="card cardPad">
+        No posts yet.
+      </div>
+    `;
+
+    return;
+  }
+
+  let html="";
+
+  for(const p of posts){
+
+    const {
+      data:profile
+    } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",p.user_id)
+      .single();
+
+    html += await renderPost(p,profile);
+
+  }
+
+  container.innerHTML=html;
+
+}
+
+
+function editProfile(){
+
+  openModal(
+    "Edit Profile",
+    `
+
+      <div class="formGroup">
+
+        <label>Name</label>
+
+        <input
+          id="editName"
+          value="${safeAttr(myProfile.name || "")}"
+        >
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Bio</label>
+
+        <textarea
+          id="editBio"
+          rows="4"
+        >${escapeHtml(myProfile.bio || "")}</textarea>
+
+      </div>
+
+      <button
+        class="primary full"
+        onclick="saveProfile()"
+      >
+        Save
+      </button>
+
+    `
+  );
+
+}
+
+
+async function saveProfile(){
+
+  const name =
+    document.getElementById("editName")
+      .value.trim();
+
+  const bio =
+    document.getElementById("editBio")
+      .value.trim();
+
+  const {
+    error
+  } = await supabaseClient
+    .from("profiles")
+    .update({
+
+      name,
+      bio
+
+    })
+    .eq("id",me.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  await loadProfile();
+
+  updateMiniProfile();
+
+  closeModal();
+
+  showProfile();
+
+  toast("Profile updated");
+
+}
+
+
+async function changeProfilePhoto(){
+
+  const file =
+    await chooseFile("image/*");
+
+  if(!file) return;
+
+  const url =
+    await uploadFile(file,"profiles");
+
+  if(!url) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("profiles")
+    .update({
+      profile_photo:url
+    })
+    .eq("id",me.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  await loadProfile();
+
+  updateMiniProfile();
+
+  showProfile();
+
+  toast("Profile photo updated");
+
+}
+
+
+async function changeCoverPhoto(){
+
+  const file =
+    await chooseFile("image/*");
+
+  if(!file) return;
+
+  const url =
+    await uploadFile(file,"covers");
+
+  if(!url) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("profiles")
+    .update({
+      cover_photo:url
+    })
+    .eq("id",me.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  await loadProfile();
+
+  showProfile();
+
+  toast("Cover photo updated");
+
+}
+
+
+/* =========================================================
+   STORIES
+========================================================= */
+
+async function loadStories(){
+
+  const box =
+    document.getElementById("storiesContainer");
+
+  if(!box) return;
+
+  const {
+    data:stories
+  } = await supabaseClient
+    .from("stories")
+    .select("*")
+    .gt("expires_at",new Date().toISOString())
+    .order("created_at",{ascending:false})
+    .limit(30);
+
+  if(!stories?.length){
+
+    box.innerHTML=`
+      <div class="storyRow">
+
+        <div
+          class="story"
+          onclick="openStoryModal()"
+        >
+          <div
+            style="
+              height:100%;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:40px;
+            "
+          >
+            +
+          </div>
+
+          <div class="storyName">
+            Add Story
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  const ids =
+    [...new Set(stories.map(s=>s.user_id))];
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  const map={};
+
+  (profiles||[]).forEach(p=>{
+    map[p.id]=p;
+  });
+
+  box.innerHTML = `
+    <div class="storyRow">
+
+      <div
+        class="story"
+        onclick="openStoryModal()"
+      >
+
+        <div
+          style="
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:40px;
+          "
+        >
+          +
+        </div>
+
+        <div class="storyName">
+          Add Story
+        </div>
+
+      </div>
+
+      ${
+        stories.map(s=>{
+
+          const p=map[s.user_id];
+
+          return `
+
+            <div
+              class="story"
+              onclick="viewStory(${s.id})"
+            >
+
+              ${
+                s.media_url
+                ? `
+                  <img
+                    src="${safeAttr(s.media_url)}"
+                  >
+                `
+                : ""
+              }
+
+              <div class="storyName">
+                ${escapeHtml(p?.name || "User")}
+              </div>
+
+            </div>
+
+          `;
+
+        }).join("")
+      }
+
+    </div>
+  `;
+
+}
+
+
+function openStoryModal(){
+
+  openModal(
+    "Create Story",
+    `
+
+      <div class="formGroup">
+
+        <label>Photo / Video</label>
+
+        <input
+          id="storyFile"
+          type="file"
+          accept="image/*,video/*"
+        >
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Caption</label>
+
+        <input
+          id="storyCaption"
+          placeholder="Write something..."
+        >
+
+      </div>
+
+      <button
+        class="primary full"
+        onclick="createStory()"
+      >
+        Add Story
+      </button>
+
+    `
+  );
+
+}
+
+
+async function createStory(){
+
+  const file =
+    document.getElementById("storyFile").files[0];
+
+  if(!file){
+
+    toast("Photo বা video দিন");
+
+    return;
+  }
+
+  const url =
+    await uploadFile(file,"stories");
+
+  if(!url) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("stories")
+    .insert({
+
+      user_id:me.id,
+      media_url:url,
+      media_type:file.type.startsWith("video")
+        ? "video"
+        : "image",
+      caption:
+        document.getElementById("storyCaption")
+          .value.trim()
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  closeModal();
+
+  toast("Story added");
+
+  loadStories();
+
+}
+
+
+async function viewStory(storyId){
+
+  const {
+    data:story
+  } = await supabaseClient
+    .from("stories")
+    .select("*")
+    .eq("id",storyId)
+    .single();
+
+  if(!story) return;
+
+  if(me){
+
+    await supabaseClient
+      .from("story_views")
+      .upsert({
+
+        story_id:storyId,
+        viewer_id:me.id
+
+      });
+
+  }
+
+  const media =
+    story.media_type==="video"
+    ? `
+      <video
+        controls
+        autoplay
+        style="width:100%;max-height:70vh"
+        src="${safeAttr(story.media_url)}"
+      ></video>
+    `
+    : `
+      <img
+        style="
+          width:100%;
+          max-height:70vh;
+          object-fit:contain;
+        "
+        src="${safeAttr(story.media_url)}"
+      >
+    `;
+
+  openModal(
+    "Story",
+    `
+      ${media}
+
+      ${
+        story.caption
+        ? `<p style="margin-top:10px">
+             ${escapeHtml(story.caption)}
+           </p>`
+        :""
+      }
+    `
+  );
+
+}
+
+
+/* =========================================================
+   REELS
+========================================================= */
+
+async function showReels(){
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card cardPad">
+
+      <h2>🎬 Reels</h2>
+
+      <button
+        class="primary"
+        style="margin-top:10px"
+        onclick="openReelModal()"
+      >
+        + Upload Reel
+      </button>
+
+    </div>
+
+    <div id="reelsContainer">
+      Loading...
+    </div>
+
+  `;
+
+  await loadReels();
+
+}
+
+
+async function loadReels(){
+
+  const box =
+    document.getElementById("reelsContainer");
+
+  if(!box) return;
+
+  const {
+    data:reels
+  } = await supabaseClient
+    .from("reels")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(30);
+
+  if(!reels?.length){
+
+    box.innerHTML=`
+      <div class="card cardPad">
+        No reels yet.
+      </div>
+    `;
+
+    return;
+  }
+
+  const ids =
+    [...new Set(reels.map(r=>r.user_id))];
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  const map={};
+
+  (profiles||[]).forEach(p=>{
+    map[p.id]=p;
+  });
+
+  box.innerHTML =
+    reels.map(r=>{
+
+      const p=map[r.user_id];
+
+      return `
+
+        <div class="card">
+
+          <div class="postHeader">
+
+            <img
+              class="avatarSmall"
+              src="${
+                safeAttr(
+                  p?.profile_photo ||
+                  "https://ui-avatars.com/api/?name=User"
+                )
+              }"
+            >
+
+            <b>
+              ${escapeHtml(p?.name || "User")}
+            </b>
+
+          </div>
+
+          <video
+            class="postVideo"
+            controls
+            playsinline
+            src="${safeAttr(r.video_url)}"
+            onclick="countReelView(${r.id},${r.views || 0})"
+          ></video>
+
+          ${
+            r.caption
+            ? `
+              <div class="postText">
+                ${escapeHtml(r.caption)}
+              </div>
+            `
+            :""
+          }
+
+          <div class="postStats">
+
+            👁️ ${r.views || 0} views
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function openReelModal(){
+
+  openModal(
+    "Upload Reel",
+    `
+
+      <div class="formGroup">
+
+        <label>Video</label>
+
+        <input
+          id="reelFile"
+          type="file"
+          accept="video/*"
+        >
+
+      </div>
+
+      <div class="formGroup">
+
+        <label>Caption</label>
+
+        <textarea
+          id="reelCaption"
+          rows="4"
+          placeholder="Caption..."
+        ></textarea>
+
+      </div>
+
+      <button
+        class="primary full"
+        onclick="createReel()"
+      >
+        Upload Reel
+      </button>
+
+    `
+  );
+
+}
+
+
+async function createReel(){
+
+  const file =
+    document.getElementById("reelFile")
+      .files[0];
+
+  if(!file){
+
+    toast("Video নির্বাচন করুন");
+
+    return;
+  }
+
+  const url =
+    await uploadFile(file,"reels");
+
+  if(!url) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("reels")
+    .insert({
+
+      user_id:me.id,
+      video_url:url,
+      caption:
+        document.getElementById("reelCaption")
+          .value.trim(),
+      views:0
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  closeModal();
+
+  toast("Reel uploaded");
+
+  showReels();
+
+}
+
+
+async function countReelView(id,current){
+
+  await supabaseClient
+    .from("reels")
+    .update({
+      views:(current||0)+1
+    })
+    .eq("id",id);
+
+}
+
+
+/* =========================================================
+   FRIENDS
+========================================================= */
+
+async function showFriends(){
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card cardPad">
+
+      <h2>👥 Friends</h2>
+
+      <button
+        class="toolBtn"
+        style="margin-top:10px"
+        onclick="loadFriendRequests()"
+      >
+        Friend Requests
+      </button>
+
+    </div>
+
+    <div id="friendsContainer">
+      Loading...
+    </div>
+
+  `;
+
+  await loadFriends();
+
+}
+
+
+async function loadFriends(){
+
+  const box =
+    document.getElementById("friendsContainer");
+
+  if(!box) return;
+
+  const {
+    data
+  } = await supabaseClient
+    .from("friends")
+    .select("*")
+    .or(
+      `user_id.eq.${me.id},friend_id.eq.${me.id}`
+    );
+
+  if(!data?.length){
+
+    box.innerHTML=`
+      <div class="card cardPad">
+        এখনো কোনো friend নেই।
+      </div>
+    `;
+
+    return;
+  }
+
+  const ids=[];
+
+  data.forEach(f=>{
+
+    if(f.user_id===me.id)
+      ids.push(f.friend_id);
+    else
+      ids.push(f.user_id);
+
+  });
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  box.innerHTML =
+    (profiles||[]).map(p=>`
+
+      <div class="card">
+
+        <div
+          class="cardPad"
+          style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+          "
+        >
+
+          <img
+            class="avatar"
+            src="${
+              safeAttr(
+                p.profile_photo ||
+                "https://ui-avatars.com/api/?name="+
+                encodeURIComponent(p.name || "User")
+              )
+            }"
+          >
+
+          <b>${escapeHtml(p.name || "User")}</b>
+
+          <button
+            class="primary"
+            style="margin-left:auto"
+            onclick="showProfile('${p.id}')"
+          >
+            View
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+async function sendFriendRequest(receiverId){
+
+  const {
+    data:existing
+  } = await supabaseClient
+    .from("friend_requests")
+    .select("*")
+    .eq("sender_id",me.id)
+    .eq("receiver_id",receiverId)
+    .eq("status","pending")
+    .maybeSingle();
+
+  if(existing){
+
+    toast("Request already sent");
+
+    return;
+  }
+
+  const {
+    error
+  } = await supabaseClient
+    .from("friend_requests")
+    .insert({
+
+      sender_id:me.id,
+      receiver_id:receiverId,
+      status:"pending"
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  toast("Friend request sent");
+
+}
+
+
+async function loadFriendRequests(){
+
+  const {
+    data
+  } = await supabaseClient
+    .from("friend_requests")
+    .select("*")
+    .eq("receiver_id",me.id)
+    .eq("status","pending")
+    .order("created_at",{ascending:false});
+
+  if(!data?.length){
+
+    openModal(
+      "Friend Requests",
+      `<p>No pending requests.</p>`
+    );
+
+    return;
+  }
+
+  const ids=data.map(x=>x.sender_id);
+
+  const {
+    data:profiles
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id",ids);
+
+  const map={};
+
+  (profiles||[]).forEach(p=>{
+    map[p.id]=p;
+  });
+
+  openModal(
+    "Friend Requests",
+    data.map(r=>{
+
+      const p=map[r.sender_id];
+
+      return `
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:10px 0;
+            border-bottom:1px solid #eee;
+          "
+        >
+
+          <img
+            class="avatarSmall"
+            src="${
+              safeAttr(
+                p?.profile_photo ||
+                "https://ui-avatars.com/api/?name=User"
+              )
+            }"
+          >
+
+          <b>
+            ${escapeHtml(p?.name || "User")}
+          </b>
+
+          <button
+            class="primary"
+            style="margin-left:auto"
+            onclick="acceptFriend(${r.id},'${r.sender_id}')"
+          >
+            Accept
+          </button>
+
+        </div>
+
+      `;
+
+    }).join("")
+  );
+
+}
+
+
+async function acceptFriend(requestId,senderId){
+
+  await supabaseClient
+    .from("friend_requests")
+    .update({
+      status:"accepted"
+    })
+    .eq("id",requestId);
+
+  await supabaseClient
+    .from("friends")
+    .insert([
+
+      {
+        user_id:me.id,
+        friend_id:senderId
+      },
+
+      {
+        user_id:senderId,
+        friend_id:me.id
+      }
+
+    ]);
+
+  toast("Friend added");
+
+  loadFriendRequests();
+
+}
+
+
+/* =========================================================
+   MESSENGER
+========================================================= */
+
+async function openMessenger(){
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card">
+
+      <div class="cardPad">
+
+        <h2>💬 Messenger</h2>
+
+      </div>
+
+      <div id="chatUsers" class="chatList">
+        Loading...
+      </div>
+
+    </div>
+
+    <div
+      id="chatArea"
+      class="card cardPad hidden"
+    ></div>
+
+  `;
+
+  await loadChatUsers();
+
+}
+
+
+async function loadChatUsers(){
+
+  const box =
+    document.getElementById("chatUsers");
+
+  const {
+    data
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .neq("id",me.id)
+    .limit(50);
+
+  box.innerHTML =
+    (data||[]).map(p=>`
+
+      <div
+        class="chatUser"
+        onclick="startChat('${p.id}')"
+      >
+
+        <img
+          class="avatarSmall"
+          src="${
+            safeAttr(
+              p.profile_photo ||
+              "https://ui-avatars.com/api/?name="+
+              encodeURIComponent(p.name || "User")
+            )
+          }"
+        >
+
+        <b>${escapeHtml(p.name || "User")}</b>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+async function startChat(userId){
+
+  currentChatUser=userId;
+
+  if(!document.getElementById("chatArea")){
+
+    await openMessenger();
+
+  }
+
+  const area =
+    document.getElementById("chatArea");
+
+  area.classList.remove("hidden");
+
+  const {
+    data:user
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id",userId)
+    .single();
+
+  area.innerHTML = `
+
+    <h3>
+      Chat with ${escapeHtml(user?.name || "User")}
+    </h3>
+
+    <div
+      id="messages"
+      class="messages"
+      style="margin-top:10px"
+    >
+      Loading...
+    </div>
+
+    <div class="sendBox">
+
+      <input
+        id="messageInput"
+        placeholder="Write a message..."
+        onkeydown="
+          if(event.key==='Enter') sendMessage()
+        "
+      >
+
+      <button
+        class="primary"
+        onclick="sendMessage()"
+      >
+        Send
+      </button>
+
+    </div>
+
+  `;
+
+  await loadMessages();
+
+}
+
+
+async function loadMessages(){
+
+  const box =
+    document.getElementById("messages");
+
+  if(!box) return;
+
+  const {
+    data
+  } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .or(
+      `and(sender_id.eq.${me.id},receiver_id.eq.${currentChatUser}),and(sender_id.eq.${currentChatUser},receiver_id.eq.${me.id})`
+    )
+    .order("created_at",{ascending:true});
+
+  box.innerHTML =
+    (data||[]).map(m=>`
+
+      <div
+        class="msg ${
+          m.sender_id===me.id
+          ? "mine"
+          : "theirs"
+        }"
+      >
+
+        ${escapeHtml(m.text || "")}
+
+      </div>
+
+    `).join("");
+
+  box.scrollTop=box.scrollHeight;
+
+}
+
+
+async function sendMessage(){
+
+  const input =
+    document.getElementById("messageInput");
+
+  const text=input.value.trim();
+
+  if(!text || !currentChatUser) return;
+
+  const {
+    error
+  } = await supabaseClient
+    .from("messages")
+    .insert({
+
+      sender_id:me.id,
+      receiver_id:currentChatUser,
+      text,
+      seen:false
+
+    });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  input.value="";
+
+  await loadMessages();
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function showNotifications(){
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card cardPad">
+
+      <h2>🔔 Notifications</h2>
+
+    </div>
+
+    <div id="notifications">
+      Loading...
+    </div>
+
+  `;
+
+  const {
+    data
+  } = await supabaseClient
+    .from("notifications")
+    .select("*")
+    .eq("receiver_id",me.id)
+    .order("created_at",{ascending:false})
+    .limit(50);
+
+  const box =
+    document.getElementById("notifications");
+
+  if(!data?.length){
+
+    box.innerHTML=`
+      <div class="card cardPad">
+        No notifications.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(n=>`
+
+      <div class="card">
+
+        <div class="cardPad">
+
+          ${
+            n.read
+            ? ""
+            : "<b>NEW </b>"
+          }
+
+          ${escapeHtml(n.text || "")}
+
+          <div
+            style="
+              color:#777;
+              font-size:12px;
+              margin-top:5px;
+            "
+          >
+            ${formatDate(n.created_at)}
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+  await supabaseClient
+    .from("notifications")
+    .update({read:true})
+    .eq("receiver_id",me.id);
+
+}
+
+
+/* =========================================================
+   EARNINGS
+========================================================= */
+
+async function showEarnings(){
+
+  const {
+    data
+  } = await supabaseClient
+    .from("creator_earnings")
+    .select("*")
+    .eq("user_id",me.id)
+    .order("created_at",{ascending:false});
+
+  const total =
+    (data||[]).reduce(
+      (sum,x)=>sum+Number(x.amount||0),
+      0
+    );
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card">
+
+      <div class="cardPad">
+
+        <h2>💰 Creator Earnings</h2>
+
+        <div
+          style="
+            font-size:35px;
+            font-weight:bold;
+            color:#1877f2;
+            margin-top:15px;
+          "
+        >
+          $${total.toFixed(2)}
+        </div>
+
+        <p style="color:#777;margin-top:5px">
+          Total recorded earnings
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="card cardPad">
+
+      <h3>Earning History</h3>
+
+      ${
+        data?.length
+        ? data.map(e=>`
+
+            <div
+              style="
+                padding:10px 0;
+                border-bottom:1px solid #eee;
+              "
+            >
+
+              <b>
+                $${Number(e.amount||0).toFixed(2)}
+              </b>
+
+              <span style="color:#777">
+                · ${escapeHtml(e.source || "content")}
+              </span>
+
+            </div>
+
+          `).join("")
+        : `
+          <p style="color:#777;margin-top:10px">
+            এখনো কোনো earning record নেই।
+          </p>
+        `
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+async function showAdmin(){
+
+  if(myProfile?.role!=="admin"){
+
+    toast("Admin only");
+
+    return;
+  }
+
+  document.getElementById("content").innerHTML = `
+
+    <div class="card cardPad">
+
+      <h2>🛡️ Admin Panel</h2>
+
+      <p style="color:#777;margin-top:5px">
+        Manage users, reports and posts.
+      </p>
+
+    </div>
+
+    <div id="adminReports">
+      Loading...
+    </div>
+
+  `;
+
+  await loadAdminReports();
+
+}
+
+
+async function loadAdminReports(){
+
+  const box =
+    document.getElementById("adminReports");
+
+  const {
+    data
+  } = await supabaseClient
+    .from("reports")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(!data?.length){
+
+    box.innerHTML=`
+      <div class="card cardPad">
+        No reports.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(r=>`
+
+      <div class="card">
+
+        <div class="cardPad">
+
+          <b>Report #${r.id}</b>
+
+          <p style="margin-top:7px">
+            Reason: ${escapeHtml(r.reason)}
+          </p>
+
+          <p style="color:#777">
+            Status: ${escapeHtml(r.status || "pending")}
+          </p>
+
+          ${
+            r.post_id
+            ? `
+              <button
+                class="primary"
+                style="margin-top:8px"
+                onclick="adminDeletePost(${r.post_id})"
+              >
+                Delete Reported Post
+              </button>
+            `
+            :""
+          }
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+async function adminDeletePost(postId){
+
+  if(myProfile?.role!=="admin"){
+
+    toast("Admin only");
+
+    return;
+  }
+
+  const {
+    error
+  } = await supabaseClient
+    .from("posts")
+    .delete()
+    .eq("id",postId);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+  toast("Post deleted by admin");
+
+  loadAdminReports();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+let searchTimer=null;
+
+async function searchUsers(value){
+
+  clearTimeout(searchTimer);
+
+  if(!value.trim()){
+
+    document
+      .getElementById("searchResults")
+      .classList.add("hidden");
+
+    return;
+  }
+
+  searchTimer=setTimeout(async()=>{
+
+    const {
+      data
+    } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .ilike("name","%"+value.trim()+"%")
+      .limit(20);
+
+    const box =
+      document.getElementById("searchResults");
+
+    if(!data?.length){
+
+      box.innerHTML=
+        `<div class="searchResult">
+          No users found
+        </div>`;
+
+    }else{
+
+      box.innerHTML =
+        data.map(p=>`
+
+          <div
+            class="searchResult"
+            onclick="
+              showProfile('${p.id}');
+              closeSearch();
+            "
+          >
+
+            <img
+              class="avatarSmall"
+              src="${
+                safeAttr(
+                  p.profile_photo ||
+                  "https://ui-avatars.com/api/?name="+
+                  encodeURIComponent(p.name || "User")
+                )
+              }"
+            >
+
+            <b>
+              ${escapeHtml(p.name || "User")}
+            </b>
+
+          </div>
+
+        `).join("");
+
+    }
+
+    box.classList.remove("hidden");
+
+  },300);
+
+}
+
+
+function closeSearch(){
+
+  document
+    .getElementById("searchResults")
+    .classList.add("hidden");
+
+  document
+    .getElementById("searchInput")
+    .value="";
+
+}
+
+
+/* =========================================================
+   UPLOAD
+========================================================= */
+
+async function uploadFile(file,folder){
+
+  if(!file) return null;
+
+  const safeName =
+    file.name
+      .replace(/[^a-zA-Z0-9._-]/g,"_");
+
+  const path =
+    folder+
+    "/"+
+    me.id+
+    "/"+
+    Date.now()+
+    "_"+
+    Math.random()
+      .toString(36)
+      .slice(2)+
+    "_"+
+    safeName;
+
+  const {
+    error
+  } = await supabaseClient
+    .storage
+    .from(BUCKET)
+    .upload(
+      path,
+      file,
+      {
+        upsert:false,
+        contentType:file.type
+      }
+    );
+
+  if(error){
+
+    toast("Upload error: "+error.message);
+
+    return null;
+  }
+
+  const {
+    data
+  } = supabaseClient
+    .storage
+    .from(BUCKET)
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+
+}
+
+
+function chooseFile(accept){
+
+  return new Promise(resolve=>{
+
+    const input =
+      document.createElement("input");
+
+    input.type="file";
+    input.accept=accept;
+
+    input.onchange=()=>{
+      resolve(input.files[0] || null);
+    };
+
+    input.click();
+
+  });
+
+}
+
+
+function previewFiles(input,targetId){
+
+  const box =
+    document.getElementById(targetId);
+
+  box.innerHTML="";
+
+  [...input.files].forEach(file=>{
+
+    const url=
+      URL.createObjectURL(file);
+
+    if(file.type.startsWith("video")){
+
+      box.innerHTML += `
+        <video
+          controls
+          src="${safeAttr(url)}"
+        ></video>
+      `;
+
+    }else{
+
+      box.innerHTML += `
+        <img
+          src="${safeAttr(url)}"
+        >
+      `;
+
+    }
+
+  });
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(title,body){
+
+  document
+    .getElementById("modalTitle")
+    .textContent=title;
+
+  document
+    .getElementById("modalBody")
+    .innerHTML=body;
+
+  document
+    .getElementById("modal")
+    .classList.remove("hidden");
+
+}
+
+
+function closeModal(){
+
+  document
+    .getElementById("modal")
+    .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function toast(message){
+
+  const box =
+    document.getElementById("toast");
+
+  box.textContent=message;
+
+  box.style.display="block";
+
+  setTimeout(()=>{
+
+    box.style.display="none";
+
+  },2500);
+
+}
+
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function safeAttr(value){
+
+  return escapeHtml(value);
 
 }
 
 
 function formatDate(date){
 
-return new Date(date)
-.toLocaleString("bn-BD",{
-dateStyle:"medium",
-timeStyle:"short"
-});
+  if(!date) return "";
+
+  return new Date(date)
+    .toLocaleString("bn-BD",{
+
+      dateStyle:"medium",
+      timeStyle:"short"
+
+    });
 
 }
 
 
-function getAvatar(user){
+function isVideo(url){
 
-if(user && user.profile_photo){
-
-return user.profile_photo;
-
-}
-
-const name =
-user?.name || "User";
-
-return "https://ui-avatars.com/api/?name="
-+encodeURIComponent(name)
-+"&background=1877f2&color=fff";
+  return /\.(mp4|webm|mov|m4v)(\?.*)?$/i
+    .test(url);
 
 }
 
 
-/* =========================
-   AUTH SCREEN
-========================= */
+/* =========================================================
+   PWA
+========================================================= */
 
-function showLogin(){
+if("serviceWorker" in navigator){
 
-document.getElementById("app").innerHTML = `
-
-<div class="auth">
-
-<div class="auth-box">
-
-<div class="auth-title">
-My Social App
-</div>
-
-<div class="tab">
-
-<button
-id="loginTab"
-class="active"
-onclick="showLoginForm()">
-Login
-</button>
-
-<button
-id="registerTab"
-onclick="showRegisterForm()">
-Create Account
-</button>
-
-</div>
-
-<div id="authForm"></div>
-
-</div>
-
-</div>
-
-`;
-
-showLoginForm();
+  window.addEventListener(
+    "load",
+    ()=>{
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(err=>{
+          console.log(
+            "Service Worker:",
+            err
+          );
+        });
+    }
+  );
 
 }
 
 
-/* =========================
-   LOGIN FORM
-========================= */
-
-function showLoginForm(){
-
-document.getElementById("loginTab")
-.classList.add("active");
-
-document.getElementById("registerTab")
-.classList.remove("active");
-
-document.getElementById("authForm").innerHTML = `
-
-<input
-id="loginEmail"
-class="input"
-type="email"
-placeholder="Email">
-
-<input
-id="loginPassword"
-class="input"
-type="password"
-placeholder="Password">
-
-<button
-class="primary"
-style="width:100%;margin-top:10px"
-onclick="login()">
-
-Login
-
-</button>
-
-`;
-
-}
-
-
-/* =========================
-   REGISTER FORM
-========================= */
-
-function showRegisterForm(){
-
-document.getElementById("loginTab")
-.classList.remove("active");
-
-document.getElementById("registerTab")
-.classList.add("active");
-
-document.getElementById("authForm").innerHTML = `
-
-<input
-id="registerName"
-class="input"
-placeholder="Your name">
-
-<input
-id="registerEmail"
-class="input"
-type="email"
-placeholder="Email">
-
-<input
-id="registerPassword"
-class="input"
-type="password"
-placeholder="Password">
-
-<button
-class="primary"
-style="width:100%;margin-top:10px"
-onclick="register()">
-
-Create Account
-
-</button>
-
-`;
-
-}
-
-
-/* =========================
-   LOGIN
-========================= */
-
-async function login(){
-
-const email =
-document.getElementById("loginEmail")
-.value.trim();
-
-const password =
-document.getElementById("loginPassword")
-.value;
-
-if(!email || !password){
-
-showToast("Email এবং Password দিন");
-
-return;
-
-}
-
-const {data,error} =
-await supabaseClient.auth
-.signInWithPassword({
-email,
-password
-});
-
-if(error){
-
-showToast(error.message);
-
-return;
-
-}
-
-await startApp();
-
-}
-
-
-/* =========================
-   REGISTER
-========================= */
-
-async function register(){
-
-const name =
-document.getElementById("registerName")
-.value.trim();
-
-const email =
-document.getElementById("registerEmail")
-.value.trim();
-
-const password =
-document.getElementById("registerPassword")
-.value;
-
-if(!name){
-
-showToast("নাম দিন");
-
-return;
-
-}
-
-if(password.length < 6){
-
-showToast("Password কমপক্ষে ৬ অক্ষর দিন");
-
-return;
-
-}
-
-const {data,error} =
-await supabaseClient.auth.signUp({
-
-email,
-password,
-
-options:{
-data:{
-name:name
-}
-}
-
-});
-
-if(error){
-
-showToast(error.message);
-
-return;
-
-}
-
-if(data.user){
-
-await supabaseClient
-.from("profiles")
-.upsert({
-
-id:data.user.id,
-name:name
-
-});
-
-}
-
-if(data.session){
-
-await startApp();
-
-}else{
-
-showToast(
-"Account তৈরি হয়েছে। Email confirmation চাইলে email confirm করে Login করুন।"
-);
-
-}
-
-}
-
-
-/* =========================
-   START APP
-========================= */
-
-async function startApp(){
-
-const {data:{user}} =
-await supabaseClient.auth.getUser();
-
-if(!user){
-
-showLogin();
-
-return;
-
-}
-
-me = user;
-
-
-/* PROFILE */
-
-let {data:p} =
-await supabaseClient
-.from("profiles")
-.select("*")
-.eq("id",user.id)
-.maybeSingle();
-
-
-if(!p){
-
-const {data:newProfile} =
-await supabaseClient
-.from("profiles")
-.insert({
-
-id:user.id,
-
-name:
-user.user_metadata?.name ||
-user.email?.split("@")[0] ||
-"User"
-
-})
-.select()
-.single();
-
-p = newProfile;
-
-}
-
-profile = p;
-
-
-/* LAST SEEN */
-
-await supabaseClient
-.from("profiles")
-.update({
-last_seen:new Date().toISOString()
-})
-.eq("id",me.id)
-.catch(()=>{});
-
-
-renderLayout();
-
-goHome();
-
-}
-
-
-/* =========================
-   MAIN LAYOUT
-========================= */
-
-function renderLayout(){
-
-document.getElementById("app").innerHTML = `
-
-<header class="header">
-
-<div class="logo">
-My Social
-</div>
-
-<input
-class="search"
-placeholder="Search people..."
-oninput="searchPeople(this.value)">
-
-<button
-class="header-btn"
-onclick="goHome()">
-🏠
-</button>
-
-<button
-class="header-btn"
-onclick="showMyProfile()">
-👤
-</button>
-
-<button
-class="header-btn"
-onclick="logout()">
-🚪
-</button>
-
-</header>
-
-
-<main class="container">
-
-<div id="page"></div>
-
-</main>
-
-
-<nav class="nav">
-
-<button
-id="navHome"
-onclick="goHome()">
-🏠<br>Home
-</button>
-
-<button
-id="navReels"
-onclick="showComingSoon('Reels')">
-🎬<br>Reels
-</button>
-
-<button
-id="navFriends"
-onclick="showComingSoon('Friends')">
-👥<br>Friends
-</button>
-
-<button
-id="navMessages"
-onclick="showComingSoon('Messenger')">
-💬<br>Message
-</button>
-
-<button
-id="navProfile"
-onclick="showMyProfile()">
-👤<br>Profile
-</button>
-
-</nav>
-
-`;
-
-}
-
-
-/* =========================
-   NAVIGATION
-========================= */
-
-function setActiveNav(name){
+/* CLOSE MODAL ON BACKDROP */
 
 document
-.querySelectorAll(".nav button")
-.forEach(btn=>{
-btn.classList.remove("active");
-});
+  .getElementById("modal")
+  .addEventListener("click",e=>{
 
-const btn =
-document.getElementById("nav"+name);
+    if(e.target.id==="modal"){
 
-if(btn){
+      closeModal();
 
-btn.classList.add("active");
+    }
 
-}
-
-}
-
-
-/* =========================
-   HOME
-========================= */
-
-async function goHome(){
-
-currentPage="home";
-
-setActiveNav("Home");
-
-const page =
-document.getElementById("page");
-
-page.innerHTML = `
-
-<div class="card">
-
-<div class="row">
-
-<img
-class="avatar"
-src="${getAvatar(profile)}">
-
-<textarea
-id="postText"
-class="input"
-rows="2"
-placeholder="আপনার মনে কী আছে?">
-</textarea>
-
-</div>
-
-
-<div class="actions">
-
-<button
-onclick="document.getElementById('postFiles').click()">
-
-📷 Photo/Video
-
-</button>
-
-<button
-onclick="showComingSoon('Story')">
-
-⭕ Story
-
-</button>
-
-</div>
-
-
-<input
-id="postFiles"
-class="hidden"
-type="file"
-accept="image/*,video/*"
-multiple
-onchange="showSelectedFiles(this)">
-
-
-<div
-id="selectedFiles"
-class="muted">
-</div>
-
-
-<button
-class="primary"
-style="width:100%;margin-top:10px"
-onclick="createPost()">
-
-Post
-
-</button>
-
-</div>
-
-
-<div id="feed">
-
-<div class="empty">
-Loading posts...
-</div>
-
-</div>
-
-`;
-
-await loadFeed();
-
-}
-
-
-/* =========================
-   SELECTED FILES
-========================= */
-
-function showSelectedFiles(input){
-
-const files =
-Array.from(input.files);
-
-document.getElementById(
-"selectedFiles"
-).textContent =
-files.map(f=>f.name).join(", ");
-
-}
-
-
-/* =========================
-   UPLOAD FILE
-========================= */
-
-async function uploadFile(file){
-
-const extension =
-file.name.split(".").pop();
-
-const path =
-"posts/"
-+me.id+"/"
-+Date.now()
-+"_"
-+Math.random()
-.toString(36)
-.substring(2)
-+"."+extension;
-
-
-const {error} =
-await supabaseClient
-.storage
-.from("media")
-.upload(
-path,
-file,
-{
-upsert:false,
-contentType:file.type
-}
-);
-
-
-if(error){
-
-throw error;
-
-}
-
-
-const {data} =
-supabaseClient
-.storage
-.from("media")
-.getPublicUrl(path);
-
-
-return data.publicUrl;
-
-}
-
-
-/* =========================
-   CREATE POST
-========================= */
-
-async function createPost(){
-
-const text =
-document.getElementById("postText")
-.value.trim();
-
-const files =
-Array.from(
-document.getElementById("postFiles")
-.files
-);
-
-
-if(!text && files.length===0){
-
-showToast(
-"কিছু লিখুন অথবা ছবি/ভিডিও দিন"
-);
-
-return;
-
-}
-
-
-try{
-
-showToast("Post হচ্ছে...");
-
-
-const {data:post,error} =
-await supabaseClient
-.from("posts")
-.insert({
-
-user_id:me.id,
-
-text:text,
-
-image_url:""
-
-})
-.select()
-.single();
-
-
-if(error){
-
-throw error;
-
-}
-
-
-/* FILE UPLOAD */
-
-let firstURL="";
-
-
-for(let i=0;i<files.length;i++){
-
-const file=files[i];
-
-const url =
-await uploadFile(file);
-
-if(i===0){
-
-firstURL=url;
-
-}
-
-
-/* MULTIPLE MEDIA */
-
-await supabaseClient
-.from("post_media")
-.insert({
-
-post_id:post.id,
-
-media_url:url,
-
-media_type:
-file.type.startsWith("video")
-?"video"
-:"image",
-
-sort_order:i
-
-});
-
-}
-
-
-/* OLD IMAGE_URL SUPPORT */
-
-if(firstURL){
-
-await supabaseClient
-.from("posts")
-.update({
-image_url:firstURL
-})
-.eq("id",post.id);
-
-}
-
-
-showToast("Post হয়েছে");
-
-goHome();
-
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-error.message ||
-"Post failed"
-);
-
-}
-
-}
-
-
-/* =========================
-   LOAD FEED
-========================= */
-
-async function loadFeed(){
-
-const feed =
-document.getElementById("feed");
-
-const {data,error} =
-await supabaseClient
-.from("posts")
-.select("*")
-.order(
-"created_at",
-{
-ascending:false
-}
-)
-.limit(50);
-
-
-if(error){
-
-feed.innerHTML = `
-
-<div class="card empty">
-
-${escapeHTML(error.message)}
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-posts=data || [];
-
-
-if(posts.length===0){
-
-feed.innerHTML = `
-
-<div class="card empty">
-
-এখনও কোনো পোস্ট নেই।<br>
-
-প্রথম পোস্টটি আপনি দিন।
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-/* GET USERS */
-
-const ids =
-[
-...new Set(
-posts.map(p=>p.user_id)
-)
-];
-
-
-const {data:profiles} =
-await supabaseClient
-.from("profiles")
-.select("*")
-.in("id",ids);
-
-
-const profileMap =
-Object.fromEntries(
-(profiles || [])
-.map(p=>[p.id,p])
-);
-
-
-feed.innerHTML =
-posts
-.map(post=>
-createPostHTML(
-post,
-profileMap[post.user_id]
-)
-)
-.join("");
-
-
-/* MEDIA */
-
-for(const post of posts){
-
-await loadPostMedia(post.id);
-
-}
-
-}
-
-
-/* =========================
-   POST HTML
-========================= */
-
-function createPostHTML(post,user){
-
-return `
-
-<article
-class="card"
-id="post-${post.id}">
-
-
-<div class="row between">
-
-<div class="row">
-
-<img
-class="avatar"
-src="${getAvatar(user)}">
-
-<div>
-
-<b>
-
-${escapeHTML(
-user?.name || "User"
-)}
-
-</b>
-
-${user?.verified
-?" ✓"
-:""}
-
-<div class="muted">
-
-${formatDate(
-post.created_at
-)}
-
-</div>
-
-</div>
-
-</div>
-
-
-${
-post.user_id===me.id
-
-?
-
-`<button
-class="light"
-onclick="deleteMyPost(${post.id})">
-
-🗑
-
-</button>`
-
-:
-
-""
-
-}
-
-</div>
-
-
-${
-post.text
-
-?
-
-`<div class="post-text">
-
-${escapeHTML(post.text)}
-
-</div>`
-
-:
-
-""
-
-}
-
-
-<div id="media-${post.id}">
-
-${
-post.image_url
-
-?
-
-(
-
-/\.(mp4|webm|mov|m4v)(\?|$)/i
-.test(post.image_url)
-
-?
-
-`<video
-class="post-video"
-controls
-src="${post.image_url}">
-</video>`
-
-:
-
-`<img
-class="post-image"
-src="${post.image_url}">`
-
-)
-
-:
-
-""
-
-}
-
-</div>
-
-
-<div
-class="actions">
-
-<button
-onclick="likePost(${post.id})">
-
-👍 Like
-
-</button>
-
-<button
-onclick="showComingSoon('Comment')">
-
-💬 Comment
-
-</button>
-
-<button
-onclick="sharePost(${post.id})">
-
-↗ Share
-
-</button>
-
-</div>
-
-
-</article>
-
-`;
-
-}
-
-
-/* =========================
-   LOAD MULTIPLE MEDIA
-========================= */
-
-async function loadPostMedia(postId){
-
-const box =
-document.getElementById(
-"media-"+postId
-);
-
-if(!box)return;
-
-
-const {data,error} =
-await supabaseClient
-.from("post_media")
-.select("*")
-.eq("post_id",postId)
-.order("sort_order");
-
-
-if(error || !data || !data.length){
-
-return;
-
-}
-
-
-box.innerHTML =
-data
-.map(media=>{
-
-if(media.media_type==="video"){
-
-return `
-
-<video
-class="post-video"
-controls
-playsinline
-src="${media.media_url}">
-</video>
-
-`;
-
-}
-
-return `
-
-<img
-class="post-image"
-src="${media.media_url}">
-
-`;
-
-})
-.join("");
-
-}
-
-
-/* =========================
-   LIKE
-========================= */
-
-async function likePost(postId){
-
-const {data} =
-await supabaseClient
-.from("post_likes")
-.select("*")
-.eq("post_id",postId)
-.eq("user_id",me.id)
-.maybeSingle();
-
-
-if(data){
-
-await supabaseClient
-.from("post_likes")
-.delete()
-.eq("post_id",postId)
-.eq("user_id",me.id);
-
-showToast("Like removed");
-
-}else{
-
-await supabaseClient
-.from("post_likes")
-.insert({
-
-post_id:postId,
-
-user_id:me.id
-
-});
-
-showToast("Liked ❤️");
-
-}
-
-}
-
-
-/* =========================
-   SHARE
-========================= */
-
-async function sharePost(id){
-
-const url =
-location.href
-.split("#")[0]
-+"#post-"+id;
-
-
-if(navigator.share){
-
-await navigator.share({
-
-title:"My Social App",
-
-text:"Check this post",
-
-url:url
-
-});
-
-}else{
-
-try{
-
-await navigator.clipboard
-.writeText(url);
-
-showToast("Post link copied");
-
-}catch{
-
-showToast(url);
-
-}
-
-}
-
-}
-
-
-/* =========================
-   DELETE
-========================= */
-
-async function deleteMyPost(id){
-
-if(!confirm(
-"এই পোস্টটি Delete করবেন?"
-))return;
-
-
-const {error} =
-await supabaseClient
-.from("posts")
-.delete()
-.eq("id",id)
-.eq("user_id",me.id);
-
-
-if(error){
-
-showToast(error.message);
-
-return;
-
-}
-
-
-showToast("Post deleted");
-
-goHome();
-
-}
-
-
-/* =========================
-   PROFILE
-========================= */
-
-async function showMyProfile(){
-
-await showProfile(me.id);
-
-}
-
-
-/* =========================
-   SHOW PROFILE
-========================= */
-
-async function showProfile(userId){
-
-currentPage="profile";
-
-setActiveNav("Profile");
-
-
-const page =
-document.getElementById("page");
-
-
-const {data:user,error} =
-await supabaseClient
-.from("profiles")
-.select("*")
-.eq("id",userId)
-.single();
-
-
-if(error){
-
-page.innerHTML =
-`<div class="card">${error.message}</div>`;
-
-return;
-
-}
-
-
-/* COUNTS */
-
-const {count:followers} =
-await supabaseClient
-.from("follows")
-.select("*",{
-count:"exact",
-head:true
-})
-.eq("following_id",userId);
-
-
-const {count:following} =
-await supabaseClient
-.from("follows")
-.select("*",{
-count:"exact",
-head:true
-})
-.eq("follower_id",userId);
-
-
-page.innerHTML = `
-
-<div class="card" style="padding:0;overflow:hidden">
-
-<div
-class="cover"
-style="
-background-image:url('${user.cover_photo || ""}')
-">
-</div>
-
-
-<div class="profile-info">
-
-<div class="row between">
-
-<img
-class="avatar-large"
-src="${getAvatar(user)}">
-
-
-${
-userId===me.id
-
-?
-
-`<button
-class="primary"
-onclick="editMyProfile()">
-
-Edit Profile
-
-</button>`
-
-:
-
-""
-
-}
-
-</div>
-
-
-<div class="profile-name">
-
-${escapeHTML(user.name)}
-
-${user.verified?" ✓":""}
-
-</div>
-
-
-<div class="muted">
-
-${escapeHTML(
-user.bio || "No bio"
-)}
-
-</div>
-
-
-<div class="stats">
-
-<div>
-
-<b>${followers || 0}</b>
-
-<br>
-
-<span class="muted">
-Followers
-</span>
-
-</div>
-
-
-<div>
-
-<b>${following || 0}</b>
-
-<br>
-
-<span class="muted">
-Following
-</span>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<b>Posts</b>
-
-</div>
-
-
-<div id="profilePosts">
-
-<div class="empty">
-Loading...
-</div>
-
-</div>
-
-`;
-
-
-/* USER POSTS */
-
-const {data:userPosts} =
-await supabaseClient
-.from("posts")
-.select("*")
-.eq("user_id",userId)
-.order(
-"created_at",
-{
-ascending:false
-}
-)
-.limit(50);
-
-
-const box =
-document.getElementById(
-"profilePosts"
-);
-
-
-if(!userPosts?.length){
-
-box.innerHTML = `
-
-<div class="card empty">
-
-No posts yet.
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-box.innerHTML =
-userPosts
-.map(post=>
-createPostHTML(
-post,
-user
-)
-)
-.join("");
-
-
-for(const post of userPosts){
-
-await loadPostMedia(post.id);
-
-}
-
-}
-
-
-/* =========================
-   EDIT PROFILE
-========================= */
-
-async function editMyProfile(){
-
-const name =
-prompt(
-"আপনার নাম:",
-profile.name
-);
-
-if(name===null)return;
-
-
-const bio =
-prompt(
-"Bio:",
-profile.bio || ""
-);
-
-if(bio===null)return;
-
-
-const {error} =
-await supabaseClient
-.from("profiles")
-.update({
-
-name:name,
-
-bio:bio
-
-})
-.eq("id",me.id);
-
-
-if(error){
-
-showToast(error.message);
-
-return;
-
-}
-
-
-profile =
-await getMyProfile();
-
-
-showToast(
-"Profile updated"
-);
-
-showMyProfile();
-
-}
-
-
-/* =========================
-   GET PROFILE
-========================= */
-
-async function getMyProfile(){
-
-const {data} =
-await supabaseClient
-.from("profiles")
-.select("*")
-.eq("id",me.id)
-.single();
-
-return data;
-
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-let searchTimer;
-
-
-function searchPeople(text){
-
-clearTimeout(searchTimer);
-
-
-if(!text.trim()){
-
-return;
-
-}
-
-
-searchTimer =
-setTimeout(
-async()=>{
-
-const {data} =
-await supabaseClient
-.from("profiles")
-.select("*")
-.ilike(
-"name",
-"%"+text.trim()+"%"
-)
-.limit(20);
-
-
-const page =
-document.getElementById("page");
-
-
-page.innerHTML = `
-
-<div class="card">
-
-<b>
-Search Results
-</b>
-
-</div>
-
-${
-(data || [])
-.map(user=>`
-
-<div
-class="card row"
-onclick="showProfile('${user.id}')">
-
-<img
-class="avatar"
-src="${getAvatar(user)}">
-
-<div>
-
-<b>
-${escapeHTML(user.name)}
-</b>
-
-<div class="muted">
-${escapeHTML(user.bio || "")}
-</div>
-
-</div>
-
-</div>
-
-`)
-.join("")
-
-||
-
-`<div class="card empty">
-
-কোনো User পাওয়া যায়নি।
-
-</div>`
-
-`;
-
-},
-300
-);
-
-}
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-async function logout(){
-
-await supabaseClient
-.auth
-.signOut();
-
-location.reload();
-
-}
-
-
-/* =========================
-   COMING SOON
-========================= */
-
-function showComingSoon(name){
-
-showToast(
-name+" Part 2/3-তে আসবে"
-);
-
-}
-
-
-/* =========================
-   INIT
-========================= */
-
-async function init(){
-
-const {data:{session}} =
-await supabaseClient
-.auth
-.getSession();
-
-
-if(session){
-
-await startApp();
-
-}else{
-
-showLogin();
-
-}
-
-}
-
-
-init();
-
-
-/* =========================
-   SERVICE WORKER
-========================= */
-
-if(
-"serviceWorker"
-in navigator
-){
-
-navigator.serviceWorker
-.register("./sw.js")
-.catch(()=>{});
-
-}
+  });
 
 </script>
 
 </body>
-</html>
+   </html>
