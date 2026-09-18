@@ -1,337 +1,952 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1877f2">
-  <meta name="description" content="FriendBook - Connect with friends, share posts and watch reels">
-  <link rel="manifest" href="./manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1877f2">
+<meta name="description" content="FriendBook - Connect with friends">
+<link rel="manifest" href="./manifest.json">
+<title>FriendBook</title>
 
-  <title>FriendBook</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f0f2f5;
+  color:#1c1e21;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
 
-  <style>
-    *{
-      box-sizing:border-box;
-    }
+:root{
+ --blue:#1877f2;
+ --bg:#f0f2f5;
+ --card:#fff;
+ --text:#1c1e21;
+ --muted:#65676b;
+ --border:#dddfe2;
+ --hover:#f2f2f2;
+}
 
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#f0f2f5;
-      color:#1c1e21;
-    }
+body.dark{
+ --bg:#18191a;
+ --card:#242526;
+ --text:#e4e6eb;
+ --muted:#b0b3b8;
+ --border:#3e4042;
+ --hover:#3a3b3c;
+}
 
-    header{
-      background:#1877f2;
-      color:white;
-      padding:14px 18px;
-      position:sticky;
-      top:0;
-      z-index:1000;
-      box-shadow:0 2px 8px rgba(0,0,0,.15);
-    }
+body{background:var(--bg);color:var(--text)}
 
-    header h1{
-      margin:0;
-      font-size:25px;
-    }
+.app-header{
+ position:sticky;
+ top:0;
+ z-index:1000;
+ height:60px;
+ background:var(--card);
+ border-bottom:1px solid var(--border);
+ display:flex;
+ align-items:center;
+ padding:0 16px;
+ gap:14px;
+}
 
-    .app-name{
-      font-weight:bold;
-    }
+.brand{
+ font-size:27px;
+ font-weight:800;
+ color:var(--blue);
+ white-space:nowrap;
+}
 
-    main{
-      max-width:700px;
-      margin:20px auto;
-      padding:0 12px;
-    }
+.header-search{
+ flex:1;
+ max-width:430px;
+}
 
-    .card{
-      background:white;
-      border-radius:12px;
-      padding:16px;
-      margin-bottom:15px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-    }
+.header-search input{
+ width:100%;
+ border:0;
+ outline:0;
+ background:var(--bg);
+ color:var(--text);
+ padding:11px 16px;
+ border-radius:22px;
+}
 
-    button{
-      border:0;
-      border-radius:8px;
-      padding:10px 15px;
-      cursor:pointer;
-      font-size:15px;
-    }
+.header-icons{
+ margin-left:auto;
+ display:flex;
+ gap:7px;
+}
 
-    .primary{
-      background:#1877f2;
-      color:white;
-    }
+.icon-btn{
+ width:42px;
+ height:42px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
+ font-size:20px;
+}
 
-    .danger{
-      background:#e41e3f;
-      color:white;
-    }
+.icon-btn:hover{background:var(--hover)}
 
-    input,textarea,select{
-      width:100%;
-      padding:12px;
-      border:1px solid #ddd;
-      border-radius:8px;
-      margin:6px 0 10px;
-      font-size:15px;
-      outline:none;
-    }
+.layout{
+ max-width:1400px;
+ margin:auto;
+ display:grid;
+ grid-template-columns:250px minmax(400px,680px) 280px;
+ gap:18px;
+ padding:18px;
+}
 
-    textarea{
-      min-height:90px;
-      resize:vertical;
-    }
+.left,.right{
+ position:sticky;
+ top:78px;
+ height:max-content;
+}
 
-    .center{
-      text-align:center;
-    }
+.menu-card,.card{
+ background:var(--card);
+ border-radius:12px;
+ border:1px solid var(--border);
+ margin-bottom:14px;
+}
 
-    .hidden{
-      display:none!important;
-    }
+.menu-item{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ width:100%;
+ padding:13px;
+ background:none;
+ color:var(--text);
+ text-align:left;
+ border-radius:9px;
+ font-weight:600;
+}
 
-    .logo{
-      font-size:38px;
-      font-weight:bold;
-      color:#1877f2;
-      margin-bottom:5px;
-    }
+.menu-item:hover{background:var(--hover)}
 
-    .subtitle{
-      color:#65676b;
-    }
+.menu-icon{font-size:22px;width:28px;text-align:center}
 
-    .post-head{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+.card{
+ padding:14px;
+}
 
-    .avatar{
-      width:45px;
-      height:45px;
-      border-radius:50%;
-      object-fit:cover;
-      background:#ddd;
-    }
+.composer{
+ display:flex;
+ gap:10px;
+ align-items:center;
+}
 
-    .post-name{
-      font-weight:bold;
-    }
+.avatar{
+ width:44px;
+ height:44px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#ccd0d5;
+ flex-shrink:0;
+}
 
-    .post-time{
-      font-size:12px;
-      color:#65676b;
-    }
+.composer-input{
+ flex:1;
+ background:var(--bg);
+ border:0;
+ border-radius:24px;
+ padding:13px 17px;
+ color:var(--text);
+ cursor:pointer;
+}
 
-    .post-text{
-      margin:14px 0;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
+.story-row{
+ display:flex;
+ gap:10px;
+ overflow-x:auto;
+ padding-bottom:3px;
+}
 
-    .post-image{
-      width:100%;
-      max-height:600px;
-      object-fit:cover;
-      border-radius:10px;
-      margin-top:5px;
-    }
+.story{
+ min-width:110px;
+ height:170px;
+ border-radius:12px;
+ overflow:hidden;
+ position:relative;
+ background:linear-gradient(135deg,#1877f2,#8b5cf6);
+ color:white;
+ display:flex;
+ align-items:flex-end;
+ padding:10px;
+ font-weight:bold;
+}
 
-    .actions{
-      display:flex;
-      gap:6px;
-      margin-top:12px;
-      border-top:1px solid #eee;
-      padding-top:10px;
-    }
+.feed-tools{
+ display:flex;
+ gap:8px;
+ margin-bottom:14px;
+}
 
-    .actions button{
-      flex:1;
-      background:#f0f2f5;
-    }
+.feed-tab{
+ flex:1;
+ padding:11px;
+ border-radius:8px;
+ background:var(--bg);
+ color:var(--text);
+ font-weight:bold;
+}
 
-    nav{
-      display:flex;
-      gap:7px;
-      overflow-x:auto;
-      margin-bottom:15px;
-    }
+.feed-tab.active{
+ background:var(--blue);
+ color:white;
+}
 
-    nav button{
-      white-space:nowrap;
-      background:white;
-    }
+.post-head{
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
 
-    nav button.active{
-      background:#1877f2;
-      color:white;
-    }
+.post-user{
+ font-weight:700;
+}
 
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:25px;
-      transform:translateX(-50%);
-      background:#222;
-      color:white;
-      padding:12px 18px;
-      border-radius:8px;
-      z-index:9999;
-      display:none;
-    }
+.post-time{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:3px;
+}
 
-    .loading{
-      text-align:center;
-      padding:25px;
-      color:#65676b;
-    }
+.post-menu{
+ margin-left:auto;
+ background:none;
+ color:var(--text);
+ font-size:21px;
+}
 
-    body.dark{
-      background:#18191a;
-      color:#e4e6eb;
-    }
+.post-text{
+ white-space:pre-wrap;
+ word-break:break-word;
+ line-height:1.45;
+ margin:13px 0;
+}
 
-    body.dark .card,
-    body.dark nav button{
-      background:#242526;
-      color:#e4e6eb;
-    }
+.post-image{
+ display:block;
+ width:100%;
+ max-height:650px;
+ object-fit:cover;
+ border-radius:9px;
+}
 
-    body.dark input,
-    body.dark textarea,
-    body.dark select{
-      background:#3a3b3c;
-      color:white;
-      border-color:#555;
-    }
+.post-meta{
+ display:flex;
+ justify-content:space-between;
+ color:var(--muted);
+ font-size:13px;
+ padding:9px 2px;
+ border-bottom:1px solid var(--border);
+}
 
-    body.dark .actions button{
-      background:#3a3b3c;
-      color:white;
-    }
+.post-actions{
+ display:flex;
+ gap:5px;
+ padding-top:7px;
+}
 
-    body.dark .post-time,
-    body.dark .subtitle{
-      color:#b0b3b8;
-    }
+.post-action{
+ flex:1;
+ background:none;
+ color:var(--muted);
+ padding:10px 5px;
+ border-radius:7px;
+ font-weight:600;
+}
 
-    @media(max-width:600px){
-      main{
-        margin:10px auto;
-      }
+.post-action:hover{
+ background:var(--hover);
+ color:var(--text);
+}
 
-      .card{
-        border-radius:8px;
-      }
-    }
-  </style>
+.reaction-box{
+ display:flex;
+ gap:4px;
+ padding:8px;
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:25px;
+ position:absolute;
+ bottom:45px;
+ left:0;
+ z-index:5;
+ box-shadow:0 4px 15px rgba(0,0,0,.18);
+}
+
+.reaction-wrap{
+ position:relative;
+ flex:1;
+}
+
+.reaction-box button{
+ background:none;
+ font-size:23px;
+ padding:3px;
+}
+
+.comment-list{
+ margin-top:10px;
+}
+
+.comment{
+ display:flex;
+ gap:8px;
+ margin:9px 0;
+}
+
+.comment-body{
+ background:var(--bg);
+ border-radius:15px;
+ padding:8px 12px;
+ flex:1;
+}
+
+.comment-name{
+ font-size:13px;
+ font-weight:bold;
+}
+
+.comment-text{
+ font-size:14px;
+ margin-top:3px;
+}
+
+.comment-input-row{
+ display:flex;
+ gap:8px;
+ margin-top:10px;
+}
+
+.comment-input-row input{
+ flex:1;
+ border:0;
+ background:var(--bg);
+ color:var(--text);
+ padding:11px 14px;
+ border-radius:20px;
+ outline:0;
+}
+
+.comment-input-row button{
+ background:var(--blue);
+ color:white;
+ border-radius:20px;
+ padding:0 17px;
+}
+
+.profile-cover{
+ height:240px;
+ border-radius:12px 12px 0 0;
+ background:linear-gradient(135deg,#1877f2,#7c3aed);
+ overflow:hidden;
+}
+
+.profile-cover img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.profile-main{
+ padding:0 20px 20px;
+ position:relative;
+}
+
+.profile-avatar{
+ width:130px;
+ height:130px;
+ border-radius:50%;
+ border:5px solid var(--card);
+ object-fit:cover;
+ margin-top:-65px;
+ background:#ddd;
+}
+
+.profile-name{
+ font-size:25px;
+ font-weight:800;
+ margin-top:8px;
+}
+
+.profile-bio{
+ color:var(--muted);
+ margin-top:5px;
+}
+
+.profile-tabs{
+ display:flex;
+ gap:5px;
+ overflow-x:auto;
+ margin-top:18px;
+ border-top:1px solid var(--border);
+ padding-top:10px;
+}
+
+.profile-tabs button{
+ padding:10px 17px;
+ border-radius:8px;
+ background:none;
+ color:var(--text);
+ font-weight:bold;
+}
+
+.profile-tabs button:hover{background:var(--hover)}
+
+.modal-bg{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.6);
+ z-index:5000;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+
+.modal{
+ width:100%;
+ max-width:560px;
+ max-height:90vh;
+ overflow:auto;
+ background:var(--card);
+ color:var(--text);
+ border-radius:14px;
+}
+
+.modal-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:15px;
+ border-bottom:1px solid var(--border);
+}
+
+.modal-body{padding:15px}
+
+.close{
+ background:none;
+ color:var(--text);
+ font-size:25px;
+}
+
+.form-control{
+ width:100%;
+ border:1px solid var(--border);
+ background:var(--card);
+ color:var(--text);
+ border-radius:9px;
+ padding:12px;
+ margin-bottom:10px;
+ outline:0;
+}
+
+.primary{
+ background:var(--blue);
+ color:white;
+ padding:11px 17px;
+ border-radius:8px;
+ font-weight:bold;
+}
+
+.secondary{
+ background:var(--bg);
+ color:var(--text);
+ padding:11px 17px;
+ border-radius:8px;
+ font-weight:bold;
+}
+
+.danger{
+ background:#e41e3f;
+ color:white;
+ padding:11px 17px;
+ border-radius:8px;
+}
+
+.full{width:100%}
+
+.auth{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
+
+.auth-box{
+ width:100%;
+ max-width:410px;
+}
+
+.auth-brand{
+ text-align:center;
+ font-size:42px;
+ font-weight:900;
+ color:var(--blue);
+ margin-bottom:8px;
+}
+
+.auth-sub{
+ text-align:center;
+ color:var(--muted);
+ margin-bottom:20px;
+}
+
+.auth-card{
+ background:var(--card);
+ padding:22px;
+ border-radius:12px;
+ box-shadow:0 5px 25px rgba(0,0,0,.12);
+}
+
+.auth-card input{
+ width:100%;
+ padding:14px;
+ margin-bottom:10px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ background:var(--card);
+ color:var(--text);
+ outline:0;
+}
+
+.auth-link{
+ background:none;
+ color:var(--blue);
+ margin-top:12px;
+}
+
+.reel{
+ position:relative;
+ background:#000;
+ border-radius:12px;
+ overflow:hidden;
+ margin-bottom:15px;
+ min-height:500px;
+}
+
+.reel video{
+ width:100%;
+ max-height:750px;
+ display:block;
+ object-fit:contain;
+ background:#000;
+}
+
+.reel-info{
+ padding:12px;
+ background:var(--card);
+}
+
+.reel-actions{
+ display:flex;
+ gap:7px;
+ margin-top:10px;
+}
+
+.reel-actions button{
+ flex:1;
+ background:var(--bg);
+ color:var(--text);
+ padding:10px;
+ border-radius:8px;
+}
+
+.search-result{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid var(--border);
+}
+
+.search-result:last-child{border-bottom:0}
+
+.notification{
+ display:flex;
+ gap:10px;
+ padding:12px;
+ border-bottom:1px solid var(--border);
+}
+
+.notification.unread{
+ background:rgba(24,119,242,.08);
+}
+
+.setting-row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:15px 5px;
+ border-bottom:1px solid var(--border);
+}
+
+.switch{
+ width:48px;
+ height:26px;
+ border-radius:20px;
+ background:#aaa;
+ padding:3px;
+}
+
+.switch.on{background:var(--blue)}
+
+.switch span{
+ display:block;
+ width:20px;
+ height:20px;
+ border-radius:50%;
+ background:white;
+ transition:.2s;
+}
+
+.switch.on span{margin-left:22px}
+
+.stat-grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+
+.stat{
+ text-align:center;
+ background:var(--bg);
+ border-radius:10px;
+ padding:15px 5px;
+}
+
+.stat strong{
+ display:block;
+ font-size:21px;
+}
+
+.empty{
+ text-align:center;
+ padding:35px 15px;
+ color:var(--muted);
+}
+
+.toast{
+ position:fixed;
+ left:50%;
+ bottom:25px;
+ transform:translateX(-50%);
+ background:#222;
+ color:white;
+ padding:12px 18px;
+ border-radius:9px;
+ z-index:9999;
+ display:none;
+ max-width:90%;
+}
+
+@media(max-width:1050px){
+ .layout{
+  grid-template-columns:200px minmax(400px,680px);
+ }
+ .right{display:none}
+}
+
+@media(max-width:760px){
+ .app-header{padding:0 10px}
+ .brand{font-size:23px}
+ .header-search{display:none}
+ .layout{
+  display:block;
+  padding:8px;
+ }
+ .left{display:none}
+ .card{border-radius:9px}
+ .profile-cover{height:170px}
+ .profile-avatar{
+  width:105px;
+  height:105px;
+  margin-top:-52px;
+ }
+}
+</style>
 </head>
 
 <body>
 
-<!-- =========================
-     LOGIN
-========================= -->
+<!-- AUTH -->
 
-<section id="loginPage" class="center" style="padding:50px 20px;">
-  <div class="logo">FriendBook</div>
-  <p class="subtitle">বন্ধুদের সাথে যুক্ত থাকুন</p>
+<div id="authPage" class="auth">
 
-  <div class="card" style="max-width:400px;margin:20px auto;">
-    <input id="loginEmail" type="email" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
+  <div class="auth-box">
 
-    <button class="primary" style="width:100%;" onclick="login()">
-      Login
-    </button>
+    <div class="auth-brand">FriendBook</div>
+    <div class="auth-sub">
+      Connect with friends and share your world
+    </div>
 
-    <br><br>
+    <div class="auth-card" id="loginBox">
 
-    <button style="width:100%;" onclick="showSignup()">
-      Create new account
-    </button>
+      <input id="loginEmail"
+        type="email"
+        placeholder="Email">
+
+      <input id="loginPassword"
+        type="password"
+        placeholder="Password">
+
+      <button class="primary full"
+        onclick="login()">
+        Login
+      </button>
+
+      <div style="text-align:center">
+        <button class="auth-link"
+          onclick="showSignup()">
+          Create new account
+        </button>
+      </div>
+
+    </div>
+
+    <div class="auth-card hidden" id="signupBox">
+
+      <input id="signupName"
+        placeholder="Full name">
+
+      <input id="signupEmail"
+        type="email"
+        placeholder="Email">
+
+      <input id="signupPassword"
+        type="password"
+        placeholder="Password">
+
+      <button class="primary full"
+        onclick="signup()">
+        Create Account
+      </button>
+
+      <div style="text-align:center">
+        <button class="auth-link"
+          onclick="showLogin()">
+          Already have an account? Login
+        </button>
+      </div>
+
+    </div>
+
   </div>
-</section>
+
+</div>
 
 
-<!-- =========================
-     SIGNUP
-========================= -->
+<!-- APP -->
 
-<section id="signupPage" class="center hidden" style="padding:50px 20px;">
-  <div class="logo">FriendBook</div>
+<div id="app" class="hidden">
 
-  <div class="card" style="max-width:400px;margin:20px auto;">
-    <input id="signupName" type="text" placeholder="আপনার নাম">
-    <input id="signupEmail" type="email" placeholder="Email">
-    <input id="signupPassword" type="password" placeholder="Password">
+<header class="app-header">
 
-    <button class="primary" style="width:100%;" onclick="signup()">
-      Create Account
-    </button>
+  <div class="brand">FriendBook</div>
 
-    <br><br>
-
-    <button style="width:100%;" onclick="showLogin()">
-      Already have an account? Login
-    </button>
+  <div class="header-search">
+    <input id="globalSearch"
+      placeholder="🔎 Search FriendBook"
+      onkeydown="globalSearch(event)">
   </div>
-</section>
+
+  <div class="header-icons">
+
+    <button class="icon-btn"
+      onclick="showHome()">
+      🏠
+    </button>
+
+    <button class="icon-btn"
+      onclick="showNotifications()">
+      🔔
+    </button>
+
+    <button class="icon-btn"
+      onclick="showMessenger()">
+      💬
+    </button>
+
+    <button class="icon-btn"
+      onclick="showProfile()">
+      👤
+    </button>
+
+  </div>
+
+</header>
 
 
-<!-- =========================
-     APP
-========================= -->
+<div class="layout">
 
-<section id="appPage" class="hidden">
+<!-- LEFT -->
 
-  <header>
-    <h1>FriendBook</h1>
-  </header>
+<aside class="left">
 
-  <main>
+<div class="menu-card">
 
-    <nav>
-      <button onclick="showHome()" id="navHome">
-        🏠 Home
-      </button>
+<button class="menu-item"
+ onclick="showHome()">
+<span class="menu-icon">🏠</span>
+Home
+</button>
 
-      <button onclick="showReels()" id="navReels">
-        🎬 Reels
-      </button>
+<button class="menu-item"
+ onclick="showProfile()">
+<span class="menu-icon">👤</span>
+Profile
+</button>
 
-      <button onclick="showProfile()" id="navProfile">
-        👤 Profile
-      </button>
+<button class="menu-item"
+ onclick="showFriends()">
+<span class="menu-icon">👥</span>
+Friends
+</button>
 
-      <button onclick="showSearch()" id="navSearch">
-        🔎 Search
-      </button>
+<button class="menu-item"
+ onclick="showMessenger()">
+<span class="menu-icon">💬</span>
+Messenger
+</button>
 
-      <button onclick="showSettings()" id="navSettings">
-        ⚙️ Settings
-      </button>
-    </nav>
+<button class="menu-item"
+ onclick="showReels()">
+<span class="menu-icon">🎬</span>
+Reels
+</button>
 
-    <div id="content"></div>
+<button class="menu-item"
+ onclick="showNotifications()">
+<span class="menu-icon">🔔</span>
+Notifications
+</button>
 
-  </main>
-</section>
+<button class="menu-item"
+ onclick="showSearchPage()">
+<span class="menu-icon">🔎</span>
+Search
+</button>
+
+<button class="menu-item"
+ onclick="showMonetization()">
+<span class="menu-icon">💰</span>
+Creator
+</button>
+
+<button class="menu-item"
+ onclick="showSettings()">
+<span class="menu-icon">⚙️</span>
+Settings
+</button>
+
+<button class="menu-item"
+ onclick="logout()">
+<span class="menu-icon">🚪</span>
+Logout
+</button>
+
+</div>
+
+</aside>
+
+
+<!-- CENTER -->
+
+<main id="main"></main>
+
+
+<!-- RIGHT -->
+
+<aside class="right">
+
+<div class="card">
+
+<h3 style="margin-top:0">
+Your shortcuts
+</h3>
+
+<button class="menu-item"
+ onclick="showFriends()">
+👥 Find Friends
+</button>
+
+<button class="menu-item"
+ onclick="showReels()">
+🎬 Watch Reels
+</button>
+
+<button class="menu-item"
+ onclick="showMonetization()">
+💰 Creator Dashboard
+</button>
+
+</div>
+
+<div class="card">
+
+<h3 style="margin-top:0">
+FriendBook
+</h3>
+
+<div style="color:var(--muted);font-size:13px">
+Connect • Share • Discover
+</div>
+
+</div>
+
+</aside>
+
+</div>
+</div>
+
+
+<!-- MODAL -->
+
+<div id="modalBg"
+ class="modal-bg hidden"
+ onclick="closeModal(event)">
+
+<div class="modal"
+ onclick="event.stopPropagation()">
+
+<div class="modal-head">
+
+<strong id="modalTitle">
+FriendBook
+</strong>
+
+<button class="close"
+ onclick="closeModal()">
+×
+</button>
+
+</div>
+
+<div id="modalBody"
+ class="modal-body"></div>
+
+</div>
+</div>
 
 
 <div id="toast" class="toast"></div>
 
 
 <script>
-/* =========================
-   SUPABASE
-========================= */
+
+/* =====================================
+   FRIENDBOOK CONFIG
+===================================== */
 
 const SUPABASE_URL =
 "https://skereuaizdczbvjplisi.supabase.co";
@@ -339,1314 +954,2250 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-let currentUser = null;
+let currentUser=null;
+let session=null;
+let feedMode="all";
 
 
-/* =========================
-   BASIC HELPERS
-========================= */
+/* =====================================
+   HELPERS
+===================================== */
 
 function $(id){
-  return document.getElementById(id);
+ return document.getElementById(id);
 }
 
-function toast(message){
-  const t = $("toast");
+function escapeHTML(v){
 
-  t.textContent = message;
-  t.style.display = "block";
+ if(v===null || v===undefined)return "";
 
-  setTimeout(()=>{
-    t.style.display = "none";
-  },2500);
+ return String(v)
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
 }
+
+function toast(msg){
+
+ const t=$("toast");
+
+ t.textContent=msg;
+ t.style.display="block";
+
+ setTimeout(()=>{
+  t.style.display="none";
+ },2500);
+}
+
+function formatCount(n){
+
+ n=Number(n||0);
+
+ if(n>=1000000)
+  return (n/1000000).toFixed(1)+"M";
+
+ if(n>=1000)
+  return (n/1000).toFixed(1)+"K";
+
+ return n;
+}
+
+function timeAgo(date){
+
+ if(!date)return "";
+
+ const seconds=
+   Math.floor((Date.now()-new Date(date))/1000);
+
+ if(seconds<60)
+   return "Just now";
+
+ if(seconds<3600)
+   return Math.floor(seconds/60)+"m";
+
+ if(seconds<86400)
+   return Math.floor(seconds/3600)+"h";
+
+ if(seconds<604800)
+   return Math.floor(seconds/86400)+"d";
+
+ return new Date(date).toLocaleDateString();
+}
+
+
+/* =====================================
+   SUPABASE
+===================================== */
+
+async function api(path,options={}){
+
+ const headers={
+  "apikey":SUPABASE_KEY,
+  "Authorization":
+    "Bearer "+
+    (session?.access_token || SUPABASE_KEY),
+  "Content-Type":"application/json",
+  ...(options.headers||{})
+ };
+
+ const res=await fetch(
+   SUPABASE_URL+"/rest/v1/"+path,
+   {
+    ...options,
+    headers
+   }
+ );
+
+ const text=await res.text();
+
+ let data=null;
+
+ try{
+  data=text?JSON.parse(text):null;
+ }catch{
+  data=text;
+ }
+
+ if(!res.ok){
+
+  throw new Error(
+   data?.message ||
+   data?.details ||
+   data?.hint ||
+   data?.error ||
+   text ||
+   "Request failed"
+  );
+ }
+
+ return data;
+}
+
+
+/* =====================================
+   AUTH
+===================================== */
 
 function showLogin(){
-  $("loginPage").classList.remove("hidden");
-  $("signupPage").classList.add("hidden");
-  $("appPage").classList.add("hidden");
+
+ $("loginBox").classList.remove("hidden");
+ $("signupBox").classList.add("hidden");
 }
 
 function showSignup(){
-  $("loginPage").classList.add("hidden");
-  $("signupPage").classList.remove("hidden");
-  $("appPage").classList.add("hidden");
+
+ $("loginBox").classList.add("hidden");
+ $("signupBox").classList.remove("hidden");
 }
-
-
-/* =========================
-   SUPABASE REQUEST
-========================= */
-
-async function supabaseFetch(path, options={}){
-  const headers = {
-    "apikey":SUPABASE_KEY,
-    "Authorization":"Bearer "+SUPABASE_KEY,
-    "Content-Type":"application/json",
-    ...(options.headers || {})
-  };
-
-  const response = await fetch(
-    SUPABASE_URL + "/rest/v1/" + path,
-    {
-      ...options,
-      headers
-    }
-  );
-
-  const text = await response.text();
-
-  let data = null;
-
-  try{
-    data = text ? JSON.parse(text) : null;
-  }catch{
-    data = text;
-  }
-
-  if(!response.ok){
-    throw new Error(
-      data?.message ||
-      data?.error_description ||
-      data?.error ||
-      text ||
-      "Request failed"
-    );
-  }
-
-  return data;
-}
-
-
-/* =========================
-   AUTH
-========================= */
 
 async function login(){
 
-  const email = $("loginEmail").value.trim();
-  const password = $("loginPassword").value;
+ const email=
+   $("loginEmail").value.trim();
 
-  if(!email || !password){
-    toast("Email ও Password দিন");
-    return;
-  }
+ const password=
+   $("loginPassword").value;
 
-  try{
+ if(!email||!password){
+  toast("Email এবং Password দিন");
+  return;
+ }
 
-    const result = await fetch(
-      SUPABASE_URL + "/auth/v1/token?grant_type=password",
-      {
-        method:"POST",
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          email,
-          password
-        })
-      }
-    );
+ try{
 
-    const data = await result.json();
+  const res=await fetch(
+   SUPABASE_URL+
+   "/auth/v1/token?grant_type=password",
+   {
+    method:"POST",
+    headers:{
+     "apikey":SUPABASE_KEY,
+     "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+     email,
+     password
+    })
+   }
+  );
 
-    if(!result.ok){
-      throw new Error(
-        data.error_description ||
-        data.msg ||
-        "Login failed"
-      );
-    }
+  const data=await res.json();
 
-    localStorage.setItem(
-      "friendbook_session",
-      JSON.stringify(data)
-    );
+  if(!res.ok)
+   throw new Error(
+    data.error_description||
+    data.msg||
+    "Login failed"
+   );
 
-    currentUser = data.user;
+  session=data;
 
-    openApp();
+  currentUser=data.user;
 
-  }catch(error){
-    toast(error.message);
-  }
+  localStorage.setItem(
+   "friendbook_session",
+   JSON.stringify(data)
+  );
+
+  openApp();
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
 async function signup(){
 
-  const name = $("signupName").value.trim();
-  const email = $("signupEmail").value.trim();
-  const password = $("signupPassword").value;
+ const name=
+   $("signupName").value.trim();
 
-  if(!name || !email || !password){
-    toast("সব তথ্য পূরণ করুন");
-    return;
-  }
+ const email=
+   $("signupEmail").value.trim();
 
-  if(password.length < 6){
-    toast("Password কমপক্ষে ৬ অক্ষরের দিন");
-    return;
-  }
+ const password=
+   $("signupPassword").value;
 
-  try{
+ if(!name||!email||!password){
+  toast("সব তথ্য দিন");
+  return;
+ }
 
-    const result = await fetch(
-      SUPABASE_URL + "/auth/v1/signup",
-      {
-        method:"POST",
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          email,
-          password,
-          data:{
-            name:name
-          }
-        })
-      }
-    );
+ if(password.length<6){
+  toast("Password কমপক্ষে ৬ অক্ষরের দিন");
+  return;
+ }
 
-    const data = await result.json();
+ try{
 
-    if(!result.ok){
-      throw new Error(
-        data.msg ||
-        data.message ||
-        "Signup failed"
-      );
-    }
+  const res=await fetch(
+   SUPABASE_URL+
+   "/auth/v1/signup",
+   {
+    method:"POST",
+    headers:{
+     "apikey":SUPABASE_KEY,
+     "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+     email,
+     password,
+     data:{name:name}
+    })
+   }
+  );
 
-    toast("Account তৈরি হয়েছে");
+  const data=await res.json();
 
-    showLogin();
+  if(!res.ok)
+   throw new Error(
+    data.msg||
+    data.message||
+    "Signup failed"
+   );
 
-  }catch(error){
-    toast(error.message);
-  }
+  toast(
+   "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে Email দেখুন।"
+  );
+
+  showLogin();
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
 async function logout(){
 
-  localStorage.removeItem("friendbook_session");
+ localStorage.removeItem(
+  "friendbook_session"
+ );
 
-  currentUser = null;
+ session=null;
+ currentUser=null;
 
-  showLogin();
+ $("app").classList.add("hidden");
+ $("authPage").classList.remove("hidden");
 
-  toast("Logout হয়েছে");
+ showLogin();
+
+ toast("Logout হয়েছে");
 }
 
-
-/* =========================
-   APP
-========================= */
 
 function openApp(){
 
-  $("loginPage").classList.add("hidden");
-  $("signupPage").classList.add("hidden");
-  $("appPage").classList.remove("hidden");
+ $("authPage").classList.add("hidden");
+ $("app").classList.remove("hidden");
 
-  showHome();
+ showHome();
 }
 
 
-/* =========================
+/* =====================================
+   PROFILE
+===================================== */
+
+async function getProfile(userId){
+
+ try{
+
+  const rows=
+   await api(
+    encodeURIComponent("my social app")+
+    "?select=*&id=eq."+
+    userId+
+    "&limit=1"
+   );
+
+  return rows?.[0]||null;
+
+ }catch(e){
+
+  return null;
+}
+
+
+/* =====================================
    HOME
-========================= */
+===================================== */
 
 function showHome(){
 
-  setActive("navHome");
+ $("main").innerHTML=`
 
-  $("content").innerHTML = `
+ <div class="card">
 
-    <div class="card">
-      <h2>🏠 FriendBook Feed</h2>
+   <div class="composer">
 
-      <textarea
-        id="postText"
-        placeholder="আপনার মনে কী আছে?"
-      ></textarea>
+     <img id="composerAvatar"
+       class="avatar">
 
-      <input
-        id="postImage"
-        type="file"
-        accept="image/*"
-      >
+     <div
+       class="composer-input"
+       onclick="openPostModal()">
+       What's on your mind?
+     </div>
 
-      <select id="postPrivacy">
-        <option value="public">🌍 Public</option>
-        <option value="friends">👥 Friends</option>
-        <option value="private">🔒 Only Me</option>
-      </select>
+   </div>
 
-      <input
-        id="postFeeling"
-        type="text"
-        placeholder="😊 Feeling / Activity"
-      >
+ </div>
 
-      <button
-        class="primary"
-        style="width:100%;"
-        onclick="submitPost()"
-      >
-        📤 Post
-      </button>
-    </div>
 
-    <div id="feed">
-      <div class="loading">
-        Feed loading...
-      </div>
-    </div>
-  `;
+ <div class="card story-row">
 
-  loadPosts();
+   <div class="story">
+     <div>
+       ➕<br>
+       Create Story
+     </div>
+   </div>
+
+   <div class="story">
+     <div>
+       👤<br>
+       Your Story
+     </div>
+   </div>
+
+   <div class="story">
+     <div>
+       🎬<br>
+       Reels
+     </div>
+   </div>
+
+ </div>
+
+
+ <div class="feed-tools">
+
+   <button
+    class="feed-tab ${feedMode==="all"?"active":""}"
+    onclick="changeFeed('all')">
+    🌍 All Posts
+   </button>
+
+   <button
+    class="feed-tab ${feedMode==="mine"?"active":""}"
+    onclick="changeFeed('mine')">
+    👤 My Posts
+   </button>
+
+   <button
+    class="feed-tab"
+    onclick="loadPosts()">
+    ↻
+   </button>
+
+ </div>
+
+
+ <div id="feed">
+   <div class="empty">Loading Feed...</div>
+ </div>
+ `;
+
+ loadComposerAvatar();
+ loadPosts();
 }
 
 
-/* =========================
-   CREATE POST
-========================= */
+async function loadComposerAvatar(){
 
-async function submitPost(){
+ const p=await getProfile(
+  currentUser.id
+ );
 
-  const text = $("postText").value.trim();
-  const file = $("postImage").files[0];
-  const privacy = $("postPrivacy").value;
-  const feeling = $("postFeeling").value.trim();
+ const img=$("composerAvatar");
 
-  if(!text && !file){
-    toast("কিছু লিখুন অথবা ছবি দিন");
-    return;
-  }
+ if(img && p?.profile_photo)
+   img.src=p.profile_photo;
+}
 
-  try{
 
-    let imageUrl = null;
+/* =====================================
+   POST MODAL
+===================================== */
 
-    /*
-      এখানে আপনার Supabase Storage bucket:
-      post-images
-    */
+function openPostModal(post=null){
 
-    if(file){
+ $("modalTitle").textContent=
+   post?"Edit Post":"Create Post";
 
-      const fileName =
-        currentUser.id +
-        "/" +
-        Date.now() +
-        "_" +
-        file.name.replace(/\s+/g,"_");
+ $("modalBody").innerHTML=`
 
-      const upload = await fetch(
-        SUPABASE_URL +
-        "/storage/v1/object/post-images/" +
-        fileName,
-        {
-          method:"POST",
-          headers:{
-            "apikey":SUPABASE_KEY,
-            "Authorization":"Bearer "+SUPABASE_KEY,
-            "Content-Type":file.type
-          },
-          body:file
-        }
-      );
+ <textarea
+   id="postTextModal"
+   class="form-control"
+   rows="6"
+   placeholder="What's on your mind?"
+ >${post?escapeHTML(post.text||""):""}</textarea>
 
-      if(!upload.ok){
-        const errorText = await upload.text();
-        throw new Error(errorText);
-      }
+ <input
+   id="postImageModal"
+   class="form-control"
+   type="file"
+   accept="image/*">
 
-      imageUrl =
-        SUPABASE_URL +
-        "/storage/v1/object/public/post-images/" +
-        fileName;
+ <select
+   id="postPrivacyModal"
+   class="form-control">
+
+   <option value="public"
+    ${post?.privacy==="public"?"selected":""}>
+    🌍 Public
+   </option>
+
+   <option value="friends"
+    ${post?.privacy==="friends"?"selected":""}>
+    👥 Friends
+   </option>
+
+   <option value="private"
+    ${post?.privacy==="private"?"selected":""}>
+    🔒 Only Me
+   </option>
+
+ </select>
+
+ <input
+   id="postFeelingModal"
+   class="form-control"
+   placeholder="😊 Feeling / Activity"
+   value="${escapeHTML(post?.feeling||"")}">
+
+ <button
+   class="primary full"
+   onclick="${post?
+     `updatePost(${post.id})`:
+     `createPost()`}">
+   ${post?"Save Changes":"Post"}
+ </button>
+ `;
+
+ $("modalBg").classList.remove("hidden");
+}
+
+
+async function createPost(){
+
+ const text=
+  $("postTextModal").value.trim();
+
+ const feeling=
+  $("postFeelingModal").value.trim();
+
+ const privacy=
+  $("postPrivacyModal").value;
+
+ const file=
+  $("postImageModal").files[0];
+
+ if(!text&&!file){
+  toast("কিছু লিখুন অথবা ছবি দিন");
+  return;
+ }
+
+ try{
+
+  let imageUrl=null;
+
+  if(file){
+
+   const path=
+    currentUser.id+
+    "/"+
+    Date.now()+
+    "_"+
+    file.name.replace(/\s+/g,"_");
+
+   const upload=await fetch(
+    SUPABASE_URL+
+    "/storage/v1/object/post-images/"+
+    path,
+    {
+     method:"POST",
+     headers:{
+      "apikey":SUPABASE_KEY,
+      "Authorization":
+       "Bearer "+session.access_token,
+      "Content-Type":file.type
+     },
+     body:file
     }
+   );
 
-
-    await supabaseFetch(
-      "posts",
-      {
-        method:"POST",
-        headers:{
-          "Prefer":"return=minimal"
-        },
-        body:JSON.stringify({
-          user_id:currentUser.id,
-          text:text,
-          image_url:imageUrl,
-          privacy:privacy,
-          feeling:feeling || null
-        })
-      }
+   if(!upload.ok)
+    throw new Error(
+     await upload.text()
     );
 
-    $("postText").value = "";
-    $("postImage").value = "";
-    $("postFeeling").value = "";
-
-    toast("Post হয়েছে");
-
-    loadPosts();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      "Post করতে সমস্যা: " +
-      error.message
-    );
+   imageUrl=
+    SUPABASE_URL+
+    "/storage/v1/object/public/post-images/"+
+    path;
   }
+
+  await api(
+   "posts",
+   {
+    method:"POST",
+    headers:{
+     "Prefer":"return=minimal"
+    },
+    body:JSON.stringify({
+     user_id:currentUser.id,
+     text,
+     image_url:imageUrl,
+     privacy,
+     feeling:feeling||null
+    })
+   }
+  );
+
+  closeModal();
+
+  toast("Post published 🎉");
+
+  showHome();
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
-/* =========================
+/* =====================================
    LOAD POSTS
-========================= */
+===================================== */
 
 async function loadPosts(){
 
-  try{
+ const feed=$("feed");
 
-    const posts = await supabaseFetch(
-      "posts?select=*&order=created_at.desc&limit=50"
-    );
+ if(!feed)return;
 
-    const feed = $("feed");
+ feed.innerHTML=
+  `<div class="empty">Loading...</div>`;
 
-    if(!posts || posts.length === 0){
+ try{
 
-      feed.innerHTML = `
-        <div class="card center">
-          এখনো কোনো Post নেই।
-        </div>
-      `;
+  let query=
+   "posts?select=*&order=created_at.desc&limit=50";
 
-      return;
-    }
+  if(feedMode==="mine")
+   query=
+    "posts?select=*&user_id=eq."+
+    currentUser.id+
+    "&order=created_at.desc&limit=50";
 
-    feed.innerHTML = "";
+  const posts=await api(query);
 
-    for(const post of posts){
+  if(!posts?.length){
 
-      let profile = null;
+   feed.innerHTML=
+    `<div class="card empty">
+      No posts yet.
+     </div>`;
 
-      try{
-
-        const profiles = await supabaseFetch(
-          encodeURIComponent("my social app") +
-          "?select=*&id=eq." +
-          post.user_id +
-          "&limit=1"
-        );
-
-        profile = profiles?.[0];
-
-      }catch(error){
-        console.log(error);
-      }
-
-      const name =
-        profile?.name ||
-        "FriendBook User";
-
-      const avatar =
-        profile?.profile_photo ||
-        "";
-
-      const time =
-        post.created_at
-          ? new Date(post.created_at)
-              .toLocaleString("bn-BD")
-          : "";
-
-      const div =
-        document.createElement("div");
-
-      div.className = "card";
-
-      div.innerHTML = `
-
-        <div class="post-head">
-
-          ${
-            avatar
-            ?
-            `<img class="avatar" src="${avatar}">`
-            :
-            `<div class="avatar"></div>`
-          }
-
-          <div>
-            <div class="post-name">
-              ${escapeHTML(name)}
-            </div>
-
-            <div class="post-time">
-              ${time}
-            </div>
-          </div>
-
-        </div>
-
-        ${
-          post.feeling
-          ?
-          `<div style="margin-top:10px;">
-            😊 ${escapeHTML(post.feeling)}
-          </div>`
-          :
-          ""
-        }
-
-        ${
-          post.text
-          ?
-          `<div class="post-text">
-            ${escapeHTML(post.text)}
-          </div>`
-          :
-          ""
-        }
-
-        ${
-          post.image_url
-          ?
-          `<img
-             class="post-image"
-             src="${post.image_url}"
-             loading="lazy"
-           >`
-          :
-          ""
-        }
-
-        <div class="actions">
-
-          <button onclick="likePost(${post.id})">
-            ❤️ Like
-          </button>
-
-          <button onclick="commentPost(${post.id})">
-            💬 Comment
-          </button>
-
-          <button onclick="sharePost(${post.id})">
-            ↗ Share
-          </button>
-
-        </div>
-      `;
-
-      feed.appendChild(div);
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    $("feed").innerHTML = `
-      <div class="card">
-        Feed load করতে সমস্যা হয়েছে।
-        <br><br>
-        ${escapeHTML(error.message)}
-      </div>
-    `;
+   return;
   }
+
+  feed.innerHTML="";
+
+  for(const post of posts){
+
+   const card=
+    await buildPost(post);
+
+   feed.appendChild(card);
+  }
+
+ }catch(e){
+
+  feed.innerHTML=
+   `<div class="card">
+    Feed error:<br>
+    ${escapeHTML(e.message)}
+   </div>`;
+ }
 }
 
 
-/* =========================
-   LIKE
-========================= */
+async function buildPost(post){
 
-async function likePost(postId){
+ const profile=
+  await getProfile(post.user_id);
 
-  try{
+ const name=
+  profile?.name||
+  "FriendBook User";
 
-    const existing = await supabaseFetch(
-      `post_reactions?select=*&post_id=eq.${postId}&user_id=eq.${currentUser.id}&limit=1`
-    );
+ const avatar=
+  profile?.profile_photo||"";
 
-    if(existing && existing.length){
+ let reactions=[];
+ let comments=[];
 
-      await supabaseFetch(
-        `post_reactions?id=eq.${existing[0].id}`,
-        {
-          method:"DELETE"
-        }
-      );
+ try{
 
-      toast("Like removed");
+  reactions=await api(
+   "post_reactions?select=*&post_id=eq."+
+   post.id
+  );
 
-    }else{
+ }catch{}
 
-      await supabaseFetch(
-        "post_reactions",
-        {
-          method:"POST",
-          headers:{
-            "Prefer":"return=minimal"
-          },
-          body:JSON.stringify({
-            post_id:postId,
-            user_id:currentUser.id,
-            reaction:"like"
-          })
-        }
-      );
+ try{
 
-      toast("Liked ❤️");
-    }
+  comments=await api(
+   "comments?select=*&post_id=eq."+
+   post.id+
+   "&order=created_at.asc"
+  );
 
-    loadPosts();
+ }catch{}
 
-  }catch(error){
+ const myReaction=
+  reactions.find(
+   x=>x.user_id===currentUser.id
+  );
 
-    console.error(error);
+ const card=document.createElement("div");
 
-    toast(
-      "Like করতে সমস্যা: " +
-      error.message
-    );
+ card.className="card";
+
+ card.innerHTML=`
+
+ <div class="post-head">
+
+  ${
+   avatar
+   ?
+   `<img class="avatar"
+     src="${escapeHTML(avatar)}">`
+   :
+   `<div class="avatar"></div>`
   }
+
+  <div>
+
+   <div class="post-user">
+    ${escapeHTML(name)}
+   </div>
+
+   <div class="post-time">
+    ${timeAgo(post.created_at)}
+    ·
+    ${post.privacy==="public"?"🌍":
+      post.privacy==="friends"?"👥":"🔒"}
+
+    ${post.edited_at?" · edited":""}
+   </div>
+
+  </div>
+
+  ${
+   post.user_id===currentUser.id
+   ?
+   `<button class="post-menu"
+     onclick="postMenu(${post.id})">
+     ⋯
+    </button>`
+   :""
+  }
+
+ </div>
+
+
+ ${
+  post.feeling
+  ?
+  `<div style="margin-top:10px;color:var(--muted)">
+   ${escapeHTML(post.feeling)}
+   </div>`
+  :""
+ }
+
+
+ ${
+  post.text
+  ?
+  `<div class="post-text">
+   ${escapeHTML(post.text)}
+   </div>`
+  :""
+ }
+
+
+ ${
+  post.image_url
+  ?
+  `<img class="post-image"
+    src="${escapeHTML(post.image_url)}"
+    loading="lazy">`
+  :""
+ }
+
+
+ <div class="post-meta">
+
+  <span>
+   ❤️ ${formatCount(reactions.length)}
+  </span>
+
+  <span>
+   💬 ${formatCount(comments.length)}
+   · 👁️ ${formatCount(post.view_count||0)}
+  </span>
+
+ </div>
+
+
+ <div class="post-actions">
+
+  <div class="reaction-wrap">
+
+   <button
+    class="post-action"
+    onclick="toggleReactionBox(${post.id})">
+    ${myReaction?
+      reactionIcon(myReaction.reaction):
+      "👍"} Like
+   </button>
+
+   <div
+    id="reaction-${post.id}"
+    class="reaction-box hidden">
+
+    <button onclick="react(${post.id},'like')">👍</button>
+    <button onclick="react(${post.id},'love')">❤️</button>
+    <button onclick="react(${post.id},'haha')">😂</button>
+    <button onclick="react(${post.id},'wow')">😮</button>
+    <button onclick="react(${post.id},'sad')">😢</button>
+    <button onclick="react(${post.id},'angry')">😡</button>
+
+   </div>
+
+  </div>
+
+  <button
+   class="post-action"
+   onclick="focusComment(${post.id})">
+   💬 Comment
+  </button>
+
+  <button
+   class="post-action"
+   onclick="sharePost(${post.id})">
+   ↗ Share
+  </button>
+
+  <button
+   class="post-action"
+   onclick="savePost(${post.id})">
+   🔖 Save
+  </button>
+
+ </div>
+
+
+ <div
+  id="comments-${post.id}"
+  class="comment-list">
+
+  ${renderComments(comments)}
+
+ </div>
+
+
+ <div class="comment-input-row">
+
+  <input
+   id="comment-${post.id}"
+   placeholder="Write a comment..."
+   onkeydown="if(event.key==='Enter')addComment(${post.id})">
+
+  <button
+   onclick="addComment(${post.id})">
+   Send
+  </button>
+
+ </div>
+
+ `;
+
+ return card;
 }
 
 
-/* =========================
+function reactionIcon(type){
+
+ return {
+  like:"👍",
+  love:"❤️",
+  haha:"😂",
+  wow:"😮",
+  sad:"😢",
+  angry:"😡"
+ }[type]||"👍";
+}
+
+
+function renderComments(comments){
+
+ if(!comments?.length)return "";
+
+ return comments.map(c=>`
+
+ <div class="comment">
+
+  <div class="avatar"
+   style="width:35px;height:35px">
+  </div>
+
+  <div class="comment-body">
+
+   <div class="comment-name">
+    FriendBook User
+   </div>
+
+   <div class="comment-text">
+    ${escapeHTML(c.text)}
+   </div>
+
+  </div>
+
+ </div>
+
+ `).join("");
+}
+
+
+/* =====================================
+   REACTIONS
+===================================== */
+
+function toggleReactionBox(id){
+
+ const box=$("reaction-"+id);
+
+ if(box)
+  box.classList.toggle("hidden");
+}
+
+
+async function react(postId,reaction){
+
+ try{
+
+  const existing=await api(
+   "post_reactions?select=*&post_id=eq."+
+   postId+
+   "&user_id=eq."+
+   currentUser.id+
+   "&limit=1"
+  );
+
+  if(existing?.length){
+
+   if(existing[0].reaction===reaction){
+
+    await api(
+     "post_reactions?id=eq."+
+     existing[0].id,
+     {method:"DELETE"}
+    );
+
+   }else{
+
+    await api(
+     "post_reactions?id=eq."+
+     existing[0].id,
+     {
+      method:"PATCH",
+      headers:{
+       "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+       reaction
+      })
+     }
+    );
+   }
+
+  }else{
+
+   await api(
+    "post_reactions",
+    {
+     method:"POST",
+     headers:{
+      "Prefer":"return=minimal"
+     },
+     body:JSON.stringify({
+      post_id:postId,
+      user_id:currentUser.id,
+      reaction
+     })
+    }
+   );
+  }
+
+  loadPosts();
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+/* =====================================
    COMMENTS
-========================= */
+===================================== */
 
-async function commentPost(postId){
+function focusComment(id){
 
-  const text =
-    prompt("আপনার Comment লিখুন:");
+ const input=$("comment-"+id);
 
-  if(!text || !text.trim()){
-    return;
-  }
-
-  try{
-
-    await supabaseFetch(
-      "comments",
-      {
-        method:"POST",
-        headers:{
-          "Prefer":"return=minimal"
-        },
-        body:JSON.stringify({
-          post_id:postId,
-          user_id:currentUser.id,
-          text:text.trim()
-        })
-      }
-    );
-
-    toast("Comment হয়েছে");
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      "Comment করতে সমস্যা: " +
-      error.message
-    );
-  }
+ if(input){
+  input.focus();
+ }
 }
 
 
-/* =========================
+async function addComment(postId){
+
+ const input=$("comment-"+postId);
+
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ try{
+
+  await api(
+   "comments",
+   {
+    method:"POST",
+    headers:{
+     "Prefer":"return=minimal"
+    },
+    body:JSON.stringify({
+     post_id:postId,
+     user_id:currentUser.id,
+     text
+    })
+   }
+  );
+
+  input.value="";
+
+  toast("Comment added");
+
+  loadPosts();
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+/* =====================================
+   POST MENU
+===================================== */
+
+async function postMenu(id){
+
+ try{
+
+  const rows=await api(
+   "posts?select=*&id=eq."+id+"&limit=1"
+  );
+
+  const post=rows?.[0];
+
+  if(!post)return;
+
+  $("modalTitle").textContent=
+   "Post Options";
+
+  $("modalBody").innerHTML=`
+
+   <button class="secondary full"
+    onclick="editPost(${id})">
+    ✏️ Edit Post
+   </button>
+
+   <br><br>
+
+   <button class="danger full"
+    onclick="deletePost(${id})">
+    🗑️ Delete Post
+   </button>
+
+  `;
+
+  $("modalBg").classList.remove("hidden");
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+async function editPost(id){
+
+ try{
+
+  const rows=await api(
+   "posts?select=*&id=eq."+id+"&limit=1"
+  );
+
+  if(!rows?.[0])return;
+
+  openPostModal(rows[0]);
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+async function updatePost(id){
+
+ const text=
+  $("postTextModal").value.trim();
+
+ const privacy=
+  $("postPrivacyModal").value;
+
+ const feeling=
+  $("postFeelingModal").value.trim();
+
+ try{
+
+  await api(
+   "posts?id=eq."+id+
+   "&user_id=eq."+currentUser.id,
+   {
+    method:"PATCH",
+    headers:{
+     "Prefer":"return=minimal"
+    },
+    body:JSON.stringify({
+     text,
+     privacy,
+     feeling:feeling||null,
+     edited_at:new Date().toISOString()
+    })
+   }
+  );
+
+  closeModal();
+
+  toast("Post updated");
+
+  loadPosts();
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+async function deletePost(id){
+
+ if(!confirm("এই Post Delete করবেন?"))
+  return;
+
+ try{
+
+  await api(
+   "posts?id=eq."+id+
+   "&user_id=eq."+currentUser.id,
+   {
+    method:"DELETE"
+   }
+  );
+
+  closeModal();
+
+  toast("Post deleted");
+
+  loadPosts();
+
+ }catch(e){
+
+  toast(e.message);
+ }
+}
+
+
+/* =====================================
+   SAVE
+===================================== */
+
+async function savePost(id){
+
+ /*
+  এখানে saved_posts table তৈরি হলে
+  permanent Save চালু হবে।
+ */
+
+ toast("Save feature-এর database table পরের ধাপে যুক্ত হবে");
+}
+
+
+/* =====================================
    SHARE
-========================= */
+===================================== */
 
-async function sharePost(postId){
+async function sharePost(id){
 
-  const url =
-    location.origin +
-    location.pathname +
-    "?post=" +
-    postId;
+ const url=
+  location.origin+
+  location.pathname+
+  "?post="+id;
 
-  try{
+ try{
 
-    if(navigator.share){
+  if(navigator.share){
 
-      await navigator.share({
-        title:"FriendBook",
-        text:"FriendBook-এর একটি Post দেখুন",
-        url:url
-      });
+   await navigator.share({
+    title:"FriendBook",
+    text:"Check this post on FriendBook",
+    url
+   });
 
-    }else{
+  }else{
 
-      await navigator.clipboard.writeText(url);
+   await navigator.clipboard.writeText(url);
 
-      toast("Post link copied");
-
-    }
-
-  }catch(error){
-
-    console.log(error);
+   toast("Post link copied");
   }
+
+ }catch{}
 }
 
 
-/* =========================
+/* =====================================
+   FEED FILTER
+===================================== */
+
+function changeFeed(mode){
+
+ feedMode=mode;
+
+ showHome();
+}
+
+
+/* =====================================
    REELS
-========================= */
+===================================== */
 
 async function showReels(){
 
-  setActive("navReels");
+ $("main").innerHTML=`
 
-  $("content").innerHTML = `
-    <div class="card">
-      <h2>🎬 FriendBook Reels</h2>
-    </div>
+ <div class="card">
 
-    <div id="reels">
-      <div class="loading">
-        Reels loading...
-      </div>
-    </div>
-  `;
+  <h2 style="margin:0">
+   🎬 FriendBook Reels
+  </h2>
 
-  loadReels();
+  <p style="color:var(--muted)">
+   Short videos from FriendBook
+  </p>
+
+ </div>
+
+ <div id="reels">
+  <div class="empty">
+   Loading Reels...
+  </div>
+ </div>
+
+ `;
+
+ loadReels();
 }
 
 
 async function loadReels(){
 
-  try{
+ const box=$("reels");
 
-    const reels = await supabaseFetch(
-      "reels?select=*&order=created_at.desc&limit=50"
-    );
+ try{
 
-    const container = $("reels");
+  const reels=await api(
+   "reels?select=*&order=created_at.desc&limit=50"
+  );
 
-    if(!reels || !reels.length){
+  if(!reels?.length){
 
-      container.innerHTML = `
-        <div class="card center">
-          এখনো কোনো Reel নেই।
-        </div>
-      `;
+   box.innerHTML=
+    `<div class="card empty">
+      No Reels yet.
+     </div>`;
 
-      return;
+   return;
+  }
+
+  box.innerHTML="";
+
+  for(const reel of reels){
+
+   const likes=
+    await api(
+     "reel_likes?select=id&reel_id=eq."+
+     reel.id
+    ).catch(()=>[]);
+
+   const comments=
+    await api(
+     "reel_comments?select=id&reel_id=eq."+
+     reel.id
+    ).catch(()=>[]);
+
+   const div=document.createElement("div");
+
+   div.className="reel";
+
+   div.innerHTML=`
+
+    <video
+     src="${escapeHTML(reel.video_url)}"
+     controls
+     loop
+     playsinline
+     preload="metadata">
+    </video>
+
+    <div class="reel-info">
+
+     ${
+      reel.caption
+      ?
+      `<div class="post-text">
+       ${escapeHTML(reel.caption)}
+       </div>`
+      :""
+     }
+
+     ${
+      reel.audio_name
+      ?
+      `<div style="color:var(--muted)">
+       🎵 ${escapeHTML(reel.audio_name)}
+       </div>`
+      :""
+     }
+
+     <div class="reel-actions">
+
+      <button onclick="likeReel(${reel.id})">
+       ❤️ ${likes.length}
+      </button>
+
+      <button onclick="commentReel(${reel.id})">
+       💬 ${comments.length}
+      </button>
+
+      <button onclick="shareReel(${reel.id})">
+       ↗ Share
+      </button>
+
+     </div>
+
+    </div>
+   `;
+
+   box.appendChild(div);
+  }
+
+ }catch(e){
+
+  box.innerHTML=
+   `<div class="card">
+    ${escapeHTML(e.message)}
+   </div>`;
+ }
+}
+
+
+async function likeReel(id){
+
+ try{
+
+  const existing=await api(
+   "reel_likes?select=*&reel_id=eq."+
+   id+
+   "&user_id=eq."+
+   currentUser.id+
+   "&limit=1"
+  );
+
+  if(existing?.length){
+
+   await api(
+    "reel_likes?id=eq."+existing[0].id,
+    {method:"DELETE"}
+   );
+
+  }else{
+
+   await api(
+    "reel_likes",
+    {
+     method:"POST",
+     headers:{
+      "Prefer":"return=minimal"
+     },
+     body:JSON.stringify({
+      reel_id:id,
+      user_id:currentUser.id
+     })
     }
-
-    container.innerHTML = "";
-
-    reels.forEach(reel=>{
-
-      const div =
-        document.createElement("div");
-
-      div.className = "card";
-
-      div.innerHTML = `
-
-        <video
-          src="${reel.video_url}"
-          controls
-          loop
-          playsinline
-          style="
-            width:100%;
-            border-radius:10px;
-            background:#000;
-          "
-        ></video>
-
-        ${
-          reel.caption
-          ?
-          `<div class="post-text">
-            ${escapeHTML(reel.caption)}
-          </div>`
-          :
-          ""
-        }
-
-        ${
-          reel.audio_name
-          ?
-          `<div>
-            🎵 ${escapeHTML(reel.audio_name)}
-          </div>`
-          :
-          ""
-        }
-
-        <div class="actions">
-
-          <button onclick="likeReel(${reel.id})">
-            ❤️ Like
-          </button>
-
-          <button onclick="commentReel(${reel.id})">
-            💬 Comment
-          </button>
-
-          <button onclick="shareReel(${reel.id})">
-            ↗ Share
-          </button>
-
-        </div>
-      `;
-
-      container.appendChild(div);
-    });
-
-  }catch(error){
-
-    console.error(error);
-
-    $("reels").innerHTML = `
-      <div class="card">
-        Reels load করতে সমস্যা হয়েছে।
-      </div>
-    `;
+   );
   }
+
+  loadReels();
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
-async function likeReel(reelId){
+async function commentReel(id){
 
-  try{
+ const text=
+  prompt("Reel Comment লিখুন");
 
-    const existing = await supabaseFetch(
-      `reel_likes?select=*&reel_id=eq.${reelId}&user_id=eq.${currentUser.id}&limit=1`
-    );
+ if(!text?.trim())return;
 
-    if(existing?.length){
+ try{
 
-      await supabaseFetch(
-        `reel_likes?id=eq.${existing[0].id}`,
-        {
-          method:"DELETE"
-        }
-      );
+  await api(
+   "reel_comments",
+   {
+    method:"POST",
+    headers:{
+     "Prefer":"return=minimal"
+    },
+    body:JSON.stringify({
+     reel_id:id,
+     user_id:currentUser.id,
+     text:text.trim()
+    })
+   }
+  );
 
-      toast("Like removed");
+  toast("Comment added");
 
-    }else{
+ }catch(e){
 
-      await supabaseFetch(
-        "reel_likes",
-        {
-          method:"POST",
-          headers:{
-            "Prefer":"return=minimal"
-          },
-          body:JSON.stringify({
-            reel_id:reelId,
-            user_id:currentUser.id
-          })
-        }
-      );
-
-      toast("Liked ❤️");
-    }
-
-    loadReels();
-
-  }catch(error){
-
-    toast(error.message);
-  }
+  toast(e.message);
+ }
 }
 
 
-async function commentReel(reelId){
+async function shareReel(id){
 
-  const text =
-    prompt("Reel Comment লিখুন:");
+ const url=
+  location.origin+
+  location.pathname+
+  "?reel="+id;
 
-  if(!text || !text.trim()){
-    return;
+ try{
+
+  if(navigator.share){
+
+   await navigator.share({
+    title:"FriendBook Reel",
+    url
+   });
+
+  }else{
+
+   await navigator.clipboard.writeText(url);
+
+   toast("Reel link copied");
   }
 
-  try{
-
-    await supabaseFetch(
-      "reel_comments",
-      {
-        method:"POST",
-        headers:{
-          "Prefer":"return=minimal"
-        },
-        body:JSON.stringify({
-          reel_id:reelId,
-          user_id:currentUser.id,
-          text:text.trim()
-        })
-      }
-    );
-
-    toast("Comment হয়েছে");
-
-  }catch(error){
-
-    toast(
-      "Comment করতে সমস্যা: " +
-      error.message
-    );
-  }
+ }catch{}
 }
 
 
-async function shareReel(reelId){
-
-  const url =
-    location.origin +
-    location.pathname +
-    "?reel=" +
-    reelId;
-
-  try{
-
-    if(navigator.share){
-
-      await navigator.share({
-        title:"FriendBook Reel",
-        url:url
-      });
-
-    }else{
-
-      await navigator.clipboard.writeText(url);
-
-      toast("Reel link copied");
-    }
-
-  }catch(error){}
-}
-
-
-/* =========================
+/* =====================================
    PROFILE
-========================= */
+===================================== */
 
 async function showProfile(){
 
-  setActive("navProfile");
+ const p=
+  await getProfile(currentUser.id);
 
-  $("content").innerHTML = `
-    <div class="card center">
-      <h2>👤 My FriendBook Profile</h2>
+ const name=
+  p?.name||
+  "FriendBook User";
 
-      <p>
-        ${escapeHTML(currentUser?.email || "")}
-      </p>
+ const avatar=
+  p?.profile_photo||
+  "";
 
-      <button class="primary"
-        onclick="editProfile()">
-        ✏️ Edit Profile
-      </button>
+ const cover=
+  p?.cover_photo||
+  "";
 
-      <button
-        onclick="logout()"
-        style="margin-left:5px;">
-        Logout
-      </button>
-    </div>
-  `;
+ $("main").innerHTML=`
+
+ <div class="card" style="padding:0;overflow:hidden">
+
+  <div class="profile-cover">
+
+   ${
+    cover
+    ?
+    `<img src="${escapeHTML(cover)}">`
+    :""
+   }
+
+  </div>
+
+  <div class="profile-main">
+
+   ${
+    avatar
+    ?
+    `<img class="profile-avatar"
+      src="${escapeHTML(avatar)}">`
+    :
+    `<div class="profile-avatar"></div>`
+   }
+
+   <div class="profile-name">
+    ${escapeHTML(name)}
+   </div>
+
+   <div class="profile-bio">
+    ${escapeHTML(
+     p?.bio||
+     "Welcome to FriendBook"
+    )}
+   </div>
+
+   <br>
+
+   <button class="primary"
+    onclick="editProfile()">
+    ✏️ Edit Profile
+   </button>
+
+   <button class="secondary"
+    onclick="showFriends()">
+    👥 Friends
+   </button>
+
+   <div class="profile-tabs">
+
+    <button>Posts</button>
+    <button>About</button>
+    <button>Friends</button>
+    <button>Photos</button>
+    <button>Reels</button>
+
+   </div>
+
+  </div>
+
+ </div>
+
+
+ <div class="card">
+
+  <h3>About</h3>
+
+  <p>
+   📧 ${escapeHTML(currentUser.email||"")}
+  </p>
+
+  <p>
+   👤 ${escapeHTML(name)}
+  </p>
+
+ </div>
+
+ `;
+
 }
 
 
 function editProfile(){
 
-  const name =
-    prompt(
-      "আপনার নতুন নাম লিখুন:"
-    );
+ $("modalTitle").textContent=
+  "Edit Profile";
 
-  if(!name || !name.trim()){
-    return;
-  }
+ $("modalBody").innerHTML=`
 
-  updateProfileName(name.trim());
+ <input id="editName"
+  class="form-control"
+  placeholder="Name">
+
+ <input id="editBio"
+  class="form-control"
+  placeholder="Bio">
+
+ <input id="editPhoto"
+  class="form-control"
+  placeholder="Profile photo URL">
+
+ <input id="editCover"
+  class="form-control"
+  placeholder="Cover photo URL">
+
+ <button
+  class="primary full"
+  onclick="saveProfile()">
+  Save Profile
+ </button>
+ `;
+
+ $("modalBg").classList.remove("hidden");
 }
 
 
-async function updateProfileName(name){
+async function saveProfile(){
 
-  try{
+ const name=
+  $("editName").value.trim();
 
-    await supabaseFetch(
-      encodeURIComponent("my social app") +
-      "?id=eq." +
-      currentUser.id,
-      {
-        method:"PATCH",
-        headers:{
-          "Prefer":"return=minimal"
-        },
-        body:JSON.stringify({
-          name:name
-        })
-      }
-    );
+ const bio=
+  $("editBio").value.trim();
 
-    toast("Profile updated");
+ const photo=
+  $("editPhoto").value.trim();
 
-    showProfile();
+ const cover=
+  $("editCover").value.trim();
 
-  }catch(error){
+ try{
 
-    toast(error.message);
-  }
+  await api(
+   encodeURIComponent("my social app")+
+   "?id=eq."+currentUser.id,
+   {
+    method:"PATCH",
+    headers:{
+     "Prefer":"return=minimal"
+    },
+    body:JSON.stringify({
+     name:name||null,
+     bio:bio||null,
+     profile_photo:photo||null,
+     cover_photo:cover||null
+    })
+   }
+  );
+
+  closeModal();
+
+  toast("Profile updated");
+
+  showProfile();
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
-/* =========================
-   SEARCH
-========================= */
+/* =====================================
+   FRIENDS
+===================================== */
 
-function showSearch(){
+function showFriends(){
 
-  setActive("navSearch");
+ $("main").innerHTML=`
 
-  $("content").innerHTML = `
+ <div class="card">
 
-    <div class="card">
+  <h2>👥 Friends</h2>
 
-      <h2>🔎 Search People</h2>
+  <input
+   id="friendSearch"
+   class="form-control"
+   placeholder="Search people...">
 
-      <input
-        id="searchName"
-        placeholder="নাম লিখুন..."
-      >
+  <button
+   class="primary"
+   onclick="searchFriends()">
+   Search
+  </button>
 
-      <button
-        class="primary"
-        onclick="searchPeople()">
-        Search
-      </button>
+ </div>
+
+ <div id="friendResults"></div>
+
+ `;
+
+}
+
+
+async function searchFriends(){
+
+ const name=
+  $("friendSearch").value.trim();
+
+ if(!name)return;
+
+ try{
+
+  const rows=
+   await api(
+    encodeURIComponent("my social app")+
+    "?select=*&name=ilike.*"+
+    encodeURIComponent(name)+
+    "*"
+   );
+
+  const box=$("friendResults");
+
+  box.innerHTML="";
+
+  rows
+  .filter(x=>x.id!==currentUser.id)
+  .forEach(p=>{
+
+   const div=document.createElement("div");
+
+   div.className="card";
+
+   div.innerHTML=`
+
+   <div class="search-result">
+
+    ${
+     p.profile_photo
+     ?
+     `<img class="avatar"
+       src="${escapeHTML(p.profile_photo)}">`
+     :
+     `<div class="avatar"></div>`
+    }
+
+    <div style="flex:1">
+
+     <strong>
+      ${escapeHTML(p.name||"User")}
+     </strong>
 
     </div>
 
-    <div id="searchResults"></div>
-  `;
+    <button
+     class="primary"
+     onclick="followUser('${p.id}')">
+     Follow
+    </button>
+
+   </div>
+   `;
+
+   box.appendChild(div);
+  });
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
-async function searchPeople(){
+async function followUser(id){
 
-  const name =
-    $("searchName").value.trim();
+ try{
 
-  if(!name){
-    return;
+  const existing=
+   await api(
+    "follows?select=*&follower_id=eq."+
+    currentUser.id+
+    "&following_id=eq."+
+    id+
+    "&limit=1"
+   );
+
+  if(existing?.length){
+
+   await api(
+    "follows?id=eq."+existing[0].id,
+    {method:"DELETE"}
+   );
+
+   toast("Unfollowed");
+
+  }else{
+
+   await api(
+    "follows",
+    {
+     method:"POST",
+     headers:{
+      "Prefer":"return=minimal"
+     },
+     body:JSON.stringify({
+      follower_id:currentUser.id,
+      following_id:id
+     })
+    }
+   );
+
+   toast("Following");
   }
 
-  try{
+ }catch(e){
 
-    const results =
-      await supabaseFetch(
-        encodeURIComponent("my social app") +
-        "?select=*&name=ilike.*" +
-        encodeURIComponent(name) +
-        "*"
-      );
+  toast(e.message);
+ }
+}
 
-    const box =
-      $("searchResults");
 
-    box.innerHTML = "";
+/* =====================================
+   SEARCH
+===================================== */
 
-    if(!results.length){
+function showSearchPage(){
 
-      box.innerHTML = `
-        <div class="card">
-          কাউকে পাওয়া যায়নি।
-        </div>
-      `;
+ $("main").innerHTML=`
 
-      return;
+ <div class="card">
+
+  <h2>🔎 Search FriendBook</h2>
+
+  <input
+   id="searchInput"
+   class="form-control"
+   placeholder="Search people">
+
+  <button
+   class="primary"
+   onclick="doSearch()">
+   Search
+  </button>
+
+ </div>
+
+ <div id="searchBox"></div>
+ `;
+}
+
+
+async function doSearch(){
+
+ const q=
+  $("searchInput").value.trim();
+
+ if(!q)return;
+
+ try{
+
+  const rows=
+   await api(
+    encodeURIComponent("my social app")+
+    "?select=*&name=ilike.*"+
+    encodeURIComponent(q)+
+    "*"
+   );
+
+  const box=$("searchBox");
+
+  box.innerHTML="";
+
+  rows.forEach(p=>{
+
+   const div=document.createElement("div");
+
+   div.className="card";
+
+   div.innerHTML=`
+
+   <div class="search-result">
+
+    ${
+     p.profile_photo
+     ?
+     `<img class="avatar"
+       src="${escapeHTML(p.profile_photo)}">`
+     :
+     `<div class="avatar"></div>`
     }
 
-    results.forEach(profile=>{
+    <div style="flex:1">
+     <strong>
+      ${escapeHTML(p.name||"User")}
+     </strong>
+    </div>
 
-      const div =
-        document.createElement("div");
-
-      div.className = "card";
-
-      div.innerHTML = `
-
-        <div class="post-head">
-
-          ${
-            profile.profile_photo
-            ?
-            `<img
-              class="avatar"
-              src="${profile.profile_photo}"
-            >`
-            :
-            `<div class="avatar"></div>`
-          }
-
-          <div style="flex:1;">
-            <strong>
-              ${escapeHTML(
-                profile.name ||
-                "FriendBook User"
-              )}
-            </strong>
-          </div>
-
-          ${
-            profile.id !== currentUser.id
-            ?
-            `<button
-              class="primary"
-              onclick="followUser('${profile.id}')">
-              Follow
-            </button>`
-            :
-            ""
-          }
-
-        </div>
-      `;
-
-      box.appendChild(div);
-    });
-
-  }catch(error){
-
-    toast(error.message);
-  }
-}
-
-
-/* =========================
-   FOLLOW
-========================= */
-
-async function followUser(userId){
-
-  try{
-
-    const existing =
-      await supabaseFetch(
-        `follows?select=*&follower_id=eq.${currentUser.id}&following_id=eq.${userId}&limit=1`
-      );
-
-    if(existing?.length){
-
-      await supabaseFetch(
-        `follows?id=eq.${existing[0].id}`,
-        {
-          method:"DELETE"
-        }
-      );
-
-      toast("Unfollowed");
-
-    }else{
-
-      await supabaseFetch(
-        "follows",
-        {
-          method:"POST",
-          headers:{
-            "Prefer":"return=minimal"
-          },
-          body:JSON.stringify({
-            follower_id:currentUser.id,
-            following_id:userId
-          })
-        }
-      );
-
-      toast("Following");
+    ${
+     p.id!==currentUser.id
+     ?
+     `<button
+       class="primary"
+       onclick="followUser('${p.id}')">
+       Follow
+      </button>`
+     :""
     }
 
-  }catch(error){
+   </div>
 
-    toast(error.message);
-  }
+   `;
+
+   box.appendChild(div);
+  });
+
+ }catch(e){
+
+  toast(e.message);
+ }
 }
 
 
-/* =========================
+function globalSearch(event){
+
+ if(event.key!=="Enter")return;
+
+ const q=
+  event.target.value.trim();
+
+ if(!q)return;
+
+ showSearchPage();
+
+ setTimeout(()=>{
+
+  $("searchInput").value=q;
+
+  doSearch();
+
+ },50);
+}
+
+
+/* =====================================
+   MESSENGER
+===================================== */
+
+function showMessenger(){
+
+ $("main").innerHTML=`
+
+ <div class="card">
+
+  <h2>💬 Messenger</h2>
+
+  <p style="color:var(--muted)">
+   আপনার বন্ধুদের সাথে Chat করুন।
+  </p>
+
+  <button
+   class="primary"
+   onclick="showFriends()">
+   Find Friends
+  </button>
+
+ </div>
+
+ <div class="card">
+
+  <h3>Messages</h3>
+
+  <div class="empty">
+   আপনার Chat এখানে দেখা যাবে।
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+/* =====================================
+   NOTIFICATIONS
+===================================== */
+
+async function showNotifications(){
+
+ $("main").innerHTML=`
+
+ <div class="card">
+
+  <h2>🔔 Notifications</h2>
+
+  <div id="notifications">
+   <div class="empty">
+    Loading...
+   </div>
+  </div>
+
+ </div>
+
+ `;
+
+ try{
+
+  const rows=
+   await api(
+    "notifications?select=*&receiver_id=eq."+
+    currentUser.id+
+    "&order=created_at.desc&limit=50"
+   );
+
+  const box=$("notifications");
+
+  if(!rows?.length){
+
+   box.innerHTML=
+    `<div class="empty">
+      No notifications
+     </div>`;
+
+   return;
+  }
+
+  box.innerHTML=
+   rows.map(n=>`
+
+   <div class="notification
+    ${n.read?"":"unread"}">
+
+    <div>🔔</div>
+
+    <div>
+     ${escapeHTML(n.message||"Notification")}
+     <br>
+     <small style="color:var(--muted)">
+      ${timeAgo(n.created_at)}
+     </small>
+    </div>
+
+   </div>
+
+   `).join("");
+
+ }catch(e){
+
+  $("notifications").innerHTML=
+   `<div class="empty">
+     Notifications unavailable
+    </div>`;
+ }
+}
+
+
+/* =====================================
+   MONETIZATION
+===================================== */
+
+async function showMonetization(){
+
+ $("main").innerHTML=`
+
+ <div class="card">
+
+  <h2>💰 Creator Dashboard</h2>
+
+  <p style="color:var(--muted)">
+   FriendBook Creator Monetization
+  </p>
+
+ </div>
+
+ <div class="card">
+
+  <div class="stat-grid">
+
+   <div class="stat">
+    <strong>0</strong>
+    Views
+   </div>
+
+   <div class="stat">
+    <strong>0</strong>
+    Earnings
+   </div>
+
+   <div class="stat">
+    <strong>0</strong>
+    Followers
+   </div>
+
+  </div>
+
+ </div>
+
+ <div class="card">
+
+  <h3>Monetization</h3>
+
+  <div class="setting-row">
+
+   <div>
+    <strong>Content Monetization</strong>
+    <br>
+    <small style="color:var(--muted)">
+     Earn from eligible content
+    </small>
+   </div>
+
+   <button
+    class="secondary"
+    onclick="toast('Monetization settings')">
+    Settings
+   </button>
+
+  </div>
+
+ </div>
+
+ `;
+}
+
+
+/* =====================================
    SETTINGS
-========================= */
+===================================== */
 
 function showSettings(){
 
-  setActive("navSettings");
+ $("main").innerHTML=`
 
-  const dark =
-    localStorage.getItem(
-      "friendbook_dark"
-    ) === "1";
+ <div class="card">
 
-  $("content").innerHTML = `
+  <h2>⚙️ Settings</h2>
 
-    <div class="card">
+  <div class="setting-row">
 
-      <h2>⚙️ FriendBook Settings</h2>
+   <div>
+    🌙 Dark Mode
+   </div>
 
-      <button
-        onclick="toggleDark()"
-        style="width:100%;margin-bottom:10px;">
-        🌙 Dark Mode
-      </button>
+   <button
+    id="darkSwitch"
+    class="switch"
+    onclick="toggleDark()">
+    <span></span>
+   </button>
 
-      <button
-        onclick="logout()"
-        class="danger"
-        style="width:100%;">
-        🚪 Logout
-      </button>
+  </div>
 
-    </div>
-  `;
+
+  <div class="setting-row">
+
+   <div>
+    🔔 Notifications
+   </div>
+
+   <button
+    class="secondary"
+    onclick="showNotifications()">
+    Open
+   </button>
+
+  </div>
+
+
+  <div class="setting-row">
+
+   <div>
+    🔐 Privacy
+   </div>
+
+   <button
+    class="secondary"
+    onclick="toast('Privacy settings')">
+    Manage
+   </button>
+
+  </div>
+
+
+  <div class="setting-row">
+
+   <div>
+    🚫 Blocked Users
+   </div>
+
+   <button
+    class="secondary"
+    onclick="toast('Blocked users')">
+    Manage
+   </button>
+
+  </div>
+
+
+  <br>
+
+  <button
+   class="danger full"
+   onclick="logout()">
+   🚪 Logout
+  </button>
+
+ </div>
+
+ `;
 }
 
 
 function toggleDark(){
 
-  document.body.classList.toggle("dark");
+ document.body.classList.toggle("dark");
 
-  localStorage.setItem(
-    "friendbook_dark",
-    document.body.classList.contains("dark")
-      ? "1"
-      : "0"
-  );
+ localStorage.setItem(
+  "friendbook_dark",
+  document.body.classList.contains("dark")
+   ?"1":"0"
+ );
 }
 
 
-/* =========================
-   NAV ACTIVE
-========================= */
+/* =====================================
+   MODAL
+===================================== */
 
-function setActive(id){
+function closeModal(event){
 
-  document.querySelectorAll(
-    "nav button"
-  ).forEach(btn=>{
-    btn.classList.remove("active");
-  });
+ if(event &&
+    event.target!==$("modalBg"))
+  return;
 
-  const button = $(id);
-
-  if(button){
-    button.classList.add("active");
-  }
+ $("modalBg").classList.add("hidden");
 }
 
 
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHTML(value){
-
-  if(value === null || value === undefined){
-    return "";
-  }
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-
-/* =========================
-   START
-========================= */
+/* =====================================
+   INIT
+===================================== */
 
 async function start(){
 
-  if(
-    localStorage.getItem(
-      "friendbook_dark"
-    ) === "1"
-  ){
-    document.body.classList.add("dark");
-  }
+ if(
+  localStorage.getItem(
+   "friendbook_dark"
+  )==="1"
+ ){
+  document.body.classList.add("dark");
+ }
 
-  const saved =
-    localStorage.getItem(
-      "friendbook_session"
-    );
+ const saved=
+  localStorage.getItem(
+   "friendbook_session"
+  );
 
-  if(!saved){
+ if(!saved){
 
-    showLogin();
-    return;
-  }
+  $("authPage").classList.remove("hidden");
+  $("app").classList.add("hidden");
 
-  try{
+  return;
+ }
 
-    const session =
-      JSON.parse(saved);
+ try{
 
-    if(!session.access_token){
-      throw new Error();
+  session=JSON.parse(saved);
+
+  const res=
+   await fetch(
+    SUPABASE_URL+"/auth/v1/user",
+    {
+     headers:{
+      "apikey":SUPABASE_KEY,
+      "Authorization":
+       "Bearer "+session.access_token
+     }
     }
+   );
 
-    const result =
-      await fetch(
-        SUPABASE_URL +
-        "/auth/v1/user",
-        {
-          headers:{
-            "apikey":SUPABASE_KEY,
-            "Authorization":
-              "Bearer " +
-              session.access_token
-          }
-        }
-      );
+  if(!res.ok)
+   throw new Error();
 
-    if(!result.ok){
-      throw new Error();
-    }
+  currentUser=
+   await res.json();
 
-    currentUser =
-      await result.json();
+  openApp();
 
-    openApp();
+ }catch{
 
-  }catch(error){
+  localStorage.removeItem(
+   "friendbook_session"
+  );
 
-    localStorage.removeItem(
-      "friendbook_session"
-    );
-
-    showLogin();
-  }
+  $("authPage").classList.remove("hidden");
+  $("app").classList.add("hidden");
+ }
 }
-
 
 start();
 
 </script>
 
 </body>
- </html>
+  </html>
