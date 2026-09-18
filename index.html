@@ -4,4296 +4,4847 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1877f2">
+
 <title>My Social App</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
-
-body{
- margin:0;
- font-family:Arial,Helvetica,sans-serif;
- background:#f0f2f5;
- color:#1c1e21;
+*{
+  box-sizing:border-box;
 }
 
-button,input,select,textarea{
- font-family:inherit;
-}
-
-button{
- cursor:pointer;
- border:0;
- border-radius:8px;
- padding:10px 14px;
- font-weight:600;
-}
-
-.blue{
- background:#1877f2;
- color:#fff;
-}
-
-.gray{
- background:#e4e6eb;
- color:#050505;
-}
-
-.danger{
- background:#e53935;
- color:#fff;
-}
-
-.green{
- background:#42b72a;
- color:#fff;
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  background:#f0f2f5;
+  color:#1c1e21;
 }
 
 body.dark{
- background:#18191a;
- color:#e4e6eb;
+  background:#18191a;
+  color:#e4e6eb;
 }
 
-body.dark .card,
-body.dark .topbar,
-body.dark .sidebar,
-body.dark .bottomnav,
-body.dark .modal-box,
-body.dark .post,
-body.dark .story{
- background:#242526;
- color:#e4e6eb;
+button,
+input,
+textarea,
+select{
+  font-family:inherit;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  border-radius:7px;
+  padding:10px 14px;
+  font-size:14px;
+}
+
+.blue{
+  background:#1877f2;
+  color:white;
+}
+
+.gray{
+  background:#e4e6eb;
+  color:#111;
+}
+
+.danger{
+  background:#e41e3f;
+  color:white;
+}
+
+.green{
+  background:#42b72a;
+  color:white;
+}
+
+body.dark .gray{
+  background:#3a3b3c;
+  color:#fff;
+}
+
+input,
+textarea,
+select{
+  border:1px solid #ccd0d5;
+  border-radius:7px;
+  padding:11px;
+  width:100%;
+  outline:none;
+  background:white;
+  color:#111;
 }
 
 body.dark input,
 body.dark textarea,
 body.dark select{
- background:#3a3b3c;
- color:#fff;
- border-color:#555;
-}
-
-body.dark .gray{
- background:#3a3b3c;
- color:#fff;
-}
-
-.topbar{
- height:60px;
- background:#fff;
- position:sticky;
- top:0;
- z-index:100;
- display:flex;
- align-items:center;
- gap:12px;
- padding:8px 15px;
- box-shadow:0 1px 4px #0002;
-}
-
-.logo{
- color:#1877f2;
- font-size:22px;
- font-weight:bold;
- white-space:nowrap;
-}
-
-.search{
- flex:1;
- max-width:500px;
-}
-
-.search input{
- width:100%;
- border:0;
- background:#f0f2f5;
- border-radius:20px;
- padding:11px 16px;
- outline:none;
-}
-
-.top-actions{
- margin-left:auto;
- display:flex;
- gap:7px;
-}
-
-.icon-btn{
- width:42px;
- height:42px;
- padding:0;
- border-radius:50%;
- background:#e4e6eb;
-}
-
-.app{
- max-width:1300px;
- margin:auto;
- display:grid;
- grid-template-columns:240px 1fr 260px;
- gap:18px;
- padding:18px;
-}
-
-.sidebar{
- background:#fff;
- border-radius:10px;
- padding:10px;
- height:max-content;
- position:sticky;
- top:78px;
-}
-
-.nav-btn{
- display:block;
- width:100%;
- text-align:left;
- background:transparent;
- padding:12px;
- margin-bottom:3px;
-}
-
-.nav-btn:hover{
- background:#f0f2f5;
-}
-
-body.dark .nav-btn:hover{
- background:#3a3b3c;
-}
-
-.card{
- background:#fff;
- border-radius:10px;
- padding:16px;
- margin-bottom:15px;
- box-shadow:0 1px 2px #0001;
-}
-
-.page-title{
- font-size:23px;
- font-weight:bold;
- margin-bottom:15px;
-}
-
-.post{
- background:#fff;
- border-radius:10px;
- padding:15px;
- margin-bottom:15px;
- box-shadow:0 1px 2px #0001;
-}
-
-.post-head{
- display:flex;
- align-items:center;
- gap:10px;
-}
-
-.avatar{
- width:45px;
- height:45px;
- border-radius:50%;
- background:#1877f2;
- color:white;
- display:flex;
- align-items:center;
- justify-content:center;
- font-weight:bold;
- overflow:hidden;
- flex:none;
-}
-
-.avatar img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-
-.post-text{
- margin:14px 0;
- white-space:pre-wrap;
- word-break:break-word;
-}
-
-.post img.post-image,
-.post video{
- width:100%;
- max-height:600px;
- object-fit:contain;
- border-radius:8px;
- background:#000;
-}
-
-.post-actions{
- display:flex;
- gap:5px;
- margin-top:10px;
- border-top:1px solid #eee;
- padding-top:8px;
-}
-
-body.dark .post-actions{
- border-color:#444;
-}
-
-.post-actions button{
- flex:1;
- background:transparent;
-}
-
-.post-actions button:hover{
- background:#f0f2f5;
-}
-
-body.dark .post-actions button:hover{
- background:#3a3b3c;
-}
-
-.story-row{
- display:flex;
- gap:10px;
- overflow-x:auto;
- padding-bottom:5px;
-}
-
-.story{
- min-width:105px;
- height:155px;
- background:#fff;
- border-radius:10px;
- overflow:hidden;
- position:relative;
- box-shadow:0 1px 2px #0001;
-}
-
-.story img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-
-.story-name{
- position:absolute;
- bottom:7px;
- left:7px;
- color:#fff;
- font-weight:bold;
- text-shadow:0 1px 4px #000;
-}
-
-textarea,
-input,
-select{
- width:100%;
- padding:11px;
- border:1px solid #ccd0d5;
- border-radius:8px;
- outline:none;
- background:#fff;
- color:#111;
+  background:#242526;
+  color:#fff;
+  border-color:#3e4042;
 }
 
 textarea{
- resize:vertical;
- min-height:90px;
+  resize:vertical;
 }
 
-.modal{
- position:fixed;
- inset:0;
- background:#0008;
- display:none;
- align-items:center;
- justify-content:center;
- z-index:1000;
- padding:15px;
+.hidden{
+  display:none!important;
 }
 
-.modal-box{
- width:100%;
- max-width:520px;
- max-height:90vh;
- overflow:auto;
- background:#fff;
- border-radius:12px;
- padding:18px;
+/* AUTH */
+
+.auth{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
 }
 
-.modal-head{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:15px;
+.auth-box{
+  width:100%;
+  max-width:420px;
+  background:white;
+  padding:28px;
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
 }
 
-.close{
- background:#e4e6eb;
- width:35px;
- height:35px;
- border-radius:50%;
- padding:0;
+body.dark .auth-box{
+  background:#242526;
 }
 
-.bottomnav{
- display:none;
+.logo{
+  text-align:center;
+  color:#1877f2;
+  font-size:32px;
+  font-weight:bold;
+  margin-bottom:20px;
 }
 
-.toast{
- position:fixed;
- bottom:25px;
- left:50%;
- transform:translateX(-50%);
- background:#222;
- color:#fff;
- padding:12px 18px;
- border-radius:8px;
- display:none;
- z-index:2000;
+.auth-box h2{
+  text-align:center;
 }
 
-.profile-cover{
- height:180px;
- background:linear-gradient(135deg,#1877f2,#7b2cff);
- border-radius:10px 10px 0 0;
- position:relative;
+.auth-box input{
+  margin-bottom:12px;
 }
 
-.profile-avatar{
- position:absolute;
- bottom:-45px;
- left:25px;
- width:95px;
- height:95px;
- border:4px solid #fff;
- border-radius:50%;
- background:#1877f2;
- color:#fff;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:35px;
- font-weight:bold;
- overflow:hidden;
+.auth-box button{
+  width:100%;
+  margin-top:5px;
 }
 
-.profile-avatar img{
- width:100%;
- height:100%;
- object-fit:cover;
+/* APP */
+
+#app{
+  min-height:100vh;
 }
 
-.profile-info{
- padding:55px 20px 20px;
+.topbar{
+  height:60px;
+  background:white;
+  border-bottom:1px solid #ddd;
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  gap:15px;
+  position:sticky;
+  top:0;
+  z-index:100;
 }
 
-.profile-actions{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
- margin-top:10px;
+body.dark .topbar{
+  background:#242526;
+  border-color:#3a3b3c;
 }
 
-.comment{
- display:flex;
- gap:8px;
- margin-top:10px;
+.top-logo{
+  color:#1877f2;
+  font-size:24px;
+  font-weight:bold;
 }
 
-.comment-body{
- background:#f0f2f5;
- border-radius:15px;
- padding:8px 12px;
- flex:1;
+.search{
+  max-width:300px;
 }
 
-body.dark .comment-body{
- background:#3a3b3c;
+.top-actions{
+  margin-left:auto;
+  display:flex;
+  gap:7px;
 }
+
+.icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  padding:0;
+  font-size:18px;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:220px minmax(0,680px);
+  gap:20px;
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.sidebar{
+  position:sticky;
+  top:80px;
+  height:max-content;
+}
+
+.nav-btn{
+  width:100%;
+  text-align:left;
+  background:transparent;
+  margin-bottom:4px;
+  padding:12px;
+}
+
+.nav-btn:hover{
+  background:#ddd;
+}
+
+body.dark .nav-btn:hover{
+  background:#3a3b3c;
+}
+
+/* CARDS */
+
+.card{
+  background:white;
+  border-radius:10px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 1px 2px rgba(0,0,0,.12);
+}
+
+body.dark .card{
+  background:#242526;
+}
+
+.page-title{
+  font-size:24px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+/* PROFILE */
+
+.profile-head{
+  text-align:center;
+}
+
+.avatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
+}
+
+.avatar-small{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
+}
+
+/* POST */
+
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.post-user{
+  font-weight:bold;
+}
+
+.post-time{
+  font-size:12px;
+  color:#65676b;
+}
+
+.post-text{
+  margin:14px 0;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.post-img,
+.post-video{
+  width:100%;
+  max-height:600px;
+  object-fit:contain;
+  border-radius:8px;
+  background:#111;
+}
+
+.post-actions{
+  display:flex;
+  gap:5px;
+  border-top:1px solid #ddd;
+  margin-top:12px;
+  padding-top:10px;
+}
+
+.post-actions button{
+  flex:1;
+  background:transparent;
+}
+
+body.dark .post-actions{
+  border-color:#3a3b3c;
+}
+
+/* STORIES */
+
+.stories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-bottom:15px;
+}
+
+.story{
+  min-width:110px;
+  height:160px;
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+  background:#1877f2;
+  color:white;
+}
+
+.story img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.story span{
+  position:absolute;
+  bottom:8px;
+  left:8px;
+  right:8px;
+  font-weight:bold;
+  text-shadow:0 1px 3px #000;
+}
+
+/* REELS */
 
 .reel{
- background:#000;
- color:#fff;
- border-radius:10px;
- overflow:hidden;
- margin-bottom:15px;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:15px;
 }
 
 .reel video{
- width:100%;
- max-height:650px;
- display:block;
+  width:100%;
+  max-height:650px;
+  display:block;
 }
 
-.settings-section{
- margin-bottom:15px;
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
 }
 
-.settings-title{
- font-size:18px;
- font-weight:bold;
- margin-bottom:12px;
+.modal-box{
+  background:white;
+  width:100%;
+  max-width:520px;
+  max-height:90vh;
+  overflow:auto;
+  border-radius:12px;
+  padding:20px;
+}
+
+body.dark .modal-box{
+  background:#242526;
+}
+
+.modal-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* COMMENTS */
+
+.comment{
+  padding:9px;
+  background:#f0f2f5;
+  border-radius:8px;
+  margin:7px 0;
+}
+
+body.dark .comment{
+  background:#3a3b3c;
+}
+
+/* SETTINGS */
+
+.setting-title{
+  font-size:18px;
+  font-weight:bold;
 }
 
 .setting-row{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:15px;
- padding:13px 0;
- border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  padding:13px 0;
+  border-bottom:1px solid #ddd;
+}
+
+body.dark .setting-row{
+  border-color:#3a3b3c;
 }
 
 .setting-row:last-child{
- border-bottom:0;
+  border-bottom:0;
 }
 
-.setting-info{
- flex:1;
+.setting-label{
+  font-weight:600;
 }
 
-.setting-info strong{
- display:block;
- font-size:15px;
- margin-bottom:4px;
-}
-
-.setting-info small{
- color:#65676b;
- font-size:13px;
-}
-
-.setting-select{
- min-width:150px;
- width:auto;
- padding:9px 10px;
-}
-
-.setting-input{
- width:100%;
- padding:11px 12px;
- margin-top:6px;
+.setting-desc{
+  color:#65676b;
+  font-size:13px;
+  margin-top:4px;
 }
 
 .switch{
- position:relative;
- width:48px;
- height:26px;
- flex:none;
+  width:48px;
+  height:26px;
+  position:relative;
 }
 
 .switch input{
- opacity:0;
- width:0;
- height:0;
+  display:none;
 }
 
 .slider{
- position:absolute;
- inset:0;
- background:#ccc;
- border-radius:30px;
- transition:.2s;
+  position:absolute;
+  inset:0;
+  background:#ccc;
+  border-radius:30px;
+  cursor:pointer;
 }
 
 .slider:before{
- content:"";
- position:absolute;
- width:20px;
- height:20px;
- left:3px;
- top:3px;
- background:#fff;
- border-radius:50%;
- transition:.2s;
+  content:"";
+  width:20px;
+  height:20px;
+  background:white;
+  position:absolute;
+  left:3px;
+  top:3px;
+  border-radius:50%;
+  transition:.2s;
 }
 
 .switch input:checked + .slider{
- background:#1877f2;
+  background:#1877f2;
 }
 
 .switch input:checked + .slider:before{
- transform:translateX(22px);
+  transform:translateX(22px);
 }
 
-.blocked-user{
- display:flex;
- align-items:center;
- gap:10px;
- padding:10px 0;
- border-bottom:1px solid #eee;
-}
+/* TOAST */
 
-.blocked-user:last-child{
- border-bottom:0;
-}
-
-.blocked-user .avatar{
- width:40px;
- height:40px;
-}
-
-.settings-buttons{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
-}
-
-.settings-buttons button{
- margin-top:5px;
-}
-
-.security-box{
- background:#f0f2f5;
- border-radius:8px;
- padding:12px;
- margin-top:8px;
-}
-
-body.dark .security-box{
- background:#3a3b3c;
-}
-
-hr{
- border:0;
- border-top:1px solid #ddd;
- margin:15px 0;
-}
-
-body.dark hr{
- border-color:#444;
-}
-
-@media(max-width:1000px){
- .app{
-  grid-template-columns:200px 1fr;
- }
- .rightbar{
-  display:none;
- }
-}
-
-@media(max-width:700px){
- .topbar{
-  height:55px;
- }
-
- .logo{
-  font-size:18px;
- }
-
- .search{
-  display:none;
- }
-
- .top-actions button:nth-child(n+3){
-  display:none;
- }
-
- .app{
-  display:block;
-  padding:10px 8px 70px;
- }
-
- .sidebar{
-  display:none;
- }
-
- .bottomnav{
+#toast{
   position:fixed;
-  display:flex;
-  bottom:0;
-  left:0;
-  right:0;
-  height:58px;
-  background:#fff;
-  z-index:500;
-  box-shadow:0 -1px 5px #0002;
-  justify-content:space-around;
-  align-items:center;
- }
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#222;
+  color:white;
+  padding:12px 18px;
+  border-radius:8px;
+  display:none;
+  z-index:2000;
+}
 
- body.dark .bottomnav{
-  background:#242526;
- }
+/* MOBILE */
 
- .bottomnav button{
-  background:transparent;
-  font-size:20px;
-  padding:7px;
- }
+@media(max-width:800px){
 
- .page-title{
-  font-size:20px;
- }
+  .layout{
+    grid-template-columns:1fr;
+    padding:10px;
+  }
 
- .setting-row{
-  align-items:flex-start;
- }
+  .sidebar{
+    position:static;
+    display:flex;
+    overflow-x:auto;
+    gap:5px;
+  }
 
- .setting-select{
-  min-width:125px;
- }
+  .nav-btn{
+    width:auto;
+    white-space:nowrap;
+  }
+
+  .search{
+    display:none;
+  }
+
+  .top-logo{
+    font-size:20px;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .topbar{
+    padding:0 8px;
+  }
+
+  .top-actions button:nth-child(1){
+    display:none;
+  }
+
+  .card{
+    border-radius:7px;
+  }
+
 }
 </style>
 </head>
 
 <body>
 
-<div id="loginPage"></div>
+<!-- ================= AUTH ================= -->
 
-<div id="app" style="display:none">
+<div id="auth">
 
-<header class="topbar">
+  <div class="auth">
 
- <div class="logo">My Social App</div>
+    <div class="auth-box">
 
- <div class="search">
-  <input
-   id="searchInput"
-   placeholder="Search people..."
-   onkeydown="if(event.key==='Enter')searchUsers()"
-  >
- </div>
+      <div class="logo">
+        My Social App
+      </div>
 
- <div class="top-actions">
-  <button class="icon-btn" onclick="openPage('notifications')">🔔</button>
-  <button class="icon-btn" onclick="openPage('messenger')">💬</button>
-  <button class="icon-btn" onclick="openPage('settings')">⚙️</button>
- </div>
+      <div id="loginBox">
 
-</header>
+        <h2>Login</h2>
 
-<div class="app">
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="Email"
+        >
 
- <aside class="sidebar" id="sidebar"></aside>
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Password"
+        >
 
- <main id="main"></main>
+        <button
+          class="blue"
+          onclick="login()">
+          Login
+        </button>
 
- <aside class="rightbar">
+        <br><br>
 
-  <div class="card">
-   <h3>My Social App</h3>
-   <p style="color:#65676b">
-    Welcome to your social network.
-   </p>
+        <button
+          class="gray"
+          onclick="showRegister()">
+          Create new account
+        </button>
+
+      </div>
+
+
+      <div id="registerBox" class="hidden">
+
+        <h2>Create Account</h2>
+
+        <input
+          id="regName"
+          placeholder="Your name"
+        >
+
+        <input
+          id="regUsername"
+          placeholder="Username"
+        >
+
+        <input
+          id="regEmail"
+          type="email"
+          placeholder="Email"
+        >
+
+        <input
+          id="regPassword"
+          type="password"
+          placeholder="Password"
+        >
+
+        <button
+          class="green"
+          onclick="register()">
+          Create Account
+        </button>
+
+        <br><br>
+
+        <button
+          class="gray"
+          onclick="showLogin()">
+          Already have account
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
 
-  <div class="card">
-   <h3>Quick Menu</h3>
-   <br>
-   <button class="gray" style="width:100%" onclick="openPage('profile')">
-    👤 My Profile
-   </button>
-   <br><br>
-   <button class="gray" style="width:100%" onclick="openPage('settings')">
-    ⚙️ Settings
-   </button>
+</div>
+
+
+<!-- ================= APP ================= -->
+
+<div id="app" class="hidden">
+
+  <header class="topbar">
+
+    <div class="top-logo">
+      My Social
+    </div>
+
+    <input
+      class="search"
+      id="searchInput"
+      placeholder="Search..."
+      onkeydown="if(event.key==='Enter') searchUsers()"
+    >
+
+    <div class="top-actions">
+
+      <button
+        class="gray icon-btn"
+        onclick="openPage('notifications')">
+        🔔
+      </button>
+
+      <button
+        class="gray icon-btn"
+        onclick="openPage('messenger')">
+        💬
+      </button>
+
+      <button
+        class="gray icon-btn"
+        onclick="openPage('profile')">
+        👤
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <div class="layout">
+
+    <aside class="sidebar">
+
+      <button
+        class="nav-btn"
+        onclick="openPage('home')">
+        🏠 Home
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('profile')">
+        👤 Profile
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('friends')">
+        👥 Friends
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('messenger')">
+        💬 Messenger
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('notifications')">
+        🔔 Notifications
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('reels')">
+        🎬 Reels
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('saved')">
+        🔖 Saved
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('trending')">
+        🔥 Trending
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('earnings')">
+        💰 Earnings
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="openPage('settings')">
+        ⚙️ Settings
+      </button>
+
+      <button
+        class="nav-btn"
+        onclick="logout()">
+        🚪 Logout
+      </button>
+
+    </aside>
+
+
+    <main id="main">
+
+      <div class="card">
+        Loading...
+      </div>
+
+    </main>
+
   </div>
 
- </aside>
+</div>
+
+
+<!-- ================= POST MODAL ================= -->
+
+<div
+  id="postModal"
+  class="modal hidden">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      <h3>Create Post</h3>
+
+      <button
+        class="gray"
+        onclick="closeModal('postModal')">
+        ✕
+      </button>
+
+    </div>
+
+    <br>
+
+    <textarea
+      id="postText"
+      rows="5"
+      placeholder="What's on your mind?">
+    </textarea>
+
+    <br><br>
+
+    <input
+      id="postImage"
+      type="file"
+      accept="image/*"
+    >
+
+    <br><br>
+
+    <select id="postPrivacy">
+
+      <option value="public">
+        🌍 Public
+      </option>
+
+      <option value="friends">
+        👥 Friends
+      </option>
+
+      <option value="private">
+        🔐 Only me
+      </option>
+
+    </select>
+
+    <br><br>
+
+    <button
+      class="blue"
+      onclick="createPost()">
+      Publish
+    </button>
+
+  </div>
 
 </div>
 
-<div class="bottomnav">
- <button onclick="openPage('home')">🏠</button>
- <button onclick="openPage('friends')">👥</button>
- <button onclick="openPage('reels')">🎬</button>
- <button onclick="openPage('messenger')">💬</button>
- <button onclick="openPage('settings')">⚙️</button>
-</div>
+
+<!-- ================= COMMENTS MODAL ================= -->
+
+<div
+  id="commentsModal"
+  class="modal hidden">
+
+  <div class="modal-box">
+
+    <div class="modal-title">
+
+      <h3>Comments</h3>
+
+      <button
+        class="gray"
+        onclick="closeModal('commentsModal')">
+        ✕
+      </button>
+
+    </div>
+
+    <div id="commentsList"></div>
+
+    <br>
+
+    <textarea
+      id="commentText"
+      rows="3"
+      placeholder="Write a comment...">
+    </textarea>
+
+    <br><br>
+
+    <button
+      class="blue"
+      onclick="addComment()">
+      Comment
+    </button>
+
+  </div>
 
 </div>
 
-<div id="modal" class="modal">
- <div id="modalBox" class="modal-box"></div>
-</div>
 
-<div id="toast" class="toast"></div>
+<div id="toast"></div>
+
 
 <script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
 const SUPABASE_URL =
-"https://skereuaizdczbvjplisi.supabase.co";
+  "https://skereuaizdczbvjplisi.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+  "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-const sb = supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
-
-let user=null;
-let profile=null;
-let appSettings=null;
-let creatorSettings=null;
+const sb =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-/* =========================
-   BASIC HELPERS
-========================= */
+/* =====================================================
+   GLOBALS
+===================================================== */
+
+let user = null;
+let profile = null;
+
+let appSettings = null;
+let creatorSettings = null;
+
+let currentCommentPost = null;
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
 
 function esc(value){
- return String(value ?? "")
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-}
 
-function toast(text){
- const el=document.getElementById("toast");
- el.textContent=text;
- el.style.display="block";
+  if(value === null || value === undefined){
+    return "";
+  }
 
- setTimeout(()=>{
-  el.style.display="none";
- },2500);
-}
-
-function openModal(html){
- document.getElementById("modalBox").innerHTML=html;
- document.getElementById("modal").style.display="flex";
-}
-
-function closeModal(){
- document.getElementById("modal").style.display="none";
-}
-
-function avatarHTML(p,size="45px"){
- if(p?.avatar_url){
-  return `
-   <div class="avatar" style="width:${size};height:${size}">
-    <img src="${esc(p.avatar_url)}">
-   </div>
-  `;
- }
-
- return `
-  <div class="avatar" style="width:${size};height:${size}">
-   ${esc((p?.name||"U").charAt(0).toUpperCase())}
-  </div>
- `;
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 
-/* =========================
-   AUTH
-========================= */
+function toast(message){
+
+  const box =
+    document.getElementById("toast");
+
+  box.textContent = message;
+
+  box.style.display = "block";
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer =
+    setTimeout(() => {
+
+      box.style.display = "none";
+
+    },3000);
+}
+
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.add("hidden");
+
+}
+
+
+/* =====================================================
+   AUTH UI
+===================================================== */
 
 function showLogin(){
 
- document.getElementById("app").style.display="none";
+  document
+    .getElementById("loginBox")
+    .classList.remove("hidden");
 
- document.getElementById("loginPage").innerHTML=`
- <div style="
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
- ">
-  <div class="card" style="width:100%;max-width:420px">
+  document
+    .getElementById("registerBox")
+    .classList.add("hidden");
 
-   <h1 style="text-align:center;color:#1877f2">
-    My Social App
-   </h1>
-
-   <p style="text-align:center;color:#65676b">
-    Login to continue
-   </p>
-
-   <input id="loginEmail" placeholder="Email">
-   <br><br>
-
-   <input
-    id="loginPassword"
-    type="password"
-    placeholder="Password"
-   >
-
-   <br><br>
-
-   <button
-    class="blue"
-    style="width:100%"
-    onclick="login()"
-   >
-    Login
-   </button>
-
-   <br><br>
-
-   <button
-    class="green"
-    style="width:100%"
-    onclick="showRegister()"
-   >
-    Create new account
-   </button>
-
-  </div>
- </div>
- `;
 }
+
 
 function showRegister(){
 
- document.getElementById("loginPage").innerHTML=`
- <div style="
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
- ">
-  <div class="card" style="width:100%;max-width:420px">
+  document
+    .getElementById("loginBox")
+    .classList.add("hidden");
 
-   <h2 style="text-align:center;color:#1877f2">
-    Create Account
-   </h2>
+  document
+    .getElementById("registerBox")
+    .classList.remove("hidden");
 
-   <input id="regName" placeholder="Full name">
-   <br><br>
-
-   <input id="regEmail" placeholder="Email">
-   <br><br>
-
-   <input
-    id="regPassword"
-    type="password"
-    placeholder="Password (minimum 6 characters)"
-   >
-
-   <br><br>
-
-   <button
-    class="green"
-    style="width:100%"
-    onclick="register()"
-   >
-    Register
-   </button>
-
-   <br><br>
-
-   <button
-    class="gray"
-    style="width:100%"
-    onclick="showLogin()"
-   >
-    Back to Login
-   </button>
-
-  </div>
- </div>
- `;
 }
 
-async function login(){
 
- const email=document.getElementById("loginEmail").value.trim();
- const password=document.getElementById("loginPassword").value;
-
- if(!email || !password){
-  toast("Email এবং Password দিন");
-  return;
- }
-
- const {data,error}=await sb.auth.signInWithPassword({
-  email,
-  password
- });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- user=data.user;
- await startApp();
-}
+/* =====================================================
+   REGISTER
+===================================================== */
 
 async function register(){
 
- const name=document.getElementById("regName").value.trim();
- const email=document.getElementById("regEmail").value.trim();
- const password=document.getElementById("regPassword").value;
+  const name =
+    document
+      .getElementById("regName")
+      .value.trim();
 
- if(!name || !email || !password){
-  toast("সব তথ্য পূরণ করুন");
-  return;
- }
+  const username =
+    document
+      .getElementById("regUsername")
+      .value
+      .trim()
+      .toLowerCase();
 
- if(password.length<6){
-  toast("Password কমপক্ষে 6 characters");
-  return;
- }
+  const email =
+    document
+      .getElementById("regEmail")
+      .value
+      .trim();
 
- const {data,error}=await sb.auth.signUp({
-  email,
-  password
- });
+  const password =
+    document
+      .getElementById("regPassword")
+      .value;
 
- if(error){
-  toast(error.message);
-  return;
- }
 
- if(data.user){
+  if(!name || !email || !password){
 
-  user=data.user;
+    toast("সব তথ্য পূরণ করুন");
 
-  await sb.from("profiles").upsert({
-   id:user.id,
-   name:name,
-   bio:"",
-   role:"user",
-   is_deactivated:false,
-   last_seen:new Date().toISOString()
-  });
+    return;
+  }
 
-  await sb.from("user_settings").upsert({
-   user_id:user.id
-  });
 
-  await sb.from("creator_settings").upsert({
-   user_id:user.id
-  });
- }
+  if(password.length < 6){
 
- alert(
-  "Account তৈরি হয়েছে। যদি email confirmation চালু থাকে তাহলে Email verify করে Login করুন।"
- );
+    toast(
+      "Password কমপক্ষে 6 characters"
+    );
 
- showLogin();
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb.auth.signUp({
+
+      email,
+
+      password,
+
+      options:{
+        data:{
+          name,
+          username
+        }
+      }
+
+    });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  if(data.user){
+
+    await sb
+      .from("profiles")
+      .upsert({
+
+        id:data.user.id,
+
+        name:name,
+
+        username:
+          username || null
+
+      });
+
+  }
+
+
+  toast(
+    "Account তৈরি হয়েছে। Email verification প্রয়োজন হতে পারে।"
+  );
+
 }
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function login(){
+
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+
+  if(!email || !password){
+
+    toast("Email এবং Password দিন");
+
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb.auth.signInWithPassword({
+
+      email,
+
+      password
+
+    });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 async function logout(){
 
- await sb.auth.signOut({
-  scope:"local"
- });
+  await sb.auth.signOut();
 
- user=null;
- profile=null;
- appSettings=null;
- creatorSettings=null;
-
- showLogin();
 }
 
 
-/* =========================
+/* =====================================================
    PROFILE
-========================= */
+===================================================== */
 
 async function ensureProfile(){
 
- if(!user)return;
+  if(!user){
+    return null;
+  }
 
- let {data,error}=await sb
-  .from("profiles")
-  .select("*")
-  .eq("id",user.id)
-  .maybeSingle();
 
- if(error){
-  console.log(error);
- }
+  try{
 
- if(!data){
+    let {
+      data,
+      error
+    } =
+      await sb
+        .from("profiles")
+        .select("*")
+        .eq("id",user.id)
+        .maybeSingle();
 
-  const name =
-   user.user_metadata?.name ||
-   user.email?.split("@")[0] ||
-   "User";
 
-  await sb.from("profiles").upsert({
-   id:user.id,
-   name:name,
-   bio:"",
-   role:"user",
-   is_deactivated:false,
-   last_seen:new Date().toISOString()
-  });
+    if(error){
 
-  const result=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",user.id)
-   .maybeSingle();
+      console.error(
+        "Profile error:",
+        error
+      );
 
-  data=result.data;
- }
+      return null;
+    }
 
- profile=data;
+
+    if(!data){
+
+      const metadata =
+        user.user_metadata || {};
+
+
+      const result =
+        await sb
+          .from("profiles")
+          .insert({
+
+            id:user.id,
+
+            name:
+              metadata.name ||
+              user.email?.split("@")[0] ||
+              "User",
+
+            username:
+              metadata.username ||
+              null
+
+          })
+          .select("*")
+          .maybeSingle();
+
+
+      if(result.error){
+
+        console.error(
+          result.error
+        );
+
+        return null;
+      }
+
+
+      data =
+        result.data;
+    }
+
+
+    profile = data;
+
+    return data;
+
+  }catch(err){
+
+    console.error(err);
+
+    return null;
+  }
+
 }
 
-async function refreshProfile(){
 
- if(!user)return;
+/* =====================================================
+   SETTINGS DEFAULT
+===================================================== */
 
- const {data}=await sb
-  .from("profiles")
-  .select("*")
-  .eq("id",user.id)
-  .maybeSingle();
+function defaultSettings(){
 
- profile=data;
+  return {
+
+    user_id:user?.id || null,
+
+    post_privacy:"public",
+
+    friend_request_privacy:"everyone",
+
+    follow_privacy:"everyone",
+
+    online_status:true,
+
+    theme:
+      localStorage.getItem("dark") === "true"
+        ? "dark"
+        : "light",
+
+    notify_like:true,
+
+    notify_comment:true,
+
+    notify_friend_request:true,
+
+    notify_message:true,
+
+    notify_follow:true
+
+  };
+
 }
 
 
-/* =========================
-   SETTINGS
-========================= */
+/* =====================================================
+   ENSURE SETTINGS
+===================================================== */
 
 async function ensureSettings(){
 
- if(!user)return null;
+  if(!user){
 
- let {data}=await sb
-  .from("user_settings")
-  .select("*")
-  .eq("user_id",user.id)
-  .maybeSingle();
+    appSettings =
+      defaultSettings();
 
- if(!data){
+    return appSettings;
+  }
 
-  const result=await sb
-   .from("user_settings")
-   .insert({
-    user_id:user.id
-   })
-   .select("*")
-   .single();
 
-  data=result.data;
- }
+  const defaults =
+    defaultSettings();
 
- appSettings=data;
- return data;
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("user_settings")
+        .select("*")
+        .eq("user_id",user.id)
+        .maybeSingle();
+
+
+    if(error){
+
+      console.error(
+        "Settings SELECT:",
+        error
+      );
+
+      appSettings =
+        defaults;
+
+      return appSettings;
+    }
+
+
+    if(!data){
+
+      const {
+        data:newData,
+        error:insertError
+      } =
+        await sb
+          .from("user_settings")
+          .insert(defaults)
+          .select("*")
+          .maybeSingle();
+
+
+      if(insertError){
+
+        console.error(
+          "Settings INSERT:",
+          insertError
+        );
+
+        appSettings =
+          defaults;
+
+        return appSettings;
+      }
+
+
+      appSettings = {
+
+        ...defaults,
+
+        ...(newData || {})
+
+      };
+
+    }else{
+
+      appSettings = {
+
+        ...defaults,
+
+        ...data
+
+      };
+
+    }
+
+
+    return appSettings;
+
+  }catch(error){
+
+    console.error(error);
+
+    appSettings =
+      defaults;
+
+    return appSettings;
+  }
+
 }
+
+
+/* =====================================================
+   CREATOR SETTINGS
+===================================================== */
 
 async function ensureCreatorSettings(){
 
- if(!user)return null;
+  if(!user){
 
- let {data}=await sb
-  .from("creator_settings")
-  .select("*")
-  .eq("user_id",user.id)
-  .maybeSingle();
+    creatorSettings = {
 
- if(!data){
+      user_id:null,
 
-  const result=await sb
-   .from("creator_settings")
-   .insert({
-    user_id:user.id
-   })
-   .select("*")
-   .single();
+      monetization_enabled:false,
 
-  data=result.data;
- }
+      payout_email:""
 
- creatorSettings=data;
- return data;
-}
+    };
 
-function applyTheme(theme){
-
- if(theme==="dark"){
-  document.body.classList.add("dark");
- }else{
-  document.body.classList.remove("dark");
- }
-
- localStorage.setItem(
-  "theme",
-  theme
- );
-}
-
-async function saveSetting(field,value){
-
- const {data,error}=await sb
-  .from("user_settings")
-  .update({
-   [field]:value,
-   updated_at:new Date().toISOString()
-  })
-  .eq("user_id",user.id)
-  .select("*")
-  .single();
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- appSettings=data;
-
- if(field==="theme"){
-  applyTheme(value);
- }
-
- if(field==="post_privacy"){
-  localStorage.setItem("privacy",value);
- }
-
- toast("Setting saved");
-}
-
-
-/* =========================
-   START APP
-========================= */
-
-async function startApp(){
-
- await ensureProfile();
-
- if(profile?.is_deactivated){
-
-  await sb.auth.signOut({
-   scope:"local"
-  });
-
-  user=null;
-  profile=null;
-
-  alert("এই account বর্তমানে deactivated করা আছে।");
-  showLogin();
-  return;
- }
-
- await ensureSettings();
- await ensureCreatorSettings();
-
- applyTheme(
-  appSettings?.theme ||
-  localStorage.getItem("theme") ||
-  "light"
- );
-
- document.getElementById("loginPage").innerHTML="";
- document.getElementById("app").style.display="block";
-
- buildSidebar();
- openPage("home");
-
- heartbeat();
-
- setInterval(heartbeat,60000);
-}
-
-async function heartbeat(){
-
- if(!user)return;
-
- if(appSettings?.online_status===false){
-  return;
- }
-
- await sb
-  .from("profiles")
-  .update({
-   last_seen:new Date().toISOString()
-  })
-  .eq("id",user.id);
-}
-
-
-/* =========================
-   SIDEBAR
-========================= */
-
-function buildSidebar(){
-
- let admin="";
-
- if(profile?.role==="admin"){
-  admin=`
-   <button class="nav-btn" onclick="openPage('admin')">
-    🛡️ Admin Panel
-   </button>
-  `;
- }
-
- document.getElementById("sidebar").innerHTML=`
-
- <button class="nav-btn" onclick="openPage('home')">
-  🏠 Home
- </button>
-
- <button class="nav-btn" onclick="openPage('profile')">
-  👤 Profile
- </button>
-
- <button class="nav-btn" onclick="openPage('friends')">
-  👥 Friends
- </button>
-
- <button class="nav-btn" onclick="openPage('messenger')">
-  💬 Messenger
- </button>
-
- <button class="nav-btn" onclick="openPage('notifications')">
-  🔔 Notifications
- </button>
-
- <button class="nav-btn" onclick="openPage('reels')">
-  🎬 Reels
- </button>
-
- <button class="nav-btn" onclick="openPage('saved')">
-  🔖 Saved
- </button>
-
- <button class="nav-btn" onclick="openPage('trending')">
-  🔥 Trending
- </button>
-
- <button class="nav-btn" onclick="openPage('earnings')">
-  💰 Earnings
- </button>
-
- <button class="nav-btn" onclick="openPage('settings')">
-  ⚙️ Settings & Privacy
- </button>
-
- ${admin}
-
- <hr>
-
- <button class="nav-btn" onclick="logout()">
-  🚪 Logout
- </button>
- `;
-}
-
-
-/* =========================
-   PAGE ROUTER
-========================= */
-
-async function openPage(page){
-
- if(page==="home")return loadHome();
- if(page==="profile")return renderProfile(user.id);
- if(page==="friends")return renderFriends();
- if(page==="messenger")return renderMessenger();
- if(page==="notifications")return renderNotifications();
- if(page==="reels")return renderReels();
- if(page==="saved")return renderSaved();
- if(page==="trending")return renderTrending();
- if(page==="earnings")return renderEarnings();
- if(page==="settings")return renderSettings();
- if(page==="admin")return renderAdmin();
-}
-
-
-/* =========================
-   HOME
-========================= */
-
-async function loadHome(){
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  Home
- </div>
-
- <div class="card">
-
-  <div style="display:flex;gap:10px;align-items:center">
-   ${avatarHTML(profile)}
-
-   <button
-    class="gray"
-    style="flex:1;text-align:left;border-radius:20px"
-    onclick="openPostModal()"
-   >
-    What's on your mind, ${esc(profile?.name)}?
-   </button>
-  </div>
-
- </div>
-
- <div class="card">
-  <h3>Stories</h3>
-  <div id="stories"></div>
- </div>
-
- <div id="feed">
-  Loading...
- </div>
- `;
-
- await loadStories();
- await loadFeed();
-}
-
-async function openPostModal(){
-
- const s=await ensureSettings();
-
- const privacy=
-  s?.post_privacy ||
-  localStorage.getItem("privacy") ||
-  "public";
-
- openModal(`
-
- <div class="modal-head">
-  <h2>Create Post</h2>
-  <button class="close" onclick="closeModal()">×</button>
- </div>
-
- <textarea
-  id="postText"
-  placeholder="What's on your mind?"
- ></textarea>
-
- <br><br>
-
- <input
-  id="postImage"
-  placeholder="Image URL (optional)"
- >
-
- <br><br>
-
- <input
-  id="postVideo"
-  placeholder="Video URL (optional)"
- >
-
- <br><br>
-
- <label>Post Privacy</label>
-
- <select id="postPrivacy">
-  <option value="public">🌍 Public</option>
-  <option value="friends">👥 Friends</option>
-  <option value="private">🔒 Only me</option>
- </select>
-
- <br><br>
-
- <button
-  class="blue"
-  style="width:100%"
-  onclick="createPost()"
- >
-  Publish
- </button>
- `);
-
- document.getElementById("postPrivacy").value=privacy;
-}
-
-async function createPost(){
-
- const text=document.getElementById("postText").value.trim();
- const image=document.getElementById("postImage").value.trim();
- const video=document.getElementById("postVideo").value.trim();
- const privacy=document.getElementById("postPrivacy").value;
-
- if(!text && !image && !video){
-  toast("Post empty");
-  return;
- }
-
- const {error}=await sb.from("posts").insert({
-  user_id:user.id,
-  text:text,
-  image_url:image||null,
-  video_url:video||null,
-  privacy:privacy
- });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- closeModal();
- toast("Post published");
- loadFeed();
-}
-
-async function filterVisiblePosts(posts){
-
- if(!posts?.length)return [];
-
- const {data:friends}=await sb
-  .from("friends")
-  .select("friend_id")
-  .eq("user_id",user.id);
-
- const friendIds=new Set(
-  (friends||[]).map(x=>x.friend_id)
- );
-
- const {data:blocked}=await sb
-  .from("blocked_users")
-  .select("blocked_id")
-  .eq("blocker_id",user.id);
-
- const blockedIds=new Set(
-  (blocked||[]).map(x=>x.blocked_id)
- );
-
- return posts.filter(p=>{
-
-  if(blockedIds.has(p.user_id)){
-   return false;
+    return creatorSettings;
   }
 
-  if(p.user_id===user.id){
-   return true;
-  }
 
-  if(p.privacy==="public"){
-   return true;
-  }
+  const defaults = {
 
-  if(p.privacy==="friends"){
-   return friendIds.has(p.user_id);
-  }
-
-  return false;
- });
-}
-
-async function loadFeed(){
-
- const feed=document.getElementById("feed");
-
- const {data:posts,error}=await sb
-  .from("posts")
-  .select("*")
-  .order("created_at",{ascending:false})
-  .limit(100);
-
- if(error){
-  feed.innerHTML=`<div class="card">${esc(error.message)}</div>`;
-  return;
- }
-
- const visible=await filterVisiblePosts(posts||[]);
-
- if(!visible.length){
-  feed.innerHTML=`
-   <div class="card">
-    <p>No posts available.</p>
-   </div>
-  `;
-  return;
- }
-
- let html="";
-
- for(const p of visible){
-
-  const {data:author}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",p.user_id)
-   .maybeSingle();
-
-  html+=await postHTML(p,author);
- }
-
- feed.innerHTML=html;
-}
-
-
-/* =========================
-   POST
-========================= */
-
-async function postHTML(p,author){
-
- const {data:reaction}=await sb
-  .from("post_reactions")
-  .select("reaction")
-  .eq("post_id",p.id)
-  .eq("user_id",user.id)
-  .maybeSingle();
-
- const {count:likes}=await sb
-  .from("post_reactions")
-  .select("*",{count:"exact",head:true})
-  .eq("post_id",p.id);
-
- const {count:comments}=await sb
-  .from("comments")
-  .select("*",{count:"exact",head:true})
-  .eq("post_id",p.id);
-
- let media="";
-
- if(p.image_url){
-  media+=`
-   <img
-    class="post-image"
-    src="${esc(p.image_url)}"
-   >
-  `;
- }
-
- if(p.video_url){
-  media+=`
-   <video
-    src="${esc(p.video_url)}"
-    controls
-   ></video>
-  `;
- }
-
- return `
-
- <div class="post">
-
-  <div class="post-head">
-
-   ${avatarHTML(author)}
-
-   <div style="flex:1">
-    <strong
-     onclick="renderProfile('${p.user_id}')"
-     style="cursor:pointer"
-    >
-     ${esc(author?.name||"User")}
-    </strong>
-
-    <div style="font-size:12px;color:#65676b">
-     ${esc(author?.username ? "@"+author.username : "")}
-     ·
-     ${new Date(p.created_at).toLocaleString()}
-     ·
-     ${p.privacy==="public"?"🌍":p.privacy==="friends"?"👥":"🔒"}
-    </div>
-   </div>
-
-   ${
-    p.user_id===user.id
-    ? `
-    <button
-     class="gray"
-     onclick="deletePost('${p.id}')"
-    >
-     🗑️
-    </button>
-    `
-    : `
-    <button
-     class="gray"
-     onclick="reportPost('${p.id}')"
-    >
-     ⋯
-    </button>
-    `
-   }
-
-  </div>
-
-  <div class="post-text">
-   ${esc(p.text||"")}
-  </div>
-
-  ${media}
-
-  <div style="margin-top:10px;color:#65676b">
-   👍 ${likes||0}
-   · 💬 ${comments||0}
-  </div>
-
-  <div class="post-actions">
-
-   <button
-    onclick="setReaction('${p.id}','like')"
-   >
-    ${reaction?.reaction==="like"?"❤️":"👍"} Like
-   </button>
-
-   <button
-    onclick="openComments('${p.id}')"
-   >
-    💬 Comment
-   </button>
-
-   <button
-    onclick="sharePost('${p.id}')"
-   >
-    ↗ Share
-   </button>
-
-   <button
-    onclick="savePost('${p.id}')"
-   >
-    🔖 Save
-   </button>
-
-  </div>
-
- </div>
- `;
-}
-
-async function deletePost(id){
-
- if(!confirm("Delete this post?"))return;
-
- const {error}=await sb
-  .from("posts")
-  .delete()
-  .eq("id",id)
-  .eq("user_id",user.id);
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- toast("Post deleted");
- loadFeed();
-}
-
-async function sharePost(id){
-
- const url=location.href+"#post-"+id;
-
- try{
-  await navigator.clipboard.writeText(url);
-  toast("Post link copied");
- }catch{
-  prompt("Copy this link:",url);
- }
-}
-
-async function savePost(id){
-
- const {error}=await sb
-  .from("saved_posts")
-  .upsert({
-   user_id:user.id,
-   post_id:id
-  });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- toast("Post saved");
-}
-
-async function reportPost(id){
-
- const reason=prompt("Report reason:");
-
- if(!reason)return;
-
- const {error}=await sb
-  .from("reports")
-  .insert({
-   reporter_id:user.id,
-   post_id:id,
-   reason:reason
-  });
-
- if(error){
-  toast(error.message);
- }else{
-  toast("Report submitted");
- }
-}
-
-
-/* =========================
-   REACTION + NOTIFICATION
-========================= */
-
-async function setReaction(postId,reaction){
-
- const {data:old}=await sb
-  .from("post_reactions")
-  .select("*")
-  .eq("post_id",postId)
-  .eq("user_id",user.id)
-  .maybeSingle();
-
- let shouldNotify=false;
-
- if(old){
-
-  if(old.reaction===reaction){
-
-   await sb
-    .from("post_reactions")
-    .delete()
-    .eq("post_id",postId)
-    .eq("user_id",user.id);
-
-  }else{
-
-   await sb
-    .from("post_reactions")
-    .update({
-     reaction:reaction
-    })
-    .eq("post_id",postId)
-    .eq("user_id",user.id);
-
-   shouldNotify=true;
-  }
-
- }else{
-
-  await sb
-   .from("post_reactions")
-   .insert({
-    post_id:postId,
     user_id:user.id,
-    reaction:reaction
-   });
 
-  shouldNotify=true;
- }
+    monetization_enabled:false,
 
- if(shouldNotify){
+    payout_email:""
 
-  const {data:post}=await sb
-   .from("posts")
-   .select("user_id")
-   .eq("id",postId)
-   .maybeSingle();
+  };
 
-  if(post?.user_id && post.user_id!==user.id){
 
-   await createNotification(
-    post.user_id,
-    `${profile.name} আপনার পোস্টে reaction দিয়েছে`,
-    "like"
-   );
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("creator_settings")
+        .select("*")
+        .eq("user_id",user.id)
+        .maybeSingle();
+
+
+    if(error){
+
+      console.error(
+        "Creator settings:",
+        error
+      );
+
+      creatorSettings =
+        defaults;
+
+      return creatorSettings;
+    }
+
+
+    if(!data){
+
+      const {
+        data:newData,
+        error:insertError
+      } =
+        await sb
+          .from("creator_settings")
+          .insert(defaults)
+          .select("*")
+          .maybeSingle();
+
+
+      if(insertError){
+
+        console.error(
+          insertError
+        );
+
+        creatorSettings =
+          defaults;
+
+        return creatorSettings;
+      }
+
+
+      creatorSettings = {
+
+        ...defaults,
+
+        ...(newData || {})
+
+      };
+
+    }else{
+
+      creatorSettings = {
+
+        ...defaults,
+
+        ...data
+
+      };
+
+    }
+
+
+    return creatorSettings;
+
+  }catch(error){
+
+    console.error(error);
+
+    creatorSettings =
+      defaults;
+
+    return creatorSettings;
   }
- }
 
- loadFeed();
 }
 
 
-/* =========================
-   COMMENTS
-========================= */
+/* =====================================================
+   SAVE SETTING
+===================================================== */
 
-async function openComments(postId){
-
- const {data:comments}=await sb
-  .from("comments")
-  .select("*")
-  .eq("post_id",postId)
-  .order("created_at",{ascending:true});
-
- let html=`
- <div class="modal-head">
-  <h2>Comments</h2>
-  <button class="close" onclick="closeModal()">×</button>
- </div>
- `;
-
- for(const c of comments||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",c.user_id)
-   .maybeSingle();
-
-  html+=`
-   <div class="comment">
-    ${avatarHTML(p,"38px")}
-    <div class="comment-body">
-     <strong>${esc(p?.name||"User")}</strong>
-     <br>
-     ${esc(c.text||c.content||"")}
-    </div>
-   </div>
-  `;
- }
-
- html+=`
-  <hr>
-
-  <textarea
-   id="commentText"
-   placeholder="Write a comment..."
-  ></textarea>
-
-  <br><br>
-
-  <button
-   class="blue"
-   style="width:100%"
-   onclick="addComment('${postId}')"
-  >
-   Comment
-  </button>
- `;
-
- openModal(html);
-}
-
-async function addComment(postId){
-
- const text=document.getElementById("commentText").value.trim();
-
- if(!text)return;
-
- const {error}=await sb
-  .from("comments")
-  .insert({
-   post_id:postId,
-   user_id:user.id,
-   text:text
-  });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- const {data:post}=await sb
-  .from("posts")
-  .select("user_id")
-  .eq("id",postId)
-  .maybeSingle();
-
- if(post?.user_id && post.user_id!==user.id){
-
-  await createNotification(
-   post.user_id,
-   `${profile.name} আপনার পোস্টে comment করেছে`,
-   "comment"
-  );
- }
-
- toast("Comment added");
-
- openComments(postId);
-}
-
-
-/* =========================
-   NOTIFICATIONS
-========================= */
-
-async function createNotification(
- receiver,
- text,
- type="message"
+async function saveSetting(
+  field,
+  value
 ){
 
- if(!receiver || receiver===user.id)return;
+  if(!user){
 
- const map={
-  like:"notify_like",
-  comment:"notify_comment",
-  friend_request:"notify_friend_request",
-  message:"notify_message",
-  follow:"notify_follow"
- };
-
- const field=map[type];
-
- if(field){
-
-  const {data}=await sb
-   .from("user_settings")
-   .select(field)
-   .eq("user_id",receiver)
-   .maybeSingle();
-
-  if(data && data[field]===false){
-   return;
-  }
- }
-
- await sb.from("notifications").insert({
-  receiver_id:receiver,
-  text:text,
-  read:false
- });
-}
-
-async function renderNotifications(){
-
- const {data}=await sb
-  .from("notifications")
-  .select("*")
-  .eq("receiver_id",user.id)
-  .order("created_at",{ascending:false})
-  .limit(100);
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  🔔 Notifications
- </div>
-
- <div class="card">
-
-  ${
-   !data?.length
-   ? "<p>No notifications.</p>"
-   : data.map(n=>`
-    <div class="setting-row">
-     <div class="setting-info">
-      <strong>${esc(n.text)}</strong>
-      <small>
-       ${new Date(n.created_at).toLocaleString()}
-      </small>
-     </div>
-    </div>
-   `).join("")
+    return;
   }
 
- </div>
- `;
 
- await sb
-  .from("notifications")
-  .update({read:true})
-  .eq("receiver_id",user.id);
-}
+  if(!appSettings){
 
-
-/* =========================
-   FOLLOW
-========================= */
-
-async function canFollowUser(id){
-
- const {data}=await sb
-  .from("user_settings")
-  .select("follow_privacy")
-  .eq("user_id",id)
-  .maybeSingle();
-
- const privacy=data?.follow_privacy||"everyone";
-
- if(privacy==="everyone")return true;
- if(privacy==="no_one")return false;
-
- const {data:friend}=await sb
-  .from("friends")
-  .select("*")
-  .eq("user_id",user.id)
-  .eq("friend_id",id)
-  .maybeSingle();
-
- return !!friend;
-}
-
-async function toggleFollow(id){
-
- const {data:existing}=await sb
-  .from("follows")
-  .select("*")
-  .eq("follower_id",user.id)
-  .eq("following_id",id)
-  .maybeSingle();
-
- if(existing){
-
-  await sb
-   .from("follows")
-   .delete()
-   .eq("follower_id",user.id)
-   .eq("following_id",id);
-
-  toast("Unfollowed");
-
- }else{
-
-  const allowed=await canFollowUser(id);
-
-  if(!allowed){
-   toast("এই user-এর follow privacy অনুযায়ী আপনি follow করতে পারবেন না");
-   return;
+    appSettings =
+      defaultSettings();
   }
 
-  await sb
-   .from("follows")
-   .insert({
-    follower_id:user.id,
-    following_id:id
-   });
 
-  await createNotification(
-   id,
-   `${profile.name} আপনাকে follow করেছে`,
-   "follow"
-  );
+  appSettings[field] =
+    value;
 
-  toast("Following");
- }
 
- renderProfile(id);
-}
+  if(field === "theme"){
 
+    if(value === "dark"){
 
-/* =========================
-   FRIEND REQUEST
-========================= */
+      document.body
+        .classList.add("dark");
 
-async function canSendFriendRequest(id){
+      localStorage.setItem(
+        "dark",
+        "true"
+      );
 
- const {data}=await sb
-  .from("user_settings")
-  .select("friend_request_privacy")
-  .eq("user_id",id)
-  .maybeSingle();
+    }else{
 
- const privacy=
-  data?.friend_request_privacy ||
-  "everyone";
+      document.body
+        .classList.remove("dark");
 
- if(privacy==="everyone")return true;
+      localStorage.setItem(
+        "dark",
+        "false"
+      );
 
- if(privacy==="no_one")return false;
-
- const {data:mine}=await sb
-  .from("friends")
-  .select("friend_id")
-  .eq("user_id",user.id);
-
- const {data:theirs}=await sb
-  .from("friends")
-  .select("friend_id")
-  .eq("user_id",id);
-
- const myFriends=new Set(
-  (mine||[]).map(x=>x.friend_id)
- );
-
- return (theirs||[])
-  .some(x=>myFriends.has(x.friend_id));
-}
-
-async function sendFriendRequest(id){
-
- const allowed=await canSendFriendRequest(id);
-
- if(!allowed){
-  toast("এই user-এর friend request privacy অনুযায়ী request পাঠানো যাচ্ছে না");
-  return;
- }
-
- const {data:existing}=await sb
-  .from("friend_requests")
-  .select("*")
-  .or(
-   `and(sender_id.eq.${user.id},receiver_id.eq.${id}),and(sender_id.eq.${id},receiver_id.eq.${user.id})`
-  )
-  .maybeSingle();
-
- if(existing){
-  toast("Friend request already exists");
-  return;
- }
-
- const {error}=await sb
-  .from("friend_requests")
-  .insert({
-   sender_id:user.id,
-   receiver_id:id,
-   status:"pending"
-  });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- await createNotification(
-  id,
-  `${profile.name} আপনাকে friend request পাঠিয়েছে`,
-  "friend_request"
- );
-
- toast("Friend request sent");
-}
-
-async function acceptRequest(id){
-
- const {data:req}=await sb
-  .from("friend_requests")
-  .select("*")
-  .eq("id",id)
-  .maybeSingle();
-
- if(!req)return;
-
- await sb
-  .from("friend_requests")
-  .update({status:"accepted"})
-  .eq("id",id);
-
- await sb.from("friends").insert({
-  user_id:req.sender_id,
-  friend_id:req.receiver_id
- });
-
- await sb.from("friends").insert({
-  user_id:req.receiver_id,
-  friend_id:req.sender_id
- });
-
- await createNotification(
-  req.sender_id,
-  `${profile.name} আপনার friend request গ্রহণ করেছে`,
-  "friend_request"
- );
-
- toast("Friend request accepted");
-
- renderFriends();
-}
-
-
-/* =========================
-   FRIENDS
-========================= */
-
-async function renderFriends(){
-
- const {data:requests}=await sb
-  .from("friend_requests")
-  .select("*")
-  .eq("receiver_id",user.id)
-  .eq("status","pending")
-  .order("created_at",{ascending:false});
-
- const {data:friends}=await sb
-  .from("friends")
-  .select("friend_id")
-  .eq("user_id",user.id);
-
- let html=`
- <div class="page-title">
-  👥 Friends
- </div>
-
- <div class="card">
-  <h3>Friend Requests</h3>
- `;
-
- if(!requests?.length){
-  html+=`<p>No pending requests.</p>`;
- }
-
- for(const r of requests||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",r.sender_id)
-   .maybeSingle();
-
-  html+=`
-   <div class="setting-row">
-
-    <div style="display:flex;gap:10px;align-items:center">
-     ${avatarHTML(p,"42px")}
-     <strong>${esc(p?.name)}</strong>
-    </div>
-
-    <button
-     class="blue"
-     onclick="acceptRequest('${r.id}')"
-    >
-     Accept
-    </button>
-
-   </div>
-  `;
- }
-
- html+=`
- </div>
-
- <div class="card">
-  <h3>My Friends</h3>
- `;
-
- if(!friends?.length){
-  html+=`<p>No friends yet.</p>`;
- }
-
- for(const f of friends||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",f.friend_id)
-   .maybeSingle();
-
-  html+=`
-   <div class="setting-row">
-
-    <div style="display:flex;gap:10px;align-items:center">
-     ${avatarHTML(p,"42px")}
-     <strong>${esc(p?.name)}</strong>
-    </div>
-
-    <button
-     class="gray"
-     onclick="renderProfile('${f.friend_id}')"
-    >
-     View
-    </button>
-
-   </div>
-  `;
- }
-
- html+=`</div>`;
-
- document.getElementById("main").innerHTML=html;
-}
-
-
-/* =========================
-   PROFILE
-========================= */
-
-async function renderProfile(id){
-
- const {data:p}=await sb
-  .from("profiles")
-  .select("*")
-  .eq("id",id)
-  .maybeSingle();
-
- if(!p){
-  toast("Profile not found");
-  return;
- }
-
- const {data:follow}=await sb
-  .from("follows")
-  .select("*")
-  .eq("follower_id",user.id)
-  .eq("following_id",id)
-  .maybeSingle();
-
- const {data:friend}=await sb
-  .from("friends")
-  .select("*")
-  .eq("user_id",user.id)
-  .eq("friend_id",id)
-  .maybeSingle();
-
- const {data:blocked}=await sb
-  .from("blocked_users")
-  .select("*")
-  .eq("blocker_id",user.id)
-  .eq("blocked_id",id)
-  .maybeSingle();
-
- let action="";
-
- if(id===user.id){
-
-  action=`
-   <button class="blue" onclick="openEditProfile()">
-    ✏️ Edit Profile
-   </button>
-  `;
-
- }else{
-
-  action=`
-
-   <button
-    class="${follow?"gray":"blue"}"
-    onclick="toggleFollow('${id}')"
-   >
-    ${follow?"Following":"Follow"}
-   </button>
-
-   <button
-    class="gray"
-    onclick="sendFriendRequest('${id}')"
-   >
-    👥 Add Friend
-   </button>
-
-   <button
-    class="gray"
-    onclick="openChat('${id}')"
-   >
-    💬 Message
-   </button>
-
-   <button
-    class="${blocked?"green":"danger"}"
-    onclick="${blocked?`unblockUser('${id}')`:`blockUser('${id}')`}"
-   >
-    ${blocked?"Unblock":"🚫 Block"}
-   </button>
-  `;
- }
-
- document.getElementById("main").innerHTML=`
-
- <div class="card" style="padding:0;overflow:hidden">
-
-  <div class="profile-cover">
-
-   <div class="profile-avatar">
-    ${
-     p.avatar_url
-     ? `<img src="${esc(p.avatar_url)}">`
-     : esc((p.name||"U").charAt(0).toUpperCase())
     }
-   </div>
 
-  </div>
-
-  <div class="profile-info">
-
-   <h2>${esc(p.name)}</h2>
-
-   ${
-    p.username
-    ? `<div style="color:#65676b">@${esc(p.username)}</div>`
-    : ""
-   }
-
-   <p>${esc(p.bio||"")}</p>
-
-   <div class="profile-actions">
-    ${action}
-   </div>
-
-  </div>
-
- </div>
-
- <div id="profilePosts"></div>
- `;
-
- const {data:posts}=await sb
-  .from("posts")
-  .select("*")
-  .eq("user_id",id)
-  .order("created_at",{ascending:false});
-
- let visible=posts||[];
-
- if(id!==user.id){
-  visible=await filterVisiblePosts(visible);
- }
-
- const el=document.getElementById("profilePosts");
-
- if(!visible.length){
-  el.innerHTML=`
-   <div class="card">
-    <p>No visible posts.</p>
-   </div>
-  `;
-  return;
- }
-
- let html="";
-
- for(const post of visible){
-  html+=await postHTML(post,p);
- }
-
- el.innerHTML=html;
-}
-
-
-/* =========================
-   EDIT PROFILE
-========================= */
-
-function openEditProfile(){
-
- openModal(`
-
- <div class="modal-head">
-  <h2>Edit Profile</h2>
-  <button class="close" onclick="closeModal()">×</button>
- </div>
-
- <label>Name</label>
- <input
-  id="editName"
-  value="${esc(profile.name)}"
- >
-
- <br><br>
-
- <label>Username</label>
- <input
-  id="editUsername"
-  value="${esc(profile.username||"")}"
-  placeholder="username"
- >
-
- <br><br>
-
- <label>Bio</label>
- <textarea id="editBio">${esc(profile.bio||"")}</textarea>
-
- <br><br>
-
- <label>Avatar URL</label>
- <input
-  id="editAvatar"
-  value="${esc(profile.avatar_url||"")}"
- >
-
- <br><br>
-
- <button
-  class="blue"
-  style="width:100%"
-  onclick="saveProfile()"
- >
-  Save Profile
- </button>
- `);
-}
-
-async function saveProfile(){
-
- const name=document.getElementById("editName").value.trim();
- const username=document.getElementById("editUsername").value.trim().toLowerCase();
- const bio=document.getElementById("editBio").value.trim();
- const avatar=document.getElementById("editAvatar").value.trim();
-
- if(!name){
-  toast("Name required");
-  return;
- }
-
- if(username &&
- !/^[a-z0-9._]{3,30}$/.test(username)){
-  toast("Username 3-30 characters: a-z, 0-9, . অথবা _");
-  return;
- }
-
- if(username){
-
-  const {data:existing}=await sb
-   .from("profiles")
-   .select("id")
-   .eq("username",username)
-   .neq("id",user.id)
-   .maybeSingle();
-
-  if(existing){
-   toast("Username already taken");
-   return;
   }
- }
 
- const {error}=await sb
-  .from("profiles")
-  .update({
-   name,
-   username:username||null,
-   bio,
-   avatar_url:avatar||null
-  })
-  .eq("id",user.id);
 
- if(error){
-  toast(error.message);
-  return;
- }
+  try{
 
- await refreshProfile();
+    const {
+      error
+    } =
+      await sb
+        .from("user_settings")
+        .upsert({
 
- closeModal();
+          user_id:user.id,
 
- buildSidebar();
+          [field]:value,
 
- toast("Profile updated");
+          updated_at:
+            new Date()
+              .toISOString()
 
- renderProfile(user.id);
-}
+        });
 
 
-/* =========================
-   BLOCK USERS
-========================= */
+    if(error){
 
-async function blockUser(id){
+      console.error(error);
 
- if(id===user.id)return;
+      toast(
+        "Setting save হয়নি"
+      );
 
- if(!confirm("এই user-কে block করবেন?"))return;
-
- const {error}=await sb
-  .from("blocked_users")
-  .insert({
-   blocker_id:user.id,
-   blocked_id:id
-  });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- toast("User blocked");
-
- renderProfile(id);
-}
-
-async function unblockUser(id){
-
- const {error}=await sb
-  .from("blocked_users")
-  .delete()
-  .eq("blocker_id",user.id)
-  .eq("blocked_id",id);
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- toast("User unblocked");
-
- renderProfile(id);
-}
-
-async function blockUserByUsername(){
-
- const username=document
-  .getElementById("blockUsername")
-  .value
-  .trim()
-  .toLowerCase();
-
- if(!username)return;
-
- const {data:p}=await sb
-  .from("profiles")
-  .select("id,name,username")
-  .eq("username",username)
-  .maybeSingle();
-
- if(!p){
-  toast("Username not found");
-  return;
- }
-
- await blockUser(p.id);
-
- renderSettings();
-}
-
-
-/* =========================
-   MESSENGER
-========================= */
-
-async function openChat(id){
-
- const {data:p}=await sb
-  .from("profiles")
-  .select("*")
-  .eq("id",id)
-  .maybeSingle();
-
- if(!p)return;
-
- openModal(`
-
- <div class="modal-head">
-  <h2>💬 ${esc(p.name)}</h2>
-  <button class="close" onclick="closeModal()">×</button>
- </div>
-
- <div id="chatMessages" style="max-height:350px;overflow:auto">
-  Loading...
- </div>
-
- <hr>
-
- <input
-  id="messageText"
-  placeholder="Write message..."
- >
-
- <br><br>
-
- <button
-  class="blue"
-  style="width:100%"
-  onclick="sendMessage('${id}')"
- >
-  Send
- </button>
- `);
-
- await loadChatMessages(id);
-}
-
-async function loadChatMessages(id){
-
- const {data}=await sb
-  .from("messages")
-  .select("*")
-  .or(
-   `and(sender_id.eq.${user.id},receiver_id.eq.${id}),and(sender_id.eq.${id},receiver_id.eq.${user.id})`
-  )
-  .order("created_at",{ascending:true});
-
- const box=document.getElementById("chatMessages");
-
- if(!box)return;
-
- box.innerHTML=(data||[]).map(m=>`
-
-  <div style="
-   margin:7px 0;
-   text-align:${m.sender_id===user.id?"right":"left"}
-  ">
-
-   <span style="
-    display:inline-block;
-    padding:8px 12px;
-    border-radius:15px;
-    background:${m.sender_id===user.id?"#1877f2":"#e4e6eb"};
-    color:${m.sender_id===user.id?"#fff":"#111"}
-   ">
-    ${esc(m.text||m.message||"")}
-   </span>
-
-  </div>
-
- `).join("");
-
- box.scrollTop=box.scrollHeight;
-}
-
-async function sendMessage(id){
-
- const text=document
-  .getElementById("messageText")
-  .value
-  .trim();
-
- if(!text)return;
-
- const {error}=await sb
-  .from("messages")
-  .insert({
-   sender_id:user.id,
-   receiver_id:id,
-   text:text
-  });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- await createNotification(
-  id,
-  `${profile.name} আপনাকে message পাঠিয়েছে`,
-  "message"
- );
-
- document.getElementById("messageText").value="";
-
- await loadChatMessages(id);
-}
-
-async function renderMessenger(){
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  💬 Messenger
- </div>
-
- <div class="card">
-
-  <p>
-   Profile থেকে Message চাপলে conversation শুরু হবে।
-  </p>
-
- </div>
- `;
-}
-
-
-/* =========================
-   REELS
-========================= */
-
-async function renderReels(){
-
- const {data}=await sb
-  .from("reels")
-  .select("*")
-  .order("created_at",{ascending:false})
-  .limit(50);
-
- let html=`
- <div class="page-title">
-  🎬 Reels
- </div>
- `;
-
- for(const r of data||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",r.user_id)
-   .maybeSingle();
-
-  html+=`
-
-  <div class="reel">
-
-   <video
-    src="${esc(r.video_url)}"
-    controls
-    playsinline
-   ></video>
-
-   <div style="padding:12px">
-    <strong>${esc(p?.name||"User")}</strong>
-    <p>${esc(r.caption||"")}</p>
-   </div>
-
-  </div>
-
-  `;
- }
-
- document.getElementById("main").innerHTML=html;
-}
-
-
-/* =========================
-   STORIES
-========================= */
-
-async function loadStories(){
-
- const box=document.getElementById("stories");
-
- if(!box)return;
-
- const {data}=await sb
-  .from("stories")
-  .select("*")
-  .order("created_at",{ascending:false})
-  .limit(20);
-
- let html="";
-
- for(const s of data||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",s.user_id)
-   .maybeSingle();
-
-  html+=`
-   <div class="story">
-    ${
-     s.image_url
-     ? `<img src="${esc(s.image_url)}">`
-     : ""
+      return;
     }
-    <div class="story-name">
-     ${esc(p?.name||"User")}
-    </div>
-   </div>
-  `;
- }
 
- box.innerHTML=html||"<p>No stories</p>";
-}
 
+    toast("✅ Setting saved");
 
-/* =========================
-   SAVED
-========================= */
+  }catch(error){
 
-async function renderSaved(){
+    console.error(error);
 
- const {data:saved}=await sb
-  .from("saved_posts")
-  .select("post_id")
-  .eq("user_id",user.id);
+    toast(
+      "Setting save করতে সমস্যা"
+    );
 
- const ids=(saved||[]).map(x=>x.post_id);
-
- document.getElementById("main").innerHTML=`
-  <div class="page-title">🔖 Saved</div>
-  <div id="savedList">Loading...</div>
- `;
-
- if(!ids.length){
-  document.getElementById("savedList").innerHTML=`
-   <div class="card">No saved posts.</div>
-  `;
-  return;
- }
-
- const {data:posts}=await sb
-  .from("posts")
-  .select("*")
-  .in("id",ids)
-  .order("created_at",{ascending:false});
-
- const visible=await filterVisiblePosts(posts||[]);
-
- let html="";
-
- for(const p of visible){
-
-  const {data:author}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",p.user_id)
-   .maybeSingle();
-
-  html+=await postHTML(p,author);
- }
-
- document.getElementById("savedList").innerHTML=
-  html||`<div class="card">No visible saved posts.</div>`;
-}
-
-
-/* =========================
-   TRENDING
-========================= */
-
-async function renderTrending(){
-
- const {data:posts}=await sb
-  .from("posts")
-  .select("*")
-  .order("created_at",{ascending:false})
-  .limit(50);
-
- const visible=await filterVisiblePosts(posts||[]);
-
- let html=`
-  <div class="page-title">
-   🔥 Trending
-  </div>
- `;
-
- for(const p of visible){
-
-  const {data:author}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",p.user_id)
-   .maybeSingle();
-
-  html+=await postHTML(p,author);
- }
-
- document.getElementById("main").innerHTML=
-  html||`<div class="card">No trending posts.</div>`;
-}
-
-
-/* =========================
-   EARNINGS
-========================= */
-
-async function renderEarnings(){
-
- const {data}=await sb
-  .from("creator_earnings")
-  .select("*")
-  .eq("user_id",user.id)
-  .order("created_at",{ascending:false});
-
- let total=0;
-
- for(const e of data||[]){
-  total+=Number(e.amount||e.earnings||0);
- }
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  💰 Earnings
- </div>
-
- <div class="card">
-
-  <h2>
-   ${total.toFixed(2)}
-  </h2>
-
-  <p>
-   Total creator earnings
-  </p>
-
- </div>
-
- <div class="card">
-
-  <h3>Monetization</h3>
-
-  <p>
-   ${
-    creatorSettings?.monetization_enabled
-    ? "✅ Enabled"
-    : "❌ Disabled"
-   }
-  </p>
-
-  <button
-   class="blue"
-   onclick="openPage('settings')"
-  >
-   Monetization Settings
-  </button>
-
- </div>
- `;
-}
-
-
-/* =========================================================
-   SETTINGS & PRIVACY
-========================================================= */
-
-async function renderSettings(){
-
- await ensureSettings();
- await ensureCreatorSettings();
-
- const s=appSettings;
- const c=creatorSettings;
-
- const {data:blocked}=await sb
-  .from("blocked_users")
-  .select("blocked_id")
-  .eq("blocker_id",user.id);
-
- let blockedHTML="";
-
- for(const b of blocked||[]){
-
-  const {data:p}=await sb
-   .from("profiles")
-   .select("*")
-   .eq("id",b.blocked_id)
-   .maybeSingle();
-
-  if(p){
-
-   blockedHTML+=`
-
-   <div class="blocked-user">
-
-    ${avatarHTML(p,"40px")}
-
-    <div style="flex:1">
-     <strong>${esc(p.name)}</strong>
-     ${
-      p.username
-      ? `<small style="display:block">@${esc(p.username)}</small>`
-      : ""
-     }
-    </div>
-
-    <button
-     class="green"
-     onclick="unblockUser('${p.id}');setTimeout(renderSettings,500)"
-    >
-     Unblock
-    </button>
-
-   </div>
-   `;
-  }
- }
-
- if(!blockedHTML){
-  blockedHTML=`<p style="color:#65676b">No blocked users.</p>`;
- }
-
- const email=user.email||"";
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  ⚙️ Settings & Privacy
- </div>
-
-
- <!-- ACCOUNT -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   👤 Account Settings
-  </div>
-
-  <div style="margin-bottom:15px">
-
-   <label>
-    <strong>Name</strong>
-   </label>
-
-   <input
-    id="settingsName"
-    class="setting-input"
-    value="${esc(profile.name||"")}"
-   >
-
-  </div>
-
-  <div style="margin-bottom:15px">
-
-   <label>
-    <strong>Username</strong>
-   </label>
-
-   <input
-    id="settingsUsername"
-    class="setting-input"
-    value="${esc(profile.username||"")}"
-    placeholder="username"
-   >
-
-   <small style="color:#65676b">
-    Example: ferdous123
-   </small>
-
-  </div>
-
-  <div style="margin-bottom:15px">
-
-   <label>
-    <strong>Email</strong>
-   </label>
-
-   <input
-    id="settingsEmail"
-    class="setting-input"
-    type="email"
-    value="${esc(email)}"
-   >
-
-  </div>
-
-  <div class="settings-buttons">
-
-   <button
-    class="blue"
-    onclick="saveAccountSettings()"
-   >
-    💾 Save Account
-   </button>
-
-   <button
-    class="gray"
-    onclick="openEditProfile()"
-   >
-    ✏️ Edit Profile
-   </button>
-
-   <button
-    class="gray"
-    onclick="openPasswordModal()"
-   >
-    🔑 Change Password
-   </button>
-
-  </div>
-
- </div>
-
-
- <!-- PRIVACY -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   🔒 Privacy
-  </div>
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Who can see your posts?</strong>
-    <small>
-     Default privacy for new posts
-    </small>
-   </div>
-
-   <select
-    class="setting-select"
-    onchange="saveSetting('post_privacy',this.value)"
-   >
-    <option value="public"
-     ${s.post_privacy==="public"?"selected":""}>
-     Public
-    </option>
-
-    <option value="friends"
-     ${s.post_privacy==="friends"?"selected":""}>
-     Friends
-    </option>
-
-    <option value="private"
-     ${s.post_privacy==="private"?"selected":""}>
-     Only me
-    </option>
-   </select>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Who can send friend requests?</strong>
-   </div>
-
-   <select
-    class="setting-select"
-    onchange="saveSetting('friend_request_privacy',this.value)"
-   >
-
-    <option value="everyone"
-     ${s.friend_request_privacy==="everyone"?"selected":""}>
-     Everyone
-    </option>
-
-    <option value="friends_of_friends"
-     ${s.friend_request_privacy==="friends_of_friends"?"selected":""}>
-     Friends of friends
-    </option>
-
-    <option value="no_one"
-     ${s.friend_request_privacy==="no_one"?"selected":""}>
-     No one
-    </option>
-
-   </select>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Who can follow you?</strong>
-   </div>
-
-   <select
-    class="setting-select"
-    onchange="saveSetting('follow_privacy',this.value)"
-   >
-
-    <option value="everyone"
-     ${s.follow_privacy==="everyone"?"selected":""}>
-     Everyone
-    </option>
-
-    <option value="friends"
-     ${s.follow_privacy==="friends"?"selected":""}>
-     Friends
-    </option>
-
-    <option value="no_one"
-     ${s.follow_privacy==="no_one"?"selected":""}>
-     No one
-    </option>
-
-   </select>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-
-    <strong>
-     Online Status
-    </strong>
-
-    <small>
-     অন্যরা আপনার active status দেখতে পারবে
-    </small>
-
-   </div>
-
-   <label class="switch">
-
-    <input
-     type="checkbox"
-     ${s.online_status?"checked":""}
-     onchange="saveSetting('online_status',this.checked)"
-    >
-
-    <span class="slider"></span>
-
-   </label>
-
-  </div>
-
- </div>
-
-
- <!-- NOTIFICATIONS -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   🔔 Notifications
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Like Notifications</strong>
-    <small>Post-এ reaction হলে notification</small>
-   </div>
-
-   <label class="switch">
-    <input
-     type="checkbox"
-     ${s.notify_like?"checked":""}
-     onchange="saveSetting('notify_like',this.checked)"
-    >
-    <span class="slider"></span>
-   </label>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Comment Notifications</strong>
-    <small>Post-এ comment হলে notification</small>
-   </div>
-
-   <label class="switch">
-    <input
-     type="checkbox"
-     ${s.notify_comment?"checked":""}
-     onchange="saveSetting('notify_comment',this.checked)"
-    >
-    <span class="slider"></span>
-   </label>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Friend Request Notifications</strong>
-   </div>
-
-   <label class="switch">
-    <input
-     type="checkbox"
-     ${s.notify_friend_request?"checked":""}
-     onchange="saveSetting('notify_friend_request',this.checked)"
-    >
-    <span class="slider"></span>
-   </label>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Message Notifications</strong>
-   </div>
-
-   <label class="switch">
-    <input
-     type="checkbox"
-     ${s.notify_message?"checked":""}
-     onchange="saveSetting('notify_message',this.checked)"
-    >
-    <span class="slider"></span>
-   </label>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Follow Notifications</strong>
-   </div>
-
-   <label class="switch">
-    <input
-     type="checkbox"
-     ${s.notify_follow?"checked":""}
-     onchange="saveSetting('notify_follow',this.checked)"
-    >
-    <span class="slider"></span>
-   </label>
-
-  </div>
-
- </div>
-
-
- <!-- APPEARANCE -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   🌙 Appearance
-  </div>
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Theme</strong>
-    <small>
-     Light অথবা Dark Mode
-    </small>
-   </div>
-
-   <select
-    class="setting-select"
-    onchange="saveSetting('theme',this.value)"
-   >
-
-    <option value="light"
-     ${s.theme==="light"?"selected":""}>
-     ☀️ Light
-    </option>
-
-    <option value="dark"
-     ${s.theme==="dark"?"selected":""}>
-     🌙 Dark
-    </option>
-
-   </select>
-
-  </div>
-
- </div>
-
-
- <!-- BLOCKED -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   🚫 Blocked Users
-  </div>
-
-  <div style="display:flex;gap:8px">
-
-   <input
-    id="blockUsername"
-    placeholder="Username লিখুন"
-   >
-
-   <button
-    class="danger"
-    onclick="blockUserByUsername()"
-   >
-    Block
-   </button>
-
-  </div>
-
-  <br>
-
-  ${blockedHTML}
-
- </div>
-
-
- <!-- SECURITY -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   📱 Security
-  </div>
-
-  <div class="security-box">
-
-   <strong>
-    Current Session
-   </strong>
-
-   <p style="margin-bottom:0">
-    এই browser/device থেকে আপনার account login আছে।
-   </p>
-
-  </div>
-
-  <br>
-
-  <div class="settings-buttons">
-
-   <button
-    class="gray"
-    onclick="logout()"
-   >
-    🚪 Logout
-   </button>
-
-   <button
-    class="danger"
-    onclick="logoutAllDevices()"
-   >
-    🔐 Logout from all devices
-   </button>
-
-  </div>
-
- </div>
-
-
- <!-- ACCOUNT ACTIONS -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   🗑️ Account
-  </div>
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Deactivate Account</strong>
-    <small>
-     Account সাময়িকভাবে বন্ধ থাকবে।
-    </small>
-   </div>
-
-   <button
-    class="gray"
-    onclick="deactivateAccount()"
-   >
-    Deactivate
-   </button>
-
-  </div>
-
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Delete Account</strong>
-    <small>
-     Account এবং আপনার data permanently delete হবে।
-    </small>
-   </div>
-
-   <button
-    class="danger"
-    onclick="deleteAccount()"
-   >
-    Delete
-   </button>
-
-  </div>
-
- </div>
-
-
- <!-- INFORMATION -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   📥 Your Information
-  </div>
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Download Your Data</strong>
-    <small>
-     আপনার profile, posts, messages, settings ইত্যাদির JSON copy
-    </small>
-   </div>
-
-   <button
-    class="blue"
-    onclick="downloadMyData()"
-   >
-    📥 Download
-   </button>
-
-  </div>
-
- </div>
-
-
- <!-- CREATOR -->
-
- <div class="card settings-section">
-
-  <div class="settings-title">
-   💰 Creator Settings
-  </div>
-
-  <div class="setting-row">
-
-   <div class="setting-info">
-    <strong>Monetization</strong>
-    <small>
-     Creator monetization status
-    </small>
-   </div>
-
-   <label class="switch">
-
-    <input
-     id="creatorMonetization"
-     type="checkbox"
-     ${c.monetization_enabled?"checked":""}
-    >
-
-    <span class="slider"></span>
-
-   </label>
-
-  </div>
-
-  <br>
-
-  <label>
-   Payout Email
-  </label>
-
-  <input
-   id="creatorPayoutEmail"
-   class="setting-input"
-   type="email"
-   value="${esc(c.payout_email||"")}"
-   placeholder="payout@example.com"
-  >
-
-  <br><br>
-
-  <button
-   class="blue"
-   onclick="saveCreatorSettings()"
-  >
-   💾 Save Monetization Settings
-  </button>
-
-  <button
-   class="gray"
-   onclick="openPage('earnings')"
-  >
-   💰 View Earnings
-  </button>
-
- </div>
-
-
- ${
-  profile?.role==="admin"
-  ? `
-
-  <div class="card settings-section">
-
-   <div class="settings-title">
-    🛡️ Admin Settings
-   </div>
-
-   <p>
-    আপনার account-এর Admin role আছে।
-   </p>
-
-   <button
-    class="blue"
-    onclick="openPage('admin')"
-   >
-    🛡️ Open Admin Panel
-   </button>
-
-  </div>
-
-  `
-  : ""
- }
-
- `;
-}
-
-
-/* =========================
-   ACCOUNT SETTINGS
-========================= */
-
-async function saveAccountSettings(){
-
- const name=document
-  .getElementById("settingsName")
-  .value
-  .trim();
-
- const username=document
-  .getElementById("settingsUsername")
-  .value
-  .trim()
-  .toLowerCase();
-
- const email=document
-  .getElementById("settingsEmail")
-  .value
-  .trim();
-
- if(!name){
-  toast("Name required");
-  return;
- }
-
- if(username &&
- !/^[a-z0-9._]{3,30}$/.test(username)){
-  toast("Username 3-30 characters হতে হবে");
-  return;
- }
-
- if(username){
-
-  const {data:existing}=await sb
-   .from("profiles")
-   .select("id")
-   .eq("username",username)
-   .neq("id",user.id)
-   .maybeSingle();
-
-  if(existing){
-   toast("Username already taken");
-   return;
-  }
- }
-
- const {error}=await sb
-  .from("profiles")
-  .update({
-   name,
-   username:username||null
-  })
-  .eq("id",user.id);
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- if(email && email!==user.email){
-
-  const {error:emailError}=await sb.auth.updateUser({
-   email:email
-  });
-
-  if(emailError){
-   toast(emailError.message);
-   return;
   }
 
-  toast("Email change confirmation আপনার email-এ যেতে পারে");
- }
-
- await refreshProfile();
-
- buildSidebar();
-
- toast("Account settings saved");
-
- renderSettings();
-}
-
-function openPasswordModal(){
-
- openModal(`
-
- <div class="modal-head">
-  <h2>🔑 Change Password</h2>
-  <button class="close" onclick="closeModal()">×</button>
- </div>
-
- <label>New Password</label>
-
- <input
-  id="newPassword"
-  type="password"
-  placeholder="New password"
- >
-
- <br><br>
-
- <label>Confirm Password</label>
-
- <input
-  id="confirmPassword"
-  type="password"
-  placeholder="Confirm password"
- >
-
- <br><br>
-
- <button
-  class="blue"
-  style="width:100%"
-  onclick="changePassword()"
- >
-  Change Password
- </button>
- `);
-}
-
-async function changePassword(){
-
- const p=document
-  .getElementById("newPassword")
-  .value;
-
- const c=document
-  .getElementById("confirmPassword")
-  .value;
-
- if(!p){
-  toast("New password দিন");
-  return;
- }
-
- if(p.length<6){
-  toast("Password কমপক্ষে 6 characters");
-  return;
- }
-
- if(p!==c){
-  toast("Passwords মিলছে না");
-  return;
- }
-
- const {error}=await sb.auth.updateUser({
-  password:p
- });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- closeModal();
- toast("Password changed successfully");
 }
 
 
-/* =========================
-   LOGOUT ALL DEVICES
-========================= */
-
-async function logoutAllDevices(){
-
- if(!confirm(
-  "সব device থেকে account logout করতে চান?"
- ))return;
-
- const {error}=await sb.auth.signOut({
-  scope:"global"
- });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- user=null;
- profile=null;
- appSettings=null;
- creatorSettings=null;
-
- showLogin();
-}
-
-
-/* =========================
-   DEACTIVATE
-========================= */
-
-async function deactivateAccount(){
-
- if(!confirm(
-  "Account deactivate করবেন?"
- ))return;
-
- const {error}=await sb
-  .from("profiles")
-  .update({
-   is_deactivated:true
-  })
-  .eq("id",user.id);
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- await sb.auth.signOut({
-  scope:"local"
- });
-
- user=null;
- profile=null;
- appSettings=null;
- creatorSettings=null;
-
- alert("Account deactivated");
-
- showLogin();
-}
-
-
-/* =========================
-   DELETE ACCOUNT
-========================= */
-
-async function deleteAccount(){
-
- if(!confirm(
-  "⚠️ Account permanently delete করবেন?"
- ))return;
-
- if(!confirm(
-  "শেষবার নিশ্চিত করুন: আপনার account/data delete হবে। Continue?"
- ))return;
-
- toast("Deleting account...");
-
- const {error}=await sb.rpc(
-  "delete_my_account"
- );
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- await sb.auth.signOut({
-  scope:"local"
- });
-
- user=null;
- profile=null;
- appSettings=null;
- creatorSettings=null;
-
- alert("Account permanently deleted");
-
- showLogin();
-}
-
-
-/* =========================
-   DOWNLOAD DATA
-========================= */
-
-async function downloadMyData(){
-
- toast("Your data preparing...");
-
- const results=await Promise.all([
-
-  sb.from("profiles")
-   .select("*")
-   .eq("id",user.id),
-
-  sb.from("user_settings")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("creator_settings")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("posts")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("comments")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("follows")
-   .select("*")
-   .or(
-    `follower_id.eq.${user.id},following_id.eq.${user.id}`
-   ),
-
-  sb.from("friends")
-   .select("*")
-   .or(
-    `user_id.eq.${user.id},friend_id.eq.${user.id}`
-   ),
-
-  sb.from("friend_requests")
-   .select("*")
-   .or(
-    `sender_id.eq.${user.id},receiver_id.eq.${user.id}`
-   ),
-
-  sb.from("messages")
-   .select("*")
-   .or(
-    `sender_id.eq.${user.id},receiver_id.eq.${user.id}`
-   ),
-
-  sb.from("notifications")
-   .select("*")
-   .eq("receiver_id",user.id),
-
-  sb.from("reels")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("creator_earnings")
-   .select("*")
-   .eq("user_id",user.id),
-
-  sb.from("blocked_users")
-   .select("*")
-   .eq("blocker_id",user.id)
-
- ]);
-
- const names=[
-  "profile",
-  "settings",
-  "creator_settings",
-  "posts",
-  "comments",
-  "follows",
-  "friends",
-  "friend_requests",
-  "messages",
-  "notifications",
-  "reels",
-  "earnings",
-  "blocked_users"
- ];
-
- const result={};
-
- results.forEach((r,i)=>{
-  result[names[i]]=r.data||[];
- });
-
- result.downloaded_at=new Date().toISOString();
-
- const blob=new Blob(
-  [JSON.stringify(result,null,2)],
-  {type:"application/json"}
- );
-
- const url=URL.createObjectURL(blob);
-
- const a=document.createElement("a");
-
- a.href=url;
- a.download="my-social-app-data.json";
-
- document.body.appendChild(a);
- a.click();
- a.remove();
-
- URL.revokeObjectURL(url);
-
- toast("Data downloaded");
-}
-
-
-/* =========================
-   CREATOR SETTINGS
-========================= */
+/* =====================================================
+   SAVE CREATOR
+===================================================== */
 
 async function saveCreatorSettings(){
 
- const enabled=
-  document.getElementById("creatorMonetization").checked;
+  if(!user){
+    return;
+  }
 
- const payout=
-  document.getElementById("creatorPayoutEmail").value.trim();
 
- const {data,error}=await sb
-  .from("creator_settings")
-  .upsert({
-   user_id:user.id,
-   monetization_enabled:enabled,
-   payout_email:payout||null,
-   updated_at:new Date().toISOString()
-  })
-  .select("*")
-  .single();
+  const enabled =
+    document
+      .getElementById(
+        "creatorMonetization"
+      )
+      ?.checked || false;
 
- if(error){
-  toast(error.message);
-  return;
- }
 
- creatorSettings=data;
+  const payout =
+    document
+      .getElementById(
+        "payoutEmail"
+      )
+      ?.value
+      .trim() || "";
 
- toast("Creator settings saved");
+
+  const {
+    error
+  } =
+    await sb
+      .from("creator_settings")
+      .upsert({
+
+        user_id:user.id,
+
+        monetization_enabled:
+          enabled,
+
+        payout_email:
+          payout,
+
+        updated_at:
+          new Date()
+            .toISOString()
+
+      });
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  creatorSettings = {
+
+    ...creatorSettings,
+
+    monetization_enabled:
+      enabled,
+
+    payout_email:
+      payout
+
+  };
+
+
+  toast(
+    "✅ Creator settings saved"
+  );
+
 }
 
 
-/* =========================
-   ADMIN
-========================= */
+/* =====================================================
+   HOME
+===================================================== */
 
-async function renderAdmin(){
+async function loadHome(){
 
- if(profile?.role!=="admin"){
-  document.getElementById("main").innerHTML=`
-   <div class="card">
-    Access denied.
-   </div>
-  `;
-  return;
- }
-
- const {count:users}=await sb
-  .from("profiles")
-  .select("*",{count:"exact",head:true});
-
- const {count:posts}=await sb
-  .from("posts")
-  .select("*",{count:"exact",head:true});
-
- const {count:reels}=await sb
-  .from("reels")
-  .select("*",{count:"exact",head:true});
-
- const {count:reports}=await sb
-  .from("reports")
-  .select("*",{count:"exact",head:true});
-
- document.getElementById("main").innerHTML=`
-
- <div class="page-title">
-  🛡️ Admin Panel
- </div>
-
- <div class="card">
-
-  <h3>Platform Statistics</h3>
-
-  <div class="setting-row">
-   <strong>Users</strong>
-   <span>${users||0}</span>
-  </div>
-
-  <div class="setting-row">
-   <strong>Posts</strong>
-   <span>${posts||0}</span>
-  </div>
-
-  <div class="setting-row">
-   <strong>Reels</strong>
-   <span>${reels||0}</span>
-  </div>
-
-  <div class="setting-row">
-   <strong>Reports</strong>
-   <span>${reports||0}</span>
-  </div>
-
- </div>
-
- <div class="card">
-
-  <h3>Admin</h3>
-
-  <p>
-   Admin-only tools can be added here later.
-  </p>
-
- </div>
- `;
-}
+  const main =
+    document.getElementById("main");
 
 
-/* =========================
-   SEARCH
-========================= */
+  main.innerHTML = `
 
-async function searchUsers(){
+    <div class="page-title">
+      🏠 Home
+    </div>
 
- const q=document
-  .getElementById("searchInput")
-  .value
-  .trim();
+    <div class="card">
 
- if(!q)return;
-
- const {data}=await sb
-  .from("profiles")
-  .select("*")
-  .ilike("name",`%${q}%`)
-  .limit(30);
-
- let html=`
- <div class="page-title">
-  🔎 Search Results
- </div>
-
- <div class="card">
- `;
-
- if(!data?.length){
-  html+=`<p>No users found.</p>`;
- }
-
- for(const p of data||[]){
-
-  html+=`
-
-   <div class="setting-row">
-
-    <div style="display:flex;gap:10px;align-items:center">
-
-     ${avatarHTML(p,"45px")}
-
-     <div>
-      <strong>${esc(p.name)}</strong>
-      ${
-       p.username
-       ? `<small style="display:block">@${esc(p.username)}</small>`
-       : ""
-      }
-     </div>
+      <button
+        class="blue"
+        onclick="openPostModal()">
+        ✍️ What's on your mind?
+      </button>
 
     </div>
 
-    <button
-     class="blue"
-     onclick="renderProfile('${p.id}')"
-    >
-     View
-    </button>
-
-   </div>
+    <div id="feed">
+      Loading posts...
+    </div>
 
   `;
- }
 
- html+=`</div>`;
 
- document.getElementById("main").innerHTML=html;
+  await loadFeed();
+
 }
 
 
-/* =========================
-   DARK MODE COMPATIBILITY
-========================= */
+/* =====================================================
+   POST MODAL
+===================================================== */
 
-function toggleDark(){
+function openPostModal(){
 
- const newTheme=
-  document.body.classList.contains("dark")
-  ? "light"
-  : "dark";
+  document
+    .getElementById("postModal")
+    .classList.remove("hidden");
 
- saveSetting("theme",newTheme);
-}
-
-function loadDark(){
-
- const theme=
-  localStorage.getItem("theme") ||
-  localStorage.getItem("dark")==="true"
-  ? "dark"
-  : "light";
-
- applyTheme(theme);
 }
 
 
-/* =========================
-   AUTH STATE
-========================= */
+/* =====================================================
+   CREATE POST
+===================================================== */
 
-async function start(){
+async function createPost(){
 
- const {data}=await sb.auth.getSession();
+  const text =
+    document
+      .getElementById("postText")
+      .value
+      .trim();
 
- if(data?.session){
+  const privacy =
+    document
+      .getElementById("postPrivacy")
+      .value;
 
-  user=data.session.user;
+  const file =
+    document
+      .getElementById("postImage")
+      .files[0];
 
-  await startApp();
 
- }else{
+  if(!text && !file){
 
-  showLogin();
+    toast(
+      "Post text অথবা photo দিন"
+    );
 
- }
-}
+    return;
+  }
 
-sb.auth.onAuthStateChange(
- async(event,session)=>{
 
-  if(session && !user){
+  let image_url = null;
 
-   user=session.user;
 
-   await startApp();
+  /*
+    Image upload-এর জন্য আপনার Supabase
+    Storage bucket-এর নাম "post-images"
+    হতে হবে।
+  */
+
+  if(file){
+
+    try{
+
+      const ext =
+        file.name
+          .split(".")
+          .pop();
+
+      const path =
+        user.id +
+        "/" +
+        Date.now() +
+        "." +
+        ext;
+
+
+      const upload =
+        await sb.storage
+          .from("post-images")
+          .upload(
+            path,
+            file,
+            {
+              upsert:false
+            }
+          );
+
+
+      if(upload.error){
+
+        console.error(
+          upload.error
+        );
+
+        toast(
+          "Photo upload হয়নি। Storage bucket check করুন।"
+        );
+
+        return;
+      }
+
+
+      const publicData =
+        sb.storage
+          .from("post-images")
+          .getPublicUrl(path);
+
+
+      image_url =
+        publicData.data.publicUrl;
+
+    }catch(error){
+
+      console.error(error);
+
+      toast(
+        "Photo upload error"
+      );
+
+      return;
+    }
 
   }
 
- }
+
+  const {
+    error
+  } =
+    await sb
+      .from("posts")
+      .insert({
+
+        user_id:user.id,
+
+        text:text,
+
+        image_url:image_url,
+
+        privacy:privacy
+
+      });
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  document
+    .getElementById("postText")
+    .value = "";
+
+  document
+    .getElementById("postImage")
+    .value = "";
+
+
+  closeModal("postModal");
+
+  toast("✅ Post published");
+
+  loadHome();
+
+}
+
+
+/* =====================================================
+   LOAD FEED
+===================================================== */
+
+async function loadFeed(){
+
+  const feed =
+    document.getElementById("feed");
+
+
+  if(!feed){
+    return;
+  }
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("posts")
+        .select(`
+          *,
+          profiles:user_id(
+            id,
+            name,
+            username,
+            avatar_url
+          )
+        `)
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        )
+        .limit(50);
+
+
+    if(error){
+
+      console.error(error);
+
+      feed.innerHTML = `
+
+        <div class="card">
+          <b>Post load হয়নি</b>
+          <p>${esc(error.message)}</p>
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    if(!data || !data.length){
+
+      feed.innerHTML = `
+
+        <div class="card">
+          <p>
+            এখনো কোনো Post নেই।
+          </p>
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    feed.innerHTML =
+      data
+        .map(postHTML)
+        .join("");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    feed.innerHTML = `
+
+      <div class="card">
+        Post load করতে সমস্যা হয়েছে।
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   POST HTML
+===================================================== */
+
+function postHTML(p){
+
+  const author =
+    p.profiles || {};
+
+  const avatar =
+    author.avatar_url ||
+    "https://via.placeholder.com/90";
+
+
+  const name =
+    author.name ||
+    "User";
+
+
+  const date =
+    p.created_at
+      ? new Date(
+          p.created_at
+        ).toLocaleString(
+          "bn-BD"
+        )
+      : "";
+
+
+  let media = "";
+
+
+  if(p.image_url){
+
+    media += `
+
+      <img
+        class="post-img"
+        src="${esc(p.image_url)}"
+        loading="lazy"
+      >
+
+    `;
+
+  }
+
+
+  if(p.video_url){
+
+    media += `
+
+      <video
+        class="post-video"
+        controls
+        src="${esc(p.video_url)}">
+      </video>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div class="card">
+
+      <div class="post-head">
+
+        <img
+          class="avatar-small"
+          src="${esc(avatar)}"
+        >
+
+        <div>
+
+          <div class="post-user">
+            ${esc(name)}
+          </div>
+
+          <div class="post-time">
+            ${esc(date)}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      ${
+        p.text
+        ? `
+          <div class="post-text">
+            ${esc(p.text)}
+          </div>
+        `
+        : ""
+      }
+
+
+      ${media}
+
+
+      <div class="post-actions">
+
+        <button
+          onclick="
+            setReaction(
+              ${p.id},
+              'like'
+            )
+          ">
+          ❤️ Like
+        </button>
+
+        <button
+          onclick="
+            openComments(
+              ${p.id}
+            )
+          ">
+          💬 Comment
+        </button>
+
+        <button
+          onclick="
+            sharePost(
+              ${p.id}
+            )
+          ">
+          ↗ Share
+        </button>
+
+        <button
+          onclick="
+            savePost(
+              ${p.id}
+            )
+          ">
+          🔖 Save
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   LIKE
+===================================================== */
+
+async function setReaction(
+  postId,
+  reaction
+){
+
+  const {
+    error
+  } =
+    await sb
+      .from("post_reactions")
+      .upsert({
+
+        post_id:postId,
+
+        user_id:user.id,
+
+        reaction:reaction
+
+      });
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  toast("❤️ Liked");
+
+}
+
+
+/* =====================================================
+   COMMENTS
+===================================================== */
+
+async function openComments(
+  postId
+){
+
+  currentCommentPost =
+    postId;
+
+
+  document
+    .getElementById(
+      "commentsModal"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  const list =
+    document
+      .getElementById(
+        "commentsList"
+      );
+
+
+  list.innerHTML =
+    "Loading...";
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from("comments")
+      .select(`
+        *,
+        profiles:user_id(
+          name,
+          username
+        )
+      `)
+      .eq(
+        "post_id",
+        postId
+      )
+      .order(
+        "created_at",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    list.innerHTML =
+      `<p>${esc(error.message)}</p>`;
+
+    return;
+  }
+
+
+  if(!data?.length){
+
+    list.innerHTML =
+      "<p>No comments yet.</p>";
+
+    return;
+  }
+
+
+  list.innerHTML =
+    data.map(c => `
+
+      <div class="comment">
+
+        <b>
+          ${esc(
+            c.profiles?.name ||
+            "User"
+          )}
+        </b>
+
+        <br>
+
+        ${esc(
+          c.text ||
+          c.content ||
+          ""
+        )}
+
+      </div>
+
+    `).join("");
+
+}
+
+
+async function addComment(){
+
+  const input =
+    document
+      .getElementById(
+        "commentText"
+      );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text){
+
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb
+      .from("comments")
+      .insert({
+
+        post_id:
+          currentCommentPost,
+
+        user_id:
+          user.id,
+
+        text:text
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  input.value = "";
+
+  openComments(
+    currentCommentPost
+  );
+
+}
+
+
+/* =====================================================
+   SAVE POST
+===================================================== */
+
+async function savePost(
+  postId
+){
+
+  const {
+    error
+  } =
+    await sb
+      .from("saved_posts")
+      .upsert({
+
+        user_id:user.id,
+
+        post_id:postId
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  toast(
+    "🔖 Post saved"
+  );
+
+}
+
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+async function sharePost(
+  postId
+){
+
+  const url =
+    location.href +
+    "?post=" +
+    postId;
+
+
+  try{
+
+    await navigator.clipboard.writeText(
+      url
+    );
+
+    toast(
+      "🔗 Link copied"
+    );
+
+  }catch{
+
+    prompt(
+      "Copy link:",
+      url
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   PROFILE PAGE
+===================================================== */
+
+async function renderProfile(
+  id
+){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  const {
+    data:p
+  } =
+    await sb
+      .from("profiles")
+      .select("*")
+      .eq("id",id)
+      .maybeSingle();
+
+
+  const {
+    data:posts
+  } =
+    await sb
+      .from("posts")
+      .select("*")
+      .eq("user_id",id)
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+  const avatar =
+    p?.avatar_url ||
+    "https://via.placeholder.com/150";
+
+
+  main.innerHTML = `
+
+    <div class="card profile-head">
+
+      <img
+        class="avatar"
+        src="${esc(avatar)}"
+      >
+
+      <h2>
+        ${esc(
+          p?.name ||
+          "User"
+        )}
+      </h2>
+
+      ${
+        p?.username
+        ? `
+          <p>
+            @${esc(
+              p.username
+            )}
+          </p>
+        `
+        : ""
+      }
+
+
+      ${
+        id === user.id
+        ? `
+          <button
+            class="blue"
+            onclick="openEditProfile()">
+            ✏️ Edit Profile
+          </button>
+        `
+        : ""
+      }
+
+    </div>
+
+
+    <div class="page-title">
+      Posts
+    </div>
+
+    <div id="profilePosts">
+
+      ${
+        posts?.length
+        ? posts.map(
+            postHTML
+          ).join("")
+        : `
+          <div class="card">
+            No posts yet.
+          </div>
+        `
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   EDIT PROFILE
+===================================================== */
+
+function openEditProfile(){
+
+  const name =
+    prompt(
+      "Name:",
+      profile?.name || ""
+    );
+
+
+  if(name === null){
+    return;
+  }
+
+
+  const username =
+    prompt(
+      "Username:",
+      profile?.username || ""
+    );
+
+
+  if(username === null){
+    return;
+  }
+
+
+  saveProfile(
+    name.trim(),
+    username.trim()
+      .toLowerCase()
+  );
+
+}
+
+
+async function saveProfile(
+  name,
+  username
+){
+
+  const {
+    error
+  } =
+    await sb
+      .from("profiles")
+      .update({
+
+        name:name,
+
+        username:
+          username || null
+
+      })
+      .eq(
+        "id",
+        user.id
+      );
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  profile = {
+
+    ...profile,
+
+    name:name,
+
+    username:
+      username || null
+
+  };
+
+
+  toast(
+    "✅ Profile updated"
+  );
+
+
+  renderProfile(
+    user.id
+  );
+
+}
+
+
+/* =====================================================
+   FRIENDS
+===================================================== */
+
+async function renderFriends(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      👥 Friends
+    </div>
+
+    <div class="card">
+      Friend system এখানে দেখাবে।
+    </div>
+
+  `;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("friends")
+        .select("*")
+        .or(
+          `user_id.eq.${user.id},friend_id.eq.${user.id}`
+        );
+
+
+    if(error){
+
+      console.error(error);
+
+      return;
+    }
+
+
+    if(data?.length){
+
+      main.innerHTML += `
+
+        <div class="card">
+
+          <h3>
+            Your Friends
+          </h3>
+
+          <p>
+            ${data.length}
+            friend connection found.
+          </p>
+
+        </div>
+
+      `;
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   MESSENGER
+===================================================== */
+
+async function renderMessenger(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      💬 Messenger
+    </div>
+
+    <div class="card">
+
+      <h3>
+        Messenger
+      </h3>
+
+      <p>
+        আপনার Message system এখানে থাকবে।
+      </p>
+
+      <input
+        id="messageText"
+        placeholder="Message"
+      >
+
+      <br><br>
+
+      <button
+        class="blue"
+        onclick="sendMessage()">
+        Send
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+async function sendMessage(){
+
+  const text =
+    document
+      .getElementById(
+        "messageText"
+      )
+      ?.value
+      .trim();
+
+
+  if(!text){
+
+    toast(
+      "Message লিখুন"
+    );
+
+    return;
+  }
+
+
+  toast(
+    "Message system-এর জন্য receiver দরকার"
+  );
+
+}
+
+
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+
+async function renderNotifications(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🔔 Notifications
+    </div>
+
+    <div class="card">
+      Loading...
+    </div>
+
+  `;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("notifications")
+        .select("*")
+        .eq(
+          "receiver_id",
+          user.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        )
+        .limit(50);
+
+
+    if(error){
+
+      main.innerHTML = `
+
+        <div class="card">
+          ${esc(error.message)}
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    if(!data?.length){
+
+      main.innerHTML = `
+
+        <div class="page-title">
+          🔔 Notifications
+        </div>
+
+        <div class="card">
+          No notifications.
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    main.innerHTML = `
+
+      <div class="page-title">
+        🔔 Notifications
+      </div>
+
+      ${data.map(n => `
+
+        <div class="card">
+
+          ${esc(
+            n.message ||
+            n.text ||
+            "Notification"
+          )}
+
+        </div>
+
+      `).join("")}
+
+    `;
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   REELS
+===================================================== */
+
+async function renderReels(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🎬 Reels
+    </div>
+
+    <div class="card">
+      Loading Reels...
+    </div>
+
+  `;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("reels")
+        .select(`
+          *,
+          profiles:user_id(
+            name,
+            username
+          )
+        `)
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        )
+        .limit(30);
+
+
+    if(error){
+
+      main.innerHTML = `
+
+        <div class="card">
+          ${esc(error.message)}
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    if(!data?.length){
+
+      main.innerHTML = `
+
+        <div class="page-title">
+          🎬 Reels
+        </div>
+
+        <div class="card">
+          এখনো কোনো Reel নেই।
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    main.innerHTML = `
+
+      <div class="page-title">
+        🎬 Reels
+      </div>
+
+      ${data.map(r => `
+
+        <div class="reel">
+
+          <video
+            controls
+            playsinline
+            src="${esc(
+              r.video_url
+            )}">
+          </video>
+
+          <div
+            style="
+              color:white;
+              padding:12px;
+            "
+          >
+
+            <b>
+              ${esc(
+                r.profiles?.name ||
+                "User"
+              )}
+            </b>
+
+            <br>
+
+            ${esc(
+              r.caption ||
+              ""
+            )}
+
+          </div>
+
+        </div>
+
+      `).join("")}
+
+    `;
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   SAVED
+===================================================== */
+
+async function renderSaved(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🔖 Saved
+    </div>
+
+    <div class="card">
+      Loading...
+    </div>
+
+  `;
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("saved_posts")
+        .select(`
+          *,
+          posts(
+            *,
+            profiles:user_id(
+              name,
+              username,
+              avatar_url
+            )
+          )
+        `)
+        .eq(
+          "user_id",
+          user.id
+        );
+
+
+    if(error){
+
+      main.innerHTML = `
+
+        <div class="card">
+          ${esc(error.message)}
+        </div>
+
+      `;
+
+      return;
+    }
+
+
+    const posts =
+      (data || [])
+        .map(
+          x => x.posts
+        )
+        .filter(Boolean);
+
+
+    main.innerHTML = `
+
+      <div class="page-title">
+        🔖 Saved
+      </div>
+
+      ${
+        posts.length
+        ? posts
+            .map(postHTML)
+            .join("")
+        : `
+          <div class="card">
+            No saved posts.
+          </div>
+        `
+      }
+
+    `;
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   TRENDING
+===================================================== */
+
+async function renderTrending(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🔥 Trending
+    </div>
+
+    <div class="card">
+
+      Trending posts will appear here.
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   EARNINGS
+===================================================== */
+
+async function renderEarnings(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      💰 Earnings
+    </div>
+
+    <div class="card">
+
+      <h3>
+        Creator Earnings
+      </h3>
+
+      <h1>
+        ৳ 0.00
+      </h1>
+
+      <p>
+        Monetization system পরে
+        server-side calculation দিয়ে
+        যুক্ত করা যাবে।
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   BLOCKED USERS
+===================================================== */
+
+async function loadBlockedUsers(){
+
+  if(!user){
+    return [];
+  }
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb
+        .from("blocked_users")
+        .select("blocked_id")
+        .eq(
+          "blocker_id",
+          user.id
+        );
+
+
+    if(error){
+
+      console.error(error);
+
+      return [];
+    }
+
+
+    return data || [];
+
+  }catch{
+
+    return [];
+  }
+
+}
+
+
+async function unblockUserFromSettings(
+  id
+){
+
+  const {
+    error
+  } =
+    await sb
+      .from("blocked_users")
+      .delete()
+      .eq(
+        "blocker_id",
+        user.id
+      )
+      .eq(
+        "blocked_id",
+        id
+      );
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  toast(
+    "✅ User unblocked"
+  );
+
+
+  renderSettings();
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+async function renderSettings(){
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  /*
+    প্রথমেই UI দেখানো হচ্ছে।
+    Database slow/error হলেও blank হবে না।
+  */
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      ⚙️ Settings & Privacy
+    </div>
+
+    <div class="card">
+
+      <h3>
+        ⏳ Loading Settings...
+      </h3>
+
+      <p>
+        Please wait...
+      </p>
+
+    </div>
+
+  `;
+
+
+  /*
+    Default values আগে।
+  */
+
+  appSettings =
+    appSettings ||
+    defaultSettings();
+
+
+  creatorSettings =
+    creatorSettings || {
+
+      user_id:user?.id,
+
+      monetization_enabled:false,
+
+      payout_email:""
+
+    };
+
+
+  try{
+
+    await ensureSettings();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  try{
+
+    await ensureCreatorSettings();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  let blocked = [];
+
+
+  try{
+
+    blocked =
+      await loadBlockedUsers();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  const dark =
+    localStorage.getItem(
+      "dark"
+    ) === "true";
+
+
+  /* ================= ACCOUNT ================= */
+
+  const accountHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        👤 Account Settings
+      </div>
+
+      <hr>
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Name
+          </div>
+
+          <div class="setting-desc">
+            ${esc(
+              profile?.name ||
+              "Not set"
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Username
+          </div>
+
+          <div class="setting-desc">
+
+            ${
+              profile?.username
+              ? "@"+esc(
+                  profile.username
+                )
+              : "Not set"
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Email
+          </div>
+
+          <div class="setting-desc">
+            ${esc(
+              user?.email ||
+              ""
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <br>
+
+      <button
+        class="blue"
+        onclick="openEditProfile()">
+        ✏️ Edit Profile
+      </button>
+
+
+      <button
+        class="gray"
+        onclick="openPasswordModal()">
+        🔑 Change Password
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ================= PRIVACY ================= */
+
+  const privacyHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        🔒 Privacy
+      </div>
+
+      <hr>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Who can see your posts?
+          </div>
+
+        </div>
+
+        <select
+          style="max-width:180px"
+          onchange="
+            saveSetting(
+              'post_privacy',
+              this.value
+            )
+          "
+        >
+
+          <option
+            value="public"
+            ${
+              appSettings.post_privacy ===
+              "public"
+              ? "selected"
+              : ""
+            }>
+            🌍 Public
+          </option>
+
+          <option
+            value="friends"
+            ${
+              appSettings.post_privacy ===
+              "friends"
+              ? "selected"
+              : ""
+            }>
+            👥 Friends
+          </option>
+
+          <option
+            value="private"
+            ${
+              appSettings.post_privacy ===
+              "private"
+              ? "selected"
+              : ""
+            }>
+            🔐 Only me
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Friend Requests
+          </div>
+
+        </div>
+
+        <select
+          style="max-width:180px"
+          onchange="
+            saveSetting(
+              'friend_request_privacy',
+              this.value
+            )
+          "
+        >
+
+          <option
+            value="everyone"
+            ${
+              appSettings.friend_request_privacy ===
+              "everyone"
+              ? "selected"
+              : ""
+            }>
+            Everyone
+          </option>
+
+          <option
+            value="friends_of_friends"
+            ${
+              appSettings.friend_request_privacy ===
+              "friends_of_friends"
+              ? "selected"
+              : ""
+            }>
+            Friends of friends
+          </option>
+
+          <option
+            value="no_one"
+            ${
+              appSettings.friend_request_privacy ===
+              "no_one"
+              ? "selected"
+              : ""
+            }>
+            No one
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Who can follow you?
+          </div>
+
+        </div>
+
+        <select
+          style="max-width:180px"
+          onchange="
+            saveSetting(
+              'follow_privacy',
+              this.value
+            )
+          "
+        >
+
+          <option
+            value="everyone"
+            ${
+              appSettings.follow_privacy ===
+              "everyone"
+              ? "selected"
+              : ""
+            }>
+            Everyone
+          </option>
+
+          <option
+            value="friends"
+            ${
+              appSettings.follow_privacy ===
+              "friends"
+              ? "selected"
+              : ""
+            }>
+            Friends
+          </option>
+
+          <option
+            value="no_one"
+            ${
+              appSettings.follow_privacy ===
+              "no_one"
+              ? "selected"
+              : ""
+            }>
+            No one
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            🟢 Online Status
+          </div>
+
+          <div class="setting-desc">
+            অন্যরা আপনার Online status দেখতে পারবে
+          </div>
+
+        </div>
+
+
+        <label class="switch">
+
+          <input
+            type="checkbox"
+            ${
+              appSettings.online_status
+                ? "checked"
+                : ""
+            }
+            onchange="
+              saveSetting(
+                'online_status',
+                this.checked
+              )
+            "
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ================= NOTIFICATIONS ================= */
+
+  const notificationsHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        🔔 Notifications
+      </div>
+
+      <hr>
+
+
+      ${notificationToggle(
+        "Like",
+        "notify_like",
+        appSettings.notify_like
+      )}
+
+
+      ${notificationToggle(
+        "Comment",
+        "notify_comment",
+        appSettings.notify_comment
+      )}
+
+
+      ${notificationToggle(
+        "Friend Request",
+        "notify_friend_request",
+        appSettings.notify_friend_request
+      )}
+
+
+      ${notificationToggle(
+        "Message",
+        "notify_message",
+        appSettings.notify_message
+      )}
+
+
+      ${notificationToggle(
+        "Follow",
+        "notify_follow",
+        appSettings.notify_follow
+      )}
+
+    </div>
+
+  `;
+
+
+  /* ================= APPEARANCE ================= */
+
+  const appearanceHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        🌙 Appearance
+      </div>
+
+      <hr>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Dark Mode
+          </div>
+
+          <div class="setting-desc">
+            App-এর Dark theme চালু করুন
+          </div>
+
+        </div>
+
+
+        <label class="switch">
+
+          <input
+            id="settingsDarkMode"
+            type="checkbox"
+            ${
+              dark
+              ? "checked"
+              : ""
+            }
+            onchange="
+              settingsDarkMode()
+            "
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ================= BLOCKED ================= */
+
+  let blockedHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        🚫 Blocked Users
+      </div>
+
+      <hr>
+
+  `;
+
+
+  if(!blocked.length){
+
+    blockedHTML += `
+
+      <p
+        style="color:#65676b">
+        কোনো Blocked User নেই।
+      </p>
+
+    `;
+
+  }else{
+
+    blocked.forEach(item => {
+
+      blockedHTML += `
+
+        <div class="setting-row">
+
+          <div>
+
+            <div class="setting-label">
+              🚫 Blocked User
+            </div>
+
+            <div
+              class="setting-desc"
+              style="font-size:11px"
+            >
+              ${esc(
+                item.blocked_id
+              )}
+            </div>
+
+          </div>
+
+
+          <button
+            class="gray"
+            onclick="
+              unblockUserFromSettings(
+                '${item.blocked_id}'
+              )
+            "
+          >
+            Unblock
+          </button>
+
+        </div>
+
+      `;
+
+    });
+
+  }
+
+
+  blockedHTML += `
+
+    </div>
+
+  `;
+
+
+  /* ================= SECURITY ================= */
+
+  const securityHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        📱 Security
+      </div>
+
+      <hr>
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Active Session
+          </div>
+
+          <div class="setting-desc">
+            এই browser/device বর্তমানে Login করা আছে।
+          </div>
+
+        </div>
+
+        <span>
+          🟢
+        </span>
+
+      </div>
+
+
+      <button
+        class="gray"
+        onclick="
+          logoutAllDevices()
+        "
+      >
+        🔐 Logout from all devices
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ================= ACCOUNT CONTROL ================= */
+
+  const accountControlHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        🗑️ Account
+      </div>
+
+      <hr>
+
+
+      <button
+        class="gray"
+        onclick="
+          deactivateAccount()
+        "
+      >
+        ⏸️ Deactivate Account
+      </button>
+
+
+      <button
+        class="danger"
+        onclick="
+          deleteAccount()
+        "
+      >
+        🗑️ Delete Account
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ================= INFORMATION ================= */
+
+  const informationHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        📥 Your Information
+      </div>
+
+      <hr>
+
+      <p>
+        আপনার basic account data download করুন।
+      </p>
+
+      <button
+        class="blue"
+        onclick="
+          downloadMyData()
+        "
+      >
+        📥 Download Your Data
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ================= CREATOR ================= */
+
+  const creatorHTML = `
+
+    <div class="card">
+
+      <div class="setting-title">
+        💰 Creator Settings
+      </div>
+
+      <hr>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            Monetization
+          </div>
+
+          <div class="setting-desc">
+            Creator monetization setting
+          </div>
+
+        </div>
+
+
+        <label class="switch">
+
+          <input
+            id="creatorMonetization"
+            type="checkbox"
+            ${
+              creatorSettings.monetization_enabled
+                ? "checked"
+                : ""
+            }
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <br>
+
+      <label>
+        Payout Email
+      </label>
+
+      <br><br>
+
+      <input
+        id="payoutEmail"
+        type="email"
+        placeholder="Payout email"
+        value="${esc(
+          creatorSettings.payout_email ||
+          ""
+        )}"
+      >
+
+      <br><br>
+
+      <button
+        class="blue"
+        onclick="
+          saveCreatorSettings()
+        "
+      >
+        💾 Save Creator Settings
+      </button>
+
+      <br><br>
+
+      <button
+        class="gray"
+        onclick="
+          openPage('earnings')
+        "
+      >
+        📊 View Earnings
+      </button>
+
+    </div>
+
+  `;
+
+
+  /* ================= FINAL ================= */
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      ⚙️ Settings & Privacy
+    </div>
+
+    ${accountHTML}
+
+    ${privacyHTML}
+
+    ${notificationsHTML}
+
+    ${appearanceHTML}
+
+    ${blockedHTML}
+
+    ${securityHTML}
+
+    ${accountControlHTML}
+
+    ${informationHTML}
+
+    ${creatorHTML}
+
+  `;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION TOGGLE HTML
+===================================================== */
+
+function notificationToggle(
+  label,
+  field,
+  value
+){
+
+  return `
+
+    <div class="setting-row">
+
+      <div>
+
+        <div class="setting-label">
+          ${esc(label)}
+        </div>
+
+      </div>
+
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          ${
+            value
+            ? "checked"
+            : ""
+          }
+          onchange="
+            saveSetting(
+              '${field}',
+              this.checked
+            )
+          "
+        >
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+function settingsDarkMode(){
+
+  const checked =
+    document
+      .getElementById(
+        "settingsDarkMode"
+      )
+      ?.checked;
+
+
+  if(checked){
+
+    document.body
+      .classList.add("dark");
+
+    localStorage.setItem(
+      "dark",
+      "true"
+    );
+
+    saveSetting(
+      "theme",
+      "dark"
+    );
+
+  }else{
+
+    document.body
+      .classList.remove("dark");
+
+    localStorage.setItem(
+      "dark",
+      "false"
+    );
+
+    saveSetting(
+      "theme",
+      "light"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   PASSWORD
+===================================================== */
+
+async function openPasswordModal(){
+
+  const password =
+    prompt(
+      "নতুন Password দিন:"
+    );
+
+
+  if(!password){
+    return;
+  }
+
+
+  if(password.length < 6){
+
+    toast(
+      "Password কমপক্ষে 6 characters হতে হবে"
+    );
+
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb.auth.updateUser({
+
+      password:password
+
+    });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  toast(
+    "✅ Password changed"
+  );
+
+}
+
+
+/* =====================================================
+   DEACTIVATE
+===================================================== */
+
+async function deactivateAccount(){
+
+  if(!confirm(
+    "Account Deactivate করতে চান?"
+  )){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb
+      .from("profiles")
+      .update({
+        is_deactivated:true
+      })
+      .eq(
+        "id",
+        user.id
+      );
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  toast(
+    "Account deactivated"
+  );
+
+
+  await logout();
+
+}
+
+
+/* =====================================================
+   DELETE ACCOUNT
+===================================================== */
+
+async function deleteAccount(){
+
+  if(!confirm(
+    "⚠️ Account permanently delete করবেন?"
+  )){
+    return;
+  }
+
+
+  if(!confirm(
+    "শেষবার নিশ্চিত করুন। Account এবং data মুছে যাবে।"
+  )){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb.rpc(
+      "delete_my_account"
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(
+      "Delete হয়নি: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await sb.auth.signOut();
+
+  location.reload();
+
+}
+
+
+/* =====================================================
+   LOGOUT ALL
+===================================================== */
+
+async function logoutAllDevices(){
+
+  if(!confirm(
+    "সব device থেকে Logout করবেন?"
+  )){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await sb.auth.signOut({
+
+      scope:"global"
+
+    });
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+  }
+
+
+  location.reload();
+
+}
+
+
+/* =====================================================
+   DOWNLOAD DATA
+===================================================== */
+
+async function downloadMyData(){
+
+  const result = {
+
+    account:{
+
+      id:user?.id,
+
+      email:user?.email,
+
+      created_at:user?.created_at
+
+    },
+
+    profile:profile,
+
+    settings:appSettings,
+
+    creator_settings:
+      creatorSettings
+
+  };
+
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          result,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const a =
+    document.createElement(
+      "a"
+    );
+
+
+  a.href = url;
+
+  a.download =
+    "my-social-app-data.json";
+
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+
+  toast(
+    "📥 Data downloaded"
+  );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+async function searchUsers(){
+
+  const q =
+    document
+      .getElementById(
+        "searchInput"
+      )
+      .value
+      .trim();
+
+
+  if(!q){
+
+    return;
+  }
+
+
+  const main =
+    document.getElementById(
+      "main"
+    );
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🔎 Search
+    </div>
+
+    <div class="card">
+      Searching...
+    </div>
+
+  `;
+
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from("profiles")
+      .select("*")
+      .ilike(
+        "name",
+        "%" +
+        q +
+        "%"
+      )
+      .limit(30);
+
+
+  if(error){
+
+    main.innerHTML += `
+
+      <div class="card">
+        ${esc(error.message)}
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  if(!data?.length){
+
+    main.innerHTML = `
+
+      <div class="page-title">
+        🔎 Search
+      </div>
+
+      <div class="card">
+        কোনো User পাওয়া যায়নি।
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  main.innerHTML = `
+
+    <div class="page-title">
+      🔎 Search Results
+    </div>
+
+    ${data.map(p => `
+
+      <div
+        class="card"
+        style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+        "
+      >
+
+        <img
+          class="avatar-small"
+          src="${esc(
+            p.avatar_url ||
+            "https://via.placeholder.com/90"
+          )}"
+        >
+
+        <div>
+
+          <b>
+            ${esc(
+              p.name ||
+              "User"
+            )}
+          </b>
+
+          ${
+            p.username
+            ? `
+              <div>
+                @${esc(
+                  p.username
+                )}
+              </div>
+            `
+            : ""
+          }
+
+        </div>
+
+
+        <button
+          class="blue"
+          style="margin-left:auto"
+          onclick="
+            renderProfile(
+              '${p.id}'
+            )
+          "
+        >
+          View
+        </button>
+
+      </div>
+
+    `).join("")}
+
+  `;
+
+}
+
+
+/* =====================================================
+   ROUTER
+===================================================== */
+
+async function openPage(page){
+
+  if(page === "home"){
+
+    return loadHome();
+
+  }
+
+
+  if(page === "profile"){
+
+    return renderProfile(
+      user.id
+    );
+
+  }
+
+
+  if(page === "friends"){
+
+    return renderFriends();
+
+  }
+
+
+  if(page === "messenger"){
+
+    return renderMessenger();
+
+  }
+
+
+  if(page === "notifications"){
+
+    return renderNotifications();
+
+  }
+
+
+  if(page === "reels"){
+
+    return renderReels();
+
+  }
+
+
+  if(page === "saved"){
+
+    return renderSaved();
+
+  }
+
+
+  if(page === "trending"){
+
+    return renderTrending();
+
+  }
+
+
+  if(page === "earnings"){
+
+    return renderEarnings();
+
+  }
+
+
+  if(page === "settings"){
+
+    return renderSettings();
+
+  }
+
+}
+
+
+/* =====================================================
+   START APP
+===================================================== */
+
+async function startApp(){
+
+  document
+    .getElementById("auth")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+
+  await ensureProfile();
+
+
+  /*
+    Settings error হলে App বন্ধ হবে না।
+  */
+
+  try{
+
+    await ensureSettings();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  try{
+
+    await ensureCreatorSettings();
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+
+  if(
+    localStorage.getItem(
+      "dark"
+    ) === "true"
+  ){
+
+    document.body
+      .classList.add("dark");
+
+  }
+
+
+  await loadHome();
+
+}
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+sb.auth.onAuthStateChange(
+  async (
+    event,
+    session
+  ) => {
+
+    user =
+      session?.user || null;
+
+
+    if(user){
+
+      await startApp();
+
+    }else{
+
+      document
+        .getElementById("app")
+        .classList.add("hidden");
+
+      document
+        .getElementById("auth")
+        .classList.remove("hidden");
+
+      showLogin();
+
+    }
+
+  }
 );
 
 
-/* =========================
-   INITIALIZE
-========================= */
+/* =====================================================
+   INITIAL SESSION
+===================================================== */
 
-loadDark();
-start();
+(async function(){
+
+  const {
+    data
+  } =
+    await sb.auth.getSession();
+
+
+  user =
+    data.session?.user ||
+    null;
+
+
+  if(user){
+
+    await startApp();
+
+  }else{
+
+    document
+      .getElementById("auth")
+      .classList.remove("hidden");
+
+  }
+
+})();
 
 </script>
 
