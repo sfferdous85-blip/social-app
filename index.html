@@ -4,905 +4,739 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1877f2">
-<meta name="description" content="FriendBook - Connect with friends">
-<link rel="manifest" href="./manifest.json">
 <title>FriendBook</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f0f2f5;
-  color:#1c1e21;
-}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;border:0}
-.hidden{display:none!important}
-
 :root{
  --blue:#1877f2;
  --bg:#f0f2f5;
  --card:#fff;
- --text:#1c1e21;
+ --text:#111;
  --muted:#65676b;
  --border:#dddfe2;
- --hover:#f2f2f2;
+ --danger:#e41e3f;
 }
-
 body.dark{
  --bg:#18191a;
  --card:#242526;
  --text:#e4e6eb;
  --muted:#b0b3b8;
- --border:#3e4042;
- --hover:#3a3b3c;
+ --border:#3a3b3c;
 }
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,"Noto Sans Bengali",sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-body{background:var(--bg);color:var(--text)}
+/* AUTH */
+#authPage{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ background:linear-gradient(135deg,#e7f0ff,#f7f9fc);
+}
+.authBox{
+ width:100%;
+ max-width:420px;
+ background:var(--card);
+ border-radius:18px;
+ padding:28px;
+ box-shadow:0 8px 35px #0002;
+}
+.logo{
+ text-align:center;
+ color:var(--blue);
+ font-size:42px;
+ font-weight:800;
+ margin-bottom:5px;
+}
+.tagline{
+ text-align:center;
+ color:var(--muted);
+ margin-bottom:25px;
+}
+.authBox input{
+ width:100%;
+ padding:14px;
+ margin:7px 0;
+ border:1px solid var(--border);
+ border-radius:10px;
+ outline:none;
+ background:var(--card);
+ color:var(--text);
+}
+.authBox input:focus{border-color:var(--blue)}
+.mainBtn{
+ width:100%;
+ border:0;
+ border-radius:10px;
+ padding:13px;
+ background:var(--blue);
+ color:white;
+ font-weight:bold;
+ margin-top:8px;
+}
+.secondaryBtn{
+ width:100%;
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:12px;
+ background:var(--card);
+ color:var(--text);
+ margin-top:8px;
+}
+.authMsg{
+ margin-top:12px;
+ padding:10px;
+ border-radius:8px;
+ display:none;
+ font-size:14px;
+}
+.authMsg.show{display:block}
+.authMsg.error{background:#ffe5e9;color:#b00020}
+.authMsg.success{background:#e5f8e9;color:#08752d}
 
-.app-header{
+/* HEADER */
+header{
  position:sticky;
  top:0;
- z-index:1000;
- height:60px;
+ z-index:100;
+ height:62px;
  background:var(--card);
  border-bottom:1px solid var(--border);
  display:flex;
  align-items:center;
- padding:0 16px;
- gap:14px;
+ padding:0 15px;
+ gap:15px;
 }
-
-.brand{
- font-size:27px;
- font-weight:800;
+.headerLogo{
  color:var(--blue);
+ font-weight:800;
+ font-size:25px;
  white-space:nowrap;
 }
-
-.header-search{
+.searchBox{
  flex:1;
- max-width:430px;
+ max-width:500px;
 }
-
-.header-search input{
+.searchBox input{
  width:100%;
  border:0;
  outline:0;
  background:var(--bg);
- color:var(--text);
- padding:11px 16px;
+ padding:10px 15px;
  border-radius:22px;
+ color:var(--text);
 }
-
-.header-icons{
+.headerActions{
  margin-left:auto;
  display:flex;
  gap:7px;
 }
+.iconBtn{
+ width:42px;
+ height:42px;
+ border:0;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
+}
+.iconBtn:hover{background:var(--border)}
 
-.icon-btn{
+#app{
+ min-height:100vh;
+}
+.layout{
+ display:grid;
+ grid-template-columns:240px minmax(0,680px) 280px;
+ gap:20px;
+ max-width:1250px;
+ margin:auto;
+ padding:20px 15px;
+}
+.sidebar{
+ position:sticky;
+ top:82px;
+ height:max-content;
+}
+.sideBtn{
+ width:100%;
+ text-align:left;
+ padding:13px 15px;
+ border:0;
+ border-radius:10px;
+ background:transparent;
+ color:var(--text);
+ margin-bottom:3px;
+ font-weight:600;
+}
+.sideBtn:hover,.sideBtn.active{background:var(--card)}
+.card{
+ background:var(--card);
+ border-radius:12px;
+ box-shadow:0 1px 2px #0001;
+ margin-bottom:15px;
+ overflow:hidden;
+}
+.cardPad{padding:15px}
+
+/* COMPOSER */
+.composer textarea{
+ width:100%;
+ min-height:70px;
+ resize:none;
+ border:0;
+ outline:0;
+ background:var(--bg);
+ color:var(--text);
+ padding:13px;
+ border-radius:10px;
+}
+.composerBottom{
+ display:flex;
+ gap:8px;
+ margin-top:10px;
+}
+.composerBottom input,.composerBottom select{
+ flex:1;
+ min-width:0;
+ padding:10px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ background:var(--card);
+ color:var(--text);
+}
+.postBtn{
+ background:var(--blue);
+ color:white;
+ border:0;
+ padding:10px 20px;
+ border-radius:8px;
+ font-weight:bold;
+}
+
+/* POST */
+.postHead{
+ display:flex;
+ align-items:center;
+ padding:13px 15px 5px;
+ gap:10px;
+}
+.avatar{
  width:42px;
  height:42px;
  border-radius:50%;
- background:var(--bg);
- color:var(--text);
- font-size:20px;
-}
-
-.icon-btn:hover{background:var(--hover)}
-
-.layout{
- max-width:1400px;
- margin:auto;
- display:grid;
- grid-template-columns:250px minmax(400px,680px) 280px;
- gap:18px;
- padding:18px;
-}
-
-.left,.right{
- position:sticky;
- top:78px;
- height:max-content;
-}
-
-.menu-card,.card{
- background:var(--card);
- border-radius:12px;
- border:1px solid var(--border);
- margin-bottom:14px;
-}
-
-.menu-item{
- display:flex;
- align-items:center;
- gap:13px;
- width:100%;
- padding:13px;
- background:none;
- color:var(--text);
- text-align:left;
- border-radius:9px;
- font-weight:600;
-}
-
-.menu-item:hover{background:var(--hover)}
-
-.menu-icon{font-size:22px;width:28px;text-align:center}
-
-.card{
- padding:14px;
-}
-
-.composer{
- display:flex;
- gap:10px;
- align-items:center;
-}
-
-.avatar{
- width:44px;
- height:44px;
- border-radius:50%;
  object-fit:cover;
- background:#ccd0d5;
- flex-shrink:0;
-}
-
-.composer-input{
- flex:1;
  background:var(--bg);
+}
+.avatar.big{
+ width:90px;
+ height:90px;
+}
+.author{
+ font-weight:bold;
+}
+.time{
+ font-size:12px;
+ color:var(--muted);
+ margin-top:3px;
+}
+.postMenu{
+ margin-left:auto;
+}
+.postBody{
+ padding:8px 15px 10px;
+ white-space:pre-wrap;
+ word-break:break-word;
+}
+.postImg{
+ width:100%;
+ max-height:650px;
+ object-fit:cover;
+ display:block;
+}
+.stats{
+ display:flex;
+ justify-content:space-between;
+ padding:8px 15px;
+ color:var(--muted);
+ font-size:13px;
+ border-bottom:1px solid var(--border);
+}
+.actions{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+}
+.action{
  border:0;
- border-radius:24px;
- padding:13px 17px;
+ background:transparent;
+ color:var(--muted);
+ padding:11px 5px;
+ font-weight:bold;
+}
+.action:hover{background:var(--bg)}
+.action.active{color:var(--blue)}
+.reactionBar{
+ display:flex;
+ gap:5px;
+ padding:7px 15px;
+ flex-wrap:wrap;
+ border-bottom:1px solid var(--border);
+}
+.reactBtn{
+ border:0;
+ background:var(--bg);
+ border-radius:20px;
+ padding:6px 10px;
+}
+.comments{
+ padding:0 15px 12px;
+}
+.comment{
+ display:flex;
+ gap:8px;
+ margin-top:10px;
+}
+.commentBubble{
+ background:var(--bg);
+ padding:8px 11px;
+ border-radius:15px;
+ max-width:85%;
+}
+.commentName{
+ font-weight:bold;
+ font-size:13px;
+}
+.commentText{
+ font-size:14px;
+ margin-top:2px;
+}
+.commentInput{
+ display:flex;
+ gap:7px;
+ margin-top:10px;
+}
+.commentInput input{
+ flex:1;
+ padding:9px 12px;
+ border:0;
+ border-radius:20px;
+ background:var(--bg);
  color:var(--text);
- cursor:pointer;
+ outline:0;
+}
+.commentInput button{
+ border:0;
+ border-radius:20px;
+ padding:0 15px;
+ background:var(--blue);
+ color:#fff;
 }
 
-.story-row{
+/* STORY */
+.storyRow{
  display:flex;
  gap:10px;
  overflow-x:auto;
- padding-bottom:3px;
+ padding:12px;
 }
-
 .story{
- min-width:110px;
- height:170px;
+ min-width:105px;
+ height:150px;
  border-radius:12px;
- overflow:hidden;
- position:relative;
- background:linear-gradient(135deg,#1877f2,#8b5cf6);
- color:white;
+ background:linear-gradient(145deg,#1877f2,#8b5cf6);
+ color:#fff;
  display:flex;
  align-items:flex-end;
  padding:10px;
  font-weight:bold;
 }
 
-.feed-tools{
- display:flex;
- gap:8px;
- margin-bottom:14px;
-}
-
-.feed-tab{
- flex:1;
- padding:11px;
- border-radius:8px;
- background:var(--bg);
- color:var(--text);
+/* RIGHT */
+.rightTitle{
  font-weight:bold;
+ padding:15px;
 }
-
-.feed-tab.active{
- background:var(--blue);
- color:white;
-}
-
-.post-head{
+.userMini{
  display:flex;
  align-items:center;
  gap:10px;
+ padding:10px 15px;
 }
-
-.post-user{
- font-weight:700;
-}
-
-.post-time{
- color:var(--muted);
- font-size:12px;
- margin-top:3px;
-}
-
-.post-menu{
+.userMini button{
  margin-left:auto;
- background:none;
- color:var(--text);
- font-size:21px;
-}
-
-.post-text{
- white-space:pre-wrap;
- word-break:break-word;
- line-height:1.45;
- margin:13px 0;
-}
-
-.post-image{
- display:block;
- width:100%;
- max-height:650px;
- object-fit:cover;
- border-radius:9px;
-}
-
-.post-meta{
- display:flex;
- justify-content:space-between;
- color:var(--muted);
- font-size:13px;
- padding:9px 2px;
- border-bottom:1px solid var(--border);
-}
-
-.post-actions{
- display:flex;
- gap:5px;
- padding-top:7px;
-}
-
-.post-action{
- flex:1;
- background:none;
- color:var(--muted);
- padding:10px 5px;
- border-radius:7px;
- font-weight:600;
-}
-
-.post-action:hover{
- background:var(--hover);
- color:var(--text);
-}
-
-.reaction-box{
- display:flex;
- gap:4px;
- padding:8px;
- background:var(--card);
- border:1px solid var(--border);
- border-radius:25px;
- position:absolute;
- bottom:45px;
- left:0;
- z-index:5;
- box-shadow:0 4px 15px rgba(0,0,0,.18);
-}
-
-.reaction-wrap{
- position:relative;
- flex:1;
-}
-
-.reaction-box button{
- background:none;
- font-size:23px;
- padding:3px;
-}
-
-.comment-list{
- margin-top:10px;
-}
-
-.comment{
- display:flex;
- gap:8px;
- margin:9px 0;
-}
-
-.comment-body{
- background:var(--bg);
- border-radius:15px;
- padding:8px 12px;
- flex:1;
-}
-
-.comment-name{
- font-size:13px;
- font-weight:bold;
-}
-
-.comment-text{
- font-size:14px;
- margin-top:3px;
-}
-
-.comment-input-row{
- display:flex;
- gap:8px;
- margin-top:10px;
-}
-
-.comment-input-row input{
- flex:1;
- border:0;
- background:var(--bg);
- color:var(--text);
- padding:11px 14px;
- border-radius:20px;
- outline:0;
-}
-
-.comment-input-row button{
  background:var(--blue);
- color:white;
- border-radius:20px;
- padding:0 17px;
+ color:#fff;
+ border:0;
+ border-radius:7px;
+ padding:7px 10px;
 }
 
-.profile-cover{
- height:240px;
- border-radius:12px 12px 0 0;
- background:linear-gradient(135deg,#1877f2,#7c3aed);
- overflow:hidden;
-}
-
-.profile-cover img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-
-.profile-main{
- padding:0 20px 20px;
- position:relative;
-}
-
-.profile-avatar{
- width:130px;
- height:130px;
- border-radius:50%;
- border:5px solid var(--card);
- object-fit:cover;
- margin-top:-65px;
- background:#ddd;
-}
-
-.profile-name{
+/* PAGE */
+.pageTitle{
  font-size:25px;
  font-weight:800;
- margin-top:8px;
+ margin-bottom:15px;
 }
-
-.profile-bio{
+.profileCover{
+ height:230px;
+ background:linear-gradient(135deg,#1877f2,#7c3aed);
+ background-size:cover;
+ background-position:center;
+ position:relative;
+}
+.profileAvatar{
+ position:absolute;
+ left:25px;
+ bottom:-50px;
+ border:5px solid var(--card);
+ border-radius:50%;
+ width:110px;
+ height:110px;
+ object-fit:cover;
+ background:var(--bg);
+}
+.profileInfo{
+ padding:60px 20px 20px;
+}
+.profileName{
+ font-size:25px;
+ font-weight:800;
+}
+.profileBio{
  color:var(--muted);
  margin-top:5px;
 }
-
-.profile-tabs{
+.profileBtns{
  display:flex;
- gap:5px;
- overflow-x:auto;
- margin-top:18px;
- border-top:1px solid var(--border);
- padding-top:10px;
+ gap:8px;
+ margin-top:15px;
 }
-
-.profile-tabs button{
- padding:10px 17px;
+.smallBtn{
+ padding:9px 14px;
+ border:0;
  border-radius:8px;
- background:none;
- color:var(--text);
- font-weight:bold;
-}
-
-.profile-tabs button:hover{background:var(--hover)}
-
-.modal-bg{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.6);
- z-index:5000;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:15px;
-}
-
-.modal{
- width:100%;
- max-width:560px;
- max-height:90vh;
- overflow:auto;
- background:var(--card);
- color:var(--text);
- border-radius:14px;
-}
-
-.modal-head{
- display:flex;
- align-items:center;
- justify-content:space-between;
- padding:15px;
- border-bottom:1px solid var(--border);
-}
-
-.modal-body{padding:15px}
-
-.close{
- background:none;
- color:var(--text);
- font-size:25px;
-}
-
-.form-control{
- width:100%;
- border:1px solid var(--border);
- background:var(--card);
- color:var(--text);
- border-radius:9px;
- padding:12px;
- margin-bottom:10px;
- outline:0;
-}
-
-.primary{
  background:var(--blue);
  color:white;
- padding:11px 17px;
- border-radius:8px;
- font-weight:bold;
 }
-
-.secondary{
+.grayBtn{
  background:var(--bg);
  color:var(--text);
- padding:11px 17px;
- border-radius:8px;
- font-weight:bold;
 }
 
-.danger{
- background:#e41e3f;
- color:white;
- padding:11px 17px;
- border-radius:8px;
+/* REELS */
+.reelsContainer{
+ max-width:500px;
+ margin:auto;
 }
-
-.full{width:100%}
-
-.auth{
- min-height:100vh;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:20px;
-}
-
-.auth-box{
- width:100%;
- max-width:410px;
-}
-
-.auth-brand{
- text-align:center;
- font-size:42px;
- font-weight:900;
- color:var(--blue);
- margin-bottom:8px;
-}
-
-.auth-sub{
- text-align:center;
- color:var(--muted);
- margin-bottom:20px;
-}
-
-.auth-card{
- background:var(--card);
- padding:22px;
- border-radius:12px;
- box-shadow:0 5px 25px rgba(0,0,0,.12);
-}
-
-.auth-card input{
- width:100%;
- padding:14px;
- margin-bottom:10px;
- border:1px solid var(--border);
- border-radius:8px;
- background:var(--card);
- color:var(--text);
- outline:0;
-}
-
-.auth-link{
- background:none;
- color:var(--blue);
- margin-top:12px;
-}
-
 .reel{
- position:relative;
  background:#000;
  border-radius:12px;
- overflow:hidden;
  margin-bottom:15px;
- min-height:500px;
+ overflow:hidden;
+ position:relative;
 }
-
 .reel video{
  width:100%;
- max-height:750px;
+ max-height:700px;
  display:block;
- object-fit:contain;
- background:#000;
+ object-fit:cover;
 }
-
-.reel-info{
+.reelInfo{
  padding:12px;
- background:var(--card);
+ color:#fff;
+ background:#111;
 }
-
-.reel-actions{
+.reelActions{
  display:flex;
  gap:7px;
  margin-top:10px;
 }
+.reelActions button{
+ background:#222;
+ color:#fff;
+ border:0;
+ border-radius:20px;
+ padding:8px 13px;
+}
 
-.reel-actions button{
- flex:1;
+/* MODAL */
+.modalBg{
+ position:fixed;
+ inset:0;
+ background:#0008;
+ z-index:500;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+.modal{
+ width:100%;
+ max-width:520px;
+ max-height:90vh;
+ overflow:auto;
+ background:var(--card);
+ border-radius:14px;
+ padding:20px;
+}
+.modalHeader{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:15px;
+}
+.closeBtn{
+ border:0;
  background:var(--bg);
  color:var(--text);
- padding:10px;
- border-radius:8px;
-}
-
-.search-result{
- display:flex;
- align-items:center;
- gap:12px;
- padding:12px 0;
- border-bottom:1px solid var(--border);
-}
-
-.search-result:last-child{border-bottom:0}
-
-.notification{
- display:flex;
- gap:10px;
- padding:12px;
- border-bottom:1px solid var(--border);
-}
-
-.notification.unread{
- background:rgba(24,119,242,.08);
-}
-
-.setting-row{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:15px 5px;
- border-bottom:1px solid var(--border);
-}
-
-.switch{
- width:48px;
- height:26px;
- border-radius:20px;
- background:#aaa;
- padding:3px;
-}
-
-.switch.on{background:var(--blue)}
-
-.switch span{
- display:block;
- width:20px;
- height:20px;
  border-radius:50%;
- background:white;
- transition:.2s;
+ width:35px;
+ height:35px;
+}
+.modal input,.modal textarea,.modal select{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ margin:5px 0 10px;
+ background:var(--card);
+ color:var(--text);
 }
 
-.switch.on span{margin-left:22px}
-
-.stat-grid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:8px;
+/* CHAT */
+.chatBox{
+ height:500px;
+ display:flex;
+ flex-direction:column;
 }
-
-.stat{
- text-align:center;
+.chatMessages{
+ flex:1;
+ overflow:auto;
+ padding:15px;
+}
+.chatMsg{
+ max-width:75%;
+ padding:9px 12px;
+ border-radius:15px;
+ margin-bottom:8px;
  background:var(--bg);
- border-radius:10px;
- padding:15px 5px;
+}
+.chatMsg.me{
+ margin-left:auto;
+ background:var(--blue);
+ color:white;
+}
+.chatSend{
+ display:flex;
+ gap:7px;
+ padding:10px;
+ border-top:1px solid var(--border);
+}
+.chatSend input{
+ flex:1;
+ border:0;
+ outline:0;
+ background:var(--bg);
+ border-radius:20px;
+ padding:10px 14px;
+ color:var(--text);
 }
 
-.stat strong{
- display:block;
- font-size:21px;
+/* SETTINGS */
+.setting{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:15px 0;
+ border-bottom:1px solid var(--border);
 }
+.setting:last-child{border:0}
 
-.empty{
- text-align:center;
- padding:35px 15px;
- color:var(--muted);
-}
-
-.toast{
+/* TOAST */
+#toast{
  position:fixed;
  left:50%;
  bottom:25px;
  transform:translateX(-50%);
  background:#222;
- color:white;
- padding:12px 18px;
- border-radius:9px;
- z-index:9999;
+ color:#fff;
+ padding:11px 18px;
+ border-radius:25px;
+ z-index:1000;
  display:none;
- max-width:90%;
 }
+#toast.show{display:block}
 
-@media(max-width:1050px){
- .layout{
-  grid-template-columns:200px minmax(400px,680px);
- }
- .right{display:none}
+/* MOBILE */
+@media(max-width:950px){
+ .layout{grid-template-columns:70px minmax(0,680px)}
+ .rightSide{display:none}
+ .sideBtn{font-size:0;text-align:center}
+ .sideBtn:first-letter{font-size:20px}
 }
-
-@media(max-width:760px){
- .app-header{padding:0 10px}
- .brand{font-size:23px}
- .header-search{display:none}
+@media(max-width:700px){
+ header{height:56px;padding:0 8px}
+ .headerLogo{font-size:20px}
+ .searchBox{display:none}
  .layout{
   display:block;
-  padding:8px;
+  padding:10px 5px 80px;
  }
- .left{display:none}
- .card{border-radius:9px}
- .profile-cover{height:170px}
- .profile-avatar{
-  width:105px;
-  height:105px;
-  margin-top:-52px;
+ .sidebar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  top:auto;
+  height:60px;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  z-index:200;
+  display:flex;
+  overflow-x:auto;
  }
+ .sideBtn{
+  min-width:75px;
+  margin:0;
+  font-size:11px;
+  text-align:center;
+  padding:8px 3px;
+ }
+ .sideBtn:first-letter{font-size:16px}
+ .composerBottom{flex-wrap:wrap}
+ .composerBottom input,.composerBottom select{min-width:45%}
+ .profileCover{height:180px}
+ .profileAvatar{width:90px;height:90px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
+<!-- ================= AUTH ================= -->
+<section id="authPage">
+ <div class="authBox">
 
-<div id="authPage" class="auth">
+  <div class="logo">FriendBook</div>
+  <div class="tagline">Connect with friends and share your world</div>
 
-  <div class="auth-box">
+  <div id="loginForm">
+   <input id="loginEmail" type="email" placeholder="Email">
+   <input id="loginPassword" type="password" placeholder="Password">
 
-    <div class="auth-brand">FriendBook</div>
-    <div class="auth-sub">
-      Connect with friends and share your world
-    </div>
+   <button class="mainBtn" onclick="login()">Log In</button>
 
-    <div class="auth-card" id="loginBox">
-
-      <input id="loginEmail"
-        type="email"
-        placeholder="Email">
-
-      <input id="loginPassword"
-        type="password"
-        placeholder="Password">
-
-      <button class="primary full"
-        onclick="login()">
-        Login
-      </button>
-
-      <div style="text-align:center">
-        <button class="auth-link"
-          onclick="showSignup()">
-          Create new account
-        </button>
-      </div>
-
-    </div>
-
-    <div class="auth-card hidden" id="signupBox">
-
-      <input id="signupName"
-        placeholder="Full name">
-
-      <input id="signupEmail"
-        type="email"
-        placeholder="Email">
-
-      <input id="signupPassword"
-        type="password"
-        placeholder="Password">
-
-      <button class="primary full"
-        onclick="signup()">
-        Create Account
-      </button>
-
-      <div style="text-align:center">
-        <button class="auth-link"
-          onclick="showLogin()">
-          Already have an account? Login
-        </button>
-      </div>
-
-    </div>
-
+   <button class="secondaryBtn" onclick="showSignup()">
+    Create new account
+   </button>
   </div>
 
-</div>
+  <div id="signupForm" class="hidden">
+   <input id="signupName" type="text" placeholder="Your name">
+   <input id="signupEmail" type="email" placeholder="Email">
+   <input id="signupPassword" type="password" placeholder="Password">
+
+   <button class="mainBtn" onclick="signup()">Create Account</button>
+
+   <button class="secondaryBtn" onclick="showLogin()">
+    Already have an account? Login
+   </button>
+  </div>
+
+  <div id="authMsg" class="authMsg"></div>
+
+ </div>
+</section>
 
 
-<!-- APP -->
-
+<!-- ================= APP ================= -->
 <div id="app" class="hidden">
 
-<header class="app-header">
+<header>
+ <div class="headerLogo">FriendBook</div>
 
-  <div class="brand">FriendBook</div>
+ <div class="searchBox">
+  <input id="globalSearch"
+   placeholder="Search FriendBook..."
+   onkeydown="if(event.key==='Enter')doSearch()">
+ </div>
 
-  <div class="header-search">
-    <input id="globalSearch"
-      placeholder="🔎 Search FriendBook"
-      onkeydown="globalSearch(event)">
-  </div>
-
-  <div class="header-icons">
-
-    <button class="icon-btn"
-      onclick="showHome()">
-      🏠
-    </button>
-
-    <button class="icon-btn"
-      onclick="showNotifications()">
-      🔔
-    </button>
-
-    <button class="icon-btn"
-      onclick="showMessenger()">
-      💬
-    </button>
-
-    <button class="icon-btn"
-      onclick="showProfile()">
-      👤
-    </button>
-
-  </div>
-
+ <div class="headerActions">
+  <button class="iconBtn" onclick="showHome()">⌂</button>
+  <button class="iconBtn" onclick="showNotifications()">🔔</button>
+  <button class="iconBtn" onclick="showMessenger()">💬</button>
+  <button class="iconBtn" onclick="showProfile()">👤</button>
+ </div>
 </header>
 
 
 <div class="layout">
 
-<!-- LEFT -->
+<!-- SIDEBAR -->
+<aside class="sidebar">
 
-<aside class="left">
-
-<div class="menu-card">
-
-<button class="menu-item"
- onclick="showHome()">
-<span class="menu-icon">🏠</span>
-Home
-</button>
-
-<button class="menu-item"
- onclick="showProfile()">
-<span class="menu-icon">👤</span>
-Profile
-</button>
-
-<button class="menu-item"
- onclick="showFriends()">
-<span class="menu-icon">👥</span>
-Friends
-</button>
-
-<button class="menu-item"
- onclick="showMessenger()">
-<span class="menu-icon">💬</span>
-Messenger
-</button>
-
-<button class="menu-item"
- onclick="showReels()">
-<span class="menu-icon">🎬</span>
-Reels
-</button>
-
-<button class="menu-item"
- onclick="showNotifications()">
-<span class="menu-icon">🔔</span>
-Notifications
-</button>
-
-<button class="menu-item"
- onclick="showSearchPage()">
-<span class="menu-icon">🔎</span>
-Search
-</button>
-
-<button class="menu-item"
- onclick="showMonetization()">
-<span class="menu-icon">💰</span>
-Creator
-</button>
-
-<button class="menu-item"
- onclick="showSettings()">
-<span class="menu-icon">⚙️</span>
-Settings
-</button>
-
-<button class="menu-item"
- onclick="logout()">
-<span class="menu-icon">🚪</span>
-Logout
-</button>
-
-</div>
+ <button class="sideBtn" onclick="showHome()">🏠 Home</button>
+ <button class="sideBtn" onclick="showProfile()">👤 Profile</button>
+ <button class="sideBtn" onclick="showFriends()">👥 Friends</button>
+ <button class="sideBtn" onclick="showMessenger()">💬 Messenger</button>
+ <button class="sideBtn" onclick="showReels()">🎬 Reels</button>
+ <button class="sideBtn" onclick="showNotifications()">🔔 Notifications</button>
+ <button class="sideBtn" onclick="showSearch()">🔎 Search</button>
+ <button class="sideBtn" onclick="showCreator()">💰 Creator</button>
+ <button class="sideBtn" onclick="showSettings()">⚙️ Settings</button>
+ <button class="sideBtn" onclick="logout()">🚪 Logout</button>
 
 </aside>
 
 
-<!-- CENTER -->
-
-<main id="main"></main>
+<!-- MAIN -->
+<main id="mainContent"></main>
 
 
 <!-- RIGHT -->
+<aside class="rightSide">
 
-<aside class="right">
+ <div class="card">
+  <div class="rightTitle">FriendBook</div>
 
-<div class="card">
+  <div class="userMini">
+   <img id="rightAvatar" class="avatar">
+   <div>
+    <div id="rightName">User</div>
+    <small>Online</small>
+   </div>
+  </div>
+ </div>
 
-<h3 style="margin-top:0">
-Your shortcuts
-</h3>
+ <div class="card">
+  <div class="rightTitle">Quick Menu</div>
 
-<button class="menu-item"
- onclick="showFriends()">
-👥 Find Friends
-</button>
+  <div class="userMini">
+   <span>🎬</span>
+   <span>Reels</span>
+  </div>
 
-<button class="menu-item"
- onclick="showReels()">
-🎬 Watch Reels
-</button>
+  <div class="userMini">
+   <span>👥</span>
+   <span>Friends</span>
+  </div>
 
-<button class="menu-item"
- onclick="showMonetization()">
-💰 Creator Dashboard
-</button>
-
-</div>
-
-<div class="card">
-
-<h3 style="margin-top:0">
-FriendBook
-</h3>
-
-<div style="color:var(--muted);font-size:13px">
-Connect • Share • Discover
-</div>
-
-</div>
+  <div class="userMini">
+   <span>💰</span>
+   <span>Creator</span>
+  </div>
+ </div>
 
 </aside>
 
@@ -911,42 +745,28 @@ Connect • Share • Discover
 
 
 <!-- MODAL -->
+<div id="modalBg" class="modalBg hidden" onclick="closeModal(event)">
+ <div class="modal" onclick="event.stopPropagation()">
 
-<div id="modalBg"
- class="modal-bg hidden"
- onclick="closeModal(event)">
+  <div class="modalHeader">
+   <h3 id="modalTitle">FriendBook</h3>
+   <button class="closeBtn" onclick="closeModal()">×</button>
+  </div>
 
-<div class="modal"
- onclick="event.stopPropagation()">
+  <div id="modalBody"></div>
 
-<div class="modal-head">
-
-<strong id="modalTitle">
-FriendBook
-</strong>
-
-<button class="close"
- onclick="closeModal()">
-×
-</button>
-
-</div>
-
-<div id="modalBody"
- class="modal-body"></div>
-
-</div>
+ </div>
 </div>
 
 
-<div id="toast" class="toast"></div>
+<div id="toast"></div>
 
 
 <script>
 
-/* =====================================
-   FRIENDBOOK CONFIG
-===================================== */
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
 
 const SUPABASE_URL =
 "https://skereuaizdczbvjplisi.supabase.co";
@@ -954,2250 +774,2333 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-let currentUser=null;
-let session=null;
-let feedMode="all";
+const sb =
+window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
 
 
-/* =====================================
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+let session = null;
+let currentUser = null;
+let currentProfile = null;
+let currentChatUser = null;
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================================================
    HELPERS
-===================================== */
-
-function $(id){
- return document.getElementById(id);
-}
-
-function escapeHTML(v){
-
- if(v===null || v===undefined)return "";
-
- return String(v)
- .replace(/&/g,"&amp;")
- .replace(/</g,"&lt;")
- .replace(/>/g,"&gt;")
- .replace(/"/g,"&quot;")
- .replace(/'/g,"&#039;");
-}
+========================================================= */
 
 function toast(msg){
-
  const t=$("toast");
-
- t.textContent=msg;
- t.style.display="block";
+ t.innerText=msg;
+ t.classList.add("show");
 
  setTimeout(()=>{
-  t.style.display="none";
+  t.classList.remove("show");
  },2500);
 }
 
-function formatCount(n){
-
- n=Number(n||0);
-
- if(n>=1000000)
-  return (n/1000000).toFixed(1)+"M";
-
- if(n>=1000)
-  return (n/1000).toFixed(1)+"K";
-
- return n;
+function escapeHTML(str=""){
+ return String(str)
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
 }
 
 function timeAgo(date){
-
  if(!date)return "";
+ const sec=Math.floor((Date.now()-new Date(date))/1000);
 
- const seconds=
-   Math.floor((Date.now()-new Date(date))/1000);
-
- if(seconds<60)
-   return "Just now";
-
- if(seconds<3600)
-   return Math.floor(seconds/60)+"m";
-
- if(seconds<86400)
-   return Math.floor(seconds/3600)+"h";
-
- if(seconds<604800)
-   return Math.floor(seconds/86400)+"d";
+ if(sec<60)return "এখনই";
+ if(sec<3600)return Math.floor(sec/60)+" মিনিট আগে";
+ if(sec<86400)return Math.floor(sec/3600)+" ঘণ্টা আগে";
+ if(sec<604800)return Math.floor(sec/86400)+" দিন আগে";
 
  return new Date(date).toLocaleDateString();
 }
 
+function avatar(url){
+ return url ||
+ "https://ui-avatars.com/api/?name=FriendBook&background=1877f2&color=fff";
+}
 
-/* =====================================
-   SUPABASE
-===================================== */
+function closeModal(event){
+ if(event && event.target!==$("modalBg"))return;
+ $("modalBg").classList.add("hidden");
+}
 
-async function api(path,options={}){
-
- const headers={
-  "apikey":SUPABASE_KEY,
-  "Authorization":
-    "Bearer "+
-    (session?.access_token || SUPABASE_KEY),
-  "Content-Type":"application/json",
-  ...(options.headers||{})
- };
-
- const res=await fetch(
-   SUPABASE_URL+"/rest/v1/"+path,
-   {
-    ...options,
-    headers
-   }
- );
-
- const text=await res.text();
-
- let data=null;
-
- try{
-  data=text?JSON.parse(text):null;
- }catch{
-  data=text;
- }
-
- if(!res.ok){
-
-  throw new Error(
-   data?.message ||
-   data?.details ||
-   data?.hint ||
-   data?.error ||
-   text ||
-   "Request failed"
-  );
- }
-
- return data;
+function openModal(title,html){
+ $("modalTitle").innerText=title;
+ $("modalBody").innerHTML=html;
+ $("modalBg").classList.remove("hidden");
 }
 
 
-/* =====================================
-   AUTH
-===================================== */
+/* =========================================================
+   AUTH UI
+========================================================= */
 
 function showLogin(){
-
- $("loginBox").classList.remove("hidden");
- $("signupBox").classList.add("hidden");
+ $("loginForm").classList.remove("hidden");
+ $("signupForm").classList.add("hidden");
+ clearAuthMsg();
 }
 
 function showSignup(){
-
- $("loginBox").classList.add("hidden");
- $("signupBox").classList.remove("hidden");
+ $("loginForm").classList.add("hidden");
+ $("signupForm").classList.remove("hidden");
+ clearAuthMsg();
 }
+
+function authMessage(msg,type="error"){
+ const box=$("authMsg");
+ box.innerText=msg;
+ box.className="authMsg show "+type;
+}
+
+function clearAuthMsg(){
+ $("authMsg").className="authMsg";
+ $("authMsg").innerText="";
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
 
 async function login(){
 
- const email=
-   $("loginEmail").value.trim();
+ clearAuthMsg();
 
- const password=
-   $("loginPassword").value;
+ const email=$("loginEmail").value.trim();
+ const password=$("loginPassword").value;
 
- if(!email||!password){
-  toast("Email এবং Password দিন");
+ if(!email || !password){
+  authMessage("Email এবং Password দিন।");
   return;
  }
 
+ const btn=document.querySelector("#loginForm .mainBtn");
+ btn.disabled=true;
+ btn.innerText="Logging in...";
+
  try{
 
-  const res=await fetch(
-   SUPABASE_URL+
-   "/auth/v1/token?grant_type=password",
-   {
-    method:"POST",
-    headers:{
-     "apikey":SUPABASE_KEY,
-     "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-     email,
-     password
-    })
-   }
-  );
+  const {data,error}=await sb.auth.signInWithPassword({
+   email,
+   password
+  });
 
-  const data=await res.json();
+  if(error)throw error;
 
-  if(!res.ok)
-   throw new Error(
-    data.error_description||
-    data.msg||
-    "Login failed"
-   );
+  if(!data.session){
+   throw new Error("Login session তৈরি হয়নি।");
+  }
 
-  session=data;
-
+  session=data.session;
   currentUser=data.user;
 
-  localStorage.setItem(
-   "friendbook_session",
-   JSON.stringify(data)
-  );
+  authMessage("Login successful!","success");
 
-  openApp();
+  await loadApp();
 
- }catch(e){
+ }catch(error){
 
-  toast(e.message);
+  console.error(error);
+
+  let msg=error.message || "Login failed";
+
+  if(msg.toLowerCase().includes("invalid login credentials")){
+   msg="Email অথবা Password ভুল।";
+  }
+
+  if(msg.toLowerCase().includes("email not confirmed")){
+   msg="Email এখনো confirm করা হয়নি। Supabase থেকে email confirm করুন।";
+  }
+
+  if(msg.toLowerCase().includes("failed to fetch")){
+   msg="Internet অথবা Supabase connection সমস্যা।";
+  }
+
+  authMessage(msg);
+
+ }finally{
+
+  btn.disabled=false;
+  btn.innerText="Log In";
+
  }
+
 }
 
 
+/* =========================================================
+   SIGNUP
+========================================================= */
+
 async function signup(){
 
- const name=
-   $("signupName").value.trim();
+ clearAuthMsg();
 
- const email=
-   $("signupEmail").value.trim();
+ const name=$("signupName").value.trim();
+ const email=$("signupEmail").value.trim();
+ const password=$("signupPassword").value;
 
- const password=
-   $("signupPassword").value;
-
- if(!name||!email||!password){
-  toast("সব তথ্য দিন");
+ if(!name || !email || !password){
+  authMessage("সব তথ্য পূরণ করুন।");
   return;
  }
 
  if(password.length<6){
-  toast("Password কমপক্ষে ৬ অক্ষরের দিন");
+  authMessage("Password কমপক্ষে 6 অক্ষরের হতে হবে।");
   return;
  }
 
+ const btn=document.querySelector("#signupForm .mainBtn");
+ btn.disabled=true;
+ btn.innerText="Creating...";
+
  try{
 
-  const res=await fetch(
-   SUPABASE_URL+
-   "/auth/v1/signup",
-   {
-    method:"POST",
-    headers:{
-     "apikey":SUPABASE_KEY,
-     "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-     email,
-     password,
-     data:{name:name}
-    })
+  const {data,error}=await sb.auth.signUp({
+   email,
+   password,
+   options:{
+    data:{
+     name:name
+    }
    }
-  );
+  });
 
-  const data=await res.json();
+  if(error)throw error;
 
-  if(!res.ok)
-   throw new Error(
-    data.msg||
-    data.message||
-    "Signup failed"
+  if(data.session){
+
+   session=data.session;
+   currentUser=data.user;
+
+   await ensureProfile(name);
+   await loadApp();
+
+  }else{
+
+   authMessage(
+    "Account তৈরি হয়েছে। আপনার email confirm করে তারপর Login করুন।",
+    "success"
    );
 
-  toast(
-   "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে Email দেখুন।"
-  );
+  }
 
-  showLogin();
+ }catch(error){
 
- }catch(e){
+  console.error(error);
 
-  toast(e.message);
+  authMessage(error.message || "Signup failed");
+
+ }finally{
+
+  btn.disabled=false;
+  btn.innerText="Create Account";
+
  }
+
 }
 
 
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function ensureProfile(name="FriendBook User"){
+
+ if(!currentUser)return;
+
+ const {data,error}=await sb
+ .from("my social app")
+ .select("*")
+ .eq("id",currentUser.id)
+ .maybeSingle();
+
+ if(error){
+  console.error(error);
+  return;
+ }
+
+ if(!data){
+
+  const {error:insertError}=await sb
+   .from("my social app")
+   .insert({
+    id:currentUser.id,
+    name:name || "FriendBook User",
+    profile_photo:null,
+    cover_photo:null
+   });
+
+  if(insertError){
+   console.error(insertError);
+  }
+
+ }else{
+
+  currentProfile=data;
+
+ }
+
+}
+
+
+/* =========================================================
+   LOAD APP
+========================================================= */
+
+async function loadApp(){
+
+ $("authPage").classList.add("hidden");
+ $("app").classList.remove("hidden");
+
+ await ensureProfile(
+  currentUser?.user_metadata?.name ||
+  "FriendBook User"
+ );
+
+ await loadCurrentProfile();
+
+ showHome();
+
+}
+
+
+/* =========================================================
+   CURRENT PROFILE
+========================================================= */
+
+async function loadCurrentProfile(){
+
+ if(!currentUser)return;
+
+ const {data,error}=await sb
+ .from("my social app")
+ .select("*")
+ .eq("id",currentUser.id)
+ .maybeSingle();
+
+ if(!error && data){
+  currentProfile=data;
+
+  $("rightName").innerText=
+   data.name || "FriendBook User";
+
+  $("rightAvatar").src=
+   avatar(data.profile_photo);
+ }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
 async function logout(){
 
- localStorage.removeItem(
-  "friendbook_session"
- );
+ await sb.auth.signOut();
 
  session=null;
  currentUser=null;
+ currentProfile=null;
 
  $("app").classList.add("hidden");
  $("authPage").classList.remove("hidden");
 
  showLogin();
 
- toast("Logout হয়েছে");
+ toast("Logged out");
+
 }
 
 
-function openApp(){
-
- $("authPage").classList.add("hidden");
- $("app").classList.remove("hidden");
-
- showHome();
-}
-
-
-/* =====================================
-   PROFILE
-===================================== */
-
-async function getProfile(userId){
-
- try{
-
-  const rows=
-   await api(
-    encodeURIComponent("my social app")+
-    "?select=*&id=eq."+
-    userId+
-    "&limit=1"
-   );
-
-  return rows?.[0]||null;
-
- }catch(e){
-
-  return null;
-}
-
-
-/* =====================================
+/* =========================================================
    HOME
-===================================== */
+========================================================= */
 
-function showHome(){
+async function showHome(){
 
- $("main").innerHTML=`
+ setActive();
 
- <div class="card">
+ $("mainContent").innerHTML=`
 
-   <div class="composer">
+  <div class="pageTitle">Home</div>
 
-     <img id="composerAvatar"
-       class="avatar">
+  <div class="card composer">
+   <div class="cardPad">
 
-     <div
-       class="composer-input"
-       onclick="openPostModal()">
-       What's on your mind?
-     </div>
+    <textarea id="postText"
+     placeholder="What's on your mind?"></textarea>
 
+    <div class="composerBottom">
+
+     <input id="postImage"
+      type="file"
+      accept="image/*">
+
+     <select id="postPrivacy">
+      <option value="public">🌎 Public</option>
+      <option value="friends">👥 Friends</option>
+      <option value="private">🔒 Only me</option>
+     </select>
+
+     <select id="postFeeling">
+      <option value="">Feeling</option>
+      <option value="😊 Happy">😊 Happy</option>
+      <option value="❤️ Loved">❤️ Loved</option>
+      <option value="😢 Sad">😢 Sad</option>
+      <option value="😡 Angry">😡 Angry</option>
+      <option value="😎 Cool">😎 Cool</option>
+     </select>
+
+     <button class="postBtn" onclick="submitPost()">
+      Post
+     </button>
+
+    </div>
    </div>
+  </div>
 
- </div>
-
-
- <div class="card story-row">
-
-   <div class="story">
-     <div>
-       ➕<br>
-       Create Story
-     </div>
+  <div class="card">
+   <div class="storyRow">
+    <div class="story">➕ Create Story</div>
+    <div class="story">Your Story</div>
+    <div class="story">Friends</div>
+    <div class="story">Memories</div>
    </div>
+  </div>
 
-   <div class="story">
-     <div>
-       👤<br>
-       Your Story
-     </div>
-   </div>
-
-   <div class="story">
-     <div>
-       🎬<br>
-       Reels
-     </div>
-   </div>
-
- </div>
-
-
- <div class="feed-tools">
-
-   <button
-    class="feed-tab ${feedMode==="all"?"active":""}"
-    onclick="changeFeed('all')">
-    🌍 All Posts
-   </button>
-
-   <button
-    class="feed-tab ${feedMode==="mine"?"active":""}"
-    onclick="changeFeed('mine')">
-    👤 My Posts
-   </button>
-
-   <button
-    class="feed-tab"
-    onclick="loadPosts()">
-    ↻
-   </button>
-
- </div>
-
-
- <div id="feed">
-   <div class="empty">Loading Feed...</div>
- </div>
+  <div id="feed"></div>
  `;
 
- loadComposerAvatar();
- loadPosts();
+ await loadPosts();
+
 }
 
 
-async function loadComposerAvatar(){
+/* =========================================================
+   UPLOAD IMAGE
+========================================================= */
 
- const p=await getProfile(
-  currentUser.id
- );
+async function uploadImage(file,folder="posts"){
 
- const img=$("composerAvatar");
+ if(!file)return null;
 
- if(img && p?.profile_photo)
-   img.src=p.profile_photo;
+ const ext=file.name.split(".").pop();
+ const path=
+  currentUser.id+
+  "/" +
+  Date.now()+
+  "."+
+  ext;
+
+ const {error}=await sb.storage
+  .from("post-images")
+  .upload(path,file,{
+   upsert:false
+  });
+
+ if(error){
+  console.error(error);
+  throw new Error(
+   "Image upload failed: "+error.message
+  );
+ }
+
+ const {data}=sb.storage
+  .from("post-images")
+  .getPublicUrl(path);
+
+ return data.publicUrl;
+
 }
 
 
-/* =====================================
-   POST MODAL
-===================================== */
+/* =========================================================
+   CREATE POST
+========================================================= */
 
-function openPostModal(post=null){
+async function submitPost(){
 
- $("modalTitle").textContent=
-   post?"Edit Post":"Create Post";
+ const text=$("postText").value.trim();
+ const file=$("postImage").files[0];
+ const privacy=$("postPrivacy").value;
+ const feeling=$("postFeeling").value;
 
- $("modalBody").innerHTML=`
-
- <textarea
-   id="postTextModal"
-   class="form-control"
-   rows="6"
-   placeholder="What's on your mind?"
- >${post?escapeHTML(post.text||""):""}</textarea>
-
- <input
-   id="postImageModal"
-   class="form-control"
-   type="file"
-   accept="image/*">
-
- <select
-   id="postPrivacyModal"
-   class="form-control">
-
-   <option value="public"
-    ${post?.privacy==="public"?"selected":""}>
-    🌍 Public
-   </option>
-
-   <option value="friends"
-    ${post?.privacy==="friends"?"selected":""}>
-    👥 Friends
-   </option>
-
-   <option value="private"
-    ${post?.privacy==="private"?"selected":""}>
-    🔒 Only Me
-   </option>
-
- </select>
-
- <input
-   id="postFeelingModal"
-   class="form-control"
-   placeholder="😊 Feeling / Activity"
-   value="${escapeHTML(post?.feeling||"")}">
-
- <button
-   class="primary full"
-   onclick="${post?
-     `updatePost(${post.id})`:
-     `createPost()`}">
-   ${post?"Save Changes":"Post"}
- </button>
- `;
-
- $("modalBg").classList.remove("hidden");
-}
-
-
-async function createPost(){
-
- const text=
-  $("postTextModal").value.trim();
-
- const feeling=
-  $("postFeelingModal").value.trim();
-
- const privacy=
-  $("postPrivacyModal").value;
-
- const file=
-  $("postImageModal").files[0];
-
- if(!text&&!file){
-  toast("কিছু লিখুন অথবা ছবি দিন");
+ if(!text && !file){
+  toast("Post-এর জন্য কিছু লিখুন অথবা ছবি দিন।");
   return;
  }
 
  try{
 
-  let imageUrl=null;
+  toast("Posting...");
+
+  let image=null;
 
   if(file){
-
-   const path=
-    currentUser.id+
-    "/"+
-    Date.now()+
-    "_"+
-    file.name.replace(/\s+/g,"_");
-
-   const upload=await fetch(
-    SUPABASE_URL+
-    "/storage/v1/object/post-images/"+
-    path,
-    {
-     method:"POST",
-     headers:{
-      "apikey":SUPABASE_KEY,
-      "Authorization":
-       "Bearer "+session.access_token,
-      "Content-Type":file.type
-     },
-     body:file
-    }
-   );
-
-   if(!upload.ok)
-    throw new Error(
-     await upload.text()
-    );
-
-   imageUrl=
-    SUPABASE_URL+
-    "/storage/v1/object/public/post-images/"+
-    path;
+   image=await uploadImage(file);
   }
 
-  await api(
-   "posts",
-   {
-    method:"POST",
-    headers:{
-     "Prefer":"return=minimal"
-    },
-    body:JSON.stringify({
-     user_id:currentUser.id,
-     text,
-     image_url:imageUrl,
-     privacy,
-     feeling:feeling||null
-    })
-   }
-  );
+  const {error}=await sb
+   .from("posts")
+   .insert({
+    user_id:currentUser.id,
+    text:text,
+    image_url:image,
+    privacy:privacy,
+    feeling:feeling || null
+   });
 
-  closeModal();
+  if(error)throw error;
 
-  toast("Post published 🎉");
+  $("postText").value="";
+  $("postImage").value="";
 
-  showHome();
+  toast("Post published!");
 
- }catch(e){
+  await loadPosts();
 
-  toast(e.message);
+ }catch(error){
+
+  console.error(error);
+  toast(error.message || "Post failed");
+
  }
+
 }
 
 
-/* =====================================
+/* =========================================================
    LOAD POSTS
-===================================== */
+========================================================= */
 
 async function loadPosts(){
 
  const feed=$("feed");
-
  if(!feed)return;
 
  feed.innerHTML=
-  `<div class="empty">Loading...</div>`;
+  `<div class="card cardPad">Loading posts...</div>`;
 
- try{
+ const {data:posts,error}=await sb
+  .from("posts")
+  .select("*")
+  .order("created_at",{ascending:false})
+  .limit(50);
 
-  let query=
-   "posts?select=*&order=created_at.desc&limit=50";
-
-  if(feedMode==="mine")
-   query=
-    "posts?select=*&user_id=eq."+
-    currentUser.id+
-    "&order=created_at.desc&limit=50";
-
-  const posts=await api(query);
-
-  if(!posts?.length){
-
-   feed.innerHTML=
-    `<div class="card empty">
-      No posts yet.
-     </div>`;
-
-   return;
-  }
-
-  feed.innerHTML="";
-
-  for(const post of posts){
-
-   const card=
-    await buildPost(post);
-
-   feed.appendChild(card);
-  }
-
- }catch(e){
+ if(error){
 
   feed.innerHTML=
-   `<div class="card">
-    Feed error:<br>
-    ${escapeHTML(e.message)}
+   `<div class="card cardPad">
+    ${escapeHTML(error.message)}
    </div>`;
+
+  return;
  }
-}
 
+ if(!posts || !posts.length){
 
-async function buildPost(post){
+  feed.innerHTML=
+   `<div class="card cardPad">
+    এখনো কোনো Post নেই। প্রথম Post করুন।
+   </div>`;
 
- const profile=
-  await getProfile(post.user_id);
+  return;
+ }
 
- const name=
-  profile?.name||
-  "FriendBook User";
+ feed.innerHTML="";
 
- const avatar=
-  profile?.profile_photo||"";
+ for(const post of posts){
 
- let reactions=[];
- let comments=[];
+  let profile=null;
 
- try{
+  const p=await sb
+   .from("my social app")
+   .select("*")
+   .eq("id",post.user_id)
+   .maybeSingle();
 
-  reactions=await api(
-   "post_reactions?select=*&post_id=eq."+
-   post.id
-  );
+  profile=p.data;
 
- }catch{}
+  const {count:likes}=await sb
+   .from("post_reactions")
+   .select("*",{count:"exact",head:true})
+   .eq("post_id",post.id);
 
- try{
+  const {count:comments}=await sb
+   .from("comments")
+   .select("*",{count:"exact",head:true})
+   .eq("post_id",post.id);
 
-  comments=await api(
-   "comments?select=*&post_id=eq."+
-   post.id+
-   "&order=created_at.asc"
-  );
+  const myReaction=await sb
+   .from("post_reactions")
+   .select("reaction")
+   .eq("post_id",post.id)
+   .eq("user_id",currentUser.id)
+   .maybeSingle();
 
- }catch{}
+  const card=document.createElement("div");
+  card.className="card";
 
- const myReaction=
-  reactions.find(
-   x=>x.user_id===currentUser.id
-  );
+  card.innerHTML=`
 
- const card=document.createElement("div");
+   <div class="postHead">
 
- card.className="card";
+    <img class="avatar"
+     src="${avatar(profile?.profile_photo)}">
 
- card.innerHTML=`
+    <div>
+     <div class="author">
+      ${escapeHTML(profile?.name || "FriendBook User")}
+     </div>
 
- <div class="post-head">
+     <div class="time">
+      ${timeAgo(post.created_at)}
+      · ${post.privacy==="public"?"🌎":"🔒"}
+     </div>
+    </div>
 
-  ${
-   avatar
-   ?
-   `<img class="avatar"
-     src="${escapeHTML(avatar)}">`
-   :
-   `<div class="avatar"></div>`
-  }
-
-  <div>
-
-   <div class="post-user">
-    ${escapeHTML(name)}
-   </div>
-
-   <div class="post-time">
-    ${timeAgo(post.created_at)}
-    ·
-    ${post.privacy==="public"?"🌍":
-      post.privacy==="friends"?"👥":"🔒"}
-
-    ${post.edited_at?" · edited":""}
-   </div>
-
-  </div>
-
-  ${
-   post.user_id===currentUser.id
-   ?
-   `<button class="post-menu"
-     onclick="postMenu(${post.id})">
+    <button class="iconBtn postMenu"
+     onclick="openPostMenu(${post.id})">
      ⋯
-    </button>`
-   :""
-  }
-
- </div>
-
-
- ${
-  post.feeling
-  ?
-  `<div style="margin-top:10px;color:var(--muted)">
-   ${escapeHTML(post.feeling)}
-   </div>`
-  :""
- }
-
-
- ${
-  post.text
-  ?
-  `<div class="post-text">
-   ${escapeHTML(post.text)}
-   </div>`
-  :""
- }
-
-
- ${
-  post.image_url
-  ?
-  `<img class="post-image"
-    src="${escapeHTML(post.image_url)}"
-    loading="lazy">`
-  :""
- }
-
-
- <div class="post-meta">
-
-  <span>
-   ❤️ ${formatCount(reactions.length)}
-  </span>
-
-  <span>
-   💬 ${formatCount(comments.length)}
-   · 👁️ ${formatCount(post.view_count||0)}
-  </span>
-
- </div>
-
-
- <div class="post-actions">
-
-  <div class="reaction-wrap">
-
-   <button
-    class="post-action"
-    onclick="toggleReactionBox(${post.id})">
-    ${myReaction?
-      reactionIcon(myReaction.reaction):
-      "👍"} Like
-   </button>
-
-   <div
-    id="reaction-${post.id}"
-    class="reaction-box hidden">
-
-    <button onclick="react(${post.id},'like')">👍</button>
-    <button onclick="react(${post.id},'love')">❤️</button>
-    <button onclick="react(${post.id},'haha')">😂</button>
-    <button onclick="react(${post.id},'wow')">😮</button>
-    <button onclick="react(${post.id},'sad')">😢</button>
-    <button onclick="react(${post.id},'angry')">😡</button>
+    </button>
 
    </div>
 
-  </div>
+   <div class="postBody">
 
-  <button
-   class="post-action"
-   onclick="focusComment(${post.id})">
-   💬 Comment
-  </button>
+    ${
+     post.feeling
+      ? `<div>${escapeHTML(post.feeling)}</div>`
+      :""
+    }
 
-  <button
-   class="post-action"
-   onclick="sharePost(${post.id})">
-   ↗ Share
-  </button>
+    ${escapeHTML(post.text || "")}
 
-  <button
-   class="post-action"
-   onclick="savePost(${post.id})">
-   🔖 Save
-  </button>
-
- </div>
-
-
- <div
-  id="comments-${post.id}"
-  class="comment-list">
-
-  ${renderComments(comments)}
-
- </div>
-
-
- <div class="comment-input-row">
-
-  <input
-   id="comment-${post.id}"
-   placeholder="Write a comment..."
-   onkeydown="if(event.key==='Enter')addComment(${post.id})">
-
-  <button
-   onclick="addComment(${post.id})">
-   Send
-  </button>
-
- </div>
-
- `;
-
- return card;
-}
-
-
-function reactionIcon(type){
-
- return {
-  like:"👍",
-  love:"❤️",
-  haha:"😂",
-  wow:"😮",
-  sad:"😢",
-  angry:"😡"
- }[type]||"👍";
-}
-
-
-function renderComments(comments){
-
- if(!comments?.length)return "";
-
- return comments.map(c=>`
-
- <div class="comment">
-
-  <div class="avatar"
-   style="width:35px;height:35px">
-  </div>
-
-  <div class="comment-body">
-
-   <div class="comment-name">
-    FriendBook User
    </div>
 
-   <div class="comment-text">
-    ${escapeHTML(c.text)}
+   ${
+    post.image_url
+     ? `<img class="postImg"
+        src="${escapeHTML(post.image_url)}">`
+     :""
+   }
+
+   <div class="stats">
+    <span>👍 ${likes || 0}</span>
+    <span>💬 ${comments || 0}</span>
    </div>
 
-  </div>
+   <div class="reactionBar">
 
- </div>
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'like')">👍</button>
 
- `).join("");
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'love')">❤️</button>
+
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'haha')">😂</button>
+
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'wow')">😮</button>
+
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'sad')">😢</button>
+
+    <button class="reactBtn"
+     onclick="reactPost(${post.id},'angry')">😡</button>
+
+   </div>
+
+   <div class="actions">
+
+    <button class="action ${
+     myReaction.data ? "active":""
+    }"
+     onclick="reactPost(${post.id},'like')">
+     👍 Like
+    </button>
+
+    <button class="action"
+     onclick="toggleComments(${post.id})">
+     💬 Comment
+    </button>
+
+    <button class="action"
+     onclick="sharePost(${post.id})">
+     ↗ Share
+    </button>
+
+   </div>
+
+   <div id="comments-${post.id}" class="comments hidden">
+    Loading...
+   </div>
+  `;
+
+  feed.appendChild(card);
+
+ }
+
 }
 
 
-/* =====================================
-   REACTIONS
-===================================== */
+/* =========================================================
+   REACTION
+========================================================= */
 
-function toggleReactionBox(id){
+async function reactPost(postId,reaction){
 
- const box=$("reaction-"+id);
-
- if(box)
-  box.classList.toggle("hidden");
-}
-
-
-async function react(postId,reaction){
+ const existing=await sb
+  .from("post_reactions")
+  .select("id,reaction")
+  .eq("post_id",postId)
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
 
  try{
 
-  const existing=await api(
-   "post_reactions?select=*&post_id=eq."+
-   postId+
-   "&user_id=eq."+
-   currentUser.id+
-   "&limit=1"
-  );
+  if(existing.data){
 
-  if(existing?.length){
+   if(existing.data.reaction===reaction){
 
-   if(existing[0].reaction===reaction){
-
-    await api(
-     "post_reactions?id=eq."+
-     existing[0].id,
-     {method:"DELETE"}
-    );
+    await sb
+     .from("post_reactions")
+     .delete()
+     .eq("id",existing.data.id);
 
    }else{
 
-    await api(
-     "post_reactions?id=eq."+
-     existing[0].id,
-     {
-      method:"PATCH",
-      headers:{
-       "Prefer":"return=minimal"
-      },
-      body:JSON.stringify({
-       reaction
-      })
-     }
-    );
+    await sb
+     .from("post_reactions")
+     .update({reaction})
+     .eq("id",existing.data.id);
+
    }
 
   }else{
 
-   await api(
-    "post_reactions",
-    {
-     method:"POST",
-     headers:{
-      "Prefer":"return=minimal"
-     },
-     body:JSON.stringify({
-      post_id:postId,
-      user_id:currentUser.id,
-      reaction
-     })
-    }
-   );
+   await sb
+    .from("post_reactions")
+    .insert({
+     post_id:postId,
+     user_id:currentUser.id,
+     reaction
+    });
+
   }
 
-  loadPosts();
+  await loadPosts();
 
- }catch(e){
+ }catch(error){
 
-  toast(e.message);
+  toast(error.message);
+
  }
+
 }
 
 
-/* =====================================
+/* =========================================================
    COMMENTS
-===================================== */
+========================================================= */
 
-function focusComment(id){
+async function toggleComments(postId){
 
- const input=$("comment-"+id);
+ const box=$("comments-"+postId);
 
- if(input){
-  input.focus();
+ if(!box)return;
+
+ box.classList.toggle("hidden");
+
+ if(!box.classList.contains("hidden")){
+
+  await loadComments(postId);
+
  }
+
 }
 
+async function loadComments(postId){
+
+ const box=$("comments-"+postId);
+
+ const {data,error}=await sb
+  .from("comments")
+  .select("*")
+  .eq("post_id",postId)
+  .order("created_at",{ascending:true});
+
+ if(error){
+
+  box.innerHTML=
+   `<div>${escapeHTML(error.message)}</div>`;
+
+  return;
+ }
+
+ let html="";
+
+ for(const c of data || []){
+
+  const p=await sb
+   .from("my social app")
+   .select("name,profile_photo")
+   .eq("id",c.user_id)
+   .maybeSingle();
+
+  html+=`
+
+   <div class="comment">
+
+    <img class="avatar"
+     src="${avatar(p.data?.profile_photo)}">
+
+    <div class="commentBubble">
+
+     <div class="commentName">
+      ${escapeHTML(p.data?.name || "User")}
+     </div>
+
+     <div class="commentText">
+      ${escapeHTML(c.text)}
+     </div>
+
+    </div>
+
+   </div>
+
+  `;
+
+ }
+
+ box.innerHTML=
+  html+
+
+  `<div class="commentInput">
+
+   <input id="commentInput-${postId}"
+    placeholder="Write a comment...">
+
+   <button
+    onclick="addComment(${postId})">
+    Send
+   </button>
+
+  </div>`;
+
+}
 
 async function addComment(postId){
 
- const input=$("comment-"+postId);
+ const input=$("commentInput-"+postId);
+
+ if(!input)return;
 
  const text=input.value.trim();
 
  if(!text)return;
 
- try{
+ const {error}=await sb
+  .from("comments")
+  .insert({
+   post_id:postId,
+   user_id:currentUser.id,
+   text:text
+  });
 
-  await api(
-   "comments",
-   {
-    method:"POST",
-    headers:{
-     "Prefer":"return=minimal"
-    },
-    body:JSON.stringify({
-     post_id:postId,
-     user_id:currentUser.id,
-     text
-    })
-   }
-  );
+ if(error){
 
-  input.value="";
-
-  toast("Comment added");
-
-  loadPosts();
-
- }catch(e){
-
-  toast(e.message);
- }
-}
-
-
-/* =====================================
-   POST MENU
-===================================== */
-
-async function postMenu(id){
-
- try{
-
-  const rows=await api(
-   "posts?select=*&id=eq."+id+"&limit=1"
-  );
-
-  const post=rows?.[0];
-
-  if(!post)return;
-
-  $("modalTitle").textContent=
-   "Post Options";
-
-  $("modalBody").innerHTML=`
-
-   <button class="secondary full"
-    onclick="editPost(${id})">
-    ✏️ Edit Post
-   </button>
-
-   <br><br>
-
-   <button class="danger full"
-    onclick="deletePost(${id})">
-    🗑️ Delete Post
-   </button>
-
-  `;
-
-  $("modalBg").classList.remove("hidden");
-
- }catch(e){
-
-  toast(e.message);
- }
-}
-
-
-async function editPost(id){
-
- try{
-
-  const rows=await api(
-   "posts?select=*&id=eq."+id+"&limit=1"
-  );
-
-  if(!rows?.[0])return;
-
-  openPostModal(rows[0]);
-
- }catch(e){
-
-  toast(e.message);
- }
-}
-
-
-async function updatePost(id){
-
- const text=
-  $("postTextModal").value.trim();
-
- const privacy=
-  $("postPrivacyModal").value;
-
- const feeling=
-  $("postFeelingModal").value.trim();
-
- try{
-
-  await api(
-   "posts?id=eq."+id+
-   "&user_id=eq."+currentUser.id,
-   {
-    method:"PATCH",
-    headers:{
-     "Prefer":"return=minimal"
-    },
-    body:JSON.stringify({
-     text,
-     privacy,
-     feeling:feeling||null,
-     edited_at:new Date().toISOString()
-    })
-   }
-  );
-
-  closeModal();
-
-  toast("Post updated");
-
-  loadPosts();
-
- }catch(e){
-
-  toast(e.message);
- }
-}
-
-
-async function deletePost(id){
-
- if(!confirm("এই Post Delete করবেন?"))
+  toast(error.message);
   return;
 
- try{
-
-  await api(
-   "posts?id=eq."+id+
-   "&user_id=eq."+currentUser.id,
-   {
-    method:"DELETE"
-   }
-  );
-
-  closeModal();
-
-  toast("Post deleted");
-
-  loadPosts();
-
- }catch(e){
-
-  toast(e.message);
  }
+
+ input.value="";
+
+ await loadComments(postId);
+
 }
 
 
-/* =====================================
-   SAVE
-===================================== */
-
-async function savePost(id){
-
- /*
-  এখানে saved_posts table তৈরি হলে
-  permanent Save চালু হবে।
- */
-
- toast("Save feature-এর database table পরের ধাপে যুক্ত হবে");
-}
-
-
-/* =====================================
+/* =========================================================
    SHARE
-===================================== */
+========================================================= */
 
-async function sharePost(id){
+async function sharePost(postId){
 
- const url=
-  location.origin+
-  location.pathname+
-  "?post="+id;
+ const url=location.href+"#post-"+postId;
 
- try{
+ if(navigator.share){
 
-  if(navigator.share){
-
+  try{
    await navigator.share({
     title:"FriendBook",
     text:"Check this post on FriendBook",
     url
    });
+  }catch(e){}
 
-  }else{
+ }else{
 
-   await navigator.clipboard.writeText(url);
+  await navigator.clipboard.writeText(url);
+  toast("Post link copied!");
 
-   toast("Post link copied");
-  }
-
- }catch{}
-}
-
-
-/* =====================================
-   FEED FILTER
-===================================== */
-
-function changeFeed(mode){
-
- feedMode=mode;
-
- showHome();
-}
-
-
-/* =====================================
-   REELS
-===================================== */
-
-async function showReels(){
-
- $("main").innerHTML=`
-
- <div class="card">
-
-  <h2 style="margin:0">
-   🎬 FriendBook Reels
-  </h2>
-
-  <p style="color:var(--muted)">
-   Short videos from FriendBook
-  </p>
-
- </div>
-
- <div id="reels">
-  <div class="empty">
-   Loading Reels...
-  </div>
- </div>
-
- `;
-
- loadReels();
-}
-
-
-async function loadReels(){
-
- const box=$("reels");
-
- try{
-
-  const reels=await api(
-   "reels?select=*&order=created_at.desc&limit=50"
-  );
-
-  if(!reels?.length){
-
-   box.innerHTML=
-    `<div class="card empty">
-      No Reels yet.
-     </div>`;
-
-   return;
-  }
-
-  box.innerHTML="";
-
-  for(const reel of reels){
-
-   const likes=
-    await api(
-     "reel_likes?select=id&reel_id=eq."+
-     reel.id
-    ).catch(()=>[]);
-
-   const comments=
-    await api(
-     "reel_comments?select=id&reel_id=eq."+
-     reel.id
-    ).catch(()=>[]);
-
-   const div=document.createElement("div");
-
-   div.className="reel";
-
-   div.innerHTML=`
-
-    <video
-     src="${escapeHTML(reel.video_url)}"
-     controls
-     loop
-     playsinline
-     preload="metadata">
-    </video>
-
-    <div class="reel-info">
-
-     ${
-      reel.caption
-      ?
-      `<div class="post-text">
-       ${escapeHTML(reel.caption)}
-       </div>`
-      :""
-     }
-
-     ${
-      reel.audio_name
-      ?
-      `<div style="color:var(--muted)">
-       🎵 ${escapeHTML(reel.audio_name)}
-       </div>`
-      :""
-     }
-
-     <div class="reel-actions">
-
-      <button onclick="likeReel(${reel.id})">
-       ❤️ ${likes.length}
-      </button>
-
-      <button onclick="commentReel(${reel.id})">
-       💬 ${comments.length}
-      </button>
-
-      <button onclick="shareReel(${reel.id})">
-       ↗ Share
-      </button>
-
-     </div>
-
-    </div>
-   `;
-
-   box.appendChild(div);
-  }
-
- }catch(e){
-
-  box.innerHTML=
-   `<div class="card">
-    ${escapeHTML(e.message)}
-   </div>`;
  }
+
 }
 
 
-async function likeReel(id){
+/* =========================================================
+   POST MENU
+========================================================= */
 
- try{
+async function openPostMenu(postId){
 
-  const existing=await api(
-   "reel_likes?select=*&reel_id=eq."+
-   id+
-   "&user_id=eq."+
-   currentUser.id+
-   "&limit=1"
-  );
+ openModal(
+  "Post Options",
+  `
 
-  if(existing?.length){
+  <button class="smallBtn"
+   style="width:100%;margin-bottom:8px"
+   onclick="editPost(${postId})">
+   ✏️ Edit Post
+  </button>
 
-   await api(
-    "reel_likes?id=eq."+existing[0].id,
-    {method:"DELETE"}
-   );
+  <button class="smallBtn"
+   style="width:100%;background:#e41e3f"
+   onclick="deletePost(${postId})">
+   🗑️ Delete Post
+  </button>
 
-  }else{
+  `
+ );
 
-   await api(
-    "reel_likes",
-    {
-     method:"POST",
-     headers:{
-      "Prefer":"return=minimal"
-     },
-     body:JSON.stringify({
-      reel_id:id,
-      user_id:currentUser.id
-     })
-    }
-   );
-  }
+}
 
-  loadReels();
+async function editPost(postId){
 
- }catch(e){
+ const {data,error}=await sb
+  .from("posts")
+  .select("text,privacy,feeling")
+  .eq("id",postId)
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
 
-  toast(e.message);
+ if(error || !data){
+
+  toast("এই Post edit করা যাবে না।");
+  return;
+
  }
+
+ openModal(
+  "Edit Post",
+  `
+
+  <textarea id="editPostText"
+   style="width:100%;min-height:120px"
+   placeholder="Post">${escapeHTML(data.text || "")}</textarea>
+
+  <select id="editPrivacy">
+   <option value="public">Public</option>
+   <option value="friends">Friends</option>
+   <option value="private">Only me</option>
+  </select>
+
+  <button class="smallBtn"
+   style="width:100%"
+   onclick="saveEditedPost(${postId})">
+   Save Changes
+  </button>
+
+  `
+ );
+
+ $("editPrivacy").value=data.privacy || "public";
+
 }
 
+async function saveEditedPost(postId){
 
-async function commentReel(id){
+ const text=$("editPostText").value.trim();
+ const privacy=$("editPrivacy").value;
 
- const text=
-  prompt("Reel Comment লিখুন");
+ const {error}=await sb
+  .from("posts")
+  .update({
+   text,
+   privacy,
+   edited_at:new Date().toISOString()
+  })
+  .eq("id",postId)
+  .eq("user_id",currentUser.id);
 
- if(!text?.trim())return;
+ if(error){
 
- try{
+  toast(error.message);
+  return;
 
-  await api(
-   "reel_comments",
-   {
-    method:"POST",
-    headers:{
-     "Prefer":"return=minimal"
-    },
-    body:JSON.stringify({
-     reel_id:id,
-     user_id:currentUser.id,
-     text:text.trim()
-    })
-   }
-  );
-
-  toast("Comment added");
-
- }catch(e){
-
-  toast(e.message);
  }
+
+ closeModal();
+ toast("Post updated");
+ loadPosts();
+
+}
+
+async function deletePost(postId){
+
+ if(!confirm("এই Post delete করবেন?"))return;
+
+ const {error}=await sb
+  .from("posts")
+  .delete()
+  .eq("id",postId)
+  .eq("user_id",currentUser.id);
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ closeModal();
+ toast("Post deleted");
+ loadPosts();
+
 }
 
 
-async function shareReel(id){
-
- const url=
-  location.origin+
-  location.pathname+
-  "?reel="+id;
-
- try{
-
-  if(navigator.share){
-
-   await navigator.share({
-    title:"FriendBook Reel",
-    url
-   });
-
-  }else{
-
-   await navigator.clipboard.writeText(url);
-
-   toast("Reel link copied");
-  }
-
- }catch{}
-}
-
-
-/* =====================================
+/* =========================================================
    PROFILE
-===================================== */
+========================================================= */
 
-async function showProfile(){
+async function showProfile(userId=currentUser.id){
 
- const p=
-  await getProfile(currentUser.id);
+ setActive();
 
- const name=
-  p?.name||
-  "FriendBook User";
+ const id=userId;
 
- const avatar=
-  p?.profile_photo||
-  "";
+ const {data,error}=await sb
+  .from("my social app")
+  .select("*")
+  .eq("id",id)
+  .maybeSingle();
 
- const cover=
-  p?.cover_photo||
-  "";
+ if(error){
 
- $("main").innerHTML=`
+  $("mainContent").innerHTML=
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
 
- <div class="card" style="padding:0;overflow:hidden">
+  return;
+ }
 
-  <div class="profile-cover">
+ const profile=data;
 
-   ${
-    cover
-    ?
-    `<img src="${escapeHTML(cover)}">`
-    :""
-   }
+ const followers=await sb
+  .from("follows")
+  .select("*",{count:"exact",head:true})
+  .eq("following_id",id);
 
-  </div>
+ const following=await sb
+  .from("follows")
+  .select("*",{count:"exact",head:true})
+  .eq("follower_id",id);
 
-  <div class="profile-main">
+ let followButton="";
 
-   ${
-    avatar
-    ?
-    `<img class="profile-avatar"
-      src="${escapeHTML(avatar)}">`
-    :
-    `<div class="profile-avatar"></div>`
-   }
+ if(id!==currentUser.id){
 
-   <div class="profile-name">
-    ${escapeHTML(name)}
-   </div>
+  const f=await sb
+   .from("follows")
+   .select("id")
+   .eq("follower_id",currentUser.id)
+   .eq("following_id",id)
+   .maybeSingle();
 
-   <div class="profile-bio">
-    ${escapeHTML(
-     p?.bio||
-     "Welcome to FriendBook"
-    )}
-   </div>
+  followButton=
+   `<button class="smallBtn"
+    onclick="toggleFollow('${id}')">
+    ${f.data?"Unfollow":"Follow"}
+   </button>`;
 
-   <br>
+ }else{
 
-   <button class="primary"
+  followButton=
+   `<button class="smallBtn grayBtn"
     onclick="editProfile()">
     ✏️ Edit Profile
-   </button>
+   </button>`;
 
-   <button class="secondary"
-    onclick="showFriends()">
-    👥 Friends
-   </button>
+ }
 
-   <div class="profile-tabs">
+ $("mainContent").innerHTML=`
 
-    <button>Posts</button>
-    <button>About</button>
-    <button>Friends</button>
-    <button>Photos</button>
-    <button>Reels</button>
+  <div class="card">
+
+   <div class="profileCover"
+    style="background-image:url('${escapeHTML(
+     profile.cover_photo ||
+     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+    )}')">
+
+    <img class="profileAvatar"
+     src="${avatar(profile.profile_photo)}">
+
+   </div>
+
+   <div class="profileInfo">
+
+    <div class="profileName">
+     ${escapeHTML(profile.name || "FriendBook User")}
+    </div>
+
+    <div class="profileBio">
+     ${escapeHTML(profile.bio || "Welcome to FriendBook")}
+    </div>
+
+    <div style="margin-top:10px;color:var(--muted)">
+     ${followers.count || 0} Followers
+     ·
+     ${following.count || 0} Following
+    </div>
+
+    <div class="profileBtns">
+     ${followButton}
+     <button class="smallBtn grayBtn"
+      onclick="showUserPosts('${id}')">
+      Posts
+     </button>
+    </div>
 
    </div>
 
   </div>
 
- </div>
-
-
- <div class="card">
-
-  <h3>About</h3>
-
-  <p>
-   📧 ${escapeHTML(currentUser.email||"")}
-  </p>
-
-  <p>
-   👤 ${escapeHTML(name)}
-  </p>
-
- </div>
-
+  <div id="profilePosts"></div>
  `;
+
+ await showUserPosts(id);
 
 }
 
+
+/* =========================================================
+   USER POSTS
+========================================================= */
+
+async function showUserPosts(userId){
+
+ const box=$("profilePosts");
+
+ if(!box)return;
+
+ const {data,error}=await sb
+  .from("posts")
+  .select("*")
+  .eq("user_id",userId)
+  .order("created_at",{ascending:false})
+  .limit(30);
+
+ if(error){
+
+  box.innerHTML=
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
+
+  return;
+ }
+
+ if(!data?.length){
+
+  box.innerHTML=
+   `<div class="card cardPad">কোনো Post নেই।</div>`;
+
+  return;
+ }
+
+ box.innerHTML="";
+
+ for(const post of data){
+
+  const card=document.createElement("div");
+  card.className="card";
+
+  card.innerHTML=`
+
+   <div class="postHead">
+
+    <img class="avatar"
+     src="${avatar(currentProfile?.profile_photo)}">
+
+    <div>
+     <div class="author">
+      ${escapeHTML(currentProfile?.name || "FriendBook User")}
+     </div>
+     <div class="time">
+      ${timeAgo(post.created_at)}
+     </div>
+    </div>
+
+   </div>
+
+   <div class="postBody">
+    ${escapeHTML(post.text || "")}
+   </div>
+
+   ${
+    post.image_url
+     ? `<img class="postImg" src="${escapeHTML(post.image_url)}">`
+     :""
+   }
+
+  `;
+
+  box.appendChild(card);
+
+ }
+
+}
+
+
+/* =========================================================
+   EDIT PROFILE
+========================================================= */
 
 function editProfile(){
 
- $("modalTitle").textContent=
-  "Edit Profile";
+ openModal(
+  "Edit Profile",
+  `
 
- $("modalBody").innerHTML=`
+  <input id="profileName"
+   placeholder="Name"
+   value="${escapeHTML(currentProfile?.name || "")}">
 
- <input id="editName"
-  class="form-control"
-  placeholder="Name">
+  <textarea id="profileBio"
+   placeholder="Bio"
+   style="min-height:100px">${escapeHTML(currentProfile?.bio || "")}</textarea>
 
- <input id="editBio"
-  class="form-control"
-  placeholder="Bio">
+  <input id="profilePhoto"
+   type="url"
+   placeholder="Profile photo URL"
+   value="${escapeHTML(currentProfile?.profile_photo || "")}">
 
- <input id="editPhoto"
-  class="form-control"
-  placeholder="Profile photo URL">
+  <input id="coverPhoto"
+   type="url"
+   placeholder="Cover photo URL"
+   value="${escapeHTML(currentProfile?.cover_photo || "")}">
 
- <input id="editCover"
-  class="form-control"
-  placeholder="Cover photo URL">
+  <button class="smallBtn"
+   style="width:100%"
+   onclick="saveProfile()">
+   Save Profile
+  </button>
 
- <button
-  class="primary full"
-  onclick="saveProfile()">
-  Save Profile
- </button>
- `;
+  `
+ );
 
- $("modalBg").classList.remove("hidden");
 }
-
 
 async function saveProfile(){
 
- const name=
-  $("editName").value.trim();
+ const name=$("profileName").value.trim();
+ const bio=$("profileBio").value.trim();
+ const profile_photo=$("profilePhoto").value.trim();
+ const cover_photo=$("coverPhoto").value.trim();
 
- const bio=
-  $("editBio").value.trim();
+ const {error}=await sb
+  .from("my social app")
+  .update({
+   name,
+   bio,
+   profile_photo,
+   cover_photo
+  })
+  .eq("id",currentUser.id);
 
- const photo=
-  $("editPhoto").value.trim();
+ if(error){
 
- const cover=
-  $("editCover").value.trim();
+  toast(error.message);
+  return;
 
- try{
-
-  await api(
-   encodeURIComponent("my social app")+
-   "?id=eq."+currentUser.id,
-   {
-    method:"PATCH",
-    headers:{
-     "Prefer":"return=minimal"
-    },
-    body:JSON.stringify({
-     name:name||null,
-     bio:bio||null,
-     profile_photo:photo||null,
-     cover_photo:cover||null
-    })
-   }
-  );
-
-  closeModal();
-
-  toast("Profile updated");
-
-  showProfile();
-
- }catch(e){
-
-  toast(e.message);
  }
+
+ closeModal();
+
+ await loadCurrentProfile();
+
+ toast("Profile updated");
+
+ showProfile();
+
 }
 
 
-/* =====================================
+/* =========================================================
+   FOLLOW
+========================================================= */
+
+async function toggleFollow(userId){
+
+ const existing=await sb
+  .from("follows")
+  .select("id")
+  .eq("follower_id",currentUser.id)
+  .eq("following_id",userId)
+  .maybeSingle();
+
+ if(existing.data){
+
+  await sb
+   .from("follows")
+   .delete()
+   .eq("id",existing.data.id);
+
+ }else{
+
+  await sb
+   .from("follows")
+   .insert({
+    follower_id:currentUser.id,
+    following_id:userId
+   });
+
+ }
+
+ showProfile(userId);
+
+}
+
+
+/* =========================================================
    FRIENDS
-===================================== */
+========================================================= */
 
-function showFriends(){
+async function showFriends(){
 
- $("main").innerHTML=`
+ setActive();
 
- <div class="card">
+ $("mainContent").innerHTML=`
 
-  <h2>👥 Friends</h2>
+  <div class="pageTitle">Friends</div>
 
-  <input
-   id="friendSearch"
-   class="form-control"
-   placeholder="Search people...">
+  <div class="card cardPad">
 
-  <button
-   class="primary"
-   onclick="searchFriends()">
-   Search
-  </button>
+   <input id="friendSearch"
+    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)"
+    placeholder="Search people..."
+    oninput="searchFriends()">
 
- </div>
+  </div>
 
- <div id="friendResults"></div>
-
+  <div id="friendsResults"></div>
  `;
 
 }
-
 
 async function searchFriends(){
 
- const name=
-  $("friendSearch").value.trim();
+ const q=$("friendSearch").value.trim();
 
- if(!name)return;
+ if(q.length<2){
 
- try{
+  $("friendsResults").innerHTML="";
+  return;
 
-  const rows=
-   await api(
-    encodeURIComponent("my social app")+
-    "?select=*&name=ilike.*"+
-    encodeURIComponent(name)+
-    "*"
-   );
+ }
 
-  const box=$("friendResults");
+ const {data,error}=await sb
+  .from("my social app")
+  .select("*")
+  .ilike("name","%"+q+"%")
+  .limit(30);
 
-  box.innerHTML="";
+ if(error){
 
-  rows
-  .filter(x=>x.id!==currentUser.id)
-  .forEach(p=>{
+  $("friendsResults").innerHTML=
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
 
-   const div=document.createElement("div");
+  return;
+ }
 
-   div.className="card";
+ $("friendsResults").innerHTML="";
 
-   div.innerHTML=`
+ for(const p of data || []){
 
-   <div class="search-result">
+  if(p.id===currentUser.id)continue;
 
-    ${
-     p.profile_photo
-     ?
-     `<img class="avatar"
-       src="${escapeHTML(p.profile_photo)}">`
-     :
-     `<div class="avatar"></div>`
-    }
+  const f=await sb
+   .from("follows")
+   .select("id")
+   .eq("follower_id",currentUser.id)
+   .eq("following_id",p.id)
+   .maybeSingle();
 
-    <div style="flex:1">
+  const div=document.createElement("div");
+  div.className="card";
 
-     <strong>
-      ${escapeHTML(p.name||"User")}
-     </strong>
+  div.innerHTML=`
 
+   <div class="userMini">
+
+    <img class="avatar"
+     src="${avatar(p.profile_photo)}">
+
+    <div onclick="showProfile('${p.id}')"
+     style="cursor:pointer">
+     <b>${escapeHTML(p.name || "User")}</b>
     </div>
 
-    <button
-     class="primary"
-     onclick="followUser('${p.id}')">
-     Follow
+    <button onclick="toggleFollow('${p.id}')">
+     ${f.data?"Unfollow":"Follow"}
     </button>
 
    </div>
-   `;
 
-   box.appendChild(div);
-  });
+  `;
 
- }catch(e){
+  $("friendsResults").appendChild(div);
 
-  toast(e.message);
  }
+
 }
 
 
-async function followUser(id){
-
- try{
-
-  const existing=
-   await api(
-    "follows?select=*&follower_id=eq."+
-    currentUser.id+
-    "&following_id=eq."+
-    id+
-    "&limit=1"
-   );
-
-  if(existing?.length){
-
-   await api(
-    "follows?id=eq."+existing[0].id,
-    {method:"DELETE"}
-   );
-
-   toast("Unfollowed");
-
-  }else{
-
-   await api(
-    "follows",
-    {
-     method:"POST",
-     headers:{
-      "Prefer":"return=minimal"
-     },
-     body:JSON.stringify({
-      follower_id:currentUser.id,
-      following_id:id
-     })
-    }
-   );
-
-   toast("Following");
-  }
-
- }catch(e){
-
-  toast(e.message);
- }
-}
-
-
-/* =====================================
+/* =========================================================
    SEARCH
-===================================== */
+========================================================= */
 
-function showSearchPage(){
+function showSearch(){
 
- $("main").innerHTML=`
+ setActive();
 
- <div class="card">
+ $("mainContent").innerHTML=`
 
-  <h2>🔎 Search FriendBook</h2>
+  <div class="pageTitle">Search</div>
 
-  <input
-   id="searchInput"
-   class="form-control"
-   placeholder="Search people">
+  <div class="card cardPad">
 
-  <button
-   class="primary"
-   onclick="doSearch()">
-   Search
-  </button>
+   <input id="searchInput"
+    style="width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)"
+    placeholder="Search people..."
+    oninput="runSearch()">
 
- </div>
+  </div>
 
- <div id="searchBox"></div>
+  <div id="searchResults"></div>
  `;
-}
 
+}
 
 async function doSearch(){
 
- const q=
-  $("searchInput").value.trim();
+ const q=$("globalSearch").value.trim();
 
  if(!q)return;
 
- try{
+ showSearch();
 
-  const rows=
-   await api(
-    encodeURIComponent("my social app")+
-    "?select=*&name=ilike.*"+
-    encodeURIComponent(q)+
-    "*"
-   );
+ $("searchInput").value=q;
 
-  const box=$("searchBox");
+ await runSearch();
 
-  box.innerHTML="";
+}
 
-  rows.forEach(p=>{
+async function runSearch(){
 
-   const div=document.createElement("div");
+ const q=$("searchInput").value.trim();
 
-   div.className="card";
+ if(q.length<2)return;
 
-   div.innerHTML=`
+ const {data,error}=await sb
+  .from("my social app")
+  .select("*")
+  .ilike("name","%"+q+"%")
+  .limit(30);
 
-   <div class="search-result">
+ if(error){
 
-    ${
-     p.profile_photo
-     ?
-     `<img class="avatar"
-       src="${escapeHTML(p.profile_photo)}">`
-     :
-     `<div class="avatar"></div>`
-    }
+  $("searchResults").innerHTML=
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
 
-    <div style="flex:1">
-     <strong>
-      ${escapeHTML(p.name||"User")}
-     </strong>
+  return;
+ }
+
+ $("searchResults").innerHTML="";
+
+ for(const p of data || []){
+
+  const div=document.createElement("div");
+  div.className="card";
+
+  div.innerHTML=`
+
+   <div class="userMini">
+
+    <img class="avatar"
+     src="${avatar(p.profile_photo)}">
+
+    <div style="flex:1;cursor:pointer"
+     onclick="showProfile('${p.id}')">
+
+     <b>${escapeHTML(p.name || "User")}</b>
+
     </div>
 
     ${
      p.id!==currentUser.id
-     ?
-     `<button
-       class="primary"
-       onclick="followUser('${p.id}')">
-       Follow
-      </button>`
-     :""
+      ? `<button onclick="toggleFollow('${p.id}')">Follow</button>`
+      :""
     }
 
    </div>
 
-   `;
+  `;
 
-   box.appendChild(div);
+  $("searchResults").appendChild(div);
+
+ }
+
+}
+
+
+/* =========================================================
+   REELS
+========================================================= */
+
+async function showReels(){
+
+ setActive();
+
+ $("mainContent").innerHTML=`
+
+  <div class="pageTitle">Reels</div>
+
+  <div class="card cardPad">
+
+   <input id="reelVideo"
+    type="url"
+    placeholder="Video URL">
+
+   <input id="reelCaption"
+    placeholder="Caption">
+
+   <button class="smallBtn"
+    style="width:100%;margin-top:7px"
+    onclick="addReel()">
+    Upload Reel
+   </button>
+
+  </div>
+
+  <div class="reelsContainer"
+   id="reelsList">
+   Loading...
+  </div>
+ `;
+
+ await loadReels();
+
+}
+
+async function addReel(){
+
+ const video_url=$("reelVideo").value.trim();
+ const caption=$("reelCaption").value.trim();
+
+ if(!video_url){
+
+  toast("Video URL দিন।");
+  return;
+
+ }
+
+ const {error}=await sb
+  .from("reels")
+  .insert({
+   user_id:currentUser.id,
+   video_url,
+   caption,
+   views:0
   });
 
- }catch(e){
+ if(error){
 
-  toast(e.message);
+  toast(error.message);
+  return;
+
  }
-}
 
+ $("reelVideo").value="";
+ $("reelCaption").value="";
 
-function globalSearch(event){
+ toast("Reel added");
 
- if(event.key!=="Enter")return;
-
- const q=
-  event.target.value.trim();
-
- if(!q)return;
-
- showSearchPage();
-
- setTimeout(()=>{
-
-  $("searchInput").value=q;
-
-  doSearch();
-
- },50);
-}
-
-
-/* =====================================
-   MESSENGER
-===================================== */
-
-function showMessenger(){
-
- $("main").innerHTML=`
-
- <div class="card">
-
-  <h2>💬 Messenger</h2>
-
-  <p style="color:var(--muted)">
-   আপনার বন্ধুদের সাথে Chat করুন।
-  </p>
-
-  <button
-   class="primary"
-   onclick="showFriends()">
-   Find Friends
-  </button>
-
- </div>
-
- <div class="card">
-
-  <h3>Messages</h3>
-
-  <div class="empty">
-   আপনার Chat এখানে দেখা যাবে।
-  </div>
-
- </div>
-
- `;
+ loadReels();
 
 }
 
+async function loadReels(){
 
-/* =====================================
-   NOTIFICATIONS
-===================================== */
+ const box=$("reelsList");
 
-async function showNotifications(){
+ if(!box)return;
 
- $("main").innerHTML=`
+ const {data,error}=await sb
+  .from("reels")
+  .select("*")
+  .order("created_at",{ascending:false})
+  .limit(50);
 
- <div class="card">
-
-  <h2>🔔 Notifications</h2>
-
-  <div id="notifications">
-   <div class="empty">
-    Loading...
-   </div>
-  </div>
-
- </div>
-
- `;
-
- try{
-
-  const rows=
-   await api(
-    "notifications?select=*&receiver_id=eq."+
-    currentUser.id+
-    "&order=created_at.desc&limit=50"
-   );
-
-  const box=$("notifications");
-
-  if(!rows?.length){
-
-   box.innerHTML=
-    `<div class="empty">
-      No notifications
-     </div>`;
-
-   return;
-  }
+ if(error){
 
   box.innerHTML=
-   rows.map(n=>`
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
 
-   <div class="notification
-    ${n.read?"":"unread"}">
+  return;
+ }
 
-    <div>🔔</div>
+ box.innerHTML="";
+
+ for(const r of data || []){
+
+  const likes=await sb
+   .from("reel_likes")
+   .select("*",{count:"exact",head:true})
+   .eq("reel_id",r.id);
+
+  const comments=await sb
+   .from("reel_comments")
+   .select("*",{count:"exact",head:true})
+   .eq("reel_id",r.id);
+
+  const div=document.createElement("div");
+  div.className="reel";
+
+  div.innerHTML=`
+
+   <video
+    src="${escapeHTML(r.video_url)}"
+    controls
+    loop
+    playsinline
+    preload="metadata">
+   </video>
+
+   <div class="reelInfo">
 
     <div>
-     ${escapeHTML(n.message||"Notification")}
-     <br>
-     <small style="color:var(--muted)">
-      ${timeAgo(n.created_at)}
-     </small>
+     ${escapeHTML(r.caption || "")}
+    </div>
+
+    <div class="reelActions">
+
+     <button onclick="likeReel(${r.id})">
+      ❤️ ${likes.count || 0}
+     </button>
+
+     <button onclick="commentReel(${r.id})">
+      💬 ${comments.count || 0}
+     </button>
+
+     <button onclick="shareReel('${escapeHTML(r.video_url)}')">
+      ↗ Share
+     </button>
+
     </div>
 
    </div>
 
-   `).join("");
+  `;
 
- }catch(e){
+  box.appendChild(div);
+
+ }
+
+}
+
+
+/* =========================================================
+   REEL LIKE
+========================================================= */
+
+async function likeReel(reelId){
+
+ const existing=await sb
+  .from("reel_likes")
+  .select("id")
+  .eq("reel_id",reelId)
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
+
+ if(existing.data){
+
+  await sb
+   .from("reel_likes")
+   .delete()
+   .eq("id",existing.data.id);
+
+ }else{
+
+  await sb
+   .from("reel_likes")
+   .insert({
+    reel_id:reelId,
+    user_id:currentUser.id
+   });
+
+ }
+
+ loadReels();
+
+}
+
+
+/* =========================================================
+   REEL COMMENT
+========================================================= */
+
+async function commentReel(reelId){
+
+ const {data,error}=await sb
+  .from("reel_comments")
+  .select("*")
+  .eq("reel_id",reelId)
+  .order("created_at",{ascending:true});
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ let html="";
+
+ for(const c of data || []){
+
+  html+=`
+
+   <div style="padding:8px;background:var(--bg);border-radius:10px;margin-bottom:6px">
+
+    <b>User</b><br>
+
+    ${escapeHTML(c.text)}
+
+   </div>
+
+  `;
+
+ }
+
+ html+=`
+
+  <input id="reelCommentInput"
+   placeholder="Write comment..."
+   style="width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)">
+
+  <button class="smallBtn"
+   style="width:100%;margin-top:8px"
+   onclick="addReelComment(${reelId})">
+   Send
+  </button>
+ `;
+
+ openModal("Reel Comments",html);
+
+}
+
+async function addReelComment(reelId){
+
+ const input=$("reelCommentInput");
+
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ const {error}=await sb
+  .from("reel_comments")
+  .insert({
+   reel_id:reelId,
+   user_id:currentUser.id,
+   text
+  });
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ closeModal();
+ toast("Comment added");
+ loadReels();
+
+}
+
+async function shareReel(url){
+
+ if(navigator.share){
+
+  try{
+   await navigator.share({
+    title:"FriendBook Reel",
+    url
+   });
+  }catch(e){}
+
+ }else{
+
+  await navigator.clipboard.writeText(url);
+  toast("Reel link copied!");
+
+ }
+
+}
+
+
+/* =========================================================
+   MESSENGER
+========================================================= */
+
+async function showMessenger(){
+
+ setActive();
+
+ $("mainContent").innerHTML=`
+
+  <div class="pageTitle">Messenger</div>
+
+  <div class="card cardPad">
+
+   <input id="chatSearch"
+    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)"
+    placeholder="Search person..."
+    oninput="searchChatUsers()">
+
+  </div>
+
+  <div id="chatUsers"></div>
+
+  <div id="chatArea"></div>
+ `;
+
+}
+
+async function searchChatUsers(){
+
+ const q=$("chatSearch").value.trim();
+
+ if(q.length<2)return;
+
+ const {data,error}=await sb
+  .from("my social app")
+  .select("*")
+  .ilike("name","%"+q+"%")
+  .limit(20);
+
+ if(error)return;
+
+ $("chatUsers").innerHTML="";
+
+ for(const p of data || []){
+
+  if(p.id===currentUser.id)continue;
+
+  const div=document.createElement("div");
+  div.className="card";
+
+  div.innerHTML=`
+
+   <div class="userMini"
+    onclick="openChat('${p.id}','${escapeHTML(p.name || "User")}')">
+
+    <img class="avatar"
+     src="${avatar(p.profile_photo)}">
+
+    <b>${escapeHTML(p.name || "User")}</b>
+
+   </div>
+  `;
+
+  $("chatUsers").appendChild(div);
+
+ }
+
+}
+
+async function openChat(userId,name){
+
+ currentChatUser=userId;
+
+ $("chatArea").innerHTML=`
+
+  <div class="card">
+
+   <div class="cardPad">
+    <b>${escapeHTML(name)}</b>
+   </div>
+
+   <div class="chatBox">
+
+    <div id="chatMessages"
+     class="chatMessages">
+     Loading...
+    </div>
+
+    <div class="chatSend">
+
+     <input id="chatInput"
+      placeholder="Write a message..."
+      onkeydown="if(event.key==='Enter')sendMessage()">
+
+     <button class="smallBtn"
+      onclick="sendMessage()">
+      Send
+     </button>
+
+    </div>
+
+   </div>
+
+  </div>
+ `;
+
+ await loadMessages();
+
+}
+
+async function loadMessages(){
+
+ if(!currentChatUser)return;
+
+ const {data,error}=await sb
+  .from("messages")
+  .select("*")
+  .or(
+   `and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChatUser}),and(sender_id.eq.${currentChatUser},receiver_id.eq.${currentUser.id})`
+  )
+  .order("created_at",{ascending:true});
+
+ if(error){
+
+  $("chatMessages").innerHTML=
+   escapeHTML(error.message);
+
+  return;
+
+ }
+
+ $("chatMessages").innerHTML="";
+
+ for(const m of data || []){
+
+  const div=document.createElement("div");
+
+  div.className=
+   "chatMsg "+(m.sender_id===currentUser.id?"me":"");
+
+  div.innerText=m.text || "";
+
+  $("chatMessages").appendChild(div);
+
+ }
+
+ $("chatMessages").scrollTop=
+  $("chatMessages").scrollHeight;
+
+}
+
+async function sendMessage(){
+
+ const input=$("chatInput");
+
+ if(!input || !currentChatUser)return;
+
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ const {error}=await sb
+  .from("messages")
+  .insert({
+   sender_id:currentUser.id,
+   receiver_id:currentChatUser,
+   text
+  });
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ input.value="";
+
+ await loadMessages();
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function showNotifications(){
+
+ setActive();
+
+ $("mainContent").innerHTML=`
+
+  <div class="pageTitle">Notifications</div>
+
+  <div id="notifications">
+   Loading...
+  </div>
+ `;
+
+ const {data,error}=await sb
+  .from("notifications")
+  .select("*")
+  .eq("receiver_id",currentUser.id)
+  .order("created_at",{ascending:false})
+  .limit(50);
+
+ if(error){
 
   $("notifications").innerHTML=
-   `<div class="empty">
-     Notifications unavailable
-    </div>`;
+   `<div class="card cardPad">${escapeHTML(error.message)}</div>`;
+
+  return;
+
  }
+
+ if(!data?.length){
+
+  $("notifications").innerHTML=
+   `<div class="card cardPad">No notifications</div>`;
+
+  return;
+
+ }
+
+ $("notifications").innerHTML="";
+
+ for(const n of data){
+
+  const div=document.createElement("div");
+  div.className="card";
+
+  div.innerHTML=`
+
+   <div class="cardPad">
+
+    <b>${escapeHTML(n.message || "Notification")}</b>
+
+    <div class="time">
+     ${timeAgo(n.created_at)}
+    </div>
+
+   </div>
+  `;
+
+  $("notifications").appendChild(div);
+
+ }
+
 }
 
 
-/* =====================================
-   MONETIZATION
-===================================== */
+/* =========================================================
+   CREATOR / MONETIZATION
+========================================================= */
 
-async function showMonetization(){
+async function showCreator(){
 
- $("main").innerHTML=`
+ setActive();
 
- <div class="card">
+ let settings=null;
 
-  <h2>💰 Creator Dashboard</h2>
+ const result=await sb
+  .from("creator_settings")
+  .select("*")
+  .eq("user_id",currentUser.id)
+  .maybeSingle();
 
-  <p style="color:var(--muted)">
-   FriendBook Creator Monetization
-  </p>
+ settings=result.data;
 
- </div>
+ $("mainContent").innerHTML=`
 
- <div class="card">
+  <div class="pageTitle">Creator Center</div>
 
-  <div class="stat-grid">
+  <div class="card">
 
-   <div class="stat">
-    <strong>0</strong>
-    Views
-   </div>
+   <div class="cardPad">
 
-   <div class="stat">
-    <strong>0</strong>
-    Earnings
-   </div>
+    <h3>💰 Monetization</h3>
 
-   <div class="stat">
-    <strong>0</strong>
-    Followers
+    <div class="setting">
+
+     <span>Monetization</span>
+
+     <input id="monetization"
+      type="checkbox"
+      ${settings?.monetization_enabled?"checked":""}>
+
+    </div>
+
+    <input id="payoutEmail"
+     placeholder="Payout Email"
+     value="${escapeHTML(settings?.payout_email || "")}">
+
+    <select id="payoutMethod">
+
+     <option value="">Payout Method</option>
+     <option value="bank">Bank</option>
+     <option value="paypal">PayPal</option>
+     <option value="other">Other</option>
+
+    </select>
+
+    <button class="smallBtn"
+     style="width:100%"
+     onclick="saveCreatorSettings()">
+     Save Settings
+    </button>
+
    </div>
 
   </div>
 
- </div>
+  <div class="card">
 
- <div class="card">
+   <div class="cardPad">
 
-  <h3>Monetization</h3>
+    <h3>📊 Creator Statistics</h3>
 
-  <div class="setting-row">
+    <p>Followers: Loading...</p>
+    <p>Posts: Loading...</p>
+    <p>Reels: Loading...</p>
 
-   <div>
-    <strong>Content Monetization</strong>
-    <br>
-    <small style="color:var(--muted)">
-     Earn from eligible content
-    </small>
    </div>
 
-   <button
-    class="secondary"
-    onclick="toast('Monetization settings')">
-    Settings
-   </button>
-
   </div>
-
- </div>
 
  `;
+
+}
+
+async function saveCreatorSettings(){
+
+ const monetization_enabled=
+  $("monetization").checked;
+
+ const payout_email=
+  $("payoutEmail").value.trim();
+
+ const payout_method=
+  $("payoutMethod").value;
+
+ const {error}=await sb
+  .from("creator_settings")
+  .upsert({
+   user_id:currentUser.id,
+   monetization_enabled,
+   payout_email,
+   payout_method,
+   updated_at:new Date().toISOString()
+  });
+
+ if(error){
+
+  toast(error.message);
+  return;
+
+ }
+
+ toast("Creator settings saved");
+
 }
 
 
-/* =====================================
+/* =========================================================
    SETTINGS
-===================================== */
+========================================================= */
 
 function showSettings(){
 
- $("main").innerHTML=`
+ setActive();
 
- <div class="card">
+ const dark=
+  localStorage.getItem("friendbook_dark")==="1";
 
-  <h2>⚙️ Settings</h2>
+ $("mainContent").innerHTML=`
 
-  <div class="setting-row">
+  <div class="pageTitle">Settings</div>
 
-   <div>
-    🌙 Dark Mode
+  <div class="card cardPad">
+
+   <div class="setting">
+
+    <span>🌙 Dark Mode</span>
+
+    <input type="checkbox"
+     ${dark?"checked":""}
+     onchange="toggleDark(this.checked)">
+
    </div>
 
-   <button
-    id="darkSwitch"
-    class="switch"
-    onclick="toggleDark()">
-    <span></span>
-   </button>
+   <div class="setting">
 
-  </div>
+    <span>🔔 Notifications</span>
 
+    <button class="smallBtn grayBtn"
+     onclick="showNotifications()">
+     Open
+    </button>
 
-  <div class="setting-row">
-
-   <div>
-    🔔 Notifications
    </div>
 
-   <button
-    class="secondary"
-    onclick="showNotifications()">
-    Open
-   </button>
+   <div class="setting">
 
-  </div>
+    <span>👤 Edit Profile</span>
 
+    <button class="smallBtn grayBtn"
+     onclick="editProfile()">
+     Edit
+    </button>
 
-  <div class="setting-row">
-
-   <div>
-    🔐 Privacy
    </div>
 
-   <button
-    class="secondary"
-    onclick="toast('Privacy settings')">
-    Manage
-   </button>
+   <div class="setting">
 
-  </div>
+    <span>💰 Creator Center</span>
 
+    <button class="smallBtn grayBtn"
+     onclick="showCreator()">
+     Open
+    </button>
 
-  <div class="setting-row">
-
-   <div>
-    🚫 Blocked Users
    </div>
 
-   <button
-    class="secondary"
-    onclick="toast('Blocked users')">
-    Manage
-   </button>
+   <div class="setting">
+
+    <span>🚪 Logout</span>
+
+    <button class="smallBtn"
+     style="background:#e41e3f"
+     onclick="logout()">
+     Logout
+    </button>
+
+   </div>
 
   </div>
-
-
-  <br>
-
-  <button
-   class="danger full"
-   onclick="logout()">
-   🚪 Logout
-  </button>
-
- </div>
 
  `;
+
 }
 
+function toggleDark(value){
 
-function toggleDark(){
-
- document.body.classList.toggle("dark");
+ document.body.classList.toggle("dark",value);
 
  localStorage.setItem(
   "friendbook_dark",
-  document.body.classList.contains("dark")
-   ?"1":"0"
+  value?"1":"0"
  );
+
 }
 
 
-/* =====================================
-   MODAL
-===================================== */
+/* =========================================================
+   NAV ACTIVE
+========================================================= */
 
-function closeModal(event){
+function setActive(){
 
- if(event &&
-    event.target!==$("modalBg"))
-  return;
-
- $("modalBg").classList.add("hidden");
 }
 
 
-/* =====================================
-   INIT
-===================================== */
+/* =========================================================
+   SESSION START
+========================================================= */
 
 async function start(){
 
- if(
-  localStorage.getItem(
-   "friendbook_dark"
-  )==="1"
- ){
+ if(localStorage.getItem("friendbook_dark")==="1"){
   document.body.classList.add("dark");
  }
 
- const saved=
-  localStorage.getItem(
-   "friendbook_session"
-  );
+ const {data}=await sb.auth.getSession();
 
- if(!saved){
+ if(data?.session){
 
-  $("authPage").classList.remove("hidden");
-  $("app").classList.add("hidden");
+  session=data.session;
+  currentUser=data.session.user;
 
-  return;
- }
+  await loadApp();
 
- try{
-
-  session=JSON.parse(saved);
-
-  const res=
-   await fetch(
-    SUPABASE_URL+"/auth/v1/user",
-    {
-     headers:{
-      "apikey":SUPABASE_KEY,
-      "Authorization":
-       "Bearer "+session.access_token
-     }
-    }
-   );
-
-  if(!res.ok)
-   throw new Error();
-
-  currentUser=
-   await res.json();
-
-  openApp();
-
- }catch{
-
-  localStorage.removeItem(
-   "friendbook_session"
-  );
+ }else{
 
   $("authPage").classList.remove("hidden");
   $("app").classList.add("hidden");
+
  }
+
 }
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+sb.auth.onAuthStateChange(
+ async (event,newSession)=>{
+
+  if(newSession){
+
+   session=newSession;
+   currentUser=newSession.user;
+
+   if($("app").classList.contains("hidden")){
+    await loadApp();
+   }
+
+  }
+
+ }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
 
 start();
 
 </script>
 
 </body>
-  </html>
+    </html>
