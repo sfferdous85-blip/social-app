@@ -9,2177 +9,3234 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:Arial,sans-serif;background:#f0f2f5;color:#111}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#f0f2f5;font-family:Arial,sans-serif;color:#111}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+img,video{max-width:100%}
+.hidden{display:none!important}
+
+:root{
+ --blue:#1877f2;
+ --bg:#f0f2f5;
+ --card:#fff;
+ --border:#dddfe2;
+ --text:#050505;
+ --muted:#65676b;
+}
+
+body.dark{
+ --bg:#18191a;
+ --card:#242526;
+ --border:#3a3b3c;
+ --text:#e4e6eb;
+ --muted:#b0b3b8;
+}
+
+#app{min-height:100vh}
 
 .topbar{
-position:fixed;top:0;left:0;right:0;height:58px;
-background:#fff;border-bottom:1px solid #ddd;
-display:flex;align-items:center;justify-content:space-between;
-padding:0 12px;z-index:1000
-}
-.logo{color:#1877f2;font-size:23px;font-weight:bold}
-.top-actions{display:flex;gap:7px}
-.icon-btn{
-width:40px;height:40px;border:0;border-radius:50%;
-background:#f0f2f5;font-size:20px
+ position:sticky;
+ top:0;
+ z-index:1000;
+ height:58px;
+ background:var(--card);
+ border-bottom:1px solid var(--border);
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:0 12px;
 }
 
-.page{display:none;padding-top:70px;padding-bottom:75px;min-height:100vh}
-.page.active{display:block}
-.container{width:100%;max-width:650px;margin:auto}
+.logo{
+ font-size:22px;
+ font-weight:800;
+ color:var(--blue);
+ white-space:nowrap;
+}
+
+.search{
+ flex:1;
+ max-width:480px;
+ background:var(--bg);
+ border-radius:22px;
+ padding:10px 15px;
+ border:0;
+ outline:none;
+ color:var(--text);
+}
+
+.top-actions{
+ margin-left:auto;
+ display:flex;
+ gap:7px;
+}
+
+.iconbtn{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
+ font-size:19px;
+}
+
+.badge{
+ position:absolute;
+ top:-2px;
+ right:-2px;
+ min-width:17px;
+ height:17px;
+ border-radius:20px;
+ background:#e41e3f;
+ color:#fff;
+ font-size:10px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+.nav{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ height:62px;
+ z-index:1000;
+ background:var(--card);
+ border-top:1px solid var(--border);
+ display:flex;
+ justify-content:space-around;
+ align-items:center;
+}
+
+.nav button{
+ background:none;
+ color:var(--muted);
+ font-size:11px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:3px;
+ min-width:55px;
+}
+
+.nav button.active{color:var(--blue)}
+.nav i{font-style:normal;font-size:22px}
+
+.main{
+ width:100%;
+ max-width:900px;
+ margin:auto;
+ padding:15px 10px 80px;
+}
 
 .card{
-background:#fff;border-radius:10px;margin:10px;padding:14px;
-box-shadow:0 1px 3px rgba(0,0,0,.12)
+ background:var(--card);
+ border-radius:12px;
+ border:1px solid var(--border);
+ margin-bottom:12px;
+ overflow:hidden;
 }
 
-.user-row{display:flex;align-items:center;gap:10px}
+.cardpad{padding:14px}
+
+.profile-cover{
+ height:220px;
+ background:linear-gradient(135deg,#1877f2,#7b2cff);
+ position:relative;
+}
+
+.cover-img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.profile-photo{
+ width:120px;
+ height:120px;
+ border-radius:50%;
+ border:5px solid var(--card);
+ object-fit:cover;
+ position:absolute;
+ left:20px;
+ bottom:-55px;
+ background:#ddd;
+}
+
+.profile-info{
+ padding:65px 18px 18px;
+}
+
+.profile-name{
+ font-size:25px;
+ font-weight:800;
+}
+
+.profile-email{
+ color:var(--muted);
+ margin-top:4px;
+}
+
+.profile-actions{
+ display:flex;
+ gap:8px;
+ margin-top:15px;
+ flex-wrap:wrap;
+}
+
+.btn{
+ background:var(--blue);
+ color:#fff;
+ padding:10px 16px;
+ border-radius:8px;
+ font-weight:700;
+}
+
+.btn.secondary{
+ background:var(--bg);
+ color:var(--text);
+}
+
+.btn.danger{
+ background:#e41e3f;
+ color:#fff;
+}
+
+.stats{
+ display:flex;
+ gap:25px;
+ margin-top:15px;
+}
+
+.stat{text-align:center}
+.stat b{display:block;font-size:18px}
+.stat span{font-size:12px;color:var(--muted)}
+
+.create-box{
+ display:flex;
+ gap:10px;
+ align-items:center;
+}
+
 .avatar{
-width:42px;height:42px;border-radius:50%;
-background:#1877f2;color:#fff;
-display:flex;align-items:center;justify-content:center;
-font-weight:bold;overflow:hidden
+ width:42px;
+ height:42px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#ddd;
+ flex-shrink:0;
 }
-.avatar img{width:100%;height:100%;object-fit:cover}
-.username{font-weight:bold}
-.time{color:#777;font-size:12px;margin-top:3px}
-.post-text{margin:12px 0;white-space:pre-wrap;word-break:break-word}
+
+.create-input{
+ flex:1;
+ background:var(--bg);
+ border-radius:22px;
+ padding:12px 16px;
+ color:var(--muted);
+ cursor:pointer;
+}
+
+.story-row{
+ display:flex;
+ gap:9px;
+ overflow-x:auto;
+ padding:10px;
+}
+
+.story{
+ min-width:85px;
+ height:125px;
+ border-radius:10px;
+ overflow:hidden;
+ position:relative;
+ background:linear-gradient(135deg,#1877f2,#9c27b0);
+ color:#fff;
+}
+
+.story img,.story video{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.story-name{
+ position:absolute;
+ bottom:6px;
+ left:6px;
+ right:6px;
+ font-size:11px;
+ font-weight:bold;
+ text-shadow:0 1px 4px #000;
+}
+
+.post-head{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:12px;
+}
+
+.post-user{
+ flex:1;
+}
+
+.post-user b{display:block}
+.post-time{font-size:12px;color:var(--muted)}
+
+.post-menu{
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
+}
+
+.post-text{
+ padding:0 12px 12px;
+ white-space:pre-wrap;
+ word-break:break-word;
+}
+
 .post-image{
-width:100%;max-height:600px;object-fit:cover;
-border-radius:8px;display:block
+ width:100%;
+ max-height:650px;
+ object-fit:cover;
+ display:block;
 }
 
-.actions{
-display:flex;border-top:1px solid #eee;
-margin-top:10px;padding-top:7px;gap:5px
+.media-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:2px;
 }
-.action-btn{
-flex:1;border:0;background:#fff;padding:10px 4px;
-border-radius:7px;font-weight:bold
-}
-.action-btn:hover{background:#f0f2f5}
-.liked{color:#1877f2}
 
-.bottom-nav{
-position:fixed;bottom:0;left:0;right:0;height:62px;
-background:#fff;border-top:1px solid #ddd;
-display:flex;z-index:1000
+.media-grid img{
+ width:100%;
+ height:250px;
+ object-fit:cover;
 }
-.nav-btn{
-flex:1;border:0;background:#fff;font-size:12px;color:#555
-}
-.nav-btn b{display:block;font-size:21px}
-.nav-btn.active{color:#1877f2}
 
-.loading{text-align:center;padding:40px 20px;color:#666}
-.empty{text-align:center;padding:45px 20px;color:#666}
-
-.primary{
-border:0;background:#1877f2;color:#fff;
-padding:11px 18px;border-radius:8px;font-weight:bold
+.post-stats{
+ display:flex;
+ justify-content:space-between;
+ padding:8px 12px;
+ color:var(--muted);
+ font-size:13px;
+ border-bottom:1px solid var(--border);
 }
-.danger{
-border:0;background:#e41e3f;color:#fff;
-padding:10px 15px;border-radius:8px
+
+.post-actions{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+}
+
+.post-actions button{
+ padding:11px 5px;
+ background:none;
+ color:var(--muted);
+ font-weight:700;
+}
+
+.post-actions button:hover{background:var(--bg)}
+.liked{color:#1877f2!important}
+
+.comment-box{
+ display:flex;
+ gap:7px;
+ padding:10px;
+ border-top:1px solid var(--border);
+}
+
+.comment-box input{
+ flex:1;
+ border:0;
+ background:var(--bg);
+ border-radius:20px;
+ padding:10px 13px;
+ outline:none;
+ color:var(--text);
+}
+
+.comments{
+ padding:0 12px 10px;
+}
+
+.comment{
+ background:var(--bg);
+ border-radius:15px;
+ padding:8px 11px;
+ margin:5px 0;
+}
+
+.comment b{font-size:13px}
+.comment p{margin:3px 0 0;font-size:14px}
+
+.reels{
+ background:#000;
+ border-radius:12px;
+ overflow:hidden;
+}
+
+.reel{
+ position:relative;
+ height:calc(100vh - 125px);
+ min-height:500px;
+ background:#000;
+ overflow:hidden;
+ margin-bottom:5px;
+}
+
+.reel video{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.reel-info{
+ position:absolute;
+ left:15px;
+ right:75px;
+ bottom:20px;
+ color:#fff;
+ text-shadow:0 1px 4px #000;
+ z-index:3;
+}
+
+.reel-info b{font-size:17px}
+.reel-caption{margin-top:7px}
+
+.reel-actions{
+ position:absolute;
+ right:12px;
+ bottom:75px;
+ display:flex;
+ flex-direction:column;
+ gap:13px;
+ z-index:4;
+}
+
+.reel-actions button{
+ width:48px;
+ height:48px;
+ border-radius:50%;
+ background:rgba(0,0,0,.5);
+ color:#fff;
+ font-size:19px;
+}
+
+.reel-actions small{
+ display:block;
+ font-size:9px;
+}
+
+.reel-mute{
+ position:absolute;
+ right:12px;
+ top:15px;
+ z-index:4;
+}
+
+.reel-mute button{
+ width:42px;
+ height:42px;
+ border-radius:50%;
+ background:rgba(0,0,0,.55);
+ color:#fff;
 }
 
 .modal{
-display:none;position:fixed;inset:0;
-background:rgba(0,0,0,.55);z-index:2000;
-align-items:flex-end;justify-content:center
+ position:fixed;
+ inset:0;
+ z-index:3000;
+ background:rgba(0,0,0,.65);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:12px;
 }
-.modal.show{display:flex}
-.modal-box{
-background:#fff;width:100%;max-width:650px;
-max-height:90vh;overflow:auto;
-border-radius:18px 18px 0 0;padding:18px
+
+.modalbox{
+ width:100%;
+ max-width:500px;
+ max-height:92vh;
+ overflow:auto;
+ background:var(--card);
+ border-radius:15px;
+ color:var(--text);
 }
-.modal-head{
-display:flex;align-items:center;justify-content:space-between;
-margin-bottom:15px
+
+.modalhead{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:15px;
+ border-bottom:1px solid var(--border);
+ font-weight:800;
 }
-.modal-head h3{margin:0}
+
 .close{
-border:0;background:#f0f2f5;width:36px;height:36px;
-border-radius:50%;font-size:20px
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
 }
 
-textarea,input[type=text],input[type=email],input[type=password]{
-width:100%;border:1px solid #ccc;border-radius:9px;
-padding:12px;outline:none;margin-bottom:10px
+.modalbody{padding:15px}
+
+textarea,input,select{
+ width:100%;
+ padding:12px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:var(--card);
+ color:var(--text);
+ outline:none;
 }
+
 textarea{min-height:120px;resize:vertical}
-.file{width:100%;margin:10px 0 15px}
 
-.profile{
-background:#fff;margin:10px;border-radius:12px;overflow:hidden
-}
-.cover{
-height:150px;
-background:linear-gradient(135deg,#1877f2,#6c5ce7)
-}
-.profile-info{padding:0 15px 20px}
-.profile-avatar{
-width:90px;height:90px;margin-top:-45px;
-border:4px solid #fff;border-radius:50%;
-background:#1877f2;color:#fff;
-display:flex;align-items:center;justify-content:center;
-font-size:35px;font-weight:bold;overflow:hidden
-}
-.profile-avatar img{width:100%;height:100%;object-fit:cover}
-
-.stats{display:flex;gap:25px;margin:15px 0}
-.stat{text-align:center}
-.stat b{display:block;font-size:20px}
-.stat span{color:#777;font-size:12px}
-
-#reelsPage{
-background:#000;padding-top:58px;padding-bottom:0
-}
-.reels-container{
-width:100%;height:calc(100vh - 58px);
-overflow-y:auto;scroll-snap-type:y mandatory;background:#000
-}
-.reel{
-width:100%;height:calc(100vh - 58px);
-position:relative;scroll-snap-align:start;
-background:#000;overflow:hidden
-}
-.reel video{
-width:100%;height:100%;object-fit:cover;
-display:block;background:#000
-}
-.reel-info{
-position:absolute;left:15px;right:75px;bottom:25px;
-color:#fff;z-index:5;text-shadow:0 1px 4px #000
-}
-.reel-caption{
-margin-top:8px;font-size:15px;white-space:pre-wrap
-}
-.reel-actions{
-position:absolute;right:12px;bottom:85px;
-display:flex;flex-direction:column;gap:14px;z-index:10
-}
-.reel-action{
-width:50px;min-height:50px;border:0;border-radius:50%;
-background:rgba(0,0,0,.5);color:#fff;font-size:21px
-}
-.reel-action small{display:block;font-size:10px;margin-top:2px}
-
-.reel-top{
-position:absolute;top:12px;left:12px;right:12px;
-display:flex;justify-content:space-between;z-index:10
-}
-.reel-top button{
-border:0;background:rgba(0,0,0,.5);color:#fff;
-width:42px;height:42px;border-radius:50%;font-size:20px
+.formgroup{margin-bottom:12px}
+.formgroup label{
+ display:block;
+ font-size:13px;
+ font-weight:bold;
+ margin-bottom:6px;
 }
 
-.reel-error{
-color:#fff;padding:30px 18px;text-align:center
-}
-.error-box{
-background:#1e1e1e;border:1px solid #555;
-padding:14px;border-radius:10px;text-align:left;
-word-break:break-word;margin:15px 0;color:#ffb3b3
+.login{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
 }
 
-.comment-item{
-padding:10px 0;border-bottom:1px solid #eee
+.loginbox{
+ width:100%;
+ max-width:400px;
+ background:var(--card);
+ padding:25px;
+ border-radius:15px;
+ border:1px solid var(--border);
 }
-.comment-name{font-weight:bold}
+
+.loginbox h1{
+ color:var(--blue);
+ text-align:center;
+}
+
+.switch{
+ text-align:center;
+ margin-top:15px;
+ color:var(--blue);
+ cursor:pointer;
+}
+
+.loading{
+ padding:30px;
+ text-align:center;
+ color:var(--muted);
+}
+
+.empty{
+ padding:35px 15px;
+ text-align:center;
+ color:var(--muted);
+}
+
+.search-result{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ padding:10px;
+ border-bottom:1px solid var(--border);
+}
+
+.setting-row{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:15px;
+ border-bottom:1px solid var(--border);
+}
+
+.setting-row:last-child{border-bottom:0}
 
 .toast{
-position:fixed;left:50%;bottom:80px;
-transform:translateX(-50%);
-background:#222;color:#fff;padding:12px 18px;
-border-radius:8px;z-index:5000;
-display:none;max-width:90%;text-align:center
+ position:fixed;
+ left:50%;
+ bottom:80px;
+ transform:translateX(-50%);
+ background:#222;
+ color:#fff;
+ padding:11px 18px;
+ border-radius:25px;
+ z-index:5000;
+ font-size:14px;
 }
-.toast.show{display:block}
 
-.login-box{max-width:430px;margin:80px auto;padding:20px}
+@media(min-width:700px){
+ .main{padding-top:20px}
+ .nav{
+   position:fixed;
+   width:600px;
+   left:50%;
+   transform:translateX(-50%);
+   border:1px solid var(--border);
+   border-radius:15px 15px 0 0;
+ }
+}
+
+@media(max-width:500px){
+ .logo{font-size:19px}
+ .search{max-width:none}
+ .top-actions .hide-mobile{display:none}
+ .profile-cover{height:170px}
+ .profile-photo{width:100px;height:100px}
+ .profile-info{padding-top:55px}
+}
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-<div class="logo">My Social App</div>
-
-<div class="top-actions">
-<button class="icon-btn" onclick="openPost()">＋</button>
-<button class="icon-btn" onclick="openNotifications()">🔔</button>
-<button class="icon-btn" onclick="showPage('settings')">⚙️</button>
-</div>
-</div>
-
-
-<!-- HOME -->
-<section id="homePage" class="page active">
-<div class="container">
-
-<div class="card">
-<button class="primary" style="width:100%" onclick="openPost()">
-What's on your mind?
-</button>
-</div>
-
-<div id="feed">
-<div class="loading">Feed লোড হচ্ছে...</div>
-</div>
-
-</div>
-</section>
-
-
-<!-- REELS -->
-<section id="reelsPage" class="page">
-
-<div class="reels-container" id="reelsList">
-<div class="loading" style="color:white">
-Reels লোড হচ্ছে...
-</div>
-</div>
-
-</section>
-
-
-<!-- PROFILE -->
-<section id="profilePage" class="page">
-<div class="container">
-
-<div class="profile">
-
-<div class="cover"></div>
-
-<div class="profile-info">
-
-<div class="profile-avatar" id="profileAvatar">
-U
-</div>
-
-<h2 id="profileName">User</h2>
-
-<div id="profileEmail" style="color:#777"></div>
-
-<div class="stats">
-
-<div class="stat">
-<b id="postCount">0</b>
-<span>Posts</span>
-</div>
-
-<div class="stat">
-<b id="followersCount">0</b>
-<span>Followers</span>
-</div>
-
-<div class="stat">
-<b id="followingCount">0</b>
-<span>Following</span>
-</div>
-
-</div>
-
-<button class="primary" onclick="showPage('settings')">
-⚙️ Settings
-</button>
-
-</div>
-</div>
-
-<div id="myPosts"></div>
-
-</div>
-</section>
-
-
-<!-- SETTINGS -->
-<section id="settingsPage" class="page">
-<div class="container">
-
-<div class="card">
-
-<h2>⚙️ Settings</h2>
-
-<hr>
-
-<p><b>Account</b></p>
-
-<p id="settingsEmail"></p>
-
-<button class="primary"
-style="width:100%;margin-bottom:10px"
-onclick="openPost()">
-＋ Create Post
-</button>
-
-<button class="primary"
-style="width:100%;margin-bottom:10px"
-onclick="openReelUpload()">
-🎬 Upload Reel
-</button>
-
-<button class="danger"
-style="width:100%"
-onclick="logout()">
-Logout
-</button>
-
-</div>
-
-</div>
-</section>
-
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-
-<button class="nav-btn active"
-id="navHome"
-onclick="showPage('home')">
-<b>🏠</b>
-Home
-</button>
-
-<button class="nav-btn"
-id="navReels"
-onclick="showPage('reels')">
-<b>🎬</b>
-Reels
-</button>
-
-<button class="nav-btn"
-id="navProfile"
-onclick="showPage('profile')">
-<b>👤</b>
-Profile
-</button>
-
-<button class="nav-btn"
-id="navSettings"
-onclick="showPage('settings')">
-<b>⚙️</b>
-Settings
-</button>
-
-</div>
-
-
-<!-- POST MODAL -->
-<div class="modal" id="postModal">
-
-<div class="modal-box">
-
-<div class="modal-head">
-<h3>Create Post</h3>
-<button class="close"
-onclick="closeModal('postModal')">×</button>
-</div>
-
-<textarea id="postText"
-placeholder="What's on your mind?"></textarea>
-
-<input type="file"
-id="postImage"
-class="file"
-accept="image/*">
-
-<button class="primary"
-style="width:100%"
-onclick="createPost()">
-Publish
-</button>
-
-</div>
-</div>
-
-
-<!-- REEL UPLOAD -->
-<div class="modal" id="reelModal">
-
-<div class="modal-box">
-
-<div class="modal-head">
-
-<h3>🎬 Upload Reel</h3>
-
-<button class="close"
-onclick="closeModal('reelModal')">
-×
-</button>
-
-</div>
-
-<input type="file"
-id="reelFile"
-class="file"
-accept="video/*">
-
-<textarea id="reelCaption"
-placeholder="Reel caption..."></textarea>
-
-<input type="text"
-id="audioName"
-placeholder="🎵 Audio name">
-
-<button class="primary"
-style="width:100%"
-onclick="uploadReel()">
-Upload Reel
-</button>
-
-<div id="uploadStatus"
-style="margin-top:12px;text-align:center">
-</div>
-
-</div>
-</div>
-
-
-<!-- COMMENTS -->
-<div class="modal" id="commentModal">
-
-<div class="modal-box">
-
-<div class="modal-head">
-
-<h3>💬 Comments</h3>
-
-<button class="close"
-onclick="closeModal('commentModal')">
-×
-</button>
-
-</div>
-
-<div id="commentsList">
-Loading...
-</div>
-
-<div style="margin-top:15px">
-
-<input type="text"
-id="commentInput"
-placeholder="Write a comment...">
-
-<button class="primary"
-style="width:100%"
-onclick="submitComment()">
-Comment
-</button>
-
-</div>
-
-</div>
-</div>
-
-
-<!-- NOTIFICATIONS -->
-<div class="modal" id="notificationModal">
-
-<div class="modal-box">
-
-<div class="modal-head">
-
-<h3>🔔 Notifications</h3>
-
-<button class="close"
-onclick="closeModal('notificationModal')">
-×
-</button>
-
-</div>
-
-<div id="notificationList">
-Loading...
-</div>
-
-</div>
-</div>
-
-
-<div class="toast" id="toast"></div>
-
+<div id="app"></div>
+<div id="toast" class="toast hidden"></div>
 
 <script>
+/* =========================================================
+   MY SOCIAL APP
+   ========================================================= */
 
-/* =====================================================
-SUPABASE
-===================================================== */
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-const SUPABASE_URL =
-"YOUR_SUPABASE_URL";
-
-const SUPABASE_ANON_KEY =
-"YOUR_SUPABASE_ANON_KEY";
-
-const db =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_ANON_KEY
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
+let currentUser = null;
+let currentProfile = null;
+let activePage = "home";
+let postsCache = [];
+let reelsCache = [];
+let followingSet = new Set();
+let notificationCount = 0;
+let currentCommentPost = null;
+let currentCommentReel = null;
+let reelObserver = null;
 
-/* =====================================================
-GLOBAL
-===================================================== */
 
-let user=null;
-let currentCommentType=null;
-let currentCommentId=null;
-let reelObserver=null;
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
+function safe(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
 
-/* =====================================================
-HELPER
-===================================================== */
+function toast(message){
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.classList.remove("hidden");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>{
+    el.classList.add("hidden");
+  },2500);
+}
 
-function safe(v){
+function formatDate(date){
+  if(!date) return "";
+  const d = new Date(date);
+  if(Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString("bn-BD",{
+    day:"numeric",
+    month:"short",
+    hour:"numeric",
+    minute:"2-digit"
+  });
+}
 
-return String(v ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+function profileName(p){
+  return p?.name || p?.full_name || p?.username || "User";
+}
 
+function profilePhoto(p){
+  return p?.profile_photo || p?.avatar_url ||
+         "https://placehold.co/100x100?text=User";
+}
+
+async function getProfile(userId){
+  if(!userId) return null;
+
+  const {data,error} = await db
+    .from("my social app")
+    .select("*")
+    .eq("id",userId)
+    .maybeSingle();
+
+  if(error){
+    console.log("Profile error:",error);
+    return null;
+  }
+
+  return data;
+}
+
+async function refreshProfile(){
+  if(!currentUser) return;
+  currentProfile = await getProfile(currentUser.id);
+}
+
+async function notify(receiverId,message){
+  if(!receiverId || receiverId === currentUser?.id) return;
+
+  try{
+    await db.from("notifications").insert({
+      receiver_id:receiverId,
+      message,
+      read:false
+    });
+  }catch(e){
+    console.log("notification:",e);
+  }
 }
 
 
-function toast(msg){
+/* =========================================================
+   AUTH
+   ========================================================= */
 
-const box=document.getElementById("toast");
+async function checkAuth(){
+  const {data} = await db.auth.getSession();
+  currentUser = data.session?.user || null;
 
-box.textContent=msg;
-box.classList.add("show");
+  if(currentUser){
+    await refreshProfile();
+    renderApp();
+  }else{
+    renderLogin();
+  }
 
-setTimeout(()=>{
-box.classList.remove("show");
-},3000);
+  db.auth.onAuthStateChange(async(_event,session)=>{
+    currentUser = session?.user || null;
 
+    if(currentUser){
+      await refreshProfile();
+      renderApp();
+    }else{
+      currentProfile = null;
+      renderLogin();
+    }
+  });
 }
 
+function renderLogin(){
+  document.getElementById("app").innerHTML = `
+    <div class="login">
+      <div class="loginbox">
+        <h1>My Social App</h1>
 
-function closeModal(id){
+        <div id="authForm">
+          <div class="formgroup">
+            <label>Email</label>
+            <input id="authEmail" type="email" placeholder="Email">
+          </div>
 
-document.getElementById(id)
-.classList.remove("show");
+          <div class="formgroup">
+            <label>Password</label>
+            <input id="authPassword" type="password" placeholder="Password">
+          </div>
 
+          <button class="btn" style="width:100%" onclick="login()">
+            Login
+          </button>
+
+          <div class="switch" onclick="showSignup()">
+            নতুন account তৈরি করুন
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
+function showSignup(){
+  document.getElementById("authForm").innerHTML = `
+    <div class="formgroup">
+      <label>নাম</label>
+      <input id="authName" placeholder="আপনার নাম">
+    </div>
 
-/* =====================================================
-PAGE
-===================================================== */
+    <div class="formgroup">
+      <label>Email</label>
+      <input id="authEmail" type="email" placeholder="Email">
+    </div>
 
-function showPage(page){
+    <div class="formgroup">
+      <label>Password</label>
+      <input id="authPassword" type="password" placeholder="কমপক্ষে 6 অক্ষর">
+    </div>
 
-document.querySelectorAll(".page")
-.forEach(x=>x.classList.remove("active"));
+    <button class="btn" style="width:100%" onclick="signup()">
+      Create Account
+    </button>
 
-document.querySelectorAll(".nav-btn")
-.forEach(x=>x.classList.remove("active"));
-
-
-if(page==="home"){
-
-document.getElementById("homePage")
-.classList.add("active");
-
-document.getElementById("navHome")
-.classList.add("active");
-
-loadFeed();
-
+    <div class="switch" onclick="renderLogin()">
+      Login-এ ফিরে যান
+    </div>
+  `;
 }
-
-
-if(page==="reels"){
-
-document.getElementById("reelsPage")
-.classList.add("active");
-
-document.getElementById("navReels")
-.classList.add("active");
-
-loadReels();
-
-}
-
-
-if(page==="profile"){
-
-document.getElementById("profilePage")
-.classList.add("active");
-
-document.getElementById("navProfile")
-.classList.add("active");
-
-loadProfile();
-
-}
-
-
-if(page==="settings"){
-
-document.getElementById("settingsPage")
-.classList.add("active");
-
-document.getElementById("navSettings")
-.classList.add("active");
-
-loadProfile();
-
-}
-
-}
-
-
-/* =====================================================
-AUTH
-===================================================== */
-
-async function checkUser(){
-
-const result=await db.auth.getUser();
-
-user=result.data.user || null;
-
-if(!user){
-
-document.body.innerHTML=`
-
-<div class="login-box card">
-
-<h2>My Social App</h2>
-
-<p>প্রথমে Login করুন</p>
-
-<input
-id="loginEmail"
-type="email"
-placeholder="Email">
-
-<input
-id="loginPassword"
-type="password"
-placeholder="Password">
-
-<button
-class="primary"
-style="width:100%;margin-bottom:10px"
-onclick="login()">
-Login
-</button>
-
-<button
-style="width:100%;padding:11px;border:0;border-radius:8px"
-onclick="signup()">
-Create new account
-</button>
-
-</div>
-
-`;
-
-return false;
-
-}
-
-return true;
-
-}
-
 
 async function login(){
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
 
-const email=
-document.getElementById("loginEmail")
-.value.trim();
+  if(!email || !password){
+    toast("Email ও Password দিন");
+    return;
+  }
 
-const password=
-document.getElementById("loginPassword")
-.value;
+  const {error} = await db.auth.signInWithPassword({
+    email,
+    password
+  });
 
-const {error}=
-await db.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-
-alert(error.message);
-return;
-
+  if(error){
+    toast(error.message);
+  }
 }
-
-location.reload();
-
-}
-
 
 async function signup(){
+  const name = document.getElementById("authName").value.trim();
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
 
-const email=
-document.getElementById("loginEmail")
-.value.trim();
+  if(!name || !email || !password){
+    toast("সব তথ্য পূরণ করুন");
+    return;
+  }
 
-const password=
-document.getElementById("loginPassword")
-.value;
+  if(password.length < 6){
+    toast("Password কমপক্ষে 6 অক্ষরের হতে হবে");
+    return;
+  }
 
-if(password.length<6){
+  const {data,error} = await db.auth.signUp({
+    email,
+    password,
+    options:{
+      data:{name}
+    }
+  });
 
-alert("Password কমপক্ষে ৬ অক্ষরের হতে হবে");
-return;
+  if(error){
+    toast(error.message);
+    return;
+  }
 
+  if(data.user){
+    try{
+      await db.from("my social app").upsert({
+        id:data.user.id,
+        name:name,
+        email:email
+      });
+    }catch(e){
+      console.log(e);
+    }
+  }
+
+  toast("Account তৈরি হয়েছে");
 }
-
-const {error}=
-await db.auth.signUp({
-email,
-password
-});
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert("Account তৈরি হয়েছে।");
-
-}
-
 
 async function logout(){
-
-await db.auth.signOut();
-
-location.reload();
-
+  await db.auth.signOut();
 }
 
 
-/* =====================================================
-POST
-===================================================== */
+/* =========================================================
+   MAIN APP
+   ========================================================= */
 
-function openPost(){
+function renderApp(){
+  document.getElementById("app").innerHTML = `
+    <header class="topbar">
+      <div class="logo">My Social App</div>
 
-document.getElementById("postModal")
-.classList.add("show");
+      <input
+        class="search"
+        id="globalSearch"
+        placeholder="Search..."
+        onkeydown="if(event.key==='Enter')doSearch()"
+      >
 
+      <div class="top-actions">
+
+        <div style="position:relative">
+          <button class="iconbtn" onclick="openNotifications()">🔔</button>
+          <span id="notificationBadge" class="badge hidden">0</span>
+        </div>
+
+        <button class="iconbtn hide-mobile" onclick="openCreatePost()">＋</button>
+      </div>
+    </header>
+
+    <main class="main" id="main"></main>
+
+    <nav class="nav">
+      <button id="navHome" onclick="showPage('home')">
+        <i>🏠</i>Home
+      </button>
+
+      <button id="navReels" onclick="showPage('reels')">
+        <i>🎬</i>Reels
+      </button>
+
+      <button onclick="openCreatePost()">
+        <i>➕</i>Post
+      </button>
+
+      <button id="navProfile" onclick="showPage('profile')">
+        <i>👤</i>Profile
+      </button>
+
+      <button id="navSettings" onclick="showPage('settings')">
+        <i>⚙️</i>Settings
+      </button>
+    </nav>
+  `;
+
+  showPage("home");
+  loadNotificationCount();
 }
 
+
+/* =========================================================
+   PAGE NAVIGATION
+   ========================================================= */
+
+async function showPage(page){
+  activePage = page;
+
+  document.querySelectorAll(".nav button")
+    .forEach(x=>x.classList.remove("active"));
+
+  const map = {
+    home:"navHome",
+    reels:"navReels",
+    profile:"navProfile",
+    settings:"navSettings"
+  };
+
+  if(map[page]){
+    document.getElementById(map[page])?.classList.add("active");
+  }
+
+  if(page==="home") await renderHome();
+  if(page==="reels") await renderReels();
+  if(page==="profile") await renderProfile();
+  if(page==="settings") renderSettings();
+}
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+async function renderHome(){
+  const main = document.getElementById("main");
+
+  main.innerHTML = `
+    <div class="card">
+      <div class="cardpad create-box">
+        <img class="avatar" src="${safe(profilePhoto(currentProfile))}">
+        <div class="create-input" onclick="openCreatePost()">
+          কী ভাবছেন, ${safe(profileName(currentProfile))}?
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="story-row">
+        <div class="story" onclick="openStoryUpload()">
+          <div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:35px">
+            ＋
+          </div>
+          <div class="story-name">Create Story</div>
+        </div>
+
+        <div id="storiesList"></div>
+      </div>
+    </div>
+
+    <div id="feed">
+      <div class="loading">Feed লোড হচ্ছে...</div>
+    </div>
+  `;
+
+  await loadStories();
+  await loadPosts();
+}
+
+async function loadPosts(){
+  const feed = document.getElementById("feed");
+
+  try{
+    /*
+      posts(*) ব্যবহার করা হয়েছে যাতে আপনার posts table-এর
+      অতিরিক্ত column থাকলেও code ভেঙে না যায়।
+    */
+    const {data,error} = await db
+      .from("posts")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(50);
+
+    if(error){
+      console.error(error);
+      feed.innerHTML = `
+        <div class="card empty">
+          <b>Post লোড করা যায়নি</b>
+          <p>${safe(error.message)}</p>
+          <button class="btn" onclick="loadPosts()">Retry</button>
+        </div>
+      `;
+      return;
+    }
+
+    postsCache = data || [];
+
+    if(!postsCache.length){
+      feed.innerHTML = `
+        <div class="card empty">
+          এখনো কোনো Post নেই।
+          <br><br>
+          <button class="btn" onclick="openCreatePost()">
+            প্রথম Post করুন
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    feed.innerHTML = "";
+
+    for(const post of postsCache){
+      feed.insertAdjacentHTML("beforeend",await postHTML(post));
+    }
+
+  }catch(e){
+    feed.innerHTML = `
+      <div class="card empty">
+        Error: ${safe(e.message)}
+      </div>
+    `;
+  }
+}
+
+async function postHTML(post){
+  const postId = post.id ?? post.post_id;
+  const ownerId = post.user_id;
+
+  let profile = null;
+
+  if(ownerId){
+    profile = await getProfile(ownerId);
+  }
+
+  const name = profileName(profile);
+  const photo = profilePhoto(profile);
+
+  let reactionCount = 0;
+  let commentCount = 0;
+  let userLiked = false;
+
+  try{
+    const r = await db
+      .from("post_reactions")
+      .select("user_id,reaction", {count:"exact"})
+      .eq("post_id",postId);
+
+    reactionCount = r.count || 0;
+    userLiked = (r.data || []).some(
+      x=>x.user_id===currentUser.id
+    );
+  }catch(e){}
+
+  try{
+    const c = await db
+      .from("comments")
+      .select("id",{count:"exact",head:true})
+      .eq("post_id",postId);
+
+    commentCount = c.count || 0;
+  }catch(e){}
+
+  const text = post.text || post.content || "";
+  const image = post.image_url || "";
+
+  return `
+    <article class="card" id="post-${safe(postId)}">
+
+      <div class="post-head">
+        <img class="avatar" src="${safe(photo)}">
+
+        <div class="post-user">
+          <b>${safe(name)}</b>
+          <div class="post-time">
+            ${formatDate(post.created_at)}
+            ${post.privacy ? " · " + safe(post.privacy) : ""}
+          </div>
+        </div>
+
+        <button class="post-menu"
+          onclick="postMenu('${safe(postId)}','${safe(ownerId)}')">
+          ⋯
+        </button>
+      </div>
+
+      ${text ? `<div class="post-text">${safe(text)}</div>` : ""}
+
+      ${
+        image
+        ? `<img class="post-image" src="${safe(image)}" loading="lazy">`
+        : ""
+      }
+
+      <div id="media-${safe(postId)}"></div>
+
+      <div class="post-stats">
+        <span>❤️ ${reactionCount}</span>
+        <span>💬 ${commentCount}</span>
+      </div>
+
+      <div class="post-actions">
+
+        <button
+          class="${userLiked ? "liked" : ""}"
+          onclick="togglePostLike('${safe(postId)}','${safe(ownerId)}',this)">
+          ❤️ Like
+        </button>
+
+        <button onclick="openPostComments('${safe(postId)}')">
+          💬 Comment
+        </button>
+
+        <button onclick="sharePost('${safe(postId)}')">
+          ↗ Share
+        </button>
+
+      </div>
+
+      <div id="comments-${safe(postId)}"></div>
+
+    </article>
+  `;
+}
+
+
+/* =========================================================
+   POST LIKE
+   ========================================================= */
+
+async function togglePostLike(postId,ownerId,button){
+  if(button.disabled) return;
+  button.disabled = true;
+
+  try{
+    const {data} = await db
+      .from("post_reactions")
+      .select("id")
+      .eq("post_id",postId)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+    if(data){
+      await db
+        .from("post_reactions")
+        .delete()
+        .eq("id",data.id);
+
+      button.classList.remove("liked");
+    }else{
+      await db
+        .from("post_reactions")
+        .insert({
+          post_id:postId,
+          user_id:currentUser.id,
+          reaction:"like"
+        });
+
+      button.classList.add("liked");
+
+      await notify(
+        ownerId,
+        `${profileName(currentProfile)} আপনার Post-এ Like দিয়েছেন ❤️`
+      );
+    }
+
+    await renderHome();
+
+  }catch(e){
+    toast(e.message);
+  }
+
+  button.disabled = false;
+}
+
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+
+async function openPostComments(postId){
+  currentCommentPost = postId;
+  currentCommentReel = null;
+
+  openModal(`
+    <div class="modalhead">
+      <span>Comments</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+      <div id="modalComments" class="comments">
+        Loading...
+      </div>
+
+      <div class="comment-box">
+        <input id="commentInput" placeholder="Comment লিখুন...">
+        <button class="btn" onclick="sendPostComment()">Send</button>
+      </div>
+    </div>
+  `);
+
+  await loadPostComments(postId);
+}
+
+async function loadPostComments(postId){
+  const box = document.getElementById("modalComments");
+  if(!box) return;
+
+  const {data,error} = await db
+    .from("comments")
+    .select("*")
+    .eq("post_id",postId)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    box.innerHTML = `<p>${safe(error.message)}</p>`;
+    return;
+  }
+
+  if(!data?.length){
+    box.innerHTML = `<div class="empty">এখনো কোনো Comment নেই</div>`;
+    return;
+  }
+
+  let html = "";
+
+  for(const c of data){
+    const p = await getProfile(c.user_id);
+
+    html += `
+      <div class="comment">
+        <b>${safe(profileName(p))}</b>
+        <p>${safe(c.comment || c.text || "")}</p>
+      </div>
+    `;
+  }
+
+  box.innerHTML = html;
+}
+
+async function sendPostComment(){
+  const input = document.getElementById("commentInput");
+  const text = input?.value.trim();
+
+  if(!text || !currentCommentPost) return;
+
+  const {error} = await db
+    .from("comments")
+    .insert({
+      post_id:currentCommentPost,
+      user_id:currentUser.id,
+      comment:text
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  const post = postsCache.find(
+    x=>(x.id ?? x.post_id)==currentCommentPost
+  );
+
+  if(post){
+    await notify(
+      post.user_id,
+      `${profileName(currentProfile)} আপনার Post-এ Comment করেছেন 💬`
+    );
+  }
+
+  input.value = "";
+  await loadPostComments(currentCommentPost);
+  toast("Comment added");
+}
+
+
+/* =========================================================
+   SHARE
+   ========================================================= */
+
+async function sharePost(postId){
+  const url = location.href.split("#")[0] + "#post-" + postId;
+
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:"My Social App",
+        text:"এই Post টি দেখুন",
+        url
+      });
+    }else{
+      await navigator.clipboard.writeText(url);
+      toast("Post link copied");
+    }
+  }catch(e){}
+}
+
+
+/* =========================================================
+   POST MENU
+   ========================================================= */
+
+async function postMenu(postId,ownerId){
+  if(ownerId===currentUser.id){
+    openModal(`
+      <div class="modalhead">
+        <span>Post Options</span>
+        <button class="close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modalbody">
+
+        <button class="btn secondary"
+          style="width:100%;margin-bottom:8px"
+          onclick="savePost('${safe(postId)}')">
+          🔖 Save Post
+        </button>
+
+        <button class="btn danger"
+          style="width:100%"
+          onclick="deletePost('${safe(postId)}')">
+          🗑 Delete Post
+        </button>
+
+      </div>
+    `);
+  }else{
+    openModal(`
+      <div class="modalhead">
+        <span>Post Options</span>
+        <button class="close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modalbody">
+
+        <button class="btn secondary"
+          style="width:100%;margin-bottom:8px"
+          onclick="savePost('${safe(postId)}')">
+          🔖 Save Post
+        </button>
+
+        <button class="btn danger"
+          style="width:100%"
+          onclick="blockUser('${safe(ownerId)}')">
+          🚫 Block User
+        </button>
+
+      </div>
+    `);
+  }
+}
+
+
+/* =========================================================
+   SAVE POST
+   ========================================================= */
+
+async function savePost(postId){
+  try{
+    const {error} = await db
+      .from("saved_posts")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id
+      });
+
+    if(error){
+      if(String(error.message).toLowerCase().includes("duplicate")){
+        toast("Already saved");
+      }else{
+        toast("Save করতে database table লাগবে: saved_posts");
+      }
+      return;
+    }
+
+    closeModal();
+    toast("Post saved 🔖");
+
+  }catch(e){
+    toast("Save Post এখনো database-এ তৈরি হয়নি");
+  }
+}
+
+
+/* =========================================================
+   DELETE POST
+   ========================================================= */
+
+async function deletePost(postId){
+  if(!confirm("এই Post delete করবেন?")) return;
+
+  const {error} = await db
+    .from("posts")
+    .delete()
+    .eq("id",postId)
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  closeModal();
+  toast("Post deleted");
+  await renderHome();
+}
+
+
+/* =========================================================
+   CREATE POST
+   ========================================================= */
+
+function openCreatePost(){
+  openModal(`
+    <div class="modalhead">
+      <span>Create Post</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <div class="formgroup">
+        <textarea id="newPostText"
+          placeholder="কী ভাবছেন?"></textarea>
+      </div>
+
+      <div class="formgroup">
+        <label>Photo</label>
+        <input id="postFile" type="file" accept="image/*">
+      </div>
+
+      <div class="formgroup">
+        <label>Privacy</label>
+        <select id="postPrivacy">
+          <option value="public">Public</option>
+          <option value="friends">Friends</option>
+          <option value="private">Only Me</option>
+        </select>
+      </div>
+
+      <button class="btn" style="width:100%" onclick="createPost()">
+        Publish Post
+      </button>
+
+    </div>
+  `);
+}
 
 async function createPost(){
+  const text = document.getElementById("newPostText").value.trim();
+  const file = document.getElementById("postFile").files[0];
+  const privacy = document.getElementById("postPrivacy").value;
 
-if(!user){
+  if(!text && !file){
+    toast("Text অথবা Photo দিন");
+    return;
+  }
 
-toast("Login করুন");
-return;
+  let imageUrl = null;
 
-}
+  if(file){
+    const path =
+      currentUser.id + "/" +
+      Date.now() + "_" +
+      file.name.replace(/[^\w.\-]/g,"_");
 
-const text=
-document.getElementById("postText")
-.value.trim();
+    const {error:uploadError} = await db.storage
+      .from("posts")
+      .upload(path,file);
 
-const file=
-document.getElementById("postImage")
-.files[0];
+    if(uploadError){
+      toast("Photo upload error: " + uploadError.message);
+      return;
+    }
 
-if(!text && !file){
+    const {data:urlData} = db.storage
+      .from("posts")
+      .getPublicUrl(path);
 
-alert("Text অথবা Photo দিন");
-return;
+    imageUrl = urlData.publicUrl;
+  }
 
-}
+  const {error} = await db
+    .from("posts")
+    .insert({
+      user_id:currentUser.id,
+      text:text,
+      image_url:imageUrl,
+      privacy:privacy
+    });
 
-let imageUrl=null;
+  if(error){
+    toast(error.message);
+    return;
+  }
 
-
-if(file){
-
-const path=
-`${user.id}/${Date.now()}_${file.name}`;
-
-const upload=
-await db.storage
-.from("posts")
-.upload(path,file,{upsert:false});
-
-if(upload.error){
-
-alert("Photo upload error: "+upload.error.message);
-return;
-
-}
-
-imageUrl=
-db.storage
-.from("posts")
-.getPublicUrl(path)
-.data.publicUrl;
-
-}
-
-
-const {error}=
-await db
-.from("posts")
-.insert({
-user_id:user.id,
-text:text,
-image_url:imageUrl
-});
-
-
-if(error){
-
-alert("Post error: "+error.message);
-return;
-
-}
-
-document.getElementById("postText").value="";
-document.getElementById("postImage").value="";
-
-closeModal("postModal");
-
-toast("Post published ✅");
-
-loadFeed();
-
+  closeModal();
+  toast("Post published 🎉");
+  await renderHome();
 }
 
 
-async function loadFeed(){
+/* =========================================================
+   STORIES
+   ========================================================= */
 
-const box=document.getElementById("feed");
+async function loadStories(){
+  const box = document.getElementById("storiesList");
+  if(!box) return;
 
-box.innerHTML=
-`<div class="loading">Feed লোড হচ্ছে...</div>`;
+  const {data,error} = await db
+    .from("stories")
+    .select("*")
+    .gt("expires_at",new Date().toISOString())
+    .order("created_at",{ascending:false})
+    .limit(30);
 
+  if(error){
+    console.log("Stories:",error);
+    return;
+  }
 
-if(!user){
+  let html = "";
 
-box.innerHTML=
-`<div class="empty">Login করুন</div>`;
+  for(const s of data || []){
+    const p = await getProfile(s.user_id);
 
-return;
+    html += `
+      <div class="story" onclick="viewStory('${safe(s.id)}')">
+        ${
+          s.media_type==="video"
+          ? `<video src="${safe(s.media_url)}" muted></video>`
+          : `<img src="${safe(s.media_url)}">`
+        }
+        <div class="story-name">
+          ${safe(profileName(p))}
+        </div>
+      </div>
+    `;
+  }
 
+  box.innerHTML = html;
+}
+
+function openStoryUpload(){
+  openModal(`
+    <div class="modalhead">
+      <span>Create Story</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <div class="formgroup">
+        <label>Photo / Video</label>
+        <input id="storyFile" type="file" accept="image/*,video/*">
+      </div>
+
+      <div class="formgroup">
+        <input id="storyCaption" placeholder="Caption">
+      </div>
+
+      <button class="btn" style="width:100%"
+        onclick="uploadStory()">
+        Upload Story
+      </button>
+
+    </div>
+  `);
+}
+
+async function uploadStory(){
+  const file = document.getElementById("storyFile").files[0];
+  const caption = document.getElementById("storyCaption").value.trim();
+
+  if(!file){
+    toast("Photo বা Video নির্বাচন করুন");
+    return;
+  }
+
+  const type = file.type.startsWith("video/")
+    ? "video"
+    : "image";
+
+  const path =
+    currentUser.id + "/" +
+    Date.now() + "_" +
+    file.name.replace(/[^\w.\-]/g,"_");
+
+  const {error:upError} = await db.storage
+    .from("stories")
+    .upload(path,file);
+
+  if(upError){
+    toast(upError.message);
+    return;
+  }
+
+  const {data:urlData} = db.storage
+    .from("stories")
+    .getPublicUrl(path);
+
+  const {error} = await db
+    .from("stories")
+    .insert({
+      user_id:currentUser.id,
+      media_url:urlData.publicUrl,
+      media_type:type,
+      caption
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  closeModal();
+  toast("Story uploaded");
+  await renderHome();
+}
+
+async function viewStory(storyId){
+  const {data,error} = await db
+    .from("stories")
+    .select("*")
+    .eq("id",storyId)
+    .single();
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  if(data.user_id!==currentUser.id){
+    await db.from("story_views").upsert({
+      story_id:storyId,
+      user_id:currentUser.id
+    });
+  }
+
+  openModal(`
+    <div class="modalhead">
+      <span>Story</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody" style="padding:0;background:#000">
+
+      ${
+        data.media_type==="video"
+        ? `<video src="${safe(data.media_url)}"
+             controls autoplay style="width:100%;max-height:75vh"></video>`
+        : `<img src="${safe(data.media_url)}"
+             style="width:100%;max-height:75vh;object-fit:contain">`
+      }
+
+      ${
+        data.caption
+        ? `<div style="padding:12px;color:white">
+             ${safe(data.caption)}
+           </div>`
+        : ""
+      }
+
+    </div>
+  `);
 }
 
 
-const {data,error}=
-await db
-.from("posts")
-.select("id,user_id,text,image_url,created_at")
-.order("created_at",{ascending:false})
-.limit(50);
+/* =========================================================
+   REELS
+   ========================================================= */
 
+async function renderReels(){
+  const main = document.getElementById("main");
 
-if(error){
+  main.innerHTML = `
+    <div class="card">
+      <div class="cardpad" style="display:flex;justify-content:space-between;align-items:center">
+        <b>🎬 Reels</b>
+        <button class="btn" onclick="openReelUpload()">＋ Reel</button>
+      </div>
+    </div>
 
-box.innerHTML=`
+    <div id="reelsContainer" class="reels">
+      <div class="loading">Reels লোড হচ্ছে...</div>
+    </div>
+  `;
 
-<div class="card">
-
-❌ Feed Error
-
-<div class="error-box">
-${safe(error.message)}
-</div>
-
-</div>
-
-`;
-
-return;
-
+  await loadReels();
 }
-
-
-if(!data || !data.length){
-
-box.innerHTML=
-`<div class="empty">এখনো কোনো Post নেই</div>`;
-
-return;
-
-}
-
-
-box.innerHTML=
-data.map(postCard).join("");
-
-}
-
-
-function postCard(post){
-
-return `
-
-<div class="card">
-
-<div class="user-row">
-
-<div class="avatar">U</div>
-
-<div>
-
-<div class="username">User</div>
-
-<div class="time">
-${safe(post.created_at)}
-</div>
-
-</div>
-
-</div>
-
-
-<div class="post-text">
-${safe(post.text || "")}
-</div>
-
-
-${
-post.image_url
-?
-`<img
-class="post-image"
-src="${safe(post.image_url)}"
-loading="lazy">`
-:""
-}
-
-
-<div class="actions">
-
-<button
-class="action-btn"
-onclick="likePost(${post.id})">
-❤️ Like
-</button>
-
-<button
-class="action-btn"
-onclick="openPostComments(${post.id})">
-💬 Comment
-</button>
-
-<button
-class="action-btn"
-onclick="sharePost(${post.id})">
-↗ Share
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-
-async function likePost(postId){
-
-if(!user){
-toast("Login করুন");
-return;
-}
-
-
-const {data}=await db
-.from("post_reactions")
-.select("id")
-.eq("post_id",postId)
-.eq("user_id",user.id)
-.maybeSingle();
-
-
-if(data){
-
-await db
-.from("post_reactions")
-.delete()
-.eq("id",data.id);
-
-toast("Like removed");
-
-}else{
-
-const {error}=
-await db
-.from("post_reactions")
-.insert({
-post_id:postId,
-user_id:user.id,
-reaction:"like"
-});
-
-if(error){
-
-toast(error.message);
-return;
-
-}
-
-toast("Liked ❤️");
-
-}
-
-}
-
-
-async function sharePost(id){
-
-const url=
-location.href.split("#")[0]+"?post="+id;
-
-if(navigator.share){
-
-try{
-
-await navigator.share({
-title:"My Social App",
-url:url
-});
-
-}catch(e){}
-
-}else{
-
-try{
-
-await navigator.clipboard.writeText(url);
-
-toast("Link copied");
-
-}catch(e){
-
-prompt("Copy link:",url);
-
-}
-
-}
-
-}
-
-
-/* =====================================================
-COMMENTS
-===================================================== */
-
-async function openPostComments(id){
-
-currentCommentType="post";
-currentCommentId=id;
-
-document.getElementById("commentModal")
-.classList.add("show");
-
-loadComments();
-
-}
-
-
-async function openReelComments(id){
-
-currentCommentType="reel";
-currentCommentId=id;
-
-document.getElementById("commentModal")
-.classList.add("show");
-
-loadComments();
-
-}
-
-
-async function loadComments(){
-
-const box=document.getElementById("commentsList");
-
-box.innerHTML=
-`<div class="loading">Comments loading...</div>`;
-
-
-const table=
-currentCommentType==="reel"
-?"reel_comments"
-:"comments";
-
-const field=
-currentCommentType==="reel"
-?"reel_id"
-:"post_id";
-
-
-const {data,error}=
-await db
-.from(table)
-.select("*")
-.eq(field,currentCommentId)
-.order("created_at",{ascending:true});
-
-
-if(error){
-
-box.innerHTML=`
-<div class="error-box">
-${safe(error.message)}
-</div>`;
-return;
-
-}
-
-
-if(!data || !data.length){
-
-box.innerHTML=
-`<div class="empty">No comments yet</div>`;
-
-return;
-
-}
-
-
-box.innerHTML=
-data.map(c=>`
-
-<div class="comment-item">
-
-<div class="comment-name">
-User
-</div>
-
-<div>
-${safe(c.comment || "")}
-</div>
-
-</div>
-
-`).join("");
-
-}
-
-
-async function submitComment(){
-
-if(!user){
-
-toast("Login করুন");
-return;
-
-}
-
-const input=
-document.getElementById("commentInput");
-
-const text=input.value.trim();
-
-if(!text)return;
-
-
-const table=
-currentCommentType==="reel"
-?"reel_comments"
-:"comments";
-
-
-const payload=
-currentCommentType==="reel"
-?
-{
-reel_id:currentCommentId,
-user_id:user.id,
-comment:text
-}
-:
-{
-post_id:currentCommentId,
-user_id:user.id,
-comment:text
-};
-
-
-const {error}=
-await db
-.from(table)
-.insert(payload);
-
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-input.value="";
-
-loadComments();
-
-}
-
-
-/* =====================================================
-REEL UPLOAD
-===================================================== */
-
-function openReelUpload(){
-
-document.getElementById("reelModal")
-.classList.add("show");
-
-}
-
-
-async function uploadReel(){
-
-if(!user){
-
-toast("Login করুন");
-return;
-
-}
-
-const file=
-document.getElementById("reelFile")
-.files[0];
-
-const caption=
-document.getElementById("reelCaption")
-.value.trim();
-
-const audio=
-document.getElementById("audioName")
-.value.trim();
-
-const status=
-document.getElementById("uploadStatus");
-
-
-if(!file){
-
-status.textContent="Video নির্বাচন করুন";
-return;
-
-}
-
-
-status.textContent="Video upload হচ্ছে...";
-
-
-const ext=
-file.name.split(".").pop();
-
-const path=
-`${user.id}/${Date.now()}.${ext}`;
-
-
-const upload=
-await db.storage
-.from("reels")
-.upload(
-path,
-file,
-{
-upsert:false,
-contentType:file.type
-}
-);
-
-
-if(upload.error){
-
-status.innerHTML=
-`<span style="color:red">
-${safe(upload.error.message)}
-</span>`;
-
-return;
-
-}
-
-
-const videoUrl=
-db.storage
-.from("reels")
-.getPublicUrl(path)
-.data.publicUrl;
-
-
-const {error}=
-await db
-.from("reels")
-.insert({
-
-user_id:user.id,
-video_url:videoUrl,
-caption:caption,
-views:0,
-audio_name:audio || null
-
-});
-
-
-if(error){
-
-status.innerHTML=
-`<span style="color:red">
-${safe(error.message)}
-</span>`;
-
-return;
-
-}
-
-
-status.innerHTML=
-`<span style="color:green">
-Reel uploaded ✅
-</span>`;
-
-
-document.getElementById("reelFile").value="";
-document.getElementById("reelCaption").value="";
-document.getElementById("audioName").value="";
-
-
-setTimeout(()=>{
-
-closeModal("reelModal");
-showPage("reels");
-
-},800);
-
-}
-
-
-/* =====================================================
-REELS LOAD
-===================================================== */
 
 async function loadReels(){
+  const box = document.getElementById("reelsContainer");
 
-const box=
-document.getElementById("reelsList");
+  try{
+    const {data,error} = await db
+      .from("reels")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(50);
 
+    if(error){
+      box.innerHTML = `
+        <div class="card empty">
+          <b>Reels লোড করা যায়নি</b>
+          <p>${safe(error.message)}</p>
+          <button class="btn" onclick="loadReels()">Retry</button>
+        </div>
+      `;
+      return;
+    }
 
-box.innerHTML=`
+    reelsCache = data || [];
 
-<div class="loading" style="color:white">
-Reels লোড হচ্ছে...
-</div>
+    if(!reelsCache.length){
+      box.innerHTML = `
+        <div class="card empty">
+          এখনো কোনো Reel নেই।
+          <br><br>
+          <button class="btn" onclick="openReelUpload()">
+            প্রথম Reel Upload করুন
+          </button>
+        </div>
+      `;
+      return;
+    }
 
-`;
+    let html = "";
 
+    for(const reel of reelsCache){
+      const p = await getProfile(reel.user_id);
 
-try{
+      const {data:likes} = await db
+        .from("reel_likes")
+        .select("id,user_id")
+        .eq("reel_id",reel.id);
 
-if(!user){
+      const liked = (likes || [])
+        .some(x=>x.user_id===currentUser.id);
 
-box.innerHTML=`
+      const likeCount = likes?.length || 0;
 
-<div class="reel-error">
-<h3>Login করুন</h3>
-</div>
+      html += `
+        <div class="reel" data-reel-id="${safe(reel.id)}">
 
-`;
+          <video
+            src="${safe(reel.video_url)}"
+            playsinline
+            muted
+            loop
+            preload="metadata"
+            onclick="toggleReelSound(this)"
+            onerror="this.parentElement.insertAdjacentHTML('beforeend','<div style=&quot;position:absolute;top:50%;left:10%;right:10%;color:white;text-align:center&quot;>Video load হয়নি</div>')">
+          </video>
 
-return;
+          <div class="reel-mute">
+            <button onclick="toggleReelSound(this.parentElement.parentElement.querySelector('video'))">
+              🔇
+            </button>
+          </div>
 
+          <div class="reel-info">
+            <b>@${safe(profileName(p))}</b>
+
+            <div class="reel-caption">
+              ${safe(reel.caption || "")}
+            </div>
+
+            ${
+              reel.audio_name
+              ? `<div style="margin-top:5px">🎵 ${safe(reel.audio_name)}</div>`
+              : ""
+            }
+          </div>
+
+          <div class="reel-actions">
+
+            <button
+              class="${liked ? "liked" : ""}"
+              onclick="toggleReelLike('${safe(reel.id)}','${safe(reel.user_id)}',this)">
+              ❤️
+              <small>${likeCount}</small>
+            </button>
+
+            <button onclick="openReelComments('${safe(reel.id)}')">
+              💬
+              <small>Comment</small>
+            </button>
+
+            <button onclick="shareReel('${safe(reel.id)}')">
+              ↗
+              <small>Share</small>
+            </button>
+
+            ${
+              reel.user_id===currentUser.id
+              ? `<button onclick="deleteReel('${safe(reel.id)}')">
+                   🗑
+                 </button>`
+              : ""
+            }
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    box.innerHTML = html;
+    setupReelObserver();
+
+  }catch(e){
+    box.innerHTML = `
+      <div class="empty">${safe(e.message)}</div>
+    `;
+  }
 }
-
-
-/* SUPABASE QUERY */
-
-const query=
-db
-.from("reels")
-.select(`
-id,
-user_id,
-video_url,
-caption,
-created_at,
-views,
-audio_name
-`)
-.order("created_at",{ascending:false})
-.limit(50);
-
-
-/* TIMEOUT */
-
-const timeout=
-new Promise((_,reject)=>{
-
-setTimeout(()=>{
-
-reject(
-new Error(
-"Supabase থেকে response আসছে না। Internet / RLS / Supabase check করুন।"
-)
-);
-
-},15000);
-
-});
-
-
-const result=
-await Promise.race([
-query,
-timeout
-]);
-
-
-const data=result.data;
-const error=result.error;
-
-
-if(error){
-
-box.innerHTML=`
-
-<div class="reel-error">
-
-<h3>❌ Reels লোড হয়নি</h3>
-
-<div class="error-box">
-${safe(error.message)}
-</div>
-
-<button
-class="primary"
-onclick="loadReels()">
-🔄 আবার চেষ্টা করুন
-</button>
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-if(!data || data.length===0){
-
-box.innerHTML=`
-
-<div class="reel-error">
-
-<h3>🎬 এখনো কোনো Reel নেই</h3>
-
-<p>প্রথম Reel Upload করুন</p>
-
-<button
-class="primary"
-onclick="openReelUpload()">
-＋ Upload Reel
-</button>
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-box.innerHTML=
-data.map(reelCard).join("");
-
-
-setupReelObserver();
-
-
-for(const reel of data){
-
-try{
-
-await reelStats(reel.id);
-
-}catch(e){
-
-console.log(e);
-
-}
-
-}
-
-
-}catch(e){
-
-console.error(e);
-
-
-box.innerHTML=`
-
-<div class="reel-error">
-
-<h3>❌ Reels Error</h3>
-
-<div class="error-box">
-${safe(e.message)}
-</div>
-
-<button
-class="primary"
-onclick="loadReels()">
-🔄 আবার চেষ্টা করুন
-</button>
-
-</div>
-
-`;
-
-}
-
-}
-
-
-/* =====================================================
-REEL CARD
-===================================================== */
-
-function reelCard(reel){
-
-return `
-
-<div
-class="reel"
-data-reel-id="${reel.id}">
-
-
-<video
-class="reel-video"
-src="${safe(reel.video_url)}"
-loop
-muted
-playsinline
-preload="metadata"
-onclick="toggleReelSound(this)">
-</video>
-
-
-<div class="reel-top">
-
-<button onclick="showPage('home')">
-←
-</button>
-
-<button onclick="openReelUpload()">
-＋
-</button>
-
-</div>
-
-
-<div class="reel-info">
-
-<div class="username">
-👤 User
-</div>
-
-${
-reel.caption
-?
-`<div class="reel-caption">
-${safe(reel.caption)}
-</div>`
-:""
-}
-
-
-${
-reel.audio_name
-?
-`<div style="margin-top:7px">
-🎵 ${safe(reel.audio_name)}
-</div>`
-:""
-}
-
-</div>
-
-
-<div class="reel-actions">
-
-<button
-class="reel-action"
-onclick="likeReel(${reel.id},this)">
-❤️
-<small class="like-count">0</small>
-</button>
-
-
-<button
-class="reel-action"
-onclick="openReelComments(${reel.id})">
-💬
-<small>Comment</small>
-</button>
-
-
-<button
-class="reel-action"
-onclick="shareReel(${reel.id})">
-↗
-<small>Share</small>
-</button>
-
-
-<button
-class="reel-action"
-data-sound-button="true"
-onclick="toggleReelSound(this)">
-🔇
-</button>
-
-
-</div>
-
-</div>
-
-`;
-
-}
-
-
-/* =====================================================
-REEL OBSERVER
-===================================================== */
 
 function setupReelObserver(){
+  if(reelObserver) reelObserver.disconnect();
 
-if(reelObserver){
-reelObserver.disconnect();
+  reelObserver = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      const video = entry.target.querySelector("video");
+
+      if(entry.isIntersecting){
+        document.querySelectorAll(".reel video")
+          .forEach(v=>{
+            if(v!==video){
+              v.pause();
+            }
+          });
+
+        video.play().catch(()=>{});
+
+        const id = entry.target.dataset.reelId;
+        incrementReelView(id);
+      }else{
+        video.pause();
+      }
+    });
+  },{
+    threshold:.7
+  });
+
+  document.querySelectorAll(".reel")
+    .forEach(x=>reelObserver.observe(x));
+}
+
+async function incrementReelView(reelId){
+  const key = "reel_view_" + reelId;
+
+  if(sessionStorage.getItem(key)) return;
+
+  sessionStorage.setItem(key,"1");
+
+  const reel = reelsCache.find(x=>String(x.id)===String(reelId));
+
+  if(!reel) return;
+
+  try{
+    await db
+      .from("reels")
+      .update({
+        views:Number(reel.views || 0)+1
+      })
+      .eq("id",reelId);
+  }catch(e){
+    console.log(e);
+  }
+}
+
+function toggleReelSound(video){
+  if(!video) return;
+
+  video.muted = !video.muted;
+
+  const btn =
+    video.parentElement.querySelector(".reel-mute button");
+
+  if(btn){
+    btn.textContent = video.muted ? "🔇" : "🔊";
+  }
+
+  if(video.paused){
+    video.play().catch(()=>{});
+  }
+}
+
+async function toggleReelLike(reelId,ownerId,button){
+  const {data} = await db
+    .from("reel_likes")
+    .select("id")
+    .eq("reel_id",reelId)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(data){
+    await db
+      .from("reel_likes")
+      .delete()
+      .eq("id",data.id);
+
+    button.classList.remove("liked");
+  }else{
+    await db
+      .from("reel_likes")
+      .insert({
+        reel_id:reelId,
+        user_id:currentUser.id
+      });
+
+    button.classList.add("liked");
+
+    await notify(
+      ownerId,
+      `${profileName(currentProfile)} আপনার Reel-এ Like দিয়েছেন ❤️`
+    );
+  }
+
+  await loadReels();
+}
+
+async function openReelComments(reelId){
+  currentCommentReel = reelId;
+  currentCommentPost = null;
+
+  openModal(`
+    <div class="modalhead">
+      <span>Reel Comments</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+      <div id="modalReelComments" class="comments">
+        Loading...
+      </div>
+
+      <div class="comment-box">
+        <input id="reelCommentInput"
+          placeholder="Comment লিখুন...">
+        <button class="btn" onclick="sendReelComment()">
+          Send
+        </button>
+      </div>
+    </div>
+  `);
+
+  await loadReelComments(reelId);
+}
+
+async function loadReelComments(reelId){
+  const box = document.getElementById("modalReelComments");
+  if(!box) return;
+
+  const {data,error} = await db
+    .from("reel_comments")
+    .select("*")
+    .eq("reel_id",reelId)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    box.innerHTML = safe(error.message);
+    return;
+  }
+
+  if(!data?.length){
+    box.innerHTML = `<div class="empty">কোনো Comment নেই</div>`;
+    return;
+  }
+
+  let html = "";
+
+  for(const c of data){
+    const p = await getProfile(c.user_id);
+
+    html += `
+      <div class="comment">
+        <b>${safe(profileName(p))}</b>
+        <p>${safe(c.comment || "")}</p>
+      </div>
+    `;
+  }
+
+  box.innerHTML = html;
+}
+
+async function sendReelComment(){
+  const input = document.getElementById("reelCommentInput");
+  const text = input.value.trim();
+
+  if(!text || !currentCommentReel) return;
+
+  const reel = reelsCache.find(
+    x=>String(x.id)===String(currentCommentReel)
+  );
+
+  const {error} = await db
+    .from("reel_comments")
+    .insert({
+      reel_id:currentCommentReel,
+      user_id:currentUser.id,
+      comment:text
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  if(reel){
+    await notify(
+      reel.user_id,
+      `${profileName(currentProfile)} আপনার Reel-এ Comment করেছেন 💬`
+    );
+  }
+
+  input.value = "";
+  await loadReelComments(currentCommentReel);
+}
+
+async function shareReel(reelId){
+  const url = location.href.split("#")[0] + "#reel-" + reelId;
+
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:"My Social App Reel",
+        text:"এই Reel টি দেখুন",
+        url
+      });
+    }else{
+      await navigator.clipboard.writeText(url);
+      toast("Reel link copied");
+    }
+  }catch(e){}
+}
+
+async function deleteReel(reelId){
+  if(!confirm("এই Reel delete করবেন?")) return;
+
+  const {error} = await db
+    .from("reels")
+    .delete()
+    .eq("id",reelId)
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  toast("Reel deleted");
+  await loadReels();
+}
+
+function openReelUpload(){
+  openModal(`
+    <div class="modalhead">
+      <span>Upload Reel</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <div class="formgroup">
+        <label>Video</label>
+        <input id="reelFile" type="file" accept="video/*">
+      </div>
+
+      <div class="formgroup">
+        <label>Caption</label>
+        <textarea id="reelCaption"
+          placeholder="Reel caption"></textarea>
+      </div>
+
+      <div class="formgroup">
+        <label>Audio Name</label>
+        <input id="audioName"
+          placeholder="Original sound">
+      </div>
+
+      <button class="btn" style="width:100%"
+        onclick="uploadReel()">
+        Upload Reel
+      </button>
+
+    </div>
+  `);
+}
+
+async function uploadReel(){
+  const file = document.getElementById("reelFile").files[0];
+  const caption = document.getElementById("reelCaption").value.trim();
+  const audioName = document.getElementById("audioName").value.trim();
+
+  if(!file){
+    toast("Video নির্বাচন করুন");
+    return;
+  }
+
+  if(!file.type.startsWith("video/")){
+    toast("শুধু Video upload করুন");
+    return;
+  }
+
+  const path =
+    currentUser.id + "/" +
+    Date.now() + "_" +
+    file.name.replace(/[^\w.\-]/g,"_");
+
+  const {error:uploadError} = await db.storage
+    .from("reels")
+    .upload(path,file);
+
+  if(uploadError){
+    toast(uploadError.message);
+    return;
+  }
+
+  const {data:urlData} = db.storage
+    .from("reels")
+    .getPublicUrl(path);
+
+  const {error} = await db
+    .from("reels")
+    .insert({
+      user_id:currentUser.id,
+      video_url:urlData.publicUrl,
+      caption:caption,
+      audio_name:audioName,
+      views:0
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  closeModal();
+  toast("Reel uploaded 🎬");
+  await renderReels();
 }
 
 
-const videos=
-document.querySelectorAll(".reel-video");
+/* =========================================================
+   PROFILE
+   ========================================================= */
 
+async function renderProfile(){
+  const main = document.getElementById("main");
 
-reelObserver=
-new IntersectionObserver(
-entries=>{
+  await refreshProfile();
 
-entries.forEach(entry=>{
+  const p = currentProfile || {};
+  const name = profileName(p);
 
-const video=entry.target;
+  let postCount = 0;
+  let followers = 0;
+  let following = 0;
 
+  try{
+    const q = await db
+      .from("posts")
+      .select("id",{count:"exact",head:true})
+      .eq("user_id",currentUser.id);
 
-if(entry.isIntersecting){
+    postCount = q.count || 0;
+  }catch(e){}
 
-video.muted=true;
+  try{
+    const q = await db
+      .from("follows")
+      .select("id",{count:"exact",head:true})
+      .eq("following_id",currentUser.id);
 
-video.play().catch(()=>{});
+    followers = q.count || 0;
+  }catch(e){}
 
-const reel=
-video.closest(".reel");
+  try{
+    const q = await db
+      .from("follows")
+      .select("id",{count:"exact",head:true})
+      .eq("follower_id",currentUser.id);
 
-if(reel){
+    following = q.count || 0;
+  }catch(e){}
 
-increaseView(
-reel.dataset.reelId
-);
+  main.innerHTML = `
+    <div class="card">
 
+      <div class="profile-cover">
+
+        ${
+          p.cover_photo
+          ? `<img class="cover-img"
+               src="${safe(p.cover_photo)}">`
+          : ""
+        }
+
+        <img
+          class="profile-photo"
+          src="${safe(profilePhoto(p))}">
+
+      </div>
+
+      <div class="profile-info">
+
+        <div class="profile-name">
+          ${safe(name)}
+        </div>
+
+        <div class="profile-email">
+          ${safe(p.email || currentUser.email || "")}
+        </div>
+
+        ${
+          p.bio
+          ? `<p>${safe(p.bio)}</p>`
+          : ""
+        }
+
+        <div class="stats">
+
+          <div class="stat">
+            <b>${postCount}</b>
+            <span>Posts</span>
+          </div>
+
+          <div class="stat">
+            <b>${followers}</b>
+            <span>Followers</span>
+          </div>
+
+          <div class="stat">
+            <b>${following}</b>
+            <span>Following</span>
+          </div>
+
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn" onclick="openEditProfile()">
+            ✏️ Edit Profile
+          </button>
+
+          <button class="btn secondary"
+            onclick="showMyPosts()">
+            📄 My Posts
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="profilePosts"></div>
+  `;
+
+  await showMyPosts();
 }
 
-}else{
+async function showMyPosts(){
+  const box = document.getElementById("profilePosts");
+  if(!box) return;
 
-video.pause();
+  const {data,error} = await db
+    .from("posts")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .order("created_at",{ascending:false});
 
-}
+  if(error){
+    box.innerHTML = `
+      <div class="card empty">
+        ${safe(error.message)}
+      </div>
+    `;
+    return;
+  }
 
-});
+  if(!data?.length){
+    box.innerHTML = `
+      <div class="card empty">
+        আপনি এখনো কোনো Post করেননি।
+      </div>
+    `;
+    return;
+  }
 
-},
-{threshold:.7}
-);
+  box.innerHTML = "";
 
-
-videos.forEach(video=>{
-reelObserver.observe(video);
-});
-
-}
-
-
-/* =====================================================
-SOUND
-===================================================== */
-
-function toggleReelSound(element){
-
-let video=null;
-
-
-if(element.tagName==="VIDEO"){
-
-video=element;
-
-}else{
-
-const reel=
-element.closest(".reel");
-
-if(reel){
-
-video=
-reel.querySelector("video");
-
-}
-
-}
-
-
-if(!video)return;
-
-
-video.muted=!video.muted;
-
-
-const reel=
-video.closest(".reel");
-
-
-if(reel){
-
-const btn=
-reel.querySelector(
-'[data-sound-button="true"]'
-);
-
-
-if(btn){
-
-btn.firstChild.textContent=
-video.muted
-?"🔇"
-:"🔊";
-
-}
-
-}
-
-}
-
-
-/* =====================================================
-REEL VIEW
-===================================================== */
-
-async function increaseView(id){
-
-try{
-
-const {data}=
-await db
-.from("reels")
-.select("views")
-.eq("id",id)
-.single();
-
-
-if(!data)return;
-
-
-await db
-.from("reels")
-.update({
-views:(data.views || 0)+1
-})
-.eq("id",id);
-
-
-}catch(e){
-
-console.log(e);
-
-}
-
-}
-
-
-/* =====================================================
-REEL LIKE
-===================================================== */
-
-async function likeReel(id,button){
-
-if(!user){
-
-toast("Login করুন");
-return;
-
+  for(const post of data){
+    box.insertAdjacentHTML(
+      "beforeend",
+      await postHTML(post)
+    );
+  }
 }
 
 
-const {data,error}=
-await db
-.from("reel_likes")
-.select("id")
-.eq("reel_id",id)
-.eq("user_id",user.id)
-.maybeSingle();
+/* =========================================================
+   EDIT PROFILE
+   ========================================================= */
 
+function openEditProfile(){
+  const p = currentProfile || {};
 
-if(error){
+  openModal(`
+    <div class="modalhead">
+      <span>Edit Profile</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
 
-toast(error.message);
-return;
+    <div class="modalbody">
 
+      <div class="formgroup">
+        <label>Name</label>
+        <input id="editName"
+          value="${safe(p.name || "")}">
+      </div>
+
+      <div class="formgroup">
+        <label>Bio</label>
+        <textarea id="editBio">${safe(p.bio || "")}</textarea>
+      </div>
+
+      <div class="formgroup">
+        <label>Profile Photo</label>
+        <input id="editProfilePhoto"
+          type="file"
+          accept="image/*">
+      </div>
+
+      <div class="formgroup">
+        <label>Cover Photo</label>
+        <input id="editCoverPhoto"
+          type="file"
+          accept="image/*">
+      </div>
+
+      <button class="btn"
+        style="width:100%"
+        onclick="saveProfile()">
+        Save Changes
+      </button>
+
+    </div>
+  `);
+}
+
+async function uploadProfileImage(file,folder){
+  if(!file) return null;
+
+  const path =
+    currentUser.id + "/" +
+    Date.now() + "_" +
+    file.name.replace(/[^\w.\-]/g,"_");
+
+  const {error} = await db.storage
+    .from("profiles")
+    .upload(path,file,{upsert:true});
+
+  if(error) throw error;
+
+  const {data} = db.storage
+    .from("profiles")
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+async function saveProfile(){
+  const name = document.getElementById("editName").value.trim();
+  const bio = document.getElementById("editBio").value.trim();
+
+  const profileFile =
+    document.getElementById("editProfilePhoto").files[0];
+
+  const coverFile =
+    document.getElementById("editCoverPhoto").files[0];
+
+  const update = {
+    name,
+    bio
+  };
+
+  try{
+    if(profileFile){
+      update.profile_photo =
+        await uploadProfileImage(profileFile,"profile");
+    }
+
+    if(coverFile){
+      update.cover_photo =
+        await uploadProfileImage(coverFile,"cover");
+    }
+
+    const {error} = await db
+      .from("my social app")
+      .update(update)
+      .eq("id",currentUser.id);
+
+    if(error){
+      toast(error.message);
+      return;
+    }
+
+    closeModal();
+    await refreshProfile();
+    toast("Profile updated");
+    await renderProfile();
+
+  }catch(e){
+    toast("Profile photo upload error: " + e.message);
+  }
 }
 
 
-if(data){
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
-await db
-.from("reel_likes")
-.delete()
-.eq("id",data.id);
+async function doSearch(){
+  const input = document.getElementById("globalSearch");
+  const q = input.value.trim();
 
-button.classList.remove("liked");
+  if(!q){
+    toast("Search লিখুন");
+    return;
+  }
 
-}else{
+  openModal(`
+    <div class="modalhead">
+      <span>Search: ${safe(q)}</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
 
-const result=
-await db
-.from("reel_likes")
-.insert({
-reel_id:id,
-user_id:user.id
-});
+    <div class="modalbody" id="searchResults">
+      Searching...
+    </div>
+  `);
 
+  const {data,error} = await db
+    .from("my social app")
+    .select("*")
+    .ilike("name","%"+q+"%")
+    .limit(30);
 
-if(result.error){
+  const box = document.getElementById("searchResults");
 
-toast(result.error.message);
-return;
+  if(error){
+    box.innerHTML = safe(error.message);
+    return;
+  }
 
-}
+  if(!data?.length){
+    box.innerHTML = `
+      <div class="empty">
+        কোনো User পাওয়া যায়নি।
+      </div>
+    `;
+    return;
+  }
 
-button.classList.add("liked");
+  box.innerHTML = data.map(p=>`
+    <div class="search-result">
 
-}
+      <img class="avatar"
+        src="${safe(profilePhoto(p))}">
 
+      <div style="flex:1">
+        <b>${safe(profileName(p))}</b>
+        <div style="color:var(--muted);font-size:12px">
+          ${safe(p.email || "")}
+        </div>
+      </div>
 
-const count=
-await db
-.from("reel_likes")
-.select("id",{count:"exact",head:true})
-.eq("reel_id",id);
+      ${
+        p.id!==currentUser.id
+        ? `<button class="btn"
+            onclick="followUser('${safe(p.id)}',this)">
+             Follow
+           </button>`
+        : ""
+      }
 
-
-const countEl=
-button.querySelector(".like-count");
-
-
-if(countEl){
-
-countEl.textContent=
-count.count || 0;
-
-}
-
-}
-
-
-async function reelStats(id){
-
-const result=
-await db
-.from("reel_likes")
-.select("id",{count:"exact",head:true})
-.eq("reel_id",id);
-
-
-const reel=
-document.querySelector(
-`.reel[data-reel-id="${id}"]`
-);
-
-
-if(!reel)return;
-
-
-const count=
-reel.querySelector(".like-count");
-
-
-if(count){
-
-count.textContent=
-result.count || 0;
-
-}
-
+    </div>
+  `).join("");
 }
 
 
-/* =====================================================
-REEL SHARE
-===================================================== */
+/* =========================================================
+   FOLLOW
+   ========================================================= */
 
-async function shareReel(id){
+async function followUser(userId,button){
+  const {data} = await db
+    .from("follows")
+    .select("id")
+    .eq("follower_id",currentUser.id)
+    .eq("following_id",userId)
+    .maybeSingle();
 
-const url=
-location.href.split("#")[0]+"?reel="+id;
+  if(data){
+    await db
+      .from("follows")
+      .delete()
+      .eq("id",data.id);
 
+    button.textContent = "Follow";
+  }else{
+    const {error} = await db
+      .from("follows")
+      .insert({
+        follower_id:currentUser.id,
+        following_id:userId
+      });
 
-if(navigator.share){
+    if(error){
+      toast(error.message);
+      return;
+    }
 
-try{
+    button.textContent = "Following";
 
-await navigator.share({
-title:"My Social App Reel",
-url:url
-});
-
-}catch(e){}
-
-}else{
-
-try{
-
-await navigator.clipboard.writeText(url);
-
-toast("Reel link copied");
-
-}catch(e){
-
-prompt("Copy link:",url);
-
-}
-
-}
-
-}
-
-
-/* =====================================================
-PROFILE
-===================================================== */
-
-async function loadProfile(){
-
-if(!user)return;
-
-
-document.getElementById("profileEmail")
-.textContent=user.email || "";
-
-document.getElementById("settingsEmail")
-.textContent=user.email || "";
-
-
-const posts=
-await db
-.from("posts")
-.select("id")
-.eq("user_id",user.id);
-
-
-document.getElementById("postCount")
-.textContent=
-posts.data?.length || 0;
-
-
-const followers=
-await db
-.from("follows")
-.select("id",{count:"exact",head:true})
-.eq("following_id",user.id);
-
-
-document.getElementById("followersCount")
-.textContent=
-followers.count || 0;
-
-
-const following=
-await db
-.from("follows")
-.select("id",{count:"exact",head:true})
-.eq("follower_id",user.id);
-
-
-document.getElementById("followingCount")
-.textContent=
-following.count || 0;
-
-
-loadMyPosts();
-
+    await notify(
+      userId,
+      `${profileName(currentProfile)} আপনাকে Follow করেছেন 👤`
+    );
+  }
 }
 
 
-async function loadMyPosts(){
+/* =========================================================
+   BLOCK
+   ========================================================= */
 
-const box=
-document.getElementById("myPosts");
+async function blockUser(userId){
+  const {error} = await db
+    .from("blocked_users")
+    .insert({
+      user_id:currentUser.id,
+      blocked_id:userId
+    });
 
+  if(error){
+    toast(error.message);
+    return;
+  }
 
-const {data,error}=
-await db
-.from("posts")
-.select(
-"id,user_id,text,image_url,created_at"
-)
-.eq("user_id",user.id)
-.order("created_at",{ascending:false});
-
-
-if(error){
-
-box.innerHTML=`
-
-<div class="card">
-${safe(error.message)}
-</div>
-
-`;
-
-return;
-
+  closeModal();
+  toast("User blocked");
 }
 
 
-box.innerHTML=
-(data || [])
-.map(postCard)
-.join("");
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
 
+async function loadNotificationCount(){
+  try{
+    const {count} = await db
+      .from("notifications")
+      .select("id",{count:"exact",head:true})
+      .eq("receiver_id",currentUser.id)
+      .eq("read",false);
+
+    notificationCount = count || 0;
+
+    const badge =
+      document.getElementById("notificationBadge");
+
+    if(badge){
+      badge.textContent = notificationCount;
+      badge.classList.toggle(
+        "hidden",
+        notificationCount===0
+      );
+    }
+  }catch(e){}
 }
-
-
-/* =====================================================
-NOTIFICATIONS
-===================================================== */
 
 async function openNotifications(){
+  const {data,error} = await db
+    .from("notifications")
+    .select("*")
+    .eq("receiver_id",currentUser.id)
+    .order("created_at",{ascending:false})
+    .limit(50);
 
-document.getElementById("notificationModal")
-.classList.add("show");
+  openModal(`
+    <div class="modalhead">
+      <span>🔔 Notifications</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
 
+    <div class="modalbody">
 
-const box=
-document.getElementById("notificationList");
+      ${
+        error
+        ? `<p>${safe(error.message)}</p>`
+        : data?.length
+        ? data.map(n=>`
+            <div class="setting-row">
+              <div>
+                ${safe(n.message)}
+                <div style="font-size:11px;color:var(--muted)">
+                  ${formatDate(n.created_at)}
+                </div>
+              </div>
+            </div>
+          `).join("")
+        : `<div class="empty">কোনো Notification নেই</div>`
+      }
 
+    </div>
+  `);
 
-box.innerHTML=
-`<div class="loading">Loading...</div>`;
+  await db
+    .from("notifications")
+    .update({read:true})
+    .eq("receiver_id",currentUser.id);
 
-
-if(!user){
-
-box.innerHTML="Login করুন";
-return;
-
+  loadNotificationCount();
 }
 
 
-const {data,error}=
-await db
-.from("notifications")
-.select(
-"id,receiver_id,message,read,created_at"
-)
-.eq("receiver_id",user.id)
-.order("created_at",{ascending:false})
-.limit(50);
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
+function renderSettings(){
+  const p = currentProfile || {};
 
-if(error){
+  document.getElementById("main").innerHTML = `
+    <div class="card">
 
-box.innerHTML=`
+      <div class="modalhead">
+        <span>⚙️ Settings</span>
+      </div>
 
-<div class="error-box">
-${safe(error.message)}
-</div>
+      <div class="setting-row">
+        <div>
+          <b>${safe(profileName(p))}</b>
+          <div style="color:var(--muted);font-size:12px">
+            ${safe(currentUser.email)}
+          </div>
+        </div>
 
-`;
+        <button class="btn"
+          onclick="openEditProfile()">
+          Edit
+        </button>
+      </div>
 
-return;
+      <div class="setting-row">
+        <div>
+          <b>🌙 Dark Mode</b>
+          <div style="font-size:12px;color:var(--muted)">
+            App appearance পরিবর্তন করুন
+          </div>
+        </div>
 
+        <button class="btn secondary"
+          onclick="toggleDarkMode()">
+          Toggle
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <b>🔔 Notifications</b>
+          <div style="font-size:12px;color:var(--muted)">
+            Notification settings
+          </div>
+        </div>
+
+        <button class="btn secondary"
+          onclick="openNotificationSettings()">
+          Open
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <b>💰 Creator Dashboard</b>
+          <div style="font-size:12px;color:var(--muted)">
+            Earnings এবং monetization
+          </div>
+        </div>
+
+        <button class="btn secondary"
+          onclick="openCreatorDashboard()">
+          Open
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <b>👥 Friends</b>
+          <div style="font-size:12px;color:var(--muted)">
+            Friend requests এবং friends
+          </div>
+        </div>
+
+        <button class="btn secondary"
+          onclick="openFriends()">
+          Open
+        </button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <b>🚪 Logout</b>
+        </div>
+
+        <button class="btn danger"
+          onclick="logout()">
+          Logout
+        </button>
+      </div>
+
+    </div>
+  `;
 }
 
 
-if(!data || !data.length){
+/* =========================================================
+   NOTIFICATION SETTINGS
+   ========================================================= */
 
-box.innerHTML=
-`<div class="empty">No notifications</div>`;
+async function openNotificationSettings(){
+  const {data} = await db
+    .from("notification_settings")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
 
-return;
+  const s = data || {};
 
+  openModal(`
+    <div class="modalhead">
+      <span>Notification Settings</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <label class="setting-row">
+        <span>Comments</span>
+        <input id="setComments"
+          type="checkbox"
+          style="width:20px"
+          ${s.comments!==false?"checked":""}>
+      </label>
+
+      <label class="setting-row">
+        <span>Friend Requests</span>
+        <input id="setFriends"
+          type="checkbox"
+          style="width:20px"
+          ${s.friend_requests!==false?"checked":""}>
+      </label>
+
+      <label class="setting-row">
+        <span>Messages</span>
+        <input id="setMessages"
+          type="checkbox"
+          style="width:20px"
+          ${s.messages!==false?"checked":""}>
+      </label>
+
+      <label class="setting-row">
+        <span>Follow</span>
+        <input id="setFollow"
+          type="checkbox"
+          style="width:20px"
+          ${s.follow!==false?"checked":""}>
+      </label>
+
+      <button class="btn"
+        style="width:100%;margin-top:15px"
+        onclick="saveNotificationSettings()">
+        Save
+      </button>
+
+    </div>
+  `);
+}
+
+async function saveNotificationSettings(){
+  const values = {
+    user_id:currentUser.id,
+    comments:document.getElementById("setComments").checked,
+    friend_requests:document.getElementById("setFriends").checked,
+    messages:document.getElementById("setMessages").checked,
+    follow:document.getElementById("setFollow").checked,
+    updated_at:new Date().toISOString()
+  };
+
+  const {error} = await db
+    .from("notification_settings")
+    .upsert(values,{onConflict:"user_id"});
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  closeModal();
+  toast("Settings saved");
 }
 
 
-box.innerHTML=
-data.map(n=>`
+/* =========================================================
+   FRIENDS
+   ========================================================= */
 
-<div class="comment-item">
+async function openFriends(){
+  const {data:requests} = await db
+    .from("friend_requests")
+    .select("*")
+    .eq("receiver_id",currentUser.id)
+    .eq("status","pending")
+    .order("created_at",{ascending:false});
 
-🔔 ${safe(n.message)}
+  const {data:friends} = await db
+    .from("friends")
+    .select("*")
+    .eq("user_id",currentUser.id);
 
-<div class="time">
-${safe(n.created_at)}
-</div>
+  let html = `
+    <div class="modalhead">
+      <span>👥 Friends</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
 
-</div>
+    <div class="modalbody">
+      <h3>Friend Requests</h3>
+  `;
 
-`).join("");
+  if(requests?.length){
+    for(const r of requests){
+      const p = await getProfile(r.sender_id);
 
+      html += `
+        <div class="search-result">
+          <img class="avatar"
+            src="${safe(profilePhoto(p))}">
+
+          <div style="flex:1">
+            <b>${safe(profileName(p))}</b>
+          </div>
+
+          <button class="btn"
+            onclick="acceptFriend('${safe(r.id)}','${safe(r.sender_id)}')">
+            Accept
+          </button>
+        </div>
+      `;
+    }
+  }else{
+    html += `<div class="empty">কোনো Friend Request নেই</div>`;
+  }
+
+  html += `<h3>Friends</h3>`;
+
+  if(friends?.length){
+    for(const f of friends){
+      const p = await getProfile(f.friend_id);
+
+      html += `
+        <div class="search-result">
+          <img class="avatar"
+            src="${safe(profilePhoto(p))}">
+
+          <div style="flex:1">
+            <b>${safe(profileName(p))}</b>
+          </div>
+
+          <button class="btn secondary"
+            onclick="openChat('${safe(f.friend_id)}')">
+            Message
+          </button>
+        </div>
+      `;
+    }
+  }else{
+    html += `<div class="empty">এখনো কোনো Friend নেই</div>`;
+  }
+
+  html += `</div>`;
+
+  openModal(html);
+}
+
+async function acceptFriend(requestId,senderId){
+  await db
+    .from("friend_requests")
+    .update({status:"accepted"})
+    .eq("id",requestId);
+
+  await db.from("friends").upsert([
+    {
+      user_id:currentUser.id,
+      friend_id:senderId
+    },
+    {
+      user_id:senderId,
+      friend_id:currentUser.id
+    }
+  ]);
+
+  await notify(
+    senderId,
+    `${profileName(currentProfile)} আপনার Friend Request গ্রহণ করেছেন 👥`
+  );
+
+  toast("Friend added");
+  await openFriends();
 }
 
 
-/* =====================================================
-INIT
-===================================================== */
+/* =========================================================
+   CHAT
+   ========================================================= */
 
-async function init(){
+async function openChat(userId){
+  const p = await getProfile(userId);
 
-const ok=await checkUser();
+  openModal(`
+    <div class="modalhead">
+      <span>💬 ${safe(profileName(p))}</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
 
-if(!ok)return;
+    <div class="modalbody">
 
-await loadFeed();
-await loadProfile();
+      <div id="chatMessages"
+        style="height:350px;overflow:auto;margin-bottom:10px">
+        Loading...
+      </div>
 
+      <div class="comment-box">
+        <input id="chatInput"
+          placeholder="Message লিখুন...">
+        <button class="btn"
+          onclick="sendMessage('${safe(userId)}')">
+          Send
+        </button>
+      </div>
+
+    </div>
+  `);
+
+  await loadChat(userId);
+}
+
+async function loadChat(userId){
+  const box = document.getElementById("chatMessages");
+  if(!box) return;
+
+  const {data,error} = await db
+    .from("messages")
+    .select("*")
+    .or(
+      `and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`
+    )
+    .order("created_at",{ascending:true});
+
+  if(error){
+    box.innerHTML = `<p>${safe(error.message)}</p>`;
+    return;
+  }
+
+  box.innerHTML = (data || []).map(m=>`
+    <div style="
+      display:flex;
+      justify-content:${m.sender_id===currentUser.id?"flex-end":"flex-start"};
+      margin:7px 0">
+
+      <div style="
+        background:${m.sender_id===currentUser.id?"#1877f2":"var(--bg)"};
+        color:${m.sender_id===currentUser.id?"white":"var(--text)"};
+        padding:9px 12px;
+        border-radius:16px;
+        max-width:75%">
+        ${safe(m.text)}
+      </div>
+
+    </div>
+  `).join("");
+
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMessage(userId){
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+
+  if(!text) return;
+
+  const {error} = await db
+    .from("messages")
+    .insert({
+      sender_id:currentUser.id,
+      receiver_id:userId,
+      text
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  input.value = "";
+  await loadChat(userId);
+
+  await notify(
+    userId,
+    `${profileName(currentProfile)} আপনাকে একটি Message পাঠিয়েছেন 💬`
+  );
 }
 
 
-db.auth.onAuthStateChange(
-(event,session)=>{
+/* =========================================================
+   CREATOR DASHBOARD
+   ========================================================= */
 
-user=session?.user || null;
+async function openCreatorDashboard(){
+  const {data:settings} = await db
+    .from("creator_settings")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
 
+  const {data:earnings} = await db
+    .from("creator_earnings")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  let total = 0;
+
+  for(const e of earnings || []){
+    total += Number(e.earnings || 0);
+  }
+
+  openModal(`
+    <div class="modalhead">
+      <span>💰 Creator Dashboard</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <div class="card">
+        <div class="cardpad">
+          <div style="color:var(--muted)">
+            Total Earnings
+          </div>
+
+          <div style="font-size:30px;font-weight:800">
+            ${total.toFixed(2)}
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span>Monetization</span>
+        <b>
+          ${settings?.monetization_enabled ? "Enabled" : "Disabled"}
+        </b>
+      </div>
+
+      <div class="setting-row">
+        <span>Payout Email</span>
+        <span>${safe(settings?.payout_email || "Not set")}</span>
+      </div>
+
+      <div class="setting-row">
+        <span>Payout Method</span>
+        <span>${safe(settings?.payout_method || "Not set")}</span>
+      </div>
+
+      <button class="btn"
+        style="width:100%;margin-top:15px"
+        onclick="openPayoutSettings()">
+        Payout Settings
+      </button>
+
+    </div>
+  `);
 }
-);
+
+function openPayoutSettings(){
+  const p = currentProfile || {};
+
+  openModal(`
+    <div class="modalhead">
+      <span>💳 Payout Settings</span>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modalbody">
+
+      <div class="formgroup">
+        <label>Payout Email</label>
+        <input id="payoutEmail"
+          value="${safe(p.email || "")}">
+      </div>
+
+      <div class="formgroup">
+        <label>Payment Method</label>
+        <select id="payoutMethod">
+          <option value="bank">Bank</option>
+          <option value="mobile_banking">Mobile Banking</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <button class="btn"
+        style="width:100%"
+        onclick="savePayoutSettings()">
+        Save
+      </button>
+
+    </div>
+  `);
+}
+
+async function savePayoutSettings(){
+  const payoutEmail =
+    document.getElementById("payoutEmail").value.trim();
+
+  const payoutMethod =
+    document.getElementById("payoutMethod").value;
+
+  const {error} = await db
+    .from("creator_settings")
+    .upsert({
+      user_id:currentUser.id,
+      payout_email:payoutEmail,
+      payout_method:payoutMethod,
+      updated_at:new Date().toISOString()
+    },{
+      onConflict:"user_id"
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  closeModal();
+  toast("Payout settings saved");
+}
 
 
-init();
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function openModal(html){
+  closeModal();
+
+  const div = document.createElement("div");
+  div.id = "modal";
+  div.className = "modal";
+
+  div.innerHTML = `
+    <div class="modalbox">
+      ${html}
+    </div>
+  `;
+
+  div.addEventListener("click",e=>{
+    if(e.target===div){
+      closeModal();
+    }
+  });
+
+  document.body.appendChild(div);
+}
+
+function closeModal(){
+  document.getElementById("modal")?.remove();
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+function toggleDarkMode(){
+  document.body.classList.toggle("dark");
+
+  localStorage.setItem(
+    "darkMode",
+    document.body.classList.contains("dark")
+      ? "1"
+      : "0"
+  );
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+if(localStorage.getItem("darkMode")==="1"){
+  document.body.classList.add("dark");
+}
+
+checkAuth();
 
 </script>
 
