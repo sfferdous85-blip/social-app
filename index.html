@@ -1,663 +1,988 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1877f2">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
-<meta
-  name="theme-color"
-  content="#1877f2"
->
-
-<title>My Social App</title>
+<title>My Social</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
 
 body{
   margin:0;
-  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  font-family:Arial,sans-serif;
   background:#f0f2f5;
   color:#111;
 }
 
+body.dark{
+  background:#18191a;
+  color:#eee;
+}
+
+button,input,textarea{
+  font-family:inherit;
+}
+
 button{
   cursor:pointer;
-}
-
-.hidden{
-  display:none !important;
-}
-
-/* =========================
-   AUTH
-========================= */
-
-#authPage{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.authBox{
-  width:100%;
-  max-width:400px;
-  background:white;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 4px 20px rgba(0,0,0,.12);
-}
-
-.logo{
-  text-align:center;
-  color:#1877f2;
-  font-size:32px;
-  font-weight:bold;
-  margin-bottom:20px;
-}
-
-.input{
-  width:100%;
-  padding:13px;
-  margin:7px 0;
-  border:1px solid #ddd;
-  border-radius:8px;
-  font-size:15px;
-}
-
-.primaryBtn{
-  width:100%;
   border:0;
-  background:#1877f2;
-  color:white;
-  padding:13px;
-  border-radius:8px;
-  font-size:16px;
-  font-weight:bold;
-  margin-top:8px;
-}
-
-.greenBtn{
-  width:100%;
-  border:0;
-  background:#42b72a;
-  color:white;
-  padding:13px;
-  border-radius:8px;
-  font-size:16px;
-  font-weight:bold;
-  margin-top:8px;
-}
-
-.authMsg{
-  text-align:center;
-  margin-top:12px;
-  color:#d00;
-}
-
-/* =========================
-   APP
-========================= */
-
-#appPage{
-  min-height:100vh;
 }
 
 .topbar{
   position:sticky;
   top:0;
-  z-index:100;
+  z-index:1000;
+  background:#1877f2;
+  color:white;
   height:60px;
-  background:white;
-  border-bottom:1px solid #ddd;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 15px;
+  gap:8px;
+  padding:8px 12px;
 }
 
-.topLogo{
-  color:#1877f2;
-  font-size:23px;
+.logo{
+  font-size:22px;
   font-weight:bold;
+  white-space:nowrap;
 }
 
-.topActions{
-  display:flex;
-  gap:7px;
-}
-
-.topActions button{
+.search{
+  flex:1;
+  max-width:450px;
+  padding:10px 14px;
   border:0;
-  background:#f0f2f5;
+  outline:0;
+  border-radius:25px;
+}
+
+.top-button{
+  background:rgba(255,255,255,.18);
+  color:white;
   border-radius:50%;
   width:40px;
   height:40px;
-  font-size:18px;
+  font-size:19px;
 }
 
 .container{
   width:100%;
-  max-width:680px;
+  max-width:720px;
   margin:auto;
-  padding:15px;
+  padding:12px;
 }
 
-/* =========================
-   NAV
-========================= */
-
-.nav{
-  background:white;
-  display:flex;
-  justify-content:space-around;
-  border-bottom:1px solid #ddd;
-  position:sticky;
-  top:60px;
-  z-index:90;
+.page{
+  display:none;
+  padding-bottom:80px;
 }
 
-.nav button{
-  flex:1;
-  border:0;
-  background:white;
-  padding:13px 5px;
-  font-size:14px;
+.page.active{
+  display:block;
 }
-
-.nav button.active{
-  color:#1877f2;
-  border-bottom:3px solid #1877f2;
-}
-
-/* =========================
-   CARD
-========================= */
 
 .card{
   background:white;
-  border-radius:10px;
-  padding:15px;
-  margin-bottom:15px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(0,0,0,.15);
 }
 
-/* =========================
-   CREATE POST
-========================= */
-
-.createPost{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
+.dark .card{
+  background:#242526;
+  color:#eee;
+  box-shadow:none;
 }
 
-.createTop{
-  display:flex;
-  gap:10px;
+.auth{
+  width:92%;
+  max-width:420px;
+  margin:60px auto;
 }
 
-.createTop textarea{
-  flex:1;
-  border:0;
-  background:#f0f2f5;
-  border-radius:20px;
-  padding:12px 15px;
-  resize:none;
-  outline:none;
-  min-height:45px;
+.auth h1{
+  color:#1877f2;
+  text-align:center;
 }
 
-.postTools{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
-
-.postTools button{
-  flex:1;
-  border:0;
-  background:#f0f2f5;
-  padding:10px;
-  border-radius:8px;
-}
-
-.postBtn{
+.auth input{
   width:100%;
-  margin-top:10px;
-  border:0;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+  outline:0;
+}
+
+.primary{
   background:#1877f2;
   color:white;
-  padding:11px;
+  padding:12px 16px;
   border-radius:8px;
   font-weight:bold;
 }
 
-/* =========================
-   POST
-========================= */
+.primary.full{
+  width:100%;
+}
 
-.post-card{
-  background:white;
-  padding:15px;
+.secondary{
+  background:#e4e6eb;
+  color:#111;
+  padding:10px 14px;
+  border-radius:8px;
+}
+
+.dark .secondary{
+  background:#3a3b3c;
+  color:white;
+}
+
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
+}
+
+.avatar-large{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid white;
+}
+
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.post-user{
+  flex:1;
+}
+
+.username{
+  font-weight:bold;
+}
+
+.time{
+  color:#777;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.post-text{
+  white-space:pre-wrap;
+  margin-top:12px;
+  line-height:1.5;
+}
+
+.post-image{
+  width:100%;
+  max-height:650px;
+  object-fit:cover;
   border-radius:10px;
-  margin-bottom:15px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
+  margin-top:10px;
 }
 
 .post-actions{
-  display:flex;
-  border-top:1px solid #eee;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
   margin-top:12px;
-  padding-top:8px;
+}
+
+.dark .post-actions{
+  border-color:#444;
 }
 
 .post-actions button{
-  flex:1;
-  border:0;
-  background:white;
-  padding:9px;
+  padding:11px 3px;
+  background:transparent;
+  color:inherit;
+}
+
+.post-actions button:hover{
+  background:#f0f2f5;
+}
+
+.dark .post-actions button:hover{
+  background:#3a3b3c;
+}
+
+.stats{
+  color:#777;
+  padding:8px 2px;
   font-size:14px;
 }
 
-/* =========================
-   PROFILE
-========================= */
+.comment-input{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
 
-.profileHeader{
-  background:white;
-  border-radius:10px;
-  padding:20px;
+.comment-input input{
+  flex:1;
+  border:1px solid #ccc;
+  border-radius:22px;
+  padding:10px 14px;
+  outline:0;
+}
+
+.comment{
+  background:#f0f2f5;
+  border-radius:9px;
+  padding:8px 10px;
+  margin-top:7px;
+}
+
+.dark .comment{
+  background:#3a3b3c;
+}
+
+.story-row{
+  display:flex;
+  gap:9px;
+  overflow-x:auto;
+  padding-bottom:3px;
+}
+
+.story{
+  min-width:100px;
+  height:145px;
+  border-radius:12px;
+  background:#1877f2;
+  color:white;
+  display:flex;
+  align-items:flex-end;
+  padding:9px;
+  background-size:cover;
+  background-position:center;
+  overflow:hidden;
+}
+
+.story.add{
+  align-items:center;
+  justify-content:center;
   text-align:center;
-  margin-bottom:15px;
+  font-weight:bold;
 }
 
-.bigAvatar{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-/* =========================
-   SETTINGS
-========================= */
-
-.settingItem{
-  background:white;
-  padding:16px;
-  border-bottom:1px solid #eee;
-}
-
-.settingItem button{
-  border:0;
-  background:none;
+.create-box textarea{
   width:100%;
-  text-align:left;
-  font-size:15px;
+  border:0;
+  outline:0;
+  resize:none;
+  padding:10px;
+  font-size:16px;
+  background:transparent;
+  color:inherit;
 }
 
-/* =========================
-   LOADING
-========================= */
+.create-tools{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
 
-.loading{
+.preview{
+  width:100%;
+  max-height:400px;
+  object-fit:cover;
+  border-radius:10px;
+  margin:8px 0;
+  display:none;
+}
+
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:62px;
+  background:white;
+  border-top:1px solid #ddd;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:1000;
+}
+
+.dark .nav{
+  background:#242526;
+  border-color:#444;
+}
+
+.nav button{
+  background:transparent;
+  color:inherit;
+  font-size:21px;
+  padding:7px;
+}
+
+.nav small{
+  display:block;
+  font-size:9px;
+}
+
+.profile-cover{
+  height:170px;
+  background:linear-gradient(135deg,#1877f2,#7b61ff);
+  border-radius:12px 12px 0 0;
+}
+
+.profile-info{
   text-align:center;
-  padding:25px;
+  margin-top:-48px;
+}
+
+.profile-info h2{
+  margin:6px 0 3px;
+}
+
+.profile-buttons{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.menu button{
+  padding:15px 8px;
+  border-radius:10px;
+  background:#e4e6eb;
+  color:#111;
+}
+
+.dark .menu button{
+  background:#3a3b3c;
+  color:#fff;
+}
+
+.reel{
+  background:#000;
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:12px;
+}
+
+.reel video{
+  width:100%;
+  max-height:650px;
+  display:block;
+}
+
+.reel-info{
+  color:white;
+  padding:10px;
+}
+
+.message{
+  padding:9px 12px;
+  border-radius:14px;
+  margin:6px 0;
+  max-width:80%;
+}
+
+.message.mine{
+  background:#1877f2;
+  color:white;
+  margin-left:auto;
+}
+
+.message.other{
+  background:#e4e6eb;
+}
+
+.dark .message.other{
+  background:#3a3b3c;
+  color:white;
+}
+
+.empty{
+  text-align:center;
   color:#777;
+  padding:30px;
 }
 
-.errorBox{
-  background:#ffecec;
-  color:#c00;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
+.result{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-.successBox{
-  background:#eaffea;
-  color:#087a08;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
+.result-info{
+  flex:1;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.notification{
+  display:flex;
+  gap:10px;
+  padding:12px 5px;
+  border-bottom:1px solid #ddd;
+}
 
-@media(max-width:600px){
+.dark .notification{
+  border-color:#444;
+}
 
-  .container{
-    padding:8px;
+.unread{
+  background:#e7f3ff;
+}
+
+.dark .unread{
+  background:#26384a;
+}
+
+.setting-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 4px;
+  border-bottom:1px solid #ddd;
+}
+
+.dark .setting-row{
+  border-color:#444;
+}
+
+@media(max-width:500px){
+
+  .logo{
+    font-size:19px;
   }
 
-  .topLogo{
-    font-size:20px;
+  .search{
+    min-width:0;
   }
 
-  .nav button{
-    font-size:12px;
+  .post-actions{
+    grid-template-columns:repeat(4,1fr);
   }
 
 }
-
 </style>
-
 </head>
 
 <body>
 
-<!-- =====================================================
-     AUTH PAGE
-===================================================== -->
+<!-- =========================
+AUTH PAGE
+========================= -->
 
 <div id="authPage">
 
-  <div class="authBox">
+  <div class="auth card">
 
-    <div class="logo">
-      My Social
+    <h1>My Social</h1>
+
+    <!-- LOGIN -->
+
+    <div id="loginBox">
+
+      <h2>Login</h2>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Email">
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Password">
+
+      <button
+        class="primary full"
+        onclick="login()">
+        Login
+      </button>
+
+      <br><br>
+
+      <button
+        class="secondary"
+        onclick="showRegister()">
+        Create new account
+      </button>
+
+      <button
+        class="secondary"
+        onclick="resetPassword()">
+        Forgot password?
+      </button>
+
     </div>
 
-    <input
-      id="email"
-      class="input"
-      type="email"
-      placeholder="Email"
-    >
 
-    <input
-      id="password"
-      class="input"
-      type="password"
-      placeholder="Password"
-    >
+    <!-- REGISTER -->
 
-    <button
-      class="primaryBtn"
-      onclick="login()"
-    >
-      Login
-    </button>
+    <div id="registerBox" style="display:none">
 
-    <button
-      class="greenBtn"
-      onclick="register()"
-    >
-      Create new account
-    </button>
+      <h2>Create Account</h2>
 
-    <div
-      id="authMsg"
-      class="authMsg"
-    ></div>
+      <input
+        id="regName"
+        placeholder="Your name">
+
+      <input
+        id="regUsername"
+        placeholder="Username">
+
+      <input
+        id="regEmail"
+        type="email"
+        placeholder="Email">
+
+      <input
+        id="regPassword"
+        type="password"
+        placeholder="Password">
+
+      <button
+        class="primary full"
+        onclick="register()">
+        Create account
+      </button>
+
+      <br><br>
+
+      <button
+        class="secondary"
+        onclick="showLogin()">
+        Back to Login
+      </button>
+
+    </div>
 
   </div>
 
 </div>
 
 
-<!-- =====================================================
-     APP PAGE
-===================================================== -->
+<!-- =========================
+MAIN APP
+========================= -->
 
-<div
-  id="appPage"
-  class="hidden"
->
+<div id="app" style="display:none">
+
+  <!-- TOP BAR -->
 
   <div class="topbar">
 
-    <div class="topLogo">
+    <div class="logo">
       My Social
     </div>
 
-    <div class="topActions">
-
-      <button onclick="showPage('home')">
-        🏠
-      </button>
-
-      <button onclick="showPage('profile')">
-        👤
-      </button>
-
-      <button onclick="showPage('settings')">
-        ⚙️
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="nav">
+    <input
+      id="topSearch"
+      class="search"
+      placeholder="Search..."
+      onkeydown="topSearchKey(event)">
 
     <button
-      id="navHome"
-      onclick="showPage('home')"
-    >
-      Home
-    </button>
-
-    <button
-      id="navProfile"
-      onclick="showPage('profile')"
-    >
-      Profile
-    </button>
-
-    <button
-      id="navSettings"
-      onclick="showPage('settings')"
-    >
-      Settings
+      class="top-button"
+      onclick="toggleDark()">
+      🌙
     </button>
 
   </div>
 
 
-  <div class="container">
+  <!-- =====================
+  HOME
+  ====================== -->
 
-    <!-- ================= HOME ================= -->
+  <div
+    id="homePage"
+    class="page active">
 
-    <section id="homePage">
+    <div class="container">
 
-      <div class="createPost">
+      <!-- STORIES -->
 
-        <div class="createTop">
+      <div class="card">
 
-          <img
-            id="createAvatar"
-            class="bigAvatar"
-            style="
-              width:45px;
-              height:45px;
-            "
-            src="https://ui-avatars.com/api/?name=User"
-          >
+        <h3>📖 Stories</h3>
 
-          <textarea
-            id="postText"
-            placeholder="আপনি কী ভাবছেন?"
-          ></textarea>
-
+        <div
+          id="stories"
+          class="story-row">
         </div>
 
+      </div>
+
+
+      <!-- CREATE POST -->
+
+      <div class="card create-box">
+
+        <textarea
+          id="postText"
+          rows="3"
+          placeholder="What's on your mind?">
+        </textarea>
 
         <input
           id="postImage"
           type="file"
           accept="image/*"
           style="display:none"
-          onchange="previewImage()"
-        >
+          onchange="previewImage()">
 
+        <img
+          id="preview"
+          class="preview">
 
-        <div class="postTools">
+        <div class="create-tools">
 
           <button
-            onclick="document.getElementById('postImage').click()"
-          >
+            class="secondary"
+            onclick="document.getElementById('postImage').click()">
             📷 Photo
           </button>
 
           <button
-            onclick="alert('আরও ফিচার পরে যোগ করা হবে')"
-          >
-            🎥 Video
+            class="primary"
+            onclick="createPost()">
+            Post
           </button>
 
         </div>
 
-
-        <div
-          id="imagePreview"
-          style="margin-top:10px"
-        ></div>
-
-
-        <select
-          id="postPrivacy"
-          class="input"
-        >
-
-          <option value="public">
-            Public
-          </option>
-
-          <option value="private">
-            Only me
-          </option>
-
-        </select>
-
-
-        <button
-          class="postBtn"
-          onclick="createPost()"
-        >
-          Post
-        </button>
-
-        <div
-          id="postMsg"
-          style="
-            text-align:center;
-            margin-top:10px;
-          "
-        ></div>
-
       </div>
 
+
+      <!-- FEED -->
 
       <div id="feed">
-
-        <div class="loading">
-          পোস্ট লোড হচ্ছে...
-        </div>
-
       </div>
 
-    </section>
+    </div>
+
+  </div>
 
 
-    <!-- ================= PROFILE ================= -->
+  <!-- =====================
+  SEARCH
+  ====================== -->
 
-    <section
-      id="profilePage"
-      class="hidden"
-    >
+  <div
+    id="searchPage"
+    class="page">
 
-      <div class="profileHeader">
-
-        <img
-          id="profileAvatar"
-          class="bigAvatar"
-          src="https://ui-avatars.com/api/?name=User"
-        >
-
-        <h2 id="profileName">
-          User
-        </h2>
-
-        <div
-          id="profileUsername"
-          style="color:#777"
-        >
-          @username
-        </div>
-
-      </div>
-
-
-      <div id="profilePosts"></div>
-
-    </section>
-
-
-    <!-- ================= SETTINGS ================= -->
-
-    <section
-      id="settingsPage"
-      class="hidden"
-    >
+    <div class="container">
 
       <div class="card">
 
-        <h2>
-          Settings
-        </h2>
+        <h2>🔎 Search People</h2>
 
-        <p>
-          আপনার My Social account settings
-        </p>
+        <input
+          id="searchBox"
+          style="width:100%;padding:12px;border:1px solid #ccc;border-radius:8px"
+          placeholder="Username search..."
+          oninput="doSearch()">
 
       </div>
 
+      <div id="searchResults"></div>
 
-      <div class="settingItem">
+    </div>
 
-        <button onclick="editProfile()">
-          👤 Edit Profile
+  </div>
+
+
+  <!-- =====================
+  PROFILE
+  ====================== -->
+
+  <div
+    id="profilePage"
+    class="page">
+
+    <div class="container">
+
+      <div id="profileArea">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  REELS
+  ====================== -->
+
+  <div
+    id="reelsPage"
+    class="page">
+
+    <div class="container">
+
+      <div class="card">
+
+        <h2>🎬 Reels</h2>
+
+        <input
+          id="reelFile"
+          type="file"
+          accept="video/*">
+
+        <br><br>
+
+        <input
+          id="reelCaption"
+          style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px"
+          placeholder="Reel caption">
+
+        <br><br>
+
+        <button
+          class="primary full"
+          onclick="uploadReel()">
+          Upload Reel
         </button>
 
       </div>
 
+      <div id="reels"></div>
 
-      <div class="settingItem">
+    </div>
 
-        <button onclick="changePassword()">
-          🔐 Change Password
+  </div>
+
+
+  <!-- =====================
+  NOTIFICATIONS
+  ====================== -->
+
+  <div
+    id="notificationsPage"
+    class="page">
+
+    <div class="container">
+
+      <div class="card">
+
+        <h2>🔔 Notifications</h2>
+
+        <button
+          class="secondary"
+          onclick="markNotificationsRead()">
+          Mark all as read
         </button>
 
       </div>
 
+      <div id="notifications"></div>
 
-      <div class="settingItem">
+    </div>
 
-        <button onclick="logout()">
-          🚪 Logout
+  </div>
+
+
+  <!-- =====================
+  MESSAGES
+  ====================== -->
+
+  <div
+    id="messagesPage"
+    class="page">
+
+    <div class="container">
+
+      <div class="card">
+
+        <h2>💬 Messenger</h2>
+
+        <input
+          id="messageUser"
+          style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px"
+          placeholder="Receiver User ID">
+
+        <br><br>
+
+        <input
+          id="messageText"
+          style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px"
+          placeholder="Write message..."
+          onkeydown="messageKey(event)">
+
+        <br><br>
+
+        <button
+          class="primary full"
+          onclick="sendMessage()">
+          Send
         </button>
 
       </div>
 
-    </section>
+      <div id="messages"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  SAVED
+  ====================== -->
+
+  <div
+    id="savedPage"
+    class="page">
+
+    <div class="container">
+
+      <div class="card">
+
+        <h2>🔖 Saved Posts</h2>
+
+      </div>
+
+      <div id="savedPosts"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  SETTINGS
+  ====================== -->
+
+  <div
+    id="settingsPage"
+    class="page">
+
+    <div class="container">
+
+      <div class="card">
+
+        <h2>⚙️ Settings</h2>
+
+        <div class="setting-row">
+          <span>🌙 Dark Mode</span>
+          <button
+            class="secondary"
+            onclick="toggleDark()">
+            Change
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span>👤 Edit Profile</span>
+          <button
+            class="secondary"
+            onclick="editProfile()">
+            Edit
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span>🔐 Password</span>
+          <button
+            class="secondary"
+            onclick="changePassword()">
+            Change
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span>🔖 Saved</span>
+          <button
+            class="secondary"
+            onclick="showPage('saved')">
+            Open
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span>🚪 Logout</span>
+          <button
+            class="secondary"
+            onclick="logout()">
+            Logout
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span>🗑️ Delete Account</span>
+          <button
+            class="secondary"
+            onclick="deleteAccount()">
+            Delete
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================
+  BOTTOM NAV
+  ====================== -->
+
+  <div class="nav">
+
+    <button onclick="showPage('home')">
+      🏠
+      <small>Home</small>
+    </button>
+
+    <button onclick="showPage('search')">
+      🔎
+      <small>Search</small>
+    </button>
+
+    <button onclick="showPage('reels')">
+      🎬
+      <small>Reels</small>
+    </button>
+
+    <button onclick="showPage('notifications')">
+      🔔
+      <small>Alerts</small>
+    </button>
+
+    <button onclick="showPage('messages')">
+      💬
+      <small>Chat</small>
+    </button>
+
+    <button onclick="showPage('profile')">
+      👤
+      <small>Profile</small>
+    </button>
+
+    <button onclick="showPage('settings')">
+      ☰
+      <small>Menu</small>
+    </button>
 
   </div>
 
@@ -666,502 +991,347 @@ button{
 
 <script>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
+/* =========================================
+SUPABASE
+========================================= */
 
 const SUPABASE_URL =
-  "https://skereuaizdczbvjplisi.supabase.co";
+"https://skereuaizdczbvjplisi.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+"sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
 const sb =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =====================================================
-   GLOBAL
-===================================================== */
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 let currentUser = null;
 
 
-/* =====================================================
-   HTML ESCAPE
-===================================================== */
+/* =========================================
+HELPER
+========================================= */
 
-function escapeHTML(text){
+function escapeHTML(value){
 
-  if(
-    text === null ||
-    text === undefined
-  ){
-    return "";
-  }
-
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-
-/* =====================================================
-   CHECK LOGIN
-===================================================== */
-
-async function checkUser(){
-
-  const {
-    data,
-    error
-  } = await sb.auth.getSession();
-
-  if(error){
-
-    console.error(error);
-
-    return;
-  }
-
-  if(
-    data &&
-    data.session &&
-    data.session.user
-  ){
-
-    currentUser =
-      data.session.user;
-
-    showApp();
-
-  }else{
-
-    showAuth();
-
-  }
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
-/* =====================================================
-   AUTH PAGE
-===================================================== */
+/* =========================================
+AUTH UI
+========================================= */
 
-function showAuth(){
+function showLogin(){
 
-  document
-    .getElementById("authPage")
-    .classList
-    .remove("hidden");
+  document.getElementById("loginBox")
+    .style.display="block";
 
-  document
-    .getElementById("appPage")
-    .classList
-    .add("hidden");
+  document.getElementById("registerBox")
+    .style.display="none";
 
 }
 
 
-/* =====================================================
-   SHOW APP
-===================================================== */
+function showRegister(){
 
-function showApp(){
+  document.getElementById("loginBox")
+    .style.display="none";
 
-  document
-    .getElementById("authPage")
-    .classList
-    .add("hidden");
-
-  document
-    .getElementById("appPage")
-    .classList
-    .remove("hidden");
-
-  showPage("home");
-
-  loadMyProfile();
-
-  loadPosts();
+  document.getElementById("registerBox")
+    .style.display="block";
 
 }
 
 
-/* =====================================================
-   LOGIN
-===================================================== */
+/* =========================================
+LOGIN
+========================================= */
 
 async function login(){
 
   const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
+    document.getElementById("loginEmail")
+    .value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      .value;
-
-  const msg =
-    document.getElementById("authMsg");
-
+    document.getElementById("loginPassword")
+    .value;
 
   if(!email || !password){
 
-    msg.innerHTML =
-      "Email এবং Password দিন";
-
+    alert("Email এবং Password দিন");
     return;
+
   }
 
-
-  msg.innerHTML =
-    "Login হচ্ছে...";
-
-
-  const {
-    data,
-    error
-  } = await sb.auth.signInWithPassword({
-
-    email:email,
-
-    password:password
-
-  });
-
+  const {error} =
+    await sb.auth.signInWithPassword({
+      email,
+      password
+    });
 
   if(error){
 
-    console.error(error);
-
-    msg.innerHTML =
-      escapeHTML(error.message);
-
+    alert(error.message);
     return;
+
   }
 
-
-  currentUser =
-    data.user;
-
-  msg.innerHTML = "";
-
-  showApp();
+  await checkUser();
 
 }
 
 
-/* =====================================================
-   REGISTER
-===================================================== */
+/* =========================================
+REGISTER
+========================================= */
 
 async function register(){
 
+  const name =
+    document.getElementById("regName")
+    .value.trim();
+
+  const username =
+    document.getElementById("regUsername")
+    .value.trim()
+    .toLowerCase();
+
   const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
+    document.getElementById("regEmail")
+    .value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      .value;
+    document.getElementById("regPassword")
+    .value;
 
+  if(!name || !username || !email || !password){
 
-  const msg =
-    document.getElementById("authMsg");
-
-
-  if(!email || !password){
-
-    msg.innerHTML =
-      "Email এবং Password দিন";
-
+    alert("সব তথ্য পূরণ করুন");
     return;
-  }
 
+  }
 
   if(password.length < 6){
 
-    msg.innerHTML =
-      "Password কমপক্ষে ৬ অক্ষরের হতে হবে";
-
+    alert("Password কমপক্ষে ৬ অক্ষরের দিন");
     return;
+
   }
-
-
-  msg.innerHTML =
-    "Account তৈরি হচ্ছে...";
-
 
   const {
     data,
     error
-  } = await sb.auth.signUp({
-
-    email:email,
-
-    password:password
-
-  });
-
+  } =
+    await sb.auth.signUp({
+      email,
+      password
+    });
 
   if(error){
 
-    console.error(error);
-
-    msg.innerHTML =
-      escapeHTML(error.message);
-
+    alert(error.message);
     return;
-  }
 
+  }
 
   if(data.user){
 
-    currentUser =
-      data.user;
+    const {error:profileError} =
+      await sb
+      .from("profiles")
+      .upsert({
+        id:data.user.id,
+        name:name,
+        username:username
+      });
 
+    if(profileError){
 
-    /*
-      যদি profiles automatic না তৈরি হয়,
-      তাহলে এখানে profile তৈরি করার চেষ্টা করা হবে।
-    */
+      alert(
+        "Account হয়েছে, কিন্তু Profile তৈরি হয়নি: "+
+        profileError.message
+      );
 
-    await createDefaultProfile(
-      data.user
-    );
-
-
-    if(data.session){
-
-      showApp();
-
-    }else{
-
-      msg.innerHTML =
-        "Account তৈরি হয়েছে। Email verify করে Login করুন।";
+      return;
 
     }
 
   }
 
+  alert(
+    "Account তৈরি হয়েছে। Email verification চাইলে Email verify করে Login করুন।"
+  );
+
+  showLogin();
+
 }
 
 
-/* =====================================================
-   DEFAULT PROFILE
-===================================================== */
+/* =========================================
+CHECK USER
+========================================= */
 
-async function createDefaultProfile(user){
-
-  if(!user){
-    return;
-  }
-
-
-  const email =
-    user.email || "User";
-
-
-  const username =
-    email
-      .split("@")[0]
-      .replace(/[^a-zA-Z0-9_]/g,"")
-      .substring(0,20)
-      || "user";
-
-
-  const name =
-    username;
-
+async function checkUser(){
 
   const {
-    error
-  } = await sb
-    .from("profiles")
-    .upsert({
+    data:{user}
+  } =
+    await sb.auth.getUser();
 
-      id:user.id,
+  if(user){
 
-      name:name,
+    currentUser=user;
 
-      username:username
+    document.getElementById("authPage")
+      .style.display="none";
 
-    },{
+    document.getElementById("app")
+      .style.display="block";
 
-      onConflict:"id"
+    await createDefaultProfile();
 
-    });
+    await loadPosts();
+    await loadStories();
 
+    loadNotifications();
+    loadReels();
 
-  if(error){
+  }else{
 
-    console.log(
-      "Profile create:",
-      error.message
-    );
+    document.getElementById("authPage")
+      .style.display="block";
+
+    document.getElementById("app")
+      .style.display="none";
 
   }
 
 }
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* =========================================
+DEFAULT PROFILE
+========================================= */
+
+async function createDefaultProfile(){
+
+  if(!currentUser) return;
+
+  const {data} =
+    await sb
+    .from("profiles")
+    .select("id")
+    .eq("id",currentUser.id)
+    .maybeSingle();
+
+  if(!data){
+
+    await sb
+    .from("profiles")
+    .insert({
+      id:currentUser.id,
+      name:
+        currentUser.email?.split("@")[0] ||
+        "User",
+      username:
+        "user"+Date.now()
+    });
+
+  }
+
+}
+
+
+/* =========================================
+LOGOUT
+========================================= */
 
 async function logout(){
 
   await sb.auth.signOut();
 
-  currentUser = null;
+  currentUser=null;
 
-  showAuth();
+  location.reload();
 
 }
 
 
-/* =====================================================
-   NAVIGATION
-===================================================== */
+/* =========================================
+NAVIGATION
+========================================= */
 
-function showPage(page){
-
-  document
-    .getElementById("homePage")
-    .classList
-    .add("hidden");
+async function showPage(page){
 
   document
-    .getElementById("profilePage")
-    .classList
-    .add("hidden");
+    .querySelectorAll(".page")
+    .forEach(p=>{
+      p.classList.remove("active");
+    });
 
-  document
-    .getElementById("settingsPage")
-    .classList
-    .add("hidden");
+  const pageEl =
+    document.getElementById(page+"Page");
 
+  if(pageEl){
 
-  document
-    .getElementById("navHome")
-    .classList
-    .remove("active");
+    pageEl.classList.add("active");
 
-  document
-    .getElementById("navProfile")
-    .classList
-    .remove("active");
+  }
 
-  document
-    .getElementById("navSettings")
-    .classList
-    .remove("active");
-
-
-  if(page === "home"){
-
-    document
-      .getElementById("homePage")
-      .classList
-      .remove("hidden");
-
-    document
-      .getElementById("navHome")
-      .classList
-      .add("active");
-
+  if(page==="home"){
     loadPosts();
-
   }
 
-
-  if(page === "profile"){
-
-    document
-      .getElementById("profilePage")
-      .classList
-      .remove("hidden");
-
-    document
-      .getElementById("navProfile")
-      .classList
-      .add("active");
-
+  if(page==="profile"){
     loadMyProfile();
-
   }
 
+  if(page==="reels"){
+    loadReels();
+  }
 
-  if(page === "settings"){
+  if(page==="notifications"){
+    loadNotifications();
+  }
 
-    document
-      .getElementById("settingsPage")
-      .classList
-      .remove("hidden");
+  if(page==="messages"){
+    loadMessages();
+  }
 
-    document
-      .getElementById("navSettings")
-      .classList
-      .add("active");
-
+  if(page==="saved"){
+    loadSaved();
   }
 
 }
 
 
-/* =====================================================
-   LOAD POSTS
-===================================================== */
+/* =========================================
+LOAD POSTS
+========================================= */
 
 async function loadPosts(){
 
   const feed =
     document.getElementById("feed");
 
-
-  if(!feed){
-
-    console.error(
-      "feed element পাওয়া যায়নি"
-    );
-
-    return;
-  }
-
-
-  feed.innerHTML = `
-    <div class="loading">
-      পোস্ট লোড হচ্ছে...
-    </div>
-  `;
-
-
-  /*
-    IMPORTANT:
-
-    এখানে profiles:user_id ব্যবহার করা হয়নি।
-
-    Posts এবং Profiles আলাদাভাবে load করা হচ্ছে।
-  */
-
+  feed.innerHTML =
+    `<div class="card">Loading Feed...</div>`;
 
   const {
     data:posts,
-    error:postsError
-  } = await sb
+    error
+  } =
+    await sb
     .from("posts")
     .select(`
       id,
@@ -1173,934 +1343,1180 @@ async function loadPosts(){
     `)
     .order(
       "created_at",
-      {
-        ascending:false
-      }
-    );
-
-
-  if(postsError){
-
-    console.error(
-      "POST ERROR:",
-      postsError
-    );
-
-
-    feed.innerHTML = `
-      <div class="errorBox">
-
-        <b>
-          পোস্ট লোড হয়নি
-        </b>
-
-        <br><br>
-
-        ${escapeHTML(
-          postsError.message
-        )}
-
-      </div>
-    `;
-
-    return;
-  }
-
-
-  console.log(
-    "POSTS:",
-    posts
-  );
-
-
-  if(
-    !posts ||
-    posts.length === 0
-  ){
-
-    feed.innerHTML = `
-      <div class="card" style="text-align:center">
-
-        এখনো কোনো পোস্ট নেই।
-
-      </div>
-    `;
-
-    return;
-  }
-
-
-  /* =========================
-     USER IDS
-  ========================= */
-
-  const userIds = [
-    ...new Set(
-      posts
-        .map(
-          post => post.user_id
-        )
-        .filter(Boolean)
+      {ascending:false}
     )
-  ];
+    .limit(50);
 
+  if(error){
 
-  /* =========================
-     PROFILES
-  ========================= */
+    feed.innerHTML =
+      `<div class="card">
+        Feed Error: ${escapeHTML(error.message)}
+      </div>`;
 
-  let profiles = [];
-
-
-  if(userIds.length > 0){
-
-    const {
-      data,
-      error:profileError
-    } = await sb
-      .from("profiles")
-      .select(`
-        id,
-        name,
-        username,
-        avatar_url
-      `)
-      .in(
-        "id",
-        userIds
-      );
-
-
-    if(profileError){
-
-      console.error(
-        "PROFILE ERROR:",
-        profileError
-      );
-
-    }else{
-
-      profiles =
-        data || [];
-
-    }
+    return;
 
   }
 
+  if(!posts || posts.length===0){
 
-  /* =========================
-     PROFILE MAP
-  ========================= */
+    feed.innerHTML =
+      `<div class="card empty">
+        এখনো কোনো Post নেই।
+      </div>`;
 
-  const profileMap = {};
+    return;
 
+  }
 
-  profiles.forEach(
-    profile => {
+  const userIds =
+    [...new Set(
+      posts
+      .map(p=>p.user_id)
+      .filter(Boolean)
+    )];
 
-      profileMap[
-        profile.id
-      ] = profile;
+  let profiles=[];
 
-    }
-  );
+  if(userIds.length){
 
+    const result =
+      await sb
+      .from("profiles")
+      .select(
+        "id,name,username,avatar_url"
+      )
+      .in("id",userIds);
 
-  /* =========================
-     RENDER
-  ========================= */
+    profiles=result.data || [];
 
-  feed.innerHTML = "";
+  }
 
+  const profileMap={};
 
-  posts.forEach(
-    post => {
+  profiles.forEach(p=>{
+    profileMap[p.id]=p;
+  });
 
-      const profile =
-        profileMap[
-          post.user_id
-        ] || {
+  feed.innerHTML="";
 
-          id:post.user_id,
+  posts.forEach(post=>{
 
-          name:"User",
+    renderPost(
+      post,
+      profileMap[post.user_id],
+      feed
+    );
 
-          username:"",
-
-          avatar_url:""
-
-        };
-
-
-      renderPost(
-        post,
-        profile,
-        feed
-      );
-
-    }
-  );
+  });
 
 }
 
 
-/* =====================================================
-   RENDER POST
-===================================================== */
+/* =========================================
+RENDER POST
+========================================= */
 
 function renderPost(
   post,
   profile,
-  feed
+  container
 ){
 
   const div =
     document.createElement("div");
 
-
-  div.className =
-    "post-card";
-
+  div.className="card";
 
   const name =
-    profile.name ||
-    profile.username ||
+    profile?.name ||
+    profile?.username ||
     "User";
 
-
   const avatar =
-    profile.avatar_url ||
-    "https://ui-avatars.com/api/?name=" +
-    encodeURIComponent(name);
+    profile?.avatar_url ||
+    "https://via.placeholder.com/100";
 
+  div.innerHTML=`
 
-  const time =
-    post.created_at
-      ? new Date(
-          post.created_at
-        ).toLocaleString("bn-BD")
-      : "";
-
-
-  let imageHTML = "";
-
-
-  if(post.image_url){
-
-    imageHTML = `
+    <div class="post-head">
 
       <img
+        class="avatar"
+        src="${avatar}">
 
-        src="${escapeHTML(
-          post.image_url
-        )}"
+      <div class="post-user">
 
-        style="
-          width:100%;
-          max-height:500px;
-          object-fit:cover;
-          border-radius:10px;
-          margin-top:10px;
-          display:block;
-        "
-
-        onerror="
-          this.style.display='none';
-        "
-
-      >
-
-    `;
-
-  }
-
-
-  div.innerHTML = `
-
-    <div style="
-      display:flex;
-      align-items:center;
-      gap:10px;
-    ">
-
-      <img
-
-        src="${escapeHTML(
-          avatar
-        )}"
-
-        style="
-          width:45px;
-          height:45px;
-          border-radius:50%;
-          object-fit:cover;
-        "
-
-      >
-
-
-      <div>
-
-        <div style="
-          font-weight:bold;
-          font-size:16px;
-        ">
-
-          ${escapeHTML(
-            name
-          )}
-
+        <div class="username">
+          ${escapeHTML(name)}
         </div>
 
-
-        <div style="
-          color:#777;
-          font-size:12px;
-        ">
-
-          ${escapeHTML(
-            time
-          )}
-
+        <div class="time">
+          ${new Date(
+            post.created_at
+          ).toLocaleString("bn-BD")}
         </div>
 
       </div>
 
     </div>
 
-
     ${
       post.text
-        ? `
-
-          <div style="
-            margin-top:12px;
-            font-size:16px;
-            white-space:pre-wrap;
-          ">
-
-            ${escapeHTML(
-              post.text
-            )}
-
-          </div>
-
-        `
-        : ""
+      ?
+      `<div class="post-text">
+        ${escapeHTML(post.text)}
+      </div>`
+      :
+      ""
     }
 
+    ${
+      post.image_url
+      ?
+      `<img
+        class="post-image"
+        src="${post.image_url}"
+        loading="lazy">`
+      :
+      ""
+    }
 
-    ${imageHTML}
-
+    <div
+      class="stats"
+      id="stats-${post.id}">
+      Loading...
+    </div>
 
     <div class="post-actions">
 
       <button
-        onclick="likePost('${post.id}')"
-      >
+        onclick="reactPost(${post.id})">
         ❤️ Like
       </button>
 
-
       <button
-        onclick="commentPost('${post.id}')"
-      >
+        onclick="focusComment(${post.id})">
         💬 Comment
       </button>
 
+      <button
+        onclick="sharePost(${post.id})">
+        ↗ Share
+      </button>
 
       <button
-        onclick="sharePost('${post.id}')"
-      >
-        ↗ Share
+        onclick="savePost(${post.id})">
+        🔖 Save
+      </button>
+
+    </div>
+
+    <div
+      id="comments-${post.id}">
+    </div>
+
+    <div class="comment-input">
+
+      <input
+        id="comment-${post.id}"
+        placeholder="Write a comment...">
+
+      <button
+        class="secondary"
+        onclick="commentPost(${post.id})">
+        Send
       </button>
 
     </div>
 
   `;
 
+  container.appendChild(div);
 
-  feed.appendChild(div);
+  loadPostStats(post.id);
 
-}
-
-
-/* =====================================================
-   IMAGE PREVIEW
-===================================================== */
-
-function previewImage(){
-
-  const input =
-    document.getElementById(
-      "postImage"
-    );
-
-  const preview =
-    document.getElementById(
-      "imagePreview"
-    );
-
-
-  preview.innerHTML = "";
-
-
-  if(
-    !input.files ||
-    !input.files[0]
-  ){
-
-    return;
-  }
-
-
-  const file =
-    input.files[0];
-
-
-  const url =
-    URL.createObjectURL(file);
-
-
-  preview.innerHTML = `
-
-    <img
-
-      src="${url}"
-
-      style="
-        width:100%;
-        max-height:300px;
-        object-fit:cover;
-        border-radius:10px;
-      "
-
-    >
-
-  `;
+  loadComments(post.id);
 
 }
 
 
-/* =====================================================
-   CREATE POST
-===================================================== */
+/* =========================================
+POST STATS
+========================================= */
 
-async function createPost(){
-
-  if(!currentUser){
-
-    alert(
-      "আগে Login করুন"
-    );
-
-    return;
-  }
-
-
-  const text =
-    document
-      .getElementById("postText")
-      .value
-      .trim();
-
-
-  const fileInput =
-    document.getElementById(
-      "postImage"
-    );
-
-
-  const privacy =
-    document
-      .getElementById(
-        "postPrivacy"
-      )
-      .value;
-
-
-  const msg =
-    document.getElementById(
-      "postMsg"
-    );
-
-
-  if(
-    !text &&
-    (
-      !fileInput.files ||
-      !fileInput.files[0]
-    )
-  ){
-
-    msg.innerHTML =
-      "লিখা অথবা ছবি দিন";
-
-    return;
-  }
-
-
-  msg.innerHTML =
-    "পোস্ট তৈরি হচ্ছে...";
-
-
-  let image_url = null;
-
-
-  /* =========================
-     IMAGE UPLOAD
-  ========================= */
-
-  if(
-    fileInput.files &&
-    fileInput.files[0]
-  ){
-
-    const file =
-      fileInput.files[0];
-
-
-    const extension =
-      file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
-
-
-    const fileName =
-      currentUser.id +
-      "/" +
-      Date.now() +
-      "." +
-      extension;
-
-
-    const {
-      error:uploadError
-    } = await sb
-      .storage
-      .from("post-images")
-      .upload(
-        fileName,
-        file,
-        {
-          upsert:false
-        }
-      );
-
-
-    if(uploadError){
-
-      console.error(
-        "UPLOAD ERROR:",
-        uploadError
-      );
-
-
-      msg.innerHTML =
-        "ছবি Upload হয়নি: " +
-        escapeHTML(
-          uploadError.message
-        );
-
-      return;
-    }
-
-
-    const {
-      data:urlData
-    } = sb
-      .storage
-      .from("post-images")
-      .getPublicUrl(
-        fileName
-      );
-
-
-    image_url =
-      urlData.publicUrl;
-
-  }
-
-
-  /* =========================
-     INSERT POST
-  ========================= */
+async function loadPostStats(postId){
 
   const {
-    data,
-    error
-  } = await sb
-    .from("posts")
-    .insert({
-
-      user_id:
-        currentUser.id,
-
-      text:
-        text || null,
-
-      image_url:
-        image_url,
-
-      privacy:
-        privacy
-
+    count:likes
+  } =
+    await sb
+    .from("reactions")
+    .select("*",{
+      count:"exact",
+      head:true
     })
-    .select()
-    .single();
-
-
-  if(error){
-
-    console.error(
-      "INSERT POST ERROR:",
-      error
-    );
-
-
-    msg.innerHTML =
-      "পোস্ট হয়নি: " +
-      escapeHTML(
-        error.message
-      );
-
-    return;
-  }
-
-
-  console.log(
-    "POST CREATED:",
-    data
-  );
-
-
-  document
-    .getElementById(
-      "postText"
-    )
-    .value = "";
-
-
-  fileInput.value = "";
-
-
-  document
-    .getElementById(
-      "imagePreview"
-    )
-    .innerHTML = "";
-
-
-  msg.innerHTML = `
-    <span style="color:green">
-      পোস্ট সফল হয়েছে ✓
-    </span>
-  `;
-
-
-  await loadPosts();
-
-
-  setTimeout(
-    () => {
-
-      msg.innerHTML = "";
-
-    },
-    2000
-  );
-
-}
-
-
-/* =====================================================
-   PROFILE
-===================================================== */
-
-async function loadMyProfile(){
-
-  if(!currentUser){
-
-    return;
-  }
-
+    .eq("post_id",postId);
 
   const {
-    data,
-    error
-  } = await sb
-    .from("profiles")
-    .select(`
-      id,
-      name,
-      username,
-      avatar_url
-    `)
-    .eq(
-      "id",
-      currentUser.id
-    )
-    .maybeSingle();
-
-
-  if(error){
-
-    console.error(
-      "PROFILE LOAD ERROR:",
-      error
-    );
-
-    return;
-  }
-
-
-  const profile =
-    data || {
-
-      name:
-        currentUser.email
-          ? currentUser.email
-              .split("@")[0]
-          : "User",
-
-      username:"",
-
-      avatar_url:""
-
-    };
-
-
-  const name =
-    profile.name ||
-    profile.username ||
-    "User";
-
-
-  const avatar =
-    profile.avatar_url ||
-    "https://ui-avatars.com/api/?name=" +
-    encodeURIComponent(name);
-
-
-  document
-    .getElementById(
-      "profileName"
-    )
-    .textContent =
-      name;
-
-
-  document
-    .getElementById(
-      "profileUsername"
-    )
-    .textContent =
-      profile.username
-        ? "@" +
-          profile.username
-        : "";
-
-
-  document
-    .getElementById(
-      "profileAvatar"
-    )
-    .src =
-      avatar;
-
-
-  document
-    .getElementById(
-      "createAvatar"
-    )
-    .src =
-      avatar;
-
-
-  loadProfilePosts();
-
-}
-
-
-/* =====================================================
-   PROFILE POSTS
-===================================================== */
-
-async function loadProfilePosts(){
-
-  if(!currentUser){
-
-    return;
-  }
-
+    count:comments
+  } =
+    await sb
+    .from("comments")
+    .select("*",{
+      count:"exact",
+      head:true
+    })
+    .eq("post_id",postId);
 
   const box =
     document.getElementById(
-      "profilePosts"
+      "stats-"+postId
     );
 
+  if(box){
 
-  box.innerHTML = `
-    <div class="loading">
-      পোস্ট লোড হচ্ছে...
-    </div>
-  `;
+    box.innerText =
+      `❤️ ${likes || 0} Likes   💬 ${comments || 0} Comments`;
 
+  }
+
+}
+
+
+/* =========================================
+LIKE
+========================================= */
+
+async function reactPost(postId){
+
+  if(!currentUser) return;
 
   const {
-    data:posts,
-    error
-  } = await sb
+    data:existing
+  } =
+    await sb
+    .from("reactions")
+    .select("id")
+    .eq("post_id",postId)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(existing){
+
+    const {error} =
+      await sb
+      .from("reactions")
+      .delete()
+      .eq("id",existing.id);
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+  }else{
+
+    const {error} =
+      await sb
+      .from("reactions")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id,
+        reaction:"like"
+      });
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+    await createNotificationForPost(
+      postId,
+      "like"
+    );
+
+  }
+
+  loadPostStats(postId);
+
+}
+
+
+/* =========================================
+COMMENTS
+========================================= */
+
+async function commentPost(postId){
+
+  const input =
+    document.getElementById(
+      "comment-"+postId
+    );
+
+  const text =
+    input.value.trim();
+
+  if(!text) return;
+
+  const {error} =
+    await sb
+    .from("comments")
+    .insert({
+      post_id:postId,
+      user_id:currentUser.id,
+      text:text
+    });
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  input.value="";
+
+  loadComments(postId);
+  loadPostStats(postId);
+
+  await createNotificationForPost(
+    postId,
+    "comment"
+  );
+
+}
+
+
+async function loadComments(postId){
+
+  const box =
+    document.getElementById(
+      "comments-"+postId
+    );
+
+  if(!box) return;
+
+  const {data} =
+    await sb
+    .from("comments")
+    .select(
+      "id,user_id,text,created_at"
+    )
+    .eq("post_id",postId)
+    .order(
+      "created_at",
+      {ascending:true}
+    )
+    .limit(20);
+
+  if(!data || !data.length){
+
+    box.innerHTML="";
+    return;
+
+  }
+
+  const ids =
+    [...new Set(
+      data.map(c=>c.user_id)
+    )];
+
+  const {data:profiles} =
+    await sb
+    .from("profiles")
+    .select("id,name,username")
+    .in("id",ids);
+
+  const map={};
+
+  (profiles||[]).forEach(p=>{
+    map[p.id]=p;
+  });
+
+  box.innerHTML =
+    data.map(c=>`
+
+      <div class="comment">
+
+        <b>
+          ${escapeHTML(
+            map[c.user_id]?.name ||
+            map[c.user_id]?.username ||
+            "User"
+          )}
+        </b>
+
+        <br>
+
+        ${escapeHTML(c.text)}
+
+      </div>
+
+    `).join("");
+
+}
+
+
+function focusComment(postId){
+
+  const input =
+    document.getElementById(
+      "comment-"+postId
+    );
+
+  if(input){
+
+    input.focus();
+
+  }
+
+}
+
+
+/* =========================================
+CREATE POST
+========================================= */
+
+async function createPost(){
+
+  const text =
+    document.getElementById("postText")
+    .value.trim();
+
+  const file =
+    document.getElementById("postImage")
+    .files[0];
+
+  if(!text && !file){
+
+    alert(
+      "Post লিখুন অথবা Photo নির্বাচন করুন"
+    );
+
+    return;
+
+  }
+
+  let image_url=null;
+
+  if(file){
+
+    const path =
+      currentUser.id+
+      "/"+
+      Date.now()+
+      "_"+
+      file.name.replace(/\s+/g,"_");
+
+    const {error} =
+      await sb
+      .storage
+      .from("post-images")
+      .upload(path,file);
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+    const {data} =
+      sb
+      .storage
+      .from("post-images")
+      .getPublicUrl(path);
+
+    image_url=data.publicUrl;
+
+  }
+
+  const {error} =
+    await sb
     .from("posts")
-    .select(`
-      id,
-      user_id,
-      text,
-      image_url,
-      privacy,
-      created_at
-    `)
+    .insert({
+      user_id:currentUser.id,
+      text:text || null,
+      image_url:image_url,
+      privacy:"public"
+    });
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  document.getElementById("postText")
+    .value="";
+
+  document.getElementById("postImage")
+    .value="";
+
+  document.getElementById("preview")
+    .style.display="none";
+
+  alert("Post হয়েছে ✅");
+
+  loadPosts();
+
+}
+
+
+/* =========================================
+IMAGE PREVIEW
+========================================= */
+
+function previewImage(){
+
+  const file =
+    document.getElementById("postImage")
+    .files[0];
+
+  const preview =
+    document.getElementById("preview");
+
+  if(file){
+
+    preview.src =
+      URL.createObjectURL(file);
+
+    preview.style.display="block";
+
+  }
+
+}
+
+
+/* =========================================
+PROFILE
+========================================= */
+
+async function loadMyProfile(){
+
+  const {
+    data:p,
+    error
+  } =
+    await sb
+    .from("profiles")
+    .select("*")
+    .eq("id",currentUser.id)
+    .single();
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  const {
+    count:followers
+  } =
+    await sb
+    .from("follows")
+    .select("*",{
+      count:"exact",
+      head:true
+    })
+    .eq(
+      "following_id",
+      currentUser.id
+    );
+
+  const {
+    count:following
+  } =
+    await sb
+    .from("follows")
+    .select("*",{
+      count:"exact",
+      head:true
+    })
+    .eq(
+      "follower_id",
+      currentUser.id
+    );
+
+  const {data:posts} =
+    await sb
+    .from("posts")
+    .select("*")
     .eq(
       "user_id",
       currentUser.id
     )
     .order(
       "created_at",
-      {
-        ascending:false
-      }
+      {ascending:false}
     );
 
+  const area =
+    document.getElementById(
+      "profileArea"
+    );
+
+  area.innerHTML=`
+
+    <div class="card">
+
+      <div class="profile-cover"></div>
+
+      <div class="profile-info">
+
+        <img
+          class="avatar-large"
+          src="${
+            p?.avatar_url ||
+            "https://via.placeholder.com/100"
+          }">
+
+        <h2>
+          ${escapeHTML(
+            p?.name || "User"
+          )}
+        </h2>
+
+        <div>
+          @${escapeHTML(
+            p?.username || ""
+          )}
+        </div>
+
+        <p>
+          👥 Followers:
+          <b>${followers || 0}</b>
+
+          &nbsp;&nbsp;
+
+          Following:
+          <b>${following || 0}</b>
+        </p>
+
+        <div class="profile-buttons">
+
+          <button
+            class="secondary"
+            onclick="editProfile()">
+            ✏️ Edit Profile
+          </button>
+
+          <button
+            class="secondary"
+            onclick="showPage('settings')">
+            ⚙️ Settings
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <h3>My Posts</h3>
+
+    <div id="profilePosts"></div>
+
+  `;
+
+  const box =
+    document.getElementById(
+      "profilePosts"
+    );
+
+  if(!posts || !posts.length){
+
+    box.innerHTML=
+      `<div class="card empty">
+        এখনো কোনো Post নেই।
+      </div>`;
+
+    return;
+
+  }
+
+  posts.forEach(post=>{
+
+    renderPost(
+      post,
+      p,
+      box
+    );
+
+  });
+
+}
+
+
+/* =========================================
+EDIT PROFILE
+========================================= */
+
+async function editProfile(){
+
+  const {
+    data:p
+  } =
+    await sb
+    .from("profiles")
+    .select("name,username")
+    .eq("id",currentUser.id)
+    .single();
+
+  const name =
+    prompt(
+      "নতুন নাম:",
+      p?.name || ""
+    );
+
+  if(name===null) return;
+
+  const username =
+    prompt(
+      "নতুন username:",
+      p?.username || ""
+    );
+
+  if(username===null) return;
+
+  const {error} =
+    await sb
+    .from("profiles")
+    .update({
+      name:name.trim(),
+      username:username
+        .trim()
+        .toLowerCase()
+    })
+    .eq("id",currentUser.id);
 
   if(error){
 
-    box.innerHTML = `
-      <div class="errorBox">
-        ${escapeHTML(
-          error.message
-        )}
-      </div>
-    `;
-
+    alert(error.message);
     return;
+
   }
 
+  alert("Profile updated ✅");
 
-  box.innerHTML = "";
+  loadMyProfile();
+
+}
 
 
-  if(
-    !posts ||
-    posts.length === 0
-  ){
+/* =========================================
+FOLLOW / UNFOLLOW
+========================================= */
 
-    box.innerHTML = `
-      <div class="card"
-        style="text-align:center">
-        আপনার কোনো পোস্ট নেই।
-      </div>
-    `;
+async function followUser(userId){
 
+  if(userId===currentUser.id){
+
+    alert("নিজেকে Follow করা যাবে না");
     return;
-  }
 
+  }
 
   const {
-    data:profile
-  } = await sb
-    .from("profiles")
-    .select(`
-      id,
-      name,
-      username,
-      avatar_url
-    `)
+    data:existing
+  } =
+    await sb
+    .from("follows")
+    .select("id")
     .eq(
-      "id",
+      "follower_id",
+      currentUser.id
+    )
+    .eq(
+      "following_id",
+      userId
+    )
+    .maybeSingle();
+
+  if(existing){
+
+    const {error} =
+      await sb
+      .from("follows")
+      .delete()
+      .eq("id",existing.id);
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+    alert("Unfollowed");
+
+  }else{
+
+    const {error} =
+      await sb
+      .from("follows")
+      .insert({
+        follower_id:currentUser.id,
+        following_id:userId
+      });
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+    alert("Followed ✅");
+
+  }
+
+  doSearch();
+
+}
+
+
+/* =========================================
+SEARCH
+========================================= */
+
+function topSearchKey(event){
+
+  if(event.key!=="Enter") return;
+
+  const q =
+    document.getElementById("topSearch")
+    .value.trim();
+
+  showPage("search");
+
+  document.getElementById("searchBox")
+    .value=q;
+
+  doSearch();
+
+}
+
+
+async function doSearch(){
+
+  const q =
+    document.getElementById("searchBox")
+    .value.trim();
+
+  const box =
+    document.getElementById(
+      "searchResults"
+    );
+
+  if(!q){
+
+    box.innerHTML="";
+    return;
+
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb
+    .from("profiles")
+    .select(
+      "id,name,username,avatar_url"
+    )
+    .or(
+      `username.ilike.%${q}%,name.ilike.%${q}%`
+    )
+    .limit(30);
+
+  if(error){
+
+    box.innerHTML=
+      `<div class="card">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+  if(!data || !data.length){
+
+    box.innerHTML=
+      `<div class="card empty">
+        কোনো User পাওয়া যায়নি।
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML="";
+
+  for(const p of data){
+
+    const {data:follow} =
+      await sb
+      .from("follows")
+      .select("id")
+      .eq(
+        "follower_id",
+        currentUser.id
+      )
+      .eq(
+        "following_id",
+        p.id
+      )
+      .maybeSingle();
+
+    const div =
+      document.createElement("div");
+
+    div.className="card";
+
+    div.innerHTML=`
+
+      <div class="result">
+
+        <img
+          class="avatar"
+          src="${
+            p.avatar_url ||
+            "https://via.placeholder.com/100"
+          }">
+
+        <div class="result-info">
+
+          <b>
+            ${escapeHTML(
+              p.name || "User"
+            )}
+          </b>
+
+          <br>
+
+          @${escapeHTML(
+            p.username || ""
+          )}
+
+        </div>
+
+        ${
+          p.id!==currentUser.id
+          ?
+          `<button
+            class="secondary"
+            onclick="followUser('${p.id}')">
+            ${follow ? "Following" : "Follow"}
+          </button>`
+          :
+          ""
+        }
+
+      </div>
+
+    `;
+
+    box.appendChild(div);
+
+  }
+
+}
+
+
+/* =========================================
+SAVE POST
+========================================= */
+
+async function savePost(postId){
+
+  const {
+    data:existing
+  } =
+    await sb
+    .from("saved_posts")
+    .select("id")
+    .eq(
+      "post_id",
+      postId
+    )
+    .eq(
+      "user_id",
       currentUser.id
     )
     .maybeSingle();
 
+  if(existing){
 
-  const p =
-    profile || {
-
-      name:"User",
-
-      username:"",
-
-      avatar_url:""
-
-    };
-
-
-  posts.forEach(
-    post => {
-
-      renderPost(
-        post,
-        p,
-        box
+    const {error} =
+      await sb
+      .from("saved_posts")
+      .delete()
+      .eq(
+        "id",
+        existing.id
       );
 
+    if(error){
+
+      alert(error.message);
+      return;
+
     }
-  );
+
+    alert("Saved থেকে সরানো হয়েছে");
+
+  }else{
+
+    const {error} =
+      await sb
+      .from("saved_posts")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id
+      });
+
+    if(error){
+
+      alert(error.message);
+      return;
+
+    }
+
+    alert("Post Saved 🔖");
+
+  }
 
 }
 
 
-/* =====================================================
-   LIKE
-===================================================== */
+/* =========================================
+LOAD SAVED
+========================================= */
 
-function likePost(id){
+async function loadSaved(){
 
-  alert(
-    "Like system পরের ধাপে যোগ করা হবে।"
-  );
+  const box =
+    document.getElementById(
+      "savedPosts"
+    );
+
+  const {
+    data:saved,
+    error
+  } =
+    await sb
+    .from("saved_posts")
+    .select("post_id")
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {ascending:false}
+    );
+
+  if(error){
+
+    box.innerHTML=
+      `<div class="card">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+  if(!saved || !saved.length){
+
+    box.innerHTML=
+      `<div class="card empty">
+        কোনো Saved Post নেই।
+      </div>`;
+
+    return;
+
+  }
+
+  const ids =
+    saved.map(x=>x.post_id);
+
+  const {
+    data:posts
+  } =
+    await sb
+    .from("posts")
+    .select("*")
+    .in("id",ids);
+
+  if(!posts){
+
+    box.innerHTML="";
+    return;
+
+  }
+
+  const userIds =
+    [...new Set(
+      posts.map(p=>p.user_id)
+    )];
+
+  const {
+    data:profiles
+  } =
+    await sb
+    .from("profiles")
+    .select("*")
+    .in("id",userIds);
+
+  const map={};
+
+  (profiles||[]).forEach(p=>{
+    map[p.id]=p;
+  });
+
+  box.innerHTML="";
+
+  posts.forEach(post=>{
+
+    renderPost(
+      post,
+      map[post.user_id],
+      box
+    );
+
+  });
 
 }
 
 
-/* =====================================================
-   COMMENT
-===================================================== */
+/* =========================================
+SHARE
+========================================= */
 
-function commentPost(id){
-
-  alert(
-    "Comment system পরের ধাপে যোগ করা হবে।"
-  );
-
-}
-
-
-/* =====================================================
-   SHARE
-===================================================== */
-
-async function sharePost(id){
+async function sharePost(postId){
 
   const url =
-    window.location.href +
-    "#post-" +
-    id;
+    location.href.split("#")[0]+
+    "#post-"+postId;
 
-
-  if(
-    navigator.share
-  ){
+  if(navigator.share){
 
     try{
 
       await navigator.share({
-
-        title:
-          "My Social Post",
-
+        title:"My Social",
+        text:"Check this post",
         url:url
-
       });
 
     }catch(e){}
@@ -2109,17 +2525,17 @@ async function sharePost(id){
 
     try{
 
-      await navigator.clipboard.writeText(
-        url
-      );
+      await navigator.clipboard
+        .writeText(url);
 
-      alert(
-        "Post link copied ✓"
-      );
+      alert("Post link copied ✅");
 
     }catch(e){
 
-      alert(url);
+      prompt(
+        "এই Link কপি করুন:",
+        url
+      );
 
     }
 
@@ -2128,77 +2544,774 @@ async function sharePost(id){
 }
 
 
-/* =====================================================
-   SETTINGS
-===================================================== */
+/* =========================================
+NOTIFICATION
+========================================= */
 
-function editProfile(){
+async function createNotificationForPost(
+  postId,
+  type
+){
 
-  alert(
-    "Edit Profile system পরের ধাপে যোগ করা হবে।"
-  );
+  const {
+    data:post
+  } =
+    await sb
+    .from("posts")
+    .select("user_id")
+    .eq("id",postId)
+    .single();
+
+  if(!post) return;
+
+  if(post.user_id===currentUser.id)
+    return;
+
+  let message="";
+
+  if(type==="like"){
+
+    message=
+      "আপনার Post-এ Like দিয়েছে ❤️";
+
+  }
+
+  if(type==="comment"){
+
+    message=
+      "আপনার Post-এ Comment করেছে 💬";
+
+  }
+
+  await sb
+    .from("notifications")
+    .insert({
+      receiver_id:post.user_id,
+      actor_id:currentUser.id,
+      type:type,
+      post_id:postId,
+      message:message,
+      read:false
+    });
 
 }
 
 
-async function changePassword(){
+/* =========================================
+LOAD NOTIFICATIONS
+========================================= */
 
-  if(!currentUser){
+async function loadNotifications(){
 
-    return;
-  }
-
-
-  const email =
-    currentUser.email;
-
+  const box =
+    document.getElementById(
+      "notifications"
+    );
 
   const {
+    data,
     error
-  } = await sb.auth.resetPasswordForEmail(
-    email
-  );
+  } =
+    await sb
+    .from("notifications")
+    .select(`
+      id,
+      receiver_id,
+      actor_id,
+      type,
+      post_id,
+      message,
+      read,
+      created_at
+    `)
+    .eq(
+      "receiver_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {ascending:false}
+    )
+    .limit(50);
 
+  if(error){
+
+    box.innerHTML=
+      `<div class="card">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+  if(!data || !data.length){
+
+    box.innerHTML=
+      `<div class="card empty">
+        কোনো Notification নেই 🔔
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    data.map(n=>`
+
+      <div class="
+        notification
+        ${n.read ? "" : "unread"}
+      ">
+
+        <div>🔔</div>
+
+        <div>
+
+          <b>
+            ${escapeHTML(
+              n.message || n.type
+            )}
+          </b>
+
+          <br>
+
+          <small>
+            ${new Date(
+              n.created_at
+            ).toLocaleString("bn-BD")}
+          </small>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+MARK NOTIFICATIONS READ
+========================================= */
+
+async function markNotificationsRead(){
+
+  const {error} =
+    await sb
+    .from("notifications")
+    .update({
+      read:true
+    })
+    .eq(
+      "receiver_id",
+      currentUser.id
+    )
+    .eq(
+      "read",
+      false
+    );
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  loadNotifications();
+
+}
+
+
+/* =========================================
+STORIES
+========================================= */
+
+async function loadStories(){
+
+  const box =
+    document.getElementById(
+      "stories"
+    );
+
+  if(!box) return;
+
+  const {
+    data,
+    error
+  } =
+    await sb
+    .from("stories")
+    .select(`
+      id,
+      user_id,
+      text,
+      image_url,
+      created_at,
+      expires_at
+    `)
+    .gt(
+      "expires_at",
+      new Date().toISOString()
+    )
+    .order(
+      "created_at",
+      {ascending:false}
+    );
+
+  box.innerHTML=`
+
+    <div
+      class="story add"
+      onclick="createStory()">
+      ➕<br>
+      Add Story
+    </div>
+
+  `;
+
+  if(error) return;
+
+  (data||[]).forEach(s=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="story";
+
+    if(s.image_url){
+
+      div.style.backgroundImage =
+        `url("${s.image_url}")`;
+
+    }
+
+    div.innerHTML =
+      `<b>
+        ${escapeHTML(
+          s.text || "Story"
+        )}
+      </b>`;
+
+    box.appendChild(div);
+
+  });
+
+}
+
+
+/* CREATE STORY */
+
+async function createStory(){
+
+  const text =
+    prompt("Story লিখুন:");
+
+  if(!text) return;
+
+  const {error} =
+    await sb
+    .from("stories")
+    .insert({
+      user_id:currentUser.id,
+      text:text
+    });
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  loadStories();
+
+}
+
+
+/* =========================================
+MESSENGER
+========================================= */
+
+function messageKey(e){
+
+  if(
+    e.key==="Enter" &&
+    !e.shiftKey
+  ){
+
+    e.preventDefault();
+
+    sendMessage();
+
+  }
+
+}
+
+
+async function sendMessage(){
+
+  const receiver =
+    document.getElementById(
+      "messageUser"
+    ).value.trim();
+
+  const text =
+    document.getElementById(
+      "messageText"
+    ).value.trim();
+
+  if(!receiver || !text){
+
+    alert(
+      "Receiver User ID এবং Message দিন"
+    );
+
+    return;
+
+  }
+
+  if(receiver===currentUser.id){
+
+    alert("নিজেকে Message পাঠানো যাবে না");
+    return;
+
+  }
+
+  const {error} =
+    await sb
+    .from("messages")
+    .insert({
+      sender_id:currentUser.id,
+      receiver_id:receiver,
+      text:text
+    });
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  document.getElementById(
+    "messageText"
+  ).value="";
+
+  loadMessages();
+
+}
+
+
+/* LOAD MESSAGES */
+
+async function loadMessages(){
+
+  const box =
+    document.getElementById(
+      "messages"
+    );
+
+  const {
+    data,
+    error
+  } =
+    await sb
+    .from("messages")
+    .select(`
+      id,
+      sender_id,
+      receiver_id,
+      text,
+      created_at,
+      is_read
+    `)
+    .or(
+      `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+    )
+    .order(
+      "created_at",
+      {ascending:true}
+    )
+    .limit(100);
+
+  if(error){
+
+    box.innerHTML=
+      `<div class="card">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+  if(!data || !data.length){
+
+    box.innerHTML=
+      `<div class="card empty">
+        কোনো Message নেই।
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    data.map(m=>`
+
+      <div class="
+        message
+        ${
+          m.sender_id===currentUser.id
+          ? "mine"
+          : "other"
+        }">
+
+        ${escapeHTML(
+          m.text || ""
+        )}
+
+        <br>
+
+        <small>
+          ${new Date(
+            m.created_at
+          ).toLocaleTimeString("bn-BD",{
+            hour:"2-digit",
+            minute:"2-digit"
+          })}
+        </small>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+REELS
+========================================= */
+
+async function uploadReel(){
+
+  const file =
+    document.getElementById(
+      "reelFile"
+    ).files[0];
+
+  const caption =
+    document.getElementById(
+      "reelCaption"
+    ).value.trim();
+
+  if(!file){
+
+    alert("Video নির্বাচন করুন");
+    return;
+
+  }
+
+  const path =
+    currentUser.id+
+    "/reel_"+
+    Date.now()+
+    "_"+
+    file.name.replace(/\s+/g,"_");
+
+  const {error} =
+    await sb
+    .storage
+    .from("post-images")
+    .upload(
+      path,
+      file
+    );
 
   if(error){
 
     alert(
+      "Video upload হয়নি: "+
       error.message
     );
 
     return;
+
   }
 
+  const {data} =
+    sb
+    .storage
+    .from("post-images")
+    .getPublicUrl(path);
 
-  alert(
-    "Password reset link আপনার Email-এ পাঠানো হয়েছে।"
+  const {
+    error:dbError
+  } =
+    await sb
+    .from("reels")
+    .insert({
+      user_id:currentUser.id,
+      video_url:data.publicUrl,
+      caption:caption
+    });
+
+  if(dbError){
+
+    alert(dbError.message);
+    return;
+
+  }
+
+  document.getElementById(
+    "reelFile"
+  ).value="";
+
+  document.getElementById(
+    "reelCaption"
+  ).value="";
+
+  alert("Reel uploaded ✅");
+
+  loadReels();
+
+}
+
+
+/* LOAD REELS */
+
+async function loadReels(){
+
+  const box =
+    document.getElementById(
+      "reels"
+    );
+
+  if(!box) return;
+
+  const {
+    data,
+    error
+  } =
+    await sb
+    .from("reels")
+    .select(`
+      id,
+      user_id,
+      video_url,
+      caption,
+      views,
+      created_at
+    `)
+    .order(
+      "created_at",
+      {ascending:false}
+    )
+    .limit(30);
+
+  if(error){
+
+    box.innerHTML=
+      `<div class="card">
+        ${escapeHTML(error.message)}
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML="";
+
+  (data||[]).forEach(r=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="reel";
+
+    div.innerHTML=`
+
+      <video
+        src="${r.video_url}"
+        controls
+        playsinline
+        loop>
+      </video>
+
+      <div class="reel-info">
+
+        ${escapeHTML(
+          r.caption || ""
+        )}
+
+        <br><br>
+
+        👁️ ${r.views || 0} views
+
+      </div>
+
+    `;
+
+    box.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================================
+PASSWORD
+========================================= */
+
+async function changePassword(){
+
+  const password =
+    prompt(
+      "নতুন Password দিন:"
+    );
+
+  if(!password) return;
+
+  if(password.length<6){
+
+    alert(
+      "Password কমপক্ষে ৬ অক্ষরের হতে হবে"
+    );
+
+    return;
+
+  }
+
+  const {error} =
+    await sb.auth.updateUser({
+      password:password
+    });
+
+  if(error){
+
+    alert(error.message);
+
+  }else{
+
+    alert(
+      "Password পরিবর্তন হয়েছে ✅"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+RESET PASSWORD
+========================================= */
+
+async function resetPassword(){
+
+  const email =
+    prompt(
+      "আপনার Account Email:"
+    );
+
+  if(!email) return;
+
+  const {error} =
+    await sb.auth.resetPasswordForEmail(
+      email
+    );
+
+  if(error){
+
+    alert(error.message);
+
+  }else{
+
+    alert(
+      "Password reset link Email-এ পাঠানো হয়েছে।"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+DELETE ACCOUNT
+========================================= */
+
+async function deleteAccount(){
+
+  const confirmText =
+    prompt(
+      "Account Delete করতে DELETE লিখুন:"
+    );
+
+  if(confirmText!=="DELETE"){
+
+    alert("Account Delete করা হয়নি");
+    return;
+
+  }
+
+  const {error} =
+    await sb.rpc(
+      "delete_my_account"
+    );
+
+  if(error){
+
+    alert(error.message);
+    return;
+
+  }
+
+  await sb.auth.signOut();
+
+  location.reload();
+
+}
+
+
+/* =========================================
+DARK MODE
+========================================= */
+
+function toggleDark(){
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+  localStorage.setItem(
+    "my_social_dark",
+    document.body.classList.contains(
+      "dark"
+    )
   );
 
 }
 
 
-/* =====================================================
-   AUTH STATE
-===================================================== */
+/* =========================================
+AUTH STATE
+========================================= */
 
 sb.auth.onAuthStateChange(
-  (event, session) => {
+  async (event,session)=>{
 
-    if(
-      session &&
-      session.user
-    ){
+    if(session){
 
-      currentUser =
-        session.user;
+      currentUser=session.user;
 
-      showApp();
+      document.getElementById(
+        "authPage"
+      ).style.display="none";
 
-    }else{
-
-      currentUser = null;
-
-      showAuth();
+      document.getElementById(
+        "app"
+      ).style.display="block";
 
     }
 
@@ -2206,13 +3319,23 @@ sb.auth.onAuthStateChange(
 );
 
 
-/* =====================================================
-   START
-===================================================== */
+/* =========================================
+START
+========================================= */
+
+if(
+  localStorage.getItem(
+    "my_social_dark"
+  )==="true"
+){
+
+  document.body.classList.add("dark");
+
+}
 
 checkUser();
 
 </script>
 
 </body>
-          </html>
+  </html>
