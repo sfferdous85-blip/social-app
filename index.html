@@ -446,13 +446,33 @@ button{cursor:pointer}
  gap:4px;
  overflow:hidden;
 }
+.postmedia.grid-two{grid-template-columns:1fr 1fr}
+.postmedia.grid-three{grid-template-columns:1fr 1fr}
+.postmedia.grid-four{grid-template-columns:1fr 1fr}
+.postmedia .postmediaitem{
+ position:relative;
+ overflow:hidden;
+ background:#111;
+ min-height:180px;
+}
+.postmedia.grid-three .postmediaitem:first-child{
+ grid-row:span 2;
+}
 .postmedia img,
 .postmedia video{
  width:100%;
+ height:100%;
+ min-height:180px;
  max-height:600px;
  object-fit:cover;
  display:block;
  background:#111;
+}
+.postmedia.single .postmediaitem,
+.postmedia.single img,
+.postmedia.single video{
+ min-height:0;
+ max-height:600px;
 }
 .meta{
  padding:8px 14px;
@@ -930,6 +950,70 @@ function getAvatar(profile){
  "https://ui-avatars.com/api/?name=User&background=1877f2&color=fff";
 }
 
+function normalizeMediaUrls(value){
+ if(!value)return [];
+
+ if(Array.isArray(value)){
+  return value
+   .map(item=>{
+    if(typeof item==="string"){
+     return {url:item,type:"image"};
+    }
+
+    if(item && typeof item==="object"){
+     const url=item.url || item.public_url || item.media_url;
+     if(!url)return null;
+
+     return {
+      url,
+      type:item.type || (
+       item.mime_type?.startsWith("video/")
+       ? "video"
+       : "image"
+      )
+     };
+    }
+
+    return null;
+   })
+   .filter(Boolean);
+ }
+
+ if(typeof value==="object"){
+  return normalizeMediaUrls(
+   value.items || value.media || value.urls || []
+  );
+ }
+
+ return [];
+}
+
+function getPostMedia(post){
+ const gallery=normalizeMediaUrls(
+  post.post_media || post.media || post.media_urls
+ );
+
+ if(gallery.length)return gallery;
+
+ const fallback=[];
+
+ if(post.image_url){
+  fallback.push({
+   url:post.image_url,
+   type:"image"
+  });
+ }
+
+ if(post.video_url){
+  fallback.push({
+   url:post.video_url,
+   type:"video"
+  });
+ }
+
+ return fallback;
+}
+
 /* =========================================================
    AUTH
 ========================================================= */
@@ -1114,13 +1198,26 @@ function showProfile(){
 async function loadProfilePosts(){
  const {data,error}=await db
   .from("posts")
-  .select("*")
+  .select("*,post_media(*)")
   .eq("user_id",currentUser.id)
   .order("created_at",{ascending:false});
 
  if(error){
+  const fallback=await db
+   .from("posts")
+   .select("*")
+   .eq("user_id",currentUser.id)
+   .order("created_at",{ascending:false});
+
+  if(fallback.error){
+   $("profilePosts").innerHTML=
+    `<div class="empty">${escapeHTML(error.message)}</div>`;
+   return;
+  }
+
   $("profilePosts").innerHTML=
-   `<div class="empty">${escapeHTML(error.message)}</div>`;
+   (fallback.data||[]).map(renderPost).join("") ||
+   `<div class="empty">No posts yet</div>`;
   return;
  }
 
@@ -1440,16 +1537,7 @@ async function publishPost(){
 
  try{
 
-  let imageUrl=null;
-  let videoUrl=null;
-
-  /*
-   * প্রথম media posts.image_url / posts.video_url-এ
-   * রাখা হচ্ছে।
-   *
-   * Multiple media preview কাজ করবে এবং প্রথম media
-   * মূল post media হিসেবে সংরক্ষিত হবে।
-   */
+  const mediaUrls=[];
 
   if(selectedMedia.length){
 
@@ -1485,24 +1573,32 @@ async function publishPost(){
      }
     );
 
-    if(!imageUrl && item.file.type.startsWith("image/")){
-     imageUrl=url;
-    }
-
-    if(!videoUrl && item.file.type.startsWith("video/")){
-     videoUrl=url;
-    }
+    mediaUrls.push({
+     url,
+     type:item.file.type.startsWith("video/")
+      ? "video"
+      : "image",
+     mime_type:item.file.type,
+     name:item.file.name,
+     position:i
+    });
    }
   }
 
   $("progressText").textContent="Publishing post...";
   $("progressFill").style.width="92%";
 
+  const firstImage=
+   mediaUrls.find(item=>item.type==="image")?.url || null;
+
+  const firstVideo=
+   mediaUrls.find(item=>item.type==="video")?.url || null;
+
   const postData={
    user_id:currentUser.id,
    text:text || null,
-   image_url:imageUrl,
-   video_url:videoUrl,
+   image_url:firstImage,
+   video_url:firstVideo,
    privacy:selectedPrivacy,
    feeling:selectedFeeling || null,
    promoted:false,
@@ -1516,6 +1612,33 @@ async function publishPost(){
    .single();
 
   if(error)throw error;
+
+  if(mediaUrls.length){
+   const mediaRows=mediaUrls.map(item=>({
+    post_id:data.id,
+    user_id:currentUser.id,
+    media_url:item.url,
+    media_type:item.type,
+    mime_type:item.mime_type,
+    file_name:item.name,
+    position:item.position
+   }));
+
+   const {error:mediaError}=await db
+    .from("post_media")
+    .insert(mediaRows);
+
+   if(mediaError){
+    const jsonbResult=await db
+     .from("posts")
+     .update({
+      media_urls:mediaUrls
+     })
+     .eq("id",data.id);
+
+    if(jsonbResult.error)throw mediaError;
+   }
+  }
 
   $("progressFill").style.width="100%";
   $("progressText").textContent="Post published successfully!";
@@ -1554,11 +1677,22 @@ async function loadFeed(){
  feed.innerHTML=
   `<div class="card empty"><div class="loader"></div></div>`;
 
- const {data,error}=await db
+ let {data,error}=await db
   .from("posts")
-  .select("*")
+  .select("*,post_media(*)")
   .order("created_at",{ascending:false})
   .limit(50);
+
+ if(error){
+  const fallback=await db
+   .from("posts")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(50);
+
+  data=fallback.data;
+  error=fallback.error;
+ }
 
  if(error){
   feed.innerHTML=
@@ -1615,27 +1749,48 @@ function renderPost(post,profile=null){
 
  const name=p.name || "User";
  const avatar=getAvatar(p);
+ const mediaItems=getPostMedia(post);
 
  let media="";
 
- if(post.image_url){
-  media+=`
-   <img
-    src="${escapeHTML(post.image_url)}"
-    loading="lazy"
-    alt="Post image">
-  `;
- }
+ if(mediaItems.length){
+  const layout=
+   mediaItems.length===1
+   ?"single"
+   :mediaItems.length===2
+   ?"grid-two"
+   :mediaItems.length===3
+   ?"grid-three"
+   :"grid-four";
 
- if(post.video_url){
-  media+=`
-   <video
-    src="${escapeHTML(post.video_url)}"
-    controls
-    playsinline
-    preload="metadata">
-   </video>
-  `;
+  media=`
+   <div class="postmedia ${layout}">
+    ${mediaItems.map((item,index)=>{
+     const url=escapeHTML(item.url);
+     const label=`Media ${index+1}`;
+
+     if(item.type==="video"){
+      return `
+       <div class="postmediaitem">
+        <video
+         src="${url}"
+         controls
+         playsinline
+         preload="metadata"
+         aria-label="${label}">
+        </video>
+       </div>`;
+     }
+
+     return `
+      <div class="postmediaitem">
+       <img
+        src="${url}"
+        loading="lazy"
+        alt="${label}">
+      </div>`;
+    }).join("")}
+   </div>`;
  }
 
  let feeling=
@@ -1666,9 +1821,7 @@ function renderPost(post,profile=null){
 
    ${feeling}
 
-   ${media?
-    `<div class="postmedia">${media}</div>`
-    :""}
+   ${media}
   </div>
 
   <div class="meta">
