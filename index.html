@@ -1,3796 +1,555 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1877f2">
-<meta name="description" content="My Social App">
-<title>My Social App</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-*{box-sizing:border-box}
-:root{
-  --blue:#1877f2;
-  --blue2:#0866ff;
-  --bg:#f0f2f5;
-  --card:#fff;
-  --text:#1c1e21;
-  --muted:#65676b;
-  --border:#dddfe2;
-  --danger:#e41e3f;
-  --green:#20a464;
-  --shadow:0 2px 10px rgba(0,0,0,.08);
-}
-body.dark{
-  --bg:#18191a;
-  --card:#242526;
-  --text:#e4e6eb;
-  --muted:#b0b3b8;
-  --border:#3a3b3c;
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;border:0}
-.hidden{display:none!important}
-.app{min-height:100vh}
-
-/* AUTH */
-.auth{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  background:linear-gradient(135deg,#eaf2ff,#f0f2f5);
-}
-.authBox{
-  width:100%;
-  max-width:420px;
-  background:var(--card);
-  border-radius:18px;
-  padding:25px;
-  box-shadow:0 10px 35px rgba(0,0,0,.12);
-}
-.logo{
-  color:var(--blue);
-  font-size:32px;
-  font-weight:800;
-  text-align:center;
-  margin-bottom:5px;
-}
-.authSub{text-align:center;color:var(--muted);margin-bottom:22px}
-.field{margin-bottom:12px}
-.field label{
-  display:block;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:5px;
-}
-.field input,.field textarea,.field select{
-  width:100%;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
-  background:var(--card);
-  color:var(--text);
-  outline:none;
-}
-.field input:focus,.field textarea:focus,.field select:focus{
-  border-color:var(--blue);
-}
-.primary{
-  width:100%;
-  background:var(--blue);
-  color:white;
-  padding:12px;
-  border-radius:10px;
-  font-weight:700;
-}
-.secondary{
-  background:#e4e6eb;
-  color:#1c1e21;
-  padding:10px 14px;
-  border-radius:9px;
-  font-weight:700;
-}
-body.dark .secondary{background:#3a3b3c;color:#e4e6eb}
-.linkBtn{
-  background:none;
-  color:var(--blue);
-  padding:5px;
-  font-weight:600;
-}
-.authMsg{
-  margin:10px 0;
-  padding:10px;
-  border-radius:9px;
-  background:#fff3cd;
-  color:#664d03;
-  display:none;
-}
-.authMsg.show{display:block}
-
-/* TOPBAR */
-.topbar{
-  height:60px;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:7px 14px;
-}
-.brand{
-  color:var(--blue);
-  font-weight:800;
-  font-size:21px;
-  white-space:nowrap;
-}
-.searchBox{
-  flex:1;
-  max-width:500px;
-}
-.searchBox input{
-  width:100%;
-  border:0;
-  background:var(--bg);
-  color:var(--text);
-  padding:10px 15px;
-  border-radius:25px;
-  outline:none;
-}
-.topActions{margin-left:auto;display:flex;gap:5px}
-.iconBtn{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:var(--bg);
-  color:var(--text);
-  font-size:19px;
-}
-
-/* LAYOUT */
-.layout{
-  max-width:1450px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:250px minmax(0,680px) 300px;
-  gap:18px;
-  padding:15px;
-}
-.sidebar,.rightbar{
-  position:sticky;
-  top:75px;
-  height:max-content;
-}
-.navItem{
-  width:100%;
-  padding:11px 12px;
-  margin-bottom:4px;
-  border-radius:9px;
-  background:transparent;
-  color:var(--text);
-  text-align:left;
-  font-weight:600;
-}
-.navItem:hover,.navItem.active{background:var(--card);box-shadow:var(--shadow)}
-.navIcon{width:25px;display:inline-block}
-
-.card{
-  background:var(--card);
-  border-radius:12px;
-  box-shadow:var(--shadow);
-  margin-bottom:15px;
-  overflow:hidden;
-}
-.cardPad{padding:15px}
-.sectionTitle{
-  font-size:20px;
-  font-weight:800;
-  margin:5px 0 15px;
-}
-
-/* COMPOSER */
-.composer{
-  padding:14px;
-}
-.composerTop{display:flex;gap:10px;align-items:center}
-.avatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:#ddd;
-  object-fit:cover;
-}
-.composer textarea{
-  flex:1;
-  min-height:45px;
-  resize:none;
-  border:0;
-  border-radius:24px;
-  background:var(--bg);
-  color:var(--text);
-  padding:13px 17px;
-}
-.composerTools{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:5px;
-  border-top:1px solid var(--border);
-  margin-top:12px;
-  padding-top:10px;
-}
-.toolBtn{
-  padding:9px 5px;
-  border-radius:8px;
-  background:transparent;
-  color:var(--text);
-}
-.toolBtn:hover{background:var(--bg)}
-.previewGrid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-top:10px;
-}
-.previewGrid img,.previewGrid video{
-  width:100%;
-  height:120px;
-  object-fit:cover;
-  border-radius:8px;
-}
-
-/* POSTS */
-.postHead{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:14px 14px 5px;
-}
-.postMeta{flex:1}
-.postName{font-weight:800}
-.postDate{font-size:12px;color:var(--muted)}
-.postMenu{background:none;color:var(--muted);font-size:20px}
-.postText{padding:7px 14px 12px;white-space:pre-wrap;line-height:1.5}
-.postMedia{
-  width:100%;
-  max-height:650px;
-  object-fit:cover;
-  display:block;
-}
-.postStats{
-  padding:9px 14px;
-  display:flex;
-  justify-content:space-between;
-  color:var(--muted);
-  font-size:13px;
-  border-bottom:1px solid var(--border);
-}
-.postActions{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-}
-.postAction{
-  background:transparent;
-  padding:10px 5px;
-  color:var(--muted);
-  font-weight:700;
-}
-.postAction:hover{background:var(--bg)}
-.postAction.liked{color:var(--blue)}
-.commentBox{
-  display:flex;
-  gap:7px;
-  padding:10px 14px;
-  border-top:1px solid var(--border);
-}
-.commentBox input{
-  flex:1;
-  border:0;
-  background:var(--bg);
-  color:var(--text);
-  padding:9px 13px;
-  border-radius:20px;
-}
-.comments{padding:0 14px 10px}
-.comment{
-  margin:5px 0;
-  background:var(--bg);
-  padding:8px 11px;
-  border-radius:10px;
-}
-
-/* STORY */
-.storyRow{
-  display:flex;
-  gap:9px;
-  overflow-x:auto;
-  padding:12px;
-}
-.story{
-  min-width:90px;
-  height:145px;
-  border-radius:12px;
-  background:linear-gradient(160deg,#1877f2,#8b5cf6);
-  color:white;
-  position:relative;
-  overflow:hidden;
-}
-.story img{width:100%;height:100%;object-fit:cover}
-.storyName{
-  position:absolute;
-  bottom:8px;
-  left:7px;
-  right:7px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-/* REELS */
-.reelsScreen{
-  position:fixed;
-  inset:0;
-  z-index:5000;
-  background:#000;
-}
-.reelsTop{
-  position:absolute;
-  z-index:20;
-  top:0;
-  left:0;
-  right:0;
-  padding:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  color:#fff;
-  background:linear-gradient(#0008,transparent);
-}
-.reelsFeed{
-  height:100dvh;
-  overflow-y:auto;
-  scroll-snap-type:y mandatory;
-  overscroll-behavior-y:contain;
-}
-.reelCard{
-  height:100dvh;
-  min-height:100svh;
-  scroll-snap-align:start;
-  position:relative;
-  background:#000;
-}
-.reelCard video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.reelOverlay{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-}
-.reelInfo{
-  position:absolute;
-  left:15px;
-  bottom:30px;
-  width:70%;
-  color:white;
-  text-shadow:0 1px 3px #000;
-  pointer-events:auto;
-}
-.reelCreator{font-weight:800;font-size:17px}
-.reelCaption{margin-top:7px;line-height:1.4}
-.reelAudio{margin-top:7px;font-size:13px}
-.reelRail{
-  position:absolute;
-  right:12px;
-  bottom:90px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  align-items:center;
-  color:white;
-  pointer-events:auto;
-}
-.reelBtn{
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  background:#0008;
-  color:#fff;
-  font-size:19px;
-}
-.reelBtn small{display:block;font-size:10px}
-.heartAnim{
-  position:absolute;
-  font-size:90px;
-  color:#fff;
-  animation:heart .8s ease forwards;
-  pointer-events:none;
-}
-@keyframes heart{
-  0%{transform:scale(.2);opacity:0}
-  35%{transform:scale(1.1);opacity:1}
-  100%{transform:scale(1.3);opacity:0}
-}
-
-/* DASHBOARD */
-.dashboardGrid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-.stat{
-  padding:15px;
-  background:var(--bg);
-  border-radius:12px;
-}
-.statValue{font-size:22px;font-weight:800}
-.statLabel{color:var(--muted);font-size:12px;margin-top:4px}
-.money{
-  font-size:36px;
-  font-weight:900;
-}
-.progress{
-  height:9px;
-  background:var(--bg);
-  border-radius:10px;
-  overflow:hidden;
-}
-.progress i{
-  display:block;
-  height:100%;
-  width:0;
-  background:var(--blue);
-}
-.monetizeGrid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-.switchRow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px;
-  background:var(--bg);
-  border-radius:10px;
-  margin-bottom:7px;
-}
-.switch{
-  width:45px;
-  height:24px;
-  border-radius:20px;
-  background:#aaa;
-  position:relative;
-}
-.switch.on{background:var(--green)}
-.switch:after{
-  content:"";
-  position:absolute;
-  width:18px;height:18px;
-  border-radius:50%;
-  background:#fff;
-  top:3px;left:3px;
-  transition:.2s;
-}
-.switch.on:after{left:24px}
-
-/* TABLE */
-.tableWrap{overflow:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
-th{font-size:13px;color:var(--muted)}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0008;
-  z-index:6000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:15px;
-}
-.modalBox{
-  width:100%;
-  max-width:600px;
-  max-height:92vh;
-  overflow:auto;
-  background:var(--card);
-  border-radius:15px;
-  padding:18px;
-}
-.modalHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:15px;
-}
-.closeBtn{
-  width:35px;height:35px;border-radius:50%;
-  background:var(--bg);color:var(--text)
-}
-
-/* TOAST */
-.toast{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%) translateY(100px);
-  background:#222;
-  color:#fff;
-  padding:12px 18px;
-  border-radius:10px;
-  z-index:10000;
-  transition:.3s;
-  max-width:90%;
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
-
-/* RIGHT */
-.rightCard{padding:14px}
-.rightTitle{font-weight:800;margin-bottom:10px}
-.suggestion{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:7px 0;
-}
-.suggestion .avatar{width:35px;height:35px}
-
-/* EDITOR */
-.editorPreview{
-  background:#000;
-  border-radius:10px;
-  overflow:hidden;
-}
-.editorPreview video{
-  width:100%;
-  max-height:400px;
-  display:block;
-}
-.rangeRow{margin:12px 0}
-.rangeRow input{width:100%}
-.editorTools{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-}
-.editorTools button{
-  padding:10px;
-  background:var(--bg);
-  color:var(--text);
-  border-radius:8px;
-}
-
-/* MOBILE */
-@media(max-width:1050px){
-  .layout{grid-template-columns:70px minmax(0,680px)}
-  .rightbar{display:none}
-  .navItem span:not(.navIcon){display:none}
-  .navItem{text-align:center}
-}
-@media(max-width:700px){
-  .topbar{height:55px;padding:6px 8px}
-  .brand{font-size:18px}
-  .searchBox{display:none}
-  .layout{display:block;padding:8px}
-  .sidebar{display:none}
-  .dashboardGrid{grid-template-columns:repeat(2,1fr)}
-  .monetizeGrid{grid-template-columns:1fr}
-  .composerTools{grid-template-columns:repeat(2,1fr)}
-  .postActions{grid-template-columns:repeat(4,1fr)}
-  .postAction{font-size:12px}
-  .previewGrid img,.previewGrid video{height:100px}
-  .money{font-size:30px}
-}
-body.reels-open{overflow:hidden}
-</style>
-</head>
-
-<body>
-
-<!-- AUTH -->
-<section id="authScreen" class="auth">
-  <div class="authBox">
-    <div class="logo">My Social App</div>
-    <div class="authSub">Connect • Create • Earn</div>
-
-    <div id="authMsg" class="authMsg"></div>
-
-    <div id="loginForm">
-      <div class="field">
-        <label>Email</label>
-        <input id="loginEmail" type="email" autocomplete="email" placeholder="আপনার Email">
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
-      </div>
-
-      <button class="primary" id="loginBtn">Login</button>
-
-      <div style="text-align:center;margin-top:12px">
-        <button class="linkBtn" id="forgotBtn">Password ভুলে গেছেন?</button>
-      </div>
-
-      <hr style="border:0;border-top:1px solid var(--border);margin:15px 0">
-
-      <button class="secondary" style="width:100%" id="showSignup">
-        নতুন Account তৈরি করুন
-      </button>
-    </div>
-
-    <div id="signupForm" class="hidden">
-      <div class="field">
-        <label>Name</label>
-        <input id="signupName" type="text" placeholder="আপনার নাম">
-      </div>
-
-      <div class="field">
-        <label>Email</label>
-        <input id="signupEmail" type="email" autocomplete="email" placeholder="Email">
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input id="signupPassword" type="password" autocomplete="new-password" placeholder="কমপক্ষে ৬ অক্ষর">
-      </div>
-
-      <button class="primary" id="signupBtn">Create Account</button>
-
-      <div style="text-align:center;margin-top:12px">
-        <button class="linkBtn" id="showLogin">আগের Login-এ ফিরে যান</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- APP -->
-<div id="app" class="app hidden">
-
-<header class="topbar">
-  <div class="brand">My Social App</div>
-
-  <div class="searchBox">
-    <input id="globalSearch" placeholder="Search মানুষ, পোস্ট, Reels...">
-  </div>
-
-  <div class="topActions">
-    <button class="iconBtn" onclick="openPage('messages')">💬</button>
-    <button class="iconBtn" onclick="openPage('notifications')">🔔</button>
-    <button class="iconBtn" onclick="toggleTheme()">🌙</button>
-    <button class="iconBtn" onclick="openPage('profile')">👤</button>
-  </div>
-</header>
-
-<div class="layout">
-
-<!-- LEFT -->
-<aside class="sidebar">
-
-<button class="navItem active" data-page="home" onclick="openPage('home')">
-<span class="navIcon">🏠</span><span>Home</span>
-</button>
-
-<button class="navItem" onclick="openPage('reels')">
-<span class="navIcon">🎬</span><span>Reels</span>
-</button>
-
-<button class="navItem" onclick="openPage('profile')">
-<span class="navIcon">👤</span><span>Profile</span>
-</button>
-
-<button class="navItem" onclick="openPage('friends')">
-<span class="navIcon">👥</span><span>Friends</span>
-</button>
-
-<button class="navItem" onclick="openPage('messages')">
-<span class="navIcon">💬</span><span>Messages</span>
-</button>
-
-<button class="navItem" onclick="openPage('saved')">
-<span class="navIcon">🔖</span><span>Saved</span>
-</button>
-
-<button class="navItem" onclick="openPage('memories')">
-<span class="navIcon">🕰️</span><span>Memories</span>
-</button>
-
-<button class="navItem" onclick="openPage('groups')">
-<span class="navIcon">👨‍👩‍👧‍👦</span><span>Groups</span>
-</button>
-
-<button class="navItem" onclick="openPage('pages')">
-<span class="navIcon">📄</span><span>Pages</span>
-</button>
-
-<button class="navItem" onclick="openPage('marketplace')">
-<span class="navIcon">🛒</span><span>Marketplace</span>
-</button>
-
-<button class="navItem" onclick="openPage('events')">
-<span class="navIcon">📅</span><span>Events</span>
-</button>
-
-<button class="navItem" onclick="openPage('live')">
-<span class="navIcon">🔴</span><span>Live</span>
-</button>
-
-<button class="navItem" onclick="openPage('monetization')">
-<span class="navIcon">💰</span><span>Monetization</span>
-</button>
-
-<button class="navItem" onclick="openPage('analytics')">
-<span class="navIcon">📊</span><span>Analytics</span>
-</button>
-
-<button class="navItem" onclick="openPage('settings')">
-<span class="navIcon">⚙️</span><span>Settings</span>
-</button>
-
-<button class="navItem" onclick="logout()">
-<span class="navIcon">🚪</span><span>Logout</span>
-</button>
-
-</aside>
-
-<!-- MAIN -->
-<main id="mainContent">
-
-<!-- HOME -->
-<section id="page-home" class="page">
-
-<div class="card">
-  <div class="storyRow">
-    <div class="story" onclick="openStoryCreator()">
-      <div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:35px">＋</div>
-      <div class="storyName">Create Story</div>
-    </div>
-
-    <div class="story">
-      <div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:30px">📷</div>
-      <div class="storyName">Your Story</div>
-    </div>
-
-    <div class="story">
-      <div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:30px">🎵</div>
-      <div class="storyName">Music Story</div>
-    </div>
-
-    <div class="story">
-      <div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:30px">😊</div>
-      <div class="storyName">Friends</div>
-    </div>
-  </div>
-</div>
-
-<div class="card composer">
-  <div class="composerTop">
-    <img id="composerAvatar" class="avatar" src="">
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
-  </div>
-
-  <div id="postPreview" class="previewGrid"></div>
-
-  <div class="composerTools">
-    <button class="toolBtn" onclick="document.getElementById('postPhotos').click()">🖼️ Photo</button>
-    <button class="toolBtn" onclick="document.getElementById('postVideo').click()">🎥 Video</button>
-    <button class="toolBtn" onclick="addFeeling()">😊 Feeling</button>
-    <button class="toolBtn" onclick="addLocation()">📍 Location</button>
-    <button class="toolBtn" onclick="addTag()">👤 Tag</button>
-    <button class="toolBtn" onclick="addHashtag()">#️⃣ Hashtag</button>
-    <button class="toolBtn" onclick="addPoll()">📊 Poll</button>
-    <button class="toolBtn" onclick="setPrivacy()">🔒 Privacy</button>
-  </div>
-
-  <input id="postPhotos" type="file" accept="image/*" multiple hidden>
-  <input id="postVideo" type="file" accept="video/*" hidden>
-
-  <div style="margin-top:10px;display:flex;gap:8px">
-    <select id="postPrivacy" style="flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)">
-      <option value="public">🌎 Public</option>
-      <option value="friends">👥 Friends</option>
-      <option value="custom">⚙️ Custom</option>
-      <option value="only_me">🔒 Only Me</option>
-    </select>
-    <button class="primary" style="width:auto;padding:10px 22px" onclick="createPost()">Post</button>
-  </div>
-</div>
-
-<div id="feed"></div>
-
-</section>
-
-<!-- PROFILE -->
-<section id="page-profile" class="page hidden">
-<div class="card">
-  <div style="height:190px;background:linear-gradient(135deg,#1877f2,#7c3aed);position:relative">
-    <img id="profileCover" style="width:100%;height:100%;object-fit:cover;display:none">
-  </div>
-
-  <div class="cardPad">
-    <img id="profileAvatar" class="avatar" style="width:95px;height:95px;margin-top:-60px;border:4px solid var(--card)" src="">
-    <h2 id="profileName">User</h2>
-    <div id="profileBio" style="color:var(--muted)">No bio</div>
-
-    <div style="display:flex;gap:20px;margin:15px 0">
-      <b><span id="followersCount">0</span> Followers</b>
-      <b><span id="followingCount">0</span> Following</b>
-    </div>
-
-    <button class="primary" style="width:auto" onclick="editProfile()">✏️ Edit Profile</button>
-  </div>
-</div>
-
-<div class="card cardPad">
-  <div class="sectionTitle">Profile</div>
-  <p>Posts • Photos • Videos • Reels • Friends • About • Featured • Pinned Posts</p>
-</div>
-</section>
-
-<!-- MONETIZATION -->
-<section id="page-monetization" class="page hidden">
-
-<div class="card cardPad">
-  <div class="sectionTitle">💰 Premium Creator Monetization</div>
-
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-    <div>
-      <div class="money" id="availableBalance">$0.00</div>
-      <div style="color:var(--muted)">Available Balance</div>
-    </div>
-
-    <button class="primary" style="width:auto" onclick="openWithdraw()">
-      💸 Withdraw
-    </button>
-  </div>
-
-  <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
-
-  <div class="dashboardGrid">
-    <div class="stat">
-      <div class="statValue" id="totalEarnings">$0.00</div>
-      <div class="statLabel">Lifetime Earnings</div>
-    </div>
-
-    <div class="stat">
-      <div class="statValue" id="pendingBalance">$0.00</div>
-      <div class="statLabel">Pending</div>
-    </div>
-
-    <div class="stat">
-      <div class="statValue" id="totalViews">0</div>
-      <div class="statLabel">Views</div>
-    </div>
-
-    <div class="stat">
-      <div class="statValue" id="rpmValue">$0.00</div>
-      <div class="statLabel">RPM</div>
-    </div>
-  </div>
-</div>
-
-<div class="card cardPad">
-  <h3>🚀 Monetization Eligibility</h3>
-  <div style="display:flex;justify-content:space-between">
-    <span>Creator Progress</span>
-    <b id="eligibilityText">0%</b>
-  </div>
-  <div class="progress"><i id="eligibilityBar"></i></div>
-  <p style="color:var(--muted);font-size:13px">
-    Actual eligibility depends on your platform rules, account status and monetization requirements.
-  </p>
-</div>
-
-<div class="card cardPad">
-  <h3>⚙️ Monetization Programs</h3>
-
-  <div class="switchRow">
-    <div>
-      <b>Creator Mode</b><br>
-      <small>Creator dashboard and earning tools</small>
-    </div>
-    <div id="creatorSwitch" class="switch" onclick="toggleMonetization('creator_mode')"></div>
-  </div>
-
-  <div class="switchRow">
-    <div>
-      <b>Content Monetization</b><br>
-      <small>Eligible posts/content earnings</small>
-    </div>
-    <div id="contentSwitch" class="switch" onclick="toggleMonetization('content_monetization')"></div>
-  </div>
-
-  <div class="switchRow">
-    <div>
-      <b>Reels Monetization</b><br>
-      <small>Eligible Reels earnings</small>
-    </div>
-    <div id="reelsSwitch" class="switch" onclick="toggleMonetization('reels_monetization')"></div>
-  </div>
-
-  <div class="switchRow">
-    <div>
-      <b>Stars</b><br>
-      <small>Fan support</small>
-    </div>
-    <div id="starsSwitch" class="switch" onclick="toggleMonetization('stars_enabled')"></div>
-  </div>
-
-  <div class="switchRow">
-    <div>
-      <b>Brand Deals</b><br>
-      <small>Sponsor/brand income tracking</small>
-    </div>
-    <div id="brandSwitch" class="switch" onclick="toggleMonetization('brand_deals_enabled')"></div>
-  </div>
-</div>
-
-<div class="card cardPad">
-  <h3>📈 Earnings</h3>
-
-  <div class="monetizeGrid">
-    <div class="stat">
-      <b>Today</b>
-      <div id="earnToday" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Last 7 Days</b>
-      <div id="earn7" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Last 30 Days</b>
-      <div id="earn30" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Lifetime</b>
-      <div id="earnLife" class="statValue">$0.00</div>
-    </div>
-  </div>
-
-  <br>
-
-  <div class="monetizeGrid">
-    <div class="stat">
-      <b>Reels</b>
-      <div id="reelEarnings" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Posts</b>
-      <div id="postEarnings" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Photos</b>
-      <div id="photoEarnings" class="statValue">$0.00</div>
-    </div>
-    <div class="stat">
-      <b>Other</b>
-      <div id="otherEarnings" class="statValue">$0.00</div>
-    </div>
-  </div>
-</div>
-
-<div class="card cardPad">
-  <h3>💳 Payment & Withdrawal</h3>
-
-  <div class="stat">
-    <b>Minimum Payout</b>
-    <div id="minimumPayout" class="statValue">$10.00</div>
-  </div>
-
-  <br>
-
-  <button class="primary" onclick="openWithdraw()">
-    📱 bKash-এ টাকা তুলুন
-  </button>
-
-  <button class="secondary" style="width:100%;margin-top:8px" onclick="openPaymentMethods()">
-    💳 Payment Methods
-  </button>
-</div>
-
-<div class="card cardPad">
-  <h3>📋 Payout History</h3>
-  <div id="payoutHistory">Loading...</div>
-</div>
-
-<div class="card cardPad">
-  <h3>📊 Earnings Details</h3>
-  <div class="tableWrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Source</th>
-          <th>Views</th>
-          <th>Amount</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="earningsTable"></tbody>
-    </table>
-  </div>
-</div>
-
-</section>
-
-<!-- ANALYTICS -->
-<section id="page-analytics" class="page hidden">
-<div class="card cardPad">
-  <div class="sectionTitle">📊 Creator Analytics</div>
-  <div class="dashboardGrid">
-    <div class="stat"><div class="statValue">0</div><div class="statLabel">Reach</div></div>
-    <div class="stat"><div class="statValue">0</div><div class="statLabel">Engagement</div></div>
-    <div class="stat"><div class="statValue">0</div><div class="statLabel">Followers</div></div>
-    <div class="stat"><div class="statValue">$0</div><div class="statLabel">Revenue</div></div>
-  </div>
-</div>
-</section>
-
-<!-- GENERIC PAGES -->
-<section id="page-friends" class="page hidden"></section>
-<section id="page-messages" class="page hidden"></section>
-<section id="page-saved" class="page hidden"></section>
-<section id="page-memories" class="page hidden"></section>
-<section id="page-groups" class="page hidden"></section>
-<section id="page-pages" class="page hidden"></section>
-<section id="page-marketplace" class="page hidden"></section>
-<section id="page-events" class="page hidden"></section>
-<section id="page-live" class="page hidden"></section>
-<section id="page-notifications" class="page hidden"></section>
-<section id="page-search" class="page hidden"></section>
-
-<!-- SETTINGS -->
-<section id="page-settings" class="page hidden">
-<div class="card cardPad">
-  <div class="sectionTitle">⚙️ Settings & Privacy</div>
-
-  <button class="navItem" onclick="editProfile()">👤 Account / Edit Profile</button>
-  <button class="navItem" onclick="toggleTheme()">🌙 Dark / Light Mode</button>
-  <button class="navItem" onclick="downloadMyData()">📥 Download My Data</button>
-  <button class="navItem" onclick="alert('Privacy Controls: Public / Friends / Only Me / Custom')">🔒 Privacy</button>
-  <button class="navItem" onclick="alert('Notification settings opened')">🔔 Notifications</button>
-  <button class="navItem" onclick="alert('Blocked users')">🚫 Blocked Users</button>
-  <button class="navItem" onclick="alert('Security settings')">🛡️ Security</button>
-  <button class="navItem" onclick="resetPassword()">🔑 Change Password</button>
-  <button class="navItem" onclick="alert('Two-factor authentication setup')">🔐 2FA</button>
-  <button class="navItem" onclick="alert('Active sessions')">📱 Where You're Logged In</button>
-  <button class="navItem" onclick="logout()">🚪 Logout</button>
-</div>
-</section>
-
-</main>
-
-<!-- RIGHT -->
-<aside class="rightbar">
-
-<div class="card rightCard">
-  <div class="rightTitle">⚡ Quick Access</div>
-  <button class="navItem" onclick="openPage('monetization')">💰 Monetization</button>
-  <button class="navItem" onclick="openPage('analytics')">📊 Analytics</button>
-  <button class="navItem" onclick="openPage('saved')">🔖 Saved</button>
-  <button class="navItem" onclick="openPage('live')">🔴 Live</button>
-</div>
-
-<div class="card rightCard">
-  <div class="rightTitle">👥 Suggestions</div>
-  <div class="suggestion">
-    <div class="avatar" style="display:flex;align-items:center;justify-content:center">👤</div>
-    <div style="flex:1"><b>People</b><br><small>Suggested for you</small></div>
-    <button class="linkBtn">Follow</button>
-  </div>
-</div>
-
-</aside>
-
-</div>
-</div>
-
-<!-- REELS FULLSCREEN -->
-<div id="reelsScreen" class="reelsScreen hidden">
-
-<div class="reelsTop">
-  <button class="iconBtn" onclick="closeReels()" style="background:#0008;color:#fff">←</button>
-  <b style="font-size:20px">Reels</b>
-  <div>
-    <button class="iconBtn" onclick="openReelEditor()" style="background:#0008;color:#fff">＋</button>
-    <button class="iconBtn" onclick="toggleAllReelSound()" style="background:#0008;color:#fff">🔊</button>
-  </div>
-</div>
-
-<div id="reelsFeed" class="reelsFeed"></div>
-</div>
-
-<!-- WITHDRAW MODAL -->
-<div id="withdrawModal" class="modal hidden">
-<div class="modalBox">
-
-<div class="modalHead">
-  <h2>💸 Withdraw Money</h2>
-  <button class="closeBtn" onclick="closeModal('withdrawModal')">×</button>
-</div>
-
-<div class="stat">
-  <small>Available Balance</small>
-  <div id="withdrawBalance" class="money">$0.00</div>
-</div>
-
-<br>
-
-<div class="field">
-<label>Payment Method</label>
-<select id="withdrawMethod">
-<option value="bkash">📱 bKash</option>
-</select>
-</div>
-
-<div class="field">
-<label>bKash Number</label>
-<input id="bkashNumber" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" maxlength="11">
-</div>
-
-<div class="field">
-<label>Withdraw Amount (USD)</label>
-<input id="withdrawAmount" type="number" min="0" step="0.01" placeholder="10.00">
-</div>
-
-<div class="field">
-<label>Note</label>
-<textarea id="withdrawNote" rows="3" placeholder="Optional note"></textarea>
-</div>
-
-<div class="stat">
-<b>⚠️ গুরুত্বপূর্ণ</b>
-<p style="font-size:13px;color:var(--muted)">
-এই request আপনার payout queue-তে যাবে। আসল bKash-এ স্বয়ংক্রিয় টাকা পাঠাতে অনুমোদিত bKash payout API/backend প্রয়োজন।
-</p>
-</div>
-
-<button class="primary" onclick="submitWithdrawal()">
-📱 bKash Withdrawal Request
-</button>
-
-</div>
-</div>
-
-<!-- PAYMENT METHODS -->
-<div id="paymentModal" class="modal hidden">
-<div class="modalBox">
-
-<div class="modalHead">
-<h2>💳 Payment Methods</h2>
-<button class="closeBtn" onclick="closeModal('paymentModal')">×</button>
-</div>
-
-<div id="paymentMethodsList">Loading...</div>
-
-<hr style="border:0;border-top:1px solid var(--border);margin:15px 0">
-
-<div class="field">
-<label>Account Name</label>
-<input id="pmName" placeholder="bKash account name">
-</div>
-
-<div class="field">
-<label>bKash Number</label>
-<input id="pmNumber" type="tel" maxlength="11" placeholder="01XXXXXXXXX">
-</div>
-
-<button class="primary" onclick="addBkashMethod()">＋ Add bKash</button>
-
-</div>
-</div>
-
-<!-- PROFILE EDIT -->
-<div id="profileModal" class="modal hidden">
-<div class="modalBox">
-
-<div class="modalHead">
-<h2>✏️ Edit Profile</h2>
-<button class="closeBtn" onclick="closeModal('profileModal')">×</button>
-</div>
-
-<div class="field">
-<label>Name</label>
-<input id="editName">
-</div>
-
-<div class="field">
-<label>Bio</label>
-<textarea id="editBio" rows="4"></textarea>
-</div>
-
-<div class="field">
-<label>Profile Photo</label>
-<input id="profilePhotoInput" type="file" accept="image/*">
-</div>
-
-<button class="primary" onclick="saveProfile()">Save Profile</button>
-
-</div>
-</div>
-
-<!-- STORY -->
-<div id="storyModal" class="modal hidden">
-<div class="modalBox">
-
-<div class="modalHead">
-<h2>📸 Create Story</h2>
-<button class="closeBtn" onclick="closeModal('storyModal')">×</button>
-</div>
-
-<div class="field">
-<label>Text</label>
-<textarea id="storyText" rows="4" placeholder="Story text..."></textarea>
-</div>
-
-<div class="field">
-<label>Photo / Video</label>
-<input type="file" accept="image/*,video/*">
-</div>
-
-<div class="editorTools">
-<button>🎵 Music</button>
-<button>😊 Sticker</button>
-<button>GIF</button>
-<button>📊 Poll</button>
-<button>❓ Question</button>
-<button>📍 Location</button>
-</div>
-
-<br>
-<button class="primary" onclick="closeModal('storyModal');toast('Story feature ready for backend wiring')">Publish Story</button>
-
-</div>
-</div>
-
-<!-- REEL EDITOR -->
-<div id="reelEditorModal" class="modal hidden">
-<div class="modalBox">
-
-<div class="modalHead">
-<h2>🎬 Premium Video Editor</h2>
-<button class="closeBtn" onclick="closeModal('reelEditorModal')">×</button>
-</div>
-
-<div class="field">
-<input id="reelFile" type="file" accept="video/*">
-</div>
-
-<div class="editorPreview">
-<video id="editorVideo" controls playsinline></video>
-</div>
-
-<div class="rangeRow">
-<label>Trim Start</label>
-<input id="trimStart" type="range" min="0" max="100" value="0">
-</div>
-
-<div class="rangeRow">
-<label>Trim End</label>
-<input id="trimEnd" type="range" min="0" max="100" value="100">
-</div>
-
-<div class="editorTools">
-<button onclick="setEditorSpeed(.5)">0.5×</button>
-<button onclick="setEditorSpeed(1)">1×</button>
-<button onclick="setEditorSpeed(1.5)">1.5×</button>
-<button onclick="setEditorSpeed(2)">2×</button>
-<button onclick="toggleEditorMute()">🔇 Mute</button>
-<button onclick="rotateEditor()">🔄 Rotate</button>
-<button onclick="setCrop('9:16')">9:16</button>
-<button onclick="setCrop('1:1')">1:1</button>
-<button onclick="setCrop('original')">Original</button>
-<button onclick="addEditorText()">T Text</button>
-<button onclick="addEditorSticker()">😊 Sticker</button>
-<button onclick="alert('Filter controls ready')">🎨 Filter</button>
-</div>
-
-<br>
-
-<div class="field">
-<label>Caption</label>
-<textarea id="reelCaption" rows="3"></textarea>
-</div>
-
-<div class="field">
-<label>Audio Name</label>
-<input id="reelAudio" placeholder="Original Sound">
-</div>
-
-<div class="field">
-<label>Privacy</label>
-<select id="reelPrivacy">
-<option>Public</option>
-<option>Friends</option>
-<option>Only Me</option>
-</select>
-</div>
-
-<button class="primary" onclick="uploadReel()">
-🚀 Upload Reel
-</button>
-
-</div>
-</div>
-
-<div id="toast" class="toast"></div>
-
 <script>
-/* =========================================================
-   SUPABASE CONFIG
-========================================================= */
 
-const SUPABASE_URL = "https://skereuaizdczbvjplisi.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+let premiumVideoFile = null;
+let premiumAudioFile = null;
+let premiumCoverFile = null;
 
-const { createClient } = supabase;
+let premiumRotation = 0;
+let premiumZoom = 100;
+let premiumSpeed = 1;
 
-const db = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth:{
-      persistSession:true,
-      autoRefreshToken:true,
-      detectSessionInUrl:true
-    }
-  }
-);
+let premiumFilter = "none";
 
-let currentUser = null;
-let currentProfile = null;
-let currentSession = null;
-let selectedPostFiles = [];
-let currentReels = [];
-let currentReelSound = true;
-let tapState = new WeakMap();
+let trimStartSeconds = 0;
+let trimEndSeconds = 0;
 
-/* =========================================================
-   HELPERS
-========================================================= */
+function openPremiumUpload(){
 
-function $(id){
-  return document.getElementById(id);
-}
+  const modal =
+    document.getElementById("premiumUploadModal");
 
-function toast(message){
-  const t=$("toast");
-  t.textContent=message;
-  t.classList.add("show");
-  clearTimeout(window.__toastTimer);
-  window.__toastTimer=setTimeout(()=>t.classList.remove("show"),3000);
-}
-
-function showAuthMessage(message){
-  const box=$("authMsg");
-  box.textContent=message;
-  box.classList.add("show");
-}
-
-function clearAuthMessage(){
-  $("authMsg").classList.remove("show");
-}
-
-function money(value){
-  return "$"+Number(value||0).toFixed(2);
-}
-
-function esc(value){
-  return String(value??"")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function closeModal(id){
-  $(id).classList.add("hidden");
-}
-
-function openModal(id){
-  $(id).classList.remove("hidden");
-}
-
-/* =========================================================
-   AUTH — FIXED
-========================================================= */
-
-$("showSignup").onclick=()=>{
-  $("loginForm").classList.add("hidden");
-  $("signupForm").classList.remove("hidden");
-  clearAuthMessage();
-};
-
-$("showLogin").onclick=()=>{
-  $("signupForm").classList.add("hidden");
-  $("loginForm").classList.remove("hidden");
-  clearAuthMessage();
-};
-
-$("loginBtn").onclick=login;
-$("signupBtn").onclick=signup;
-$("forgotBtn").onclick=resetPassword;
-
-$("loginPassword").addEventListener("keydown",e=>{
-  if(e.key==="Enter") login();
-});
-
-$("signupPassword").addEventListener("keydown",e=>{
-  if(e.key==="Enter") signup();
-});
-
-async function login(){
-
-  clearAuthMessage();
-
-  const email=$("loginEmail").value.trim();
-  const password=$("loginPassword").value;
-
-  if(!email || !password){
-    showAuthMessage("Email এবং Password দুটোই দিন।");
-    return;
+  if(modal){
+    modal.classList.add("show");
   }
 
-  $("loginBtn").disabled=true;
-  $("loginBtn").textContent="Logging in...";
+  resetVideoEditor();
+}
 
-  try{
+function closePremiumUpload(){
 
-    const {data,error}=await db.auth.signInWithPassword({
-      email,
-      password
-    });
+  const modal =
+    document.getElementById("premiumUploadModal");
 
-    if(error) throw error;
-
-    if(!data.session){
-      throw new Error("Login session তৈরি হয়নি।");
-    }
-
-    currentSession=data.session;
-    currentUser=data.user;
-
-    await afterLogin();
-
-  }catch(error){
-
-    console.error(error);
-
-    let msg=error?.message||"Login failed";
-
-    if(msg.toLowerCase().includes("invalid login")){
-      msg="Email অথবা Password ভুল।";
-    }
-
-    if(msg.toLowerCase().includes("email not confirmed")){
-      msg="Email confirmation প্রয়োজন। Supabase Authentication > Providers > Email থেকে Confirm email বন্ধ আছে কিনা দেখুন।";
-    }
-
-    showAuthMessage(msg);
-
-  }finally{
-
-    $("loginBtn").disabled=false;
-    $("loginBtn").textContent="Login";
-
+  if(modal){
+    modal.classList.remove("show");
   }
 }
 
-async function signup(){
+function loadPremiumVideo(event){
 
-  clearAuthMessage();
-
-  const name=$("signupName").value.trim();
-  const email=$("signupEmail").value.trim();
-  const password=$("signupPassword").value;
-
-  if(!name || !email || !password){
-    showAuthMessage("Name, Email এবং Password দিন।");
-    return;
-  }
-
-  if(password.length<6){
-    showAuthMessage("Password কমপক্ষে ৬ অক্ষরের হতে হবে।");
-    return;
-  }
-
-  $("signupBtn").disabled=true;
-  $("signupBtn").textContent="Creating...";
-
-  try{
-
-    const {data,error}=await db.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          name:name
-        }
-      }
-    });
-
-    if(error) throw error;
-
-    if(data.session && data.user){
-      currentSession=data.session;
-      currentUser=data.user;
-      await ensureProfile(name);
-      await afterLogin();
-      return;
-    }
-
-    showAuthMessage(
-      "Account তৈরি হয়েছে। যদি Email confirmation চালু থাকে, Email verify করে Login করুন।"
-    );
-
-  }catch(error){
-
-    console.error(error);
-    showAuthMessage(error?.message||"Account তৈরি করা যায়নি।");
-
-  }finally{
-
-    $("signupBtn").disabled=false;
-    $("signupBtn").textContent="Create Account";
-
-  }
-}
-
-async function resetPassword(){
-
-  const email=prompt("আপনার account-এর Email দিন:");
-
-  if(!email) return;
-
-  try{
-
-    const redirect=window.location.origin+window.location.pathname;
-
-    const {error}=await db.auth.resetPasswordForEmail(
-      email.trim(),
-      {redirectTo:redirect}
-    );
-
-    if(error) throw error;
-
-    toast("Password reset email পাঠানো হয়েছে।");
-
-  }catch(error){
-
-    toast(error?.message||"Password reset failed");
-
-  }
-}
-
-async function logout(){
-
-  try{
-    await db.auth.signOut();
-  }catch(e){
-    console.error(e);
-  }
-
-  currentUser=null;
-  currentSession=null;
-  currentProfile=null;
-
-  $("app").classList.add("hidden");
-  $("authScreen").classList.remove("hidden");
-
-  closeReels();
-}
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-db.auth.onAuthStateChange(async(event,session)=>{
-
-  if(event==="SIGNED_IN" || event==="TOKEN_REFRESHED"){
-
-    currentSession=session;
-    currentUser=session?.user||null;
-
-    if(currentUser){
-      setTimeout(()=>afterLogin(),0);
-    }
-
-  }
-
-  if(event==="SIGNED_OUT"){
-
-    currentSession=null;
-    currentUser=null;
-
-    $("app").classList.add("hidden");
-    $("authScreen").classList.remove("hidden");
-
-  }
-
-});
-
-async function boot(){
-
-  try{
-
-    const {data,error}=await db.auth.getSession();
-
-    if(error) throw error;
-
-    if(data.session?.user){
-
-      currentSession=data.session;
-      currentUser=data.session.user;
-
-      await afterLogin();
-
-    }else{
-
-      $("authScreen").classList.remove("hidden");
-      $("app").classList.add("hidden");
-
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    $("authScreen").classList.remove("hidden");
-    $("app").classList.add("hidden");
-
-  }
-
-}
-
-async function afterLogin(){
-
-  if(!currentUser) return;
-
-  $("authScreen").classList.add("hidden");
-  $("app").classList.remove("hidden");
-
-  await ensureProfile();
-
-  await loadProfileUI();
-  await loadFeed();
-
-  toast("Welcome to My Social App");
-
-}
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-async function ensureProfile(nameFromSignup){
-
-  if(!currentUser) return;
-
-  try{
-
-    const {data,error}=await db
-      .from("profiles")
-      .select("*")
-      .eq("id",currentUser.id)
-      .maybeSingle();
-
-    if(error){
-      console.warn("profile select:",error);
-      return;
-    }
-
-    if(data){
-      currentProfile=data;
-      return;
-    }
-
-    const name=
-      nameFromSignup ||
-      currentUser.user_metadata?.name ||
-      currentUser.email?.split("@")[0] ||
-      "User";
-
-    const insert={
-      id:currentUser.id,
-      name:name
-    };
-
-    const result=await db
-      .from("profiles")
-      .insert(insert)
-      .select("*")
-      .maybeSingle();
-
-    if(!result.error){
-      currentProfile=result.data;
-    }
-
-  }catch(error){
-
-    console.warn("ensureProfile",error);
-
-  }
-}
-
-async function loadProfileUI(){
-
-  if(!currentUser) return;
-
-  await ensureProfile();
-
-  const p=currentProfile||{};
-
-  const name=
-    p.name ||
-    p.username ||
-    currentUser.user_metadata?.name ||
-    currentUser.email?.split("@")[0] ||
-    "User";
-
-  const avatar=
-    p.profile_photo ||
-    p.avatar_url ||
-    p.photo_url ||
-    "https://ui-avatars.com/api/?name="+encodeURIComponent(name);
-
-  $("composerAvatar").src=avatar;
-  $("profileAvatar").src=avatar;
-
-  $("profileName").textContent=name;
-  $("profileBio").textContent=p.bio||"No bio";
-
-  $("followersCount").textContent=p.followers_count||0;
-  $("followingCount").textContent=p.following_count||0;
-}
-
-async function editProfile(){
-
-  await ensureProfile();
-
-  $("editName").value=
-    currentProfile?.name ||
-    currentUser?.user_metadata?.name ||
-    "";
-
-  $("editBio").value=currentProfile?.bio||"";
-
-  openModal("profileModal");
-}
-
-async function saveProfile(){
-
-  if(!currentUser) return;
-
-  const name=$("editName").value.trim()||"User";
-  const bio=$("editBio").value.trim();
-
-  let photoUrl=null;
-
-  const file=$("profilePhotoInput").files[0];
-
-  try{
-
-    if(file){
-
-      const path=currentUser.id+"/"+Date.now()+"_"+file.name;
-
-      const upload=await db.storage
-        .from("profile-photos")
-        .upload(path,file,{upsert:true});
-
-      if(upload.error) throw upload.error;
-
-      const pub=db.storage
-        .from("profile-photos")
-        .getPublicUrl(path);
-
-      photoUrl=pub.data.publicUrl;
-    }
-
-    const update={name,bio};
-
-    if(photoUrl){
-      update.profile_photo=photoUrl;
-    }
-
-    const {data,error}=await db
-      .from("profiles")
-      .update(update)
-      .eq("id",currentUser.id)
-      .select("*")
-      .maybeSingle();
-
-    if(error) throw error;
-
-    currentProfile=data||{...currentProfile,...update};
-
-    await loadProfileUI();
-
-    closeModal("profileModal");
-
-    toast("Profile updated");
-
-  }catch(error){
-
-    console.error(error);
-    toast("Profile update error: "+(error.message||"unknown"));
-
-  }
-}
-
-/* =========================================================
-   PAGE NAVIGATION
-========================================================= */
-
-const genericPages={
-  friends:["👥 Friends","Friend requests • Suggestions • Followers • Following • Favorites • Blocked"],
-  messages:["💬 Messenger","1-to-1 chat • Group chat • Emoji • GIF • Sticker • Photo • Video • File • Voice • Calls • Seen • Typing"],
-  saved:["🔖 Saved","Saved posts • Saved Reels • Collections"],
-  memories:["🕰️ Memories","On this day • Previous posts • Memories"],
-  groups:["👨‍👩‍👧‍👦 Groups","Discover groups • Your groups • Create group • Group posts • Members • Moderation"],
-  pages:["📄 Pages","Your Pages • Discover Pages • Page management • Followers • Insights"],
-  marketplace:["🛒 Marketplace","Buy • Sell • Search • Categories • Location • Messages"],
-  events:["📅 Events","Upcoming • Your events • Create event • Invitations"],
-  live:["🔴 Live","Start Live • Schedule Live • Live video • Comments • Moderation"],
-  notifications:["🔔 Notifications","Likes • Comments • Follows • Friend requests • Mentions • Monetization"],
-  search:["🔎 Search","People • Posts • Reels • Videos • Pages • Groups • Marketplace • Events • Hashtags • Locations"]
-};
-
-function openPage(page){
-
-  if(page==="reels"){
-    openReels();
-    return;
-  }
-
-  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
-
-  const target=$("page-"+page);
-
-  if(!target) return;
-
-  target.classList.remove("hidden");
-
-  document.querySelectorAll(".navItem").forEach(n=>{
-    n.classList.remove("active");
-  });
-
-  if(genericPages[page]){
-
-    target.innerHTML=`
-      <div class="card cardPad">
-        <div class="sectionTitle">${genericPages[page][0]}</div>
-        <p>${genericPages[page][1]}</p>
-
-        <div class="dashboardGrid">
-          <div class="stat"><div class="statValue">0</div><div class="statLabel">Items</div></div>
-          <div class="stat"><div class="statValue">0</div><div class="statLabel">Active</div></div>
-          <div class="stat"><div class="statValue">0</div><div class="statLabel">New</div></div>
-          <div class="stat"><div class="statValue">0</div><div class="statLabel">Total</div></div>
-        </div>
-
-        <br>
-
-        <button class="primary" style="width:auto" onclick="toast('Feature UI ready for backend wiring')">
-          ＋ Create / Explore
-        </button>
-      </div>
-    `;
-
-  }
-
-  if(page==="home"){
-    loadFeed();
-  }
-
-  if(page==="profile"){
-    loadProfileUI();
-  }
-
-  if(page==="monetization"){
-    loadMonetization();
-  }
-
-  if(page==="notifications"){
-    loadNotifications();
-  }
-}
-
-/* =========================================================
-   FEED
-========================================================= */
-
-$("postPhotos").addEventListener("change",e=>{
-  selectedPostFiles=[...e.target.files];
-  renderPostPreview();
-});
-
-$("postVideo").addEventListener("change",e=>{
-  selectedPostFiles=[...e.target.files];
-  renderPostPreview();
-});
-
-function renderPostPreview(){
-
-  const box=$("postPreview");
-  box.innerHTML="";
-
-  selectedPostFiles.forEach(file=>{
-
-    const url=URL.createObjectURL(file);
-
-    if(file.type.startsWith("video/")){
-
-      const v=document.createElement("video");
-      v.src=url;
-      v.controls=true;
-      box.appendChild(v);
-
-    }else{
-
-      const img=document.createElement("img");
-      img.src=url;
-      box.appendChild(img);
-
-    }
-
-  });
-}
-
-async function createPost(){
-
-  if(!currentUser){
-    toast("Login করুন");
-    return;
-  }
-
-  const text=$("postText").value.trim();
-  const privacy=$("postPrivacy").value;
-
-  if(!text && selectedPostFiles.length===0){
-    toast("Post-এর জন্য কিছু লিখুন অথবা Photo/Video দিন");
-    return;
-  }
-
-  let imageUrl=null;
-  let videoUrl=null;
-
-  try{
-
-    for(const file of selectedPostFiles){
-
-      const bucket=file.type.startsWith("video/")?"media":"post-images";
-
-      const path=currentUser.id+"/"+Date.now()+"_"+Math.random().toString(36).slice(2)+"_"+file.name;
-
-      const up=await db.storage
-        .from(bucket)
-        .upload(path,file,{upsert:false});
-
-      if(up.error){
-        console.warn("upload:",up.error);
-        continue;
-      }
-
-      const pub=db.storage
-        .from(bucket)
-        .getPublicUrl(path);
-
-      if(file.type.startsWith("video/")){
-        videoUrl=pub.data.publicUrl;
-      }else if(!imageUrl){
-        imageUrl=pub.data.publicUrl;
-      }
-
-    }
-
-    const payload={
-      user_id:currentUser.id,
-      text:text||null,
-      image_url:imageUrl,
-      video_url:videoUrl,
-      privacy:privacy
-    };
-
-    const {data,error}=await db
-      .from("posts")
-      .insert(payload)
-      .select("*")
-      .single();
-
-    if(error) throw error;
-
-    $("postText").value="";
-    selectedPostFiles=[];
-    $("postPhotos").value="";
-    $("postVideo").value="";
-    renderPostPreview();
-
-    toast("Post published");
-
-    await loadFeed();
-
-  }catch(error){
-
-    console.error(error);
-    toast("Post error: "+(error.message||"unknown"));
-
-  }
-}
-
-async function loadFeed(){
-
-  if(!currentUser) return;
-
-  const feed=$("feed");
-
-  if(!feed) return;
-
-  feed.innerHTML=`<div class="card cardPad">Loading Feed...</div>`;
-
-  try{
-
-    const {data,error}=await db
-      .from("posts")
-      .select("*")
-      .order("created_at",{ascending:false})
-      .limit(30);
-
-    if(error) throw error;
-
-    if(!data?.length){
-
-      feed.innerHTML=`
-      <div class="card cardPad">
-        <div class="sectionTitle">Welcome 🎉</div>
-        <p>No posts yet. Create your first post.</p>
-      </div>`;
-
-      return;
-    }
-
-    feed.innerHTML="";
-
-    for(const post of data){
-
-      feed.insertAdjacentHTML("beforeend",renderPost(post));
-
-      loadPostStats(post.id);
-
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    feed.innerHTML=`
-      <div class="card cardPad">
-        Feed load error.<br>
-        <small>${esc(error.message||"Unknown error")}</small>
-      </div>`;
-
-  }
-}
-
-function renderPost(post){
-
-  const text=esc(post.text||"");
-  const date=post.created_at?
-    new Date(post.created_at).toLocaleString("bn-BD"):
-    "";
-
-  let media="";
-
-  if(post.video_url){
-    media=`<video class="postMedia" src="${esc(post.video_url)}" controls playsinline></video>`;
-  }else if(post.image_url){
-    media=`<img class="postMedia" src="${esc(post.image_url)}" loading="lazy">`;
-  }
-
-  return `
-  <article class="card post" id="post-${post.id}">
-
-    <div class="postHead">
-      <img class="avatar postAvatar" src="https://ui-avatars.com/api/?name=User">
-      <div class="postMeta">
-        <div class="postName">User</div>
-        <div class="postDate">${date}</div>
-      </div>
-      <button class="postMenu" onclick="postMenu('${post.id}')">•••</button>
-    </div>
-
-    ${text?`<div class="postText">${text}</div>`:""}
-
-    ${media}
-
-    <div class="postStats">
-      <span id="likeCount-${post.id}">❤️ 0</span>
-      <span id="commentCount-${post.id}">0 Comments</span>
-    </div>
-
-    <div class="postActions">
-      <button class="postAction" id="likeBtn-${post.id}" onclick="toggleLike('${post.id}')">❤️ Like</button>
-      <button class="postAction" onclick="focusComment('${post.id}')">💬 Comment</button>
-      <button class="postAction" onclick="sharePost('${post.id}')">↗ Share</button>
-      <button class="postAction" onclick="savePost('${post.id}')">🔖 Save</button>
-    </div>
-
-    <div id="comments-${post.id}" class="comments"></div>
-
-    <div class="commentBox">
-      <input id="commentInput-${post.id}" placeholder="Write a comment...">
-      <button class="secondary" onclick="addComment('${post.id}')">Send</button>
-    </div>
-
-  </article>`;
-}
-
-async function loadPostStats(postId){
-
-  try{
-
-    const likes=await db
-      .from("post_likes")
-      .select("*",{count:"exact",head:true})
-      .eq("post_id",postId);
-
-    if(likes.count!=null){
-      $("likeCount-"+postId).textContent="❤️ "+likes.count;
-    }
-
-  }catch(e){}
-
-  try{
-
-    const comments=await db
-      .from("comments")
-      .select("*",{count:"exact",head:true})
-      .eq("post_id",postId);
-
-    if(comments.count!=null){
-      $("commentCount-"+postId).textContent=comments.count+" Comments";
-    }
-
-  }catch(e){}
-
-  loadComments(postId);
-}
-
-async function toggleLike(postId){
-
-  if(!currentUser) return;
-
-  const btn=$("likeBtn-"+postId);
-
-  try{
-
-    const existing=await db
-      .from("post_likes")
-      .select("*")
-      .eq("post_id",postId)
-      .eq("user_id",currentUser.id)
-      .maybeSingle();
-
-    if(existing.data){
-
-      const del=await db
-        .from("post_likes")
-        .delete()
-        .eq("post_id",postId)
-        .eq("user_id",currentUser.id);
-
-      if(del.error) throw del.error;
-
-      btn.classList.remove("liked");
-
-    }else{
-
-      const ins=await db
-        .from("post_likes")
-        .insert({
-          post_id:postId,
-          user_id:currentUser.id
-        });
-
-      if(ins.error) throw ins.error;
-
-      btn.classList.add("liked");
-
-    }
-
-    await loadPostStats(postId);
-
-  }catch(error){
-
-    console.error(error);
-    toast("Like failed");
-
-  }
-}
-
-async function addComment(postId){
-
-  if(!currentUser) return;
-
-  const input=$("commentInput-"+postId);
-  const text=input.value.trim();
-
-  if(!text) return;
-
-  try{
-
-    const {error}=await db
-      .from("comments")
-      .insert({
-        post_id:postId,
-        user_id:currentUser.id,
-        text:text
-      });
-
-    if(error) throw error;
-
-    input.value="";
-
-    await loadComments(postId);
-
-  }catch(error){
-
-    console.error(error);
-    toast("Comment failed");
-
-  }
-}
-
-async function loadComments(postId){
-
-  const box=$("comments-"+postId);
-
-  if(!box) return;
-
-  try{
-
-    const {data,error}=await db
-      .from("comments")
-      .select("*")
-      .eq("post_id",postId)
-      .order("created_at",{ascending:true})
-      .limit(20);
-
-    if(error) throw error;
-
-    box.innerHTML=(data||[]).map(c=>`
-      <div class="comment">
-        <b>User</b><br>
-        ${esc(c.text)}
-      </div>
-    `).join("");
-
-  }catch(e){}
-
-}
-
-function focusComment(postId){
-  $("commentInput-"+postId)?.focus();
-}
-
-async function savePost(postId){
-
-  if(!currentUser) return;
-
-  try{
-
-    const existing=await db
-      .from("saved_posts")
-      .select("*")
-      .eq("post_id",postId)
-      .eq("user_id",currentUser.id)
-      .maybeSingle();
-
-    if(existing.error && !String(existing.error.message).includes("0 rows")){
-      throw existing.error;
-    }
-
-    if(existing.data){
-
-      await db
-        .from("saved_posts")
-        .delete()
-        .eq("post_id",postId)
-        .eq("user_id",currentUser.id);
-
-      toast("Removed from Saved");
-
-    }else{
-
-      const {error}=await db
-        .from("saved_posts")
-        .insert({
-          post_id:postId,
-          user_id:currentUser.id
-        });
-
-      if(error) throw error;
-
-      toast("Saved");
-
-    }
-
-  }catch(error){
-
-    toast("Save feature backend needs saved_posts schema");
-
-  }
-}
-
-async function sharePost(postId){
-
-  const url=location.origin+location.pathname+"#post-"+postId;
-
-  try{
-
-    if(navigator.share){
-      await navigator.share({
-        title:"My Social App",
-        text:"Check this post",
-        url
-      });
-    }else{
-
-      await navigator.clipboard.writeText(url);
-      toast("Post link copied");
-
-    }
-
-  }catch(e){}
-
-}
-
-function postMenu(id){
-
-  const action=prompt(
-    "Post options:\n1 = Delete\n2 = Pin\n3 = Report\n4 = Copy Link"
-  );
-
-  if(action==="1") deletePost(id);
-  if(action==="2") pinPost(id);
-  if(action==="3") reportPost(id);
-  if(action==="4") sharePost(id);
-}
-
-async function deletePost(id){
-
-  if(!confirm("এই post delete করবেন?")) return;
-
-  try{
-
-    const {error}=await db
-      .from("posts")
-      .delete()
-      .eq("id",id)
-      .eq("user_id",currentUser.id);
-
-    if(error) throw error;
-
-    toast("Post deleted");
-    await loadFeed();
-
-  }catch(e){
-
-    toast("Delete failed");
-
-  }
-}
-
-async function pinPost(id){
-
-  try{
-
-    const {error}=await db
-      .from("pinned_posts")
-      .insert({
-        user_id:currentUser.id,
-        post_id:id
-      });
-
-    if(error) throw error;
-
-    toast("Post pinned");
-
-  }catch(e){
-
-    toast("Pin backend not available");
-
-  }
-}
-
-async function reportPost(id){
-
-  try{
-
-    const {error}=await db
-      .from("reports")
-      .insert({
-        reporter_id:currentUser.id,
-        target_type:"post",
-        target_id:id,
-        reason:"User report"
-      });
-
-    if(error) throw error;
-
-    toast("Report submitted");
-
-  }catch(e){
-
-    toast("Report submitted/queued");
-
-  }
-}
-
-/* =========================================================
-   REELS
-========================================================= */
-
-async function openReels(){
-
-  $("reelsScreen").classList.remove("hidden");
-  document.body.classList.add("reels-open");
-
-  await loadReels();
-
-}
-
-function closeReels(){
-
-  $("reelsScreen").classList.add("hidden");
-  document.body.classList.remove("reels-open");
-
-  document.querySelectorAll("#reelsFeed video").forEach(v=>{
-    try{v.pause()}catch(e){}
-  });
-
-}
-
-async function loadReels(){
-
-  const feed=$("reelsFeed");
-
-  feed.innerHTML=`<div style="height:100dvh;color:white;display:flex;align-items:center;justify-content:center">Reels লোড হচ্ছে...</div>`;
-
-  try{
-
-    const {data,error}=await db
-      .from("reels")
-      .select("*")
-      .order("created_at",{ascending:false})
-      .limit(30);
-
-    if(error) throw error;
-
-    currentReels=data||[];
-
-    if(!currentReels.length){
-
-      feed.innerHTML=`
-      <div style="height:100dvh;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px">
-        <div style="font-size:25px">🎬 No Reels Yet</div>
-        <button class="primary" style="width:auto" onclick="openReelEditor()">＋ Upload Reel</button>
-      </div>`;
-
-      return;
-    }
-
-    feed.innerHTML=currentReels.map(renderReel).join("");
-
-    setupReelObserver();
-
-    document.querySelectorAll("#reelsFeed video").forEach(video=>{
-
-      const card=video.closest(".reelCard");
-
-      let lastTap=0;
-      let tapTimer;
-
-      video.addEventListener("pointerup",e=>{
-
-        const now=Date.now();
-
-        if(now-lastTap<320){
-
-          clearTimeout(tapTimer);
-
-          toggleReelLike(card,true);
-          showHeart(card,e.clientX,e.clientY);
-
-          lastTap=0;
-          return;
-
-        }
-
-        lastTap=now;
-
-        clearTimeout(tapTimer);
-
-        tapTimer=setTimeout(()=>{
-          togglePlay(video);
-        },280);
-
-      });
-
-    });
-
-  }catch(error){
-
-    console.error(error);
-
-    feed.innerHTML=`
-      <div style="height:100dvh;color:white;padding:60px 20px">
-        Reels load error<br><small>${esc(error.message||"Unknown")}</small>
-      </div>`;
-
-  }
-}
-
-function renderReel(r){
-
-  return `
-  <article class="reelCard" data-id="${r.id}">
-
-    <video
-      src="${esc(r.video_url)}"
-      playsinline
-      loop
-      preload="metadata"
-      ${currentReelSound?"":"muted"}
-    ></video>
-
-    <div class="reelOverlay">
-
-      <div class="reelInfo">
-
-        <div class="reelCreator">
-          @creator
-          <button
-            class="secondary"
-            style="padding:5px 9px;margin-left:5px"
-            onclick="followUser('${r.user_id}')">
-            Follow
-          </button>
-        </div>
-
-        <div class="reelCaption">
-          ${esc(r.caption||"")}
-        </div>
-
-        <div class="reelAudio">
-          🎵 ${esc(r.audio_name||"Original Sound")}
-        </div>
-
-      </div>
-
-      <div class="reelRail">
-
-        <button class="reelBtn"
-          onclick="toggleReelLike(this.closest('.reelCard'),false)">
-          ❤️
-          <small id="reelLike-${r.id}">0</small>
-        </button>
-
-        <button class="reelBtn"
-          onclick="openReelComments('${r.id}')">
-          💬
-          <small>Comment</small>
-        </button>
-
-        <button class="reelBtn"
-          onclick="shareReel('${r.id}')">
-          ↗
-          <small>Share</small>
-        </button>
-
-        <button class="reelBtn"
-          onclick="saveReel('${r.id}')">
-          🔖
-          <small>Save</small>
-        </button>
-
-        <button class="reelBtn"
-          onclick="toggleVideoSound(this.closest('.reelCard'))">
-          🔊
-          <small>Sound</small>
-        </button>
-
-      </div>
-
-    </div>
-
-  </article>`;
-}
-
-function setupReelObserver(){
-
-  const cards=[...document.querySelectorAll(".reelCard")];
-
-  const observer=new IntersectionObserver(entries=>{
-
-    entries.forEach(entry=>{
-
-      const video=entry.target.querySelector("video");
-
-      if(entry.isIntersecting){
-
-        cards.forEach(card=>{
-          if(card!==entry.target){
-            const v=card.querySelector("video");
-            if(v) v.pause();
-          }
-        });
-
-        video.muted=!currentReelSound;
-
-        video.play().catch(()=>{
-          video.muted=true;
-          video.play().catch(()=>{});
-        });
-
-        incrementReelView(entry.target.dataset.id);
-
-      }else{
-
-        video.pause();
-
-      }
-
-    });
-
-  },{threshold:.65});
-
-  cards.forEach(card=>observer.observe(card));
-
-}
-
-function togglePlay(video){
-
-  if(video.paused){
-
-    video.play().catch(()=>{});
-
-  }else{
-
-    video.pause();
-
-  }
-
-}
-
-function toggleVideoSound(card){
-
-  const video=card.querySelector("video");
-
-  video.muted=!video.muted;
-
-  currentReelSound=!video.muted;
-
-}
-
-function toggleAllReelSound(){
-
-  currentReelSound=!currentReelSound;
-
-  document.querySelectorAll("#reelsFeed video").forEach(v=>{
-    v.muted=!currentReelSound;
-  });
-
-}
-
-function showHeart(card,x,y){
-
-  const heart=document.createElement("div");
-
-  heart.className="heartAnim";
-  heart.textContent="❤️";
-
-  const rect=card.getBoundingClientRect();
-
-  heart.style.left=(x-rect.left-45)+"px";
-  heart.style.top=(y-rect.top-45)+"px";
-
-  card.appendChild(heart);
-
-  setTimeout(()=>heart.remove(),800);
-
-}
-
-async function toggleReelLike(card,forceLike){
-
-  if(!card || !currentUser) return;
-
-  const id=card.dataset.id;
-
-  try{
-
-    const existing=await db
-      .from("reel_reactions")
-      .select("*")
-      .eq("reel_id",id)
-      .eq("user_id",currentUser.id)
-      .maybeSingle();
-
-    if(existing.error) throw existing.error;
-
-    if(existing.data && !forceLike){
-
-      await db
-        .from("reel_reactions")
-        .delete()
-        .eq("reel_id",id)
-        .eq("user_id",currentUser.id);
-
-    }else if(!existing.data){
-
-      await db
-        .from("reel_reactions")
-        .insert({
-          reel_id:id,
-          user_id:currentUser.id,
-          reaction:"like"
-        });
-
-    }
-
-    loadReelLikeCount(id);
-
-  }catch(e){
-
-    console.warn("reel like:",e);
-
-  }
-
-}
-
-async function loadReelLikeCount(id){
-
-  try{
-
-    const result=await db
-      .from("reel_reactions")
-      .select("*",{count:"exact",head:true})
-      .eq("reel_id",id);
-
-    if(result.count!=null){
-      $("reelLike-"+id).textContent=result.count;
-    }
-
-  }catch(e){}
-
-}
-
-async function incrementReelView(id){
-
-  try{
-
-    const {error}=await db.rpc(
-      "increment_reel_views",
-      {reel_id_input:Number(id)}
-    );
-
-    if(error) console.warn("view rpc:",error);
-
-  }catch(e){}
-
-}
-
-function shareReel(id){
-
-  const url=location.href.split("#")[0]+"#reel-"+id;
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"My Social App Reel",
-      url
-    }).catch(()=>{});
-
-  }else{
-
-    navigator.clipboard?.writeText(url);
-    toast("Reel link copied");
-
-  }
-
-}
-
-async function saveReel(id){
-
-  const key="saved_reels_local";
-
-  let arr=[];
-
-  try{
-    arr=JSON.parse(localStorage.getItem(key)||"[]");
-  }catch(e){}
-
-  if(arr.includes(String(id))){
-    arr=arr.filter(x=>x!==String(id));
-    toast("Reel removed from Saved");
-  }else{
-    arr.push(String(id));
-    toast("Reel saved");
-  }
-
-  localStorage.setItem(key,JSON.stringify(arr));
-
-}
-
-async function followUser(userId){
-
-  if(!currentUser) return;
-
-  if(userId===currentUser.id){
-    toast("নিজেকে Follow করা যাবে না");
-    return;
-  }
-
-  try{
-
-    const existing=await db
-      .from("follows")
-      .select("*")
-      .eq("follower_id",currentUser.id)
-      .eq("following_id",userId)
-      .maybeSingle();
-
-    if(existing.data){
-
-      await db
-        .from("follows")
-        .delete()
-        .eq("follower_id",currentUser.id)
-        .eq("following_id",userId);
-
-      toast("Unfollowed");
-
-    }else{
-
-      const {error}=await db
-        .from("follows")
-        .insert({
-          follower_id:currentUser.id,
-          following_id:userId
-        });
-
-      if(error) throw error;
-
-      toast("Following");
-
-    }
-
-  }catch(e){
-
-    toast("Follow backend schema check করুন");
-
-  }
-}
-
-function openReelComments(id){
-
-  const text=prompt("Reel comment লিখুন:");
-
-  if(!text) return;
-
-  addReelComment(id,text);
-
-}
-
-async function addReelComment(id,text){
-
-  try{
-
-    const {error}=await db
-      .from("reel_comments")
-      .insert({
-        reel_id:Number(id),
-        user_id:currentUser.id,
-        text:text
-      });
-
-    if(error) throw error;
-
-    toast("Reel comment added");
-
-  }catch(e){
-
-    toast("Reel comment failed");
-
-  }
-
-}
-
-/* =========================================================
-   REEL EDITOR
-========================================================= */
-
-function openReelEditor(){
-
-  openModal("reelEditorModal");
-
-}
-
-$("reelFile").addEventListener("change",e=>{
-
-  const file=e.target.files[0];
+  const file = event.target.files[0];
 
   if(!file) return;
 
-  $("editorVideo").src=URL.createObjectURL(file);
-
-});
-
-function setEditorSpeed(speed){
-  $("editorVideo").playbackRate=speed;
-  toast("Speed "+speed+"×");
-}
-
-function toggleEditorMute(){
-  const v=$("editorVideo");
-  v.muted=!v.muted;
-}
-
-function rotateEditor(){
-  const v=$("editorVideo");
-  const current=v.style.transform;
-  v.style.transform=current==="rotate(90deg)"?"rotate(0deg)":"rotate(90deg)";
-}
-
-function setCrop(ratio){
-  const v=$("editorVideo");
-
-  if(ratio==="9:16"){
-    v.style.aspectRatio="9/16";
-    v.style.objectFit="cover";
-  }else if(ratio==="1:1"){
-    v.style.aspectRatio="1/1";
-    v.style.objectFit="cover";
-  }else{
-    v.style.aspectRatio="";
-    v.style.objectFit="contain";
-  }
-
-  toast("Crop: "+ratio);
-}
-
-function addEditorText(){
-  const text=prompt("Video text লিখুন:");
-  if(text) toast("Text overlay: "+text);
-}
-
-function addEditorSticker(){
-  const sticker=prompt("Sticker/Emoji লিখুন:");
-  if(sticker) toast("Sticker: "+sticker);
-}
-
-async function uploadReel(){
-
-  if(!currentUser){
-    toast("Login করুন");
+  if(!file.type.startsWith("video/")){
+    alert("দয়া করে Video নির্বাচন করুন");
     return;
   }
 
-  const file=$("reelFile").files[0];
+  premiumVideoFile = file;
 
-  if(!file){
-    toast("Video নির্বাচন করুন");
-    return;
-  }
+  const video =
+    document.getElementById("premiumVideo");
 
-  try{
+  const empty =
+    document.getElementById("playerEmpty");
 
-    toast("Uploading Reel...");
+  video.src = URL.createObjectURL(file);
 
-    const path=
-      currentUser.id+
-      "/"+
-      Date.now()+
-      "_"+
-      file.name;
+  video.load();
 
-    const up=await db.storage
-      .from("reels")
-      .upload(path,file,{upsert:false});
+  empty.style.display = "none";
 
-    if(up.error) throw up.error;
+  video.onloadedmetadata = function(){
 
-    const pub=db.storage
-      .from("reels")
-      .getPublicUrl(path);
+    trimStartSeconds = 0;
+    trimEndSeconds = video.duration;
 
-    const {error}=await db
-      .from("reels")
-      .insert({
-        user_id:currentUser.id,
-        video_url:pub.data.publicUrl,
-        caption:$("reelCaption").value,
-        audio_name:$("reelAudio").value||"Original Sound"
-      });
+    document.getElementById("trimEnd").value = 100;
 
-    if(error) throw error;
+    document.getElementById("trimEndText").innerText =
+      video.duration.toFixed(1) + "s";
 
-    closeModal("reelEditorModal");
-
-    toast("Reel uploaded");
-
-    if(!$("reelsScreen").classList.contains("hidden")){
-      await loadReels();
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    toast("Reel upload error: "+(error.message||"unknown"));
-
-  }
-}
-
-/* =========================================================
-   MONETIZATION
-========================================================= */
-
-let monetizationSettings={
-  creator_mode:false,
-  content_monetization:false,
-  reels_monetization:false,
-  stars_enabled:false,
-  brand_deals_enabled:false,
-  minimum_payout:10
-};
-
-async function loadMonetization(){
-
-  if(!currentUser) return;
-
-  try{
-
-    const {data,error}=await db
-      .from("monetization_settings")
-      .select("*")
-      .eq("user_id",currentUser.id)
-      .maybeSingle();
-
-    if(!error && data){
-      monetizationSettings=data;
-    }
-
-  }catch(e){}
-
-  applyMonetizationUI();
-
-  await loadEarnings();
-
-  await loadPayoutHistory();
-
-  await loadPaymentMethods();
-
-}
-
-function applyMonetizationUI(){
-
-  setSwitch("creatorSwitch",monetizationSettings.creator_mode);
-  setSwitch("contentSwitch",monetizationSettings.content_monetization);
-  setSwitch("reelsSwitch",monetizationSettings.reels_monetization);
-  setSwitch("starsSwitch",monetizationSettings.stars_enabled);
-  setSwitch("brandSwitch",monetizationSettings.brand_deals_enabled);
-
-  $("minimumPayout").textContent=
-    money(monetizationSettings.minimum_payout||10);
-
-}
-
-function setSwitch(id,on){
-
-  const el=$(id);
-
-  if(!el) return;
-
-  el.classList.toggle("on",!!on);
-
-}
-
-async function toggleMonetization(field){
-
-  if(!currentUser) return;
-
-  monetizationSettings[field]=!monetizationSettings[field];
-
-  applyMonetizationUI();
-
-  try{
-
-    const {error}=await db
-      .from("monetization_settings")
-      .upsert({
-        user_id:currentUser.id,
-        ...monetizationSettings,
-        updated_at:new Date().toISOString()
-      },{
-        onConflict:"user_id"
-      });
-
-    if(error) throw error;
-
-    toast("Monetization setting updated");
-
-  }catch(error){
-
-    toast("Setting save হয়নি: "+(error.message||""));
-
-  }
-}
-
-async function loadEarnings(){
-
-  const empty={
-    total:0,
-    pending:0,
-    views:0,
-    rpm:0,
-    today:0,
-    e7:0,
-    e30:0,
-    reels:0,
-    posts:0,
-    photos:0,
-    other:0
+    document.getElementById("trimStartText").innerText =
+      "0.0s";
   };
 
-  try{
+}
 
-    const {data,error}=await db
-      .from("creator_earnings")
-      .select("*")
-      .eq("user_id",currentUser.id)
-      .order("created_at",{ascending:false})
-      .limit(500);
+function setVideoFilter(filter){
 
-    if(error) throw error;
+  premiumFilter = filter;
 
-    const rows=data||[];
+  updateVideoStyle();
+}
 
-    let total=0;
-    let pending=0;
-    let views=0;
-    let today=0;
-    let e7=0;
-    let e30=0;
-    let reels=0;
-    let posts=0;
-    let photos=0;
-    let other=0;
+function updateVideoAdjustments(){
 
-    const now=Date.now();
+  const brightness =
+    document.getElementById("brightnessControl").value;
 
-    rows.forEach(r=>{
+  const contrast =
+    document.getElementById("contrastControl").value;
 
-      const amount=Number(r.amount||0);
-      const v=Number(r.views||0);
+  const saturation =
+    document.getElementById("saturationControl").value;
 
-      total+=amount;
-      views+=v;
+  document.getElementById("brightnessValue").innerText =
+    brightness + "%";
 
-      const created=new Date(r.created_at||0).getTime();
-      const age=now-created;
+  document.getElementById("contrastValue").innerText =
+    contrast + "%";
 
-      if(r.status==="pending"){
-        pending+=amount;
+  document.getElementById("saturationValue").innerText =
+    saturation + "%";
+
+  updateVideoStyle();
+}
+
+function updateVideoStyle(){
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  if(!video) return;
+
+  const brightness =
+    document.getElementById("brightnessControl").value;
+
+  const contrast =
+    document.getElementById("contrastControl").value;
+
+  const saturation =
+    document.getElementById("saturationControl").value;
+
+  video.style.filter =
+    `
+    ${premiumFilter}
+    brightness(${brightness}%)
+    contrast(${contrast}%)
+    saturate(${saturation}%)
+    `;
+
+  video.style.transform =
+    `
+    rotate(${premiumRotation}deg)
+    scale(${premiumZoom / 100})
+    `;
+}
+
+function updateVideoTransform(){
+
+  premiumZoom =
+    document.getElementById("zoomControl").value;
+
+  document.getElementById("zoomValue").innerText =
+    premiumZoom + "%";
+
+  updateVideoStyle();
+}
+
+function rotateVideo(degrees){
+
+  premiumRotation += degrees;
+
+  if(premiumRotation >= 360)
+    premiumRotation -= 360;
+
+  if(premiumRotation <= -360)
+    premiumRotation += 360;
+
+  updateVideoStyle();
+}
+
+function setVideoSpeed(speed){
+
+  premiumSpeed = speed;
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  video.playbackRate = speed;
+}
+
+function updateVideoVolume(){
+
+  const volume =
+    document.getElementById("volumeControl").value;
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  video.volume = volume / 100;
+
+  document.getElementById("volumeValue").innerText =
+    volume + "%";
+}
+
+function toggleVideoMute(){
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  video.muted = !video.muted;
+
+  document.getElementById("muteButton").innerText =
+    video.muted ? "🔊 Unmute" : "🔇 Mute";
+}
+
+function addVideoText(){
+
+  const text =
+    document.getElementById("videoTextInput").value.trim();
+
+  if(!text) return;
+
+  const color =
+    document.getElementById("videoTextColor").value;
+
+  const size =
+    document.getElementById("videoTextSize").value;
+
+  const overlay =
+    document.getElementById("premiumTextOverlay");
+
+  overlay.innerText = text;
+
+  overlay.style.color = color;
+
+  overlay.style.fontSize = size + "px";
+}
+
+function addVideoEmoji(emoji){
+
+  document.getElementById("premiumEmojiOverlay")
+    .innerText = emoji;
+}
+
+function updateTrimStart(){
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  if(!video.duration) return;
+
+  const percent =
+    Number(document.getElementById("trimStart").value);
+
+  trimStartSeconds =
+    video.duration * percent / 100;
+
+  if(trimStartSeconds >= trimEndSeconds){
+
+    trimStartSeconds =
+      Math.max(0, trimEndSeconds - .1);
+
+  }
+
+  document.getElementById("trimStartText").innerText =
+    trimStartSeconds.toFixed(1) + "s";
+
+  video.currentTime = trimStartSeconds;
+}
+
+function updateTrimEnd(){
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  if(!video.duration) return;
+
+  const percent =
+    Number(document.getElementById("trimEnd").value);
+
+  trimEndSeconds =
+    video.duration * percent / 100;
+
+  if(trimEndSeconds <= trimStartSeconds){
+
+    trimEndSeconds =
+      Math.min(video.duration, trimStartSeconds + .1);
+
+  }
+
+  document.getElementById("trimEndText").innerText =
+    trimEndSeconds.toFixed(1) + "s";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const video =
+    document.getElementById("premiumVideo");
+
+  if(video){
+
+    video.addEventListener("timeupdate", function(){
+
+      if(
+        trimEndSeconds > 0 &&
+        video.currentTime >= trimEndSeconds
+      ){
+
+        video.pause();
+
+        video.currentTime =
+          trimStartSeconds;
       }
-
-      if(age<=86400000) today+=amount;
-      if(age<=86400000*7) e7+=amount;
-      if(age<=86400000*30) e30+=amount;
-
-      const source=String(r.source||"other").toLowerCase();
-
-      if(source.includes("reel")) reels+=amount;
-      else if(source.includes("post")||source.includes("content")) posts+=amount;
-      else if(source.includes("photo")) photos+=amount;
-      else other+=amount;
 
     });
 
-    const rpm=views>0?(total/views*1000):0;
-
-    $("availableBalance").textContent=money(Math.max(0,total-pending));
-    $("totalEarnings").textContent=money(total);
-    $("pendingBalance").textContent=money(pending);
-    $("totalViews").textContent=views.toLocaleString();
-    $("rpmValue").textContent=money(rpm);
-
-    $("earnToday").textContent=money(today);
-    $("earn7").textContent=money(e7);
-    $("earn30").textContent=money(e30);
-    $("earnLife").textContent=money(total);
-
-    $("reelEarnings").textContent=money(reels);
-    $("postEarnings").textContent=money(posts);
-    $("photoEarnings").textContent=money(photos);
-    $("otherEarnings").textContent=money(other);
-
-    renderEarningsTable(rows);
-
-    const eligibility=Math.min(
-      100,
-      Math.round(
-        (currentProfile?.followers_count||0)/1000*50+
-        Math.min(50,views/10000*50)
-      )
-    );
-
-    $("eligibilityText").textContent=eligibility+"%";
-    $("eligibilityBar").style.width=eligibility+"%";
-
-  }catch(error){
-
-    console.warn("earnings:",error);
-
-    Object.entries(empty).forEach(([k,v])=>{
-      if(k==="total") $("totalEarnings").textContent=money(v);
-    });
-
-    renderEarningsTable([]);
-
   }
-
-}
-
-function renderEarningsTable(rows){
-
-  const table=$("earningsTable");
-
-  if(!rows.length){
-
-    table.innerHTML=`
-      <tr>
-        <td colspan="5" style="text-align:center;color:var(--muted)">
-          No earnings data yet
-        </td>
-      </tr>`;
-
-    return;
-  }
-
-  table.innerHTML=rows.slice(0,100).map(r=>`
-    <tr>
-      <td>${new Date(r.created_at).toLocaleDateString("bn-BD")}</td>
-      <td>${esc(r.source||"other")}</td>
-      <td>${Number(r.views||0).toLocaleString()}</td>
-      <td>${money(r.amount)}</td>
-      <td>${esc(r.status||"pending")}</td>
-    </tr>
-  `).join("");
-
-}
-
-/* =========================================================
-   BKASH WITHDRAWAL
-========================================================= */
-
-async function openWithdraw(){
-
-  if(!currentUser){
-    toast("Login করুন");
-    return;
-  }
-
-  await loadEarnings();
-
-  const availableText=$("availableBalance").textContent;
-
-  $("withdrawBalance").textContent=availableText;
-
-  $("withdrawAmount").value="";
-  $("bkashNumber").value="";
-  $("withdrawNote").value="";
-
-  openModal("withdrawModal");
-
-}
-
-function normalizeBkash(number){
-
-  return String(number||"").replace(/\D/g,"");
-
-}
-
-function validBkash(number){
-
-  return /^01[3-9]\d{8}$/.test(number);
-
-}
-
-async function submitWithdrawal(){
-
-  if(!currentUser) return;
-
-  const number=normalizeBkash($("bkashNumber").value);
-  const amount=Number($("withdrawAmount").value);
-
-  const availableText=$("availableBalance").textContent;
-  const available=Number(
-    availableText.replace(/[^0-9.-]/g,"")
-  )||0;
-
-  const minimum=Number(monetizationSettings.minimum_payout||10);
-
-  if(!validBkash(number)){
-
-    toast("সঠিক ১১ সংখ্যার bKash নম্বর দিন");
-
-    return;
-  }
-
-  if(!amount || amount<=0){
-
-    toast("Withdrawal amount দিন");
-
-    return;
-  }
-
-  if(amount<minimum){
-
-    toast("Minimum payout "+money(minimum));
-
-    return;
-  }
-
-  if(amount>available){
-
-    toast("Available balance-এর বেশি তুলতে পারবেন না");
-
-    return;
-  }
-
-  try{
-
-    const payload={
-      user_id:currentUser.id,
-      amount:amount,
-      currency:"USD",
-      method:"bKash",
-      account_info:number,
-      status:"pending",
-      note:$("withdrawNote").value.trim()||"bKash withdrawal request"
-    };
-
-    const {data,error}=await db
-      .from("payout_requests")
-      .insert(payload)
-      .select("*")
-      .maybeSingle();
-
-    if(error) throw error;
-
-    await db
-      .from("payment_methods")
-      .upsert({
-        user_id:currentUser.id,
-        method:"bKash",
-        account_name:"",
-        account_info:number,
-        is_default:true
-      });
-
-    closeModal("withdrawModal");
-
-    toast("bKash withdrawal request submitted");
-
-    await loadPayoutHistory();
-    await loadPaymentMethods();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      "Withdrawal request failed: "+
-      (error.message||"unknown error")
-    );
-
-  }
-
-}
-
-/* =========================================================
-   PAYMENT METHODS
-========================================================= */
-
-async function openPaymentMethods(){
-
-  openModal("paymentModal");
-
-  await loadPaymentMethods();
-
-}
-
-async function loadPaymentMethods(){
-
-  const box=$("paymentMethodsList");
-
-  if(!box) return;
-
-  try{
-
-    const {data,error}=await db
-      .from("payment_methods")
-      .select("*")
-      .eq("user_id",currentUser.id)
-      .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    if(!data?.length){
-
-      box.innerHTML=`
-      <div class="stat">
-        No payment method added.
-      </div>`;
-
-      return;
-    }
-
-    box.innerHTML=data.map(m=>`
-      <div class="stat" style="margin-bottom:8px">
-        <b>📱 ${esc(m.method)}</b>
-        <div>${esc(m.account_info||"")}</div>
-        <small>${m.is_default?"Default":""}</small>
-      </div>
-    `).join("");
-
-  }catch(e){
-
-    box.innerHTML=`
-      <div class="stat">
-        Payment methods load failed.
-      </div>`;
-
-  }
-
-}
-
-async function addBkashMethod(){
-
-  const name=$("pmName").value.trim();
-  const number=normalizeBkash($("pmNumber").value);
-
-  if(!validBkash(number)){
-
-    toast("সঠিক bKash নম্বর দিন");
-
-    return;
-  }
-
-  try{
-
-    const {error}=await db
-      .from("payment_methods")
-      .insert({
-        user_id:currentUser.id,
-        method:"bKash",
-        account_name:name,
-        account_info:number,
-        is_default:true
-      });
-
-    if(error) throw error;
-
-    $("pmName").value="";
-    $("pmNumber").value="";
-
-    toast("bKash added");
-
-    await loadPaymentMethods();
-
-  }catch(error){
-
-    toast("Payment method save failed");
-
-  }
-
-}
-
-async function loadPayoutHistory(){
-
-  const box=$("payoutHistory");
-
-  if(!box || !currentUser) return;
-
-  try{
-
-    const {data,error}=await db
-      .from("payout_requests")
-      .select("*")
-      .eq("user_id",currentUser.id)
-      .order("created_at",{ascending:false})
-      .limit(50);
-
-    if(error) throw error;
-
-    if(!data?.length){
-
-      box.innerHTML=`
-        <div style="color:var(--muted)">
-          No payout requests yet.
-        </div>`;
-
-      return;
-    }
-
-    box.innerHTML=data.map(p=>`
-      <div class="stat" style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between">
-          <b>${money(p.amount)}</b>
-          <b>${esc(p.status||"pending")}</b>
-        </div>
-        <div>📱 ${esc(p.method||"bKash")}</div>
-        <div>${esc(p.account_info||"")}</div>
-        <small>${new Date(p.created_at).toLocaleString("bn-BD")}</small>
-      </div>
-    `).join("");
-
-  }catch(error){
-
-    box.innerHTML=`
-      <div style="color:var(--muted)">
-        Payout history unavailable.
-      </div>`;
-
-  }
-
-}
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-async function loadNotifications(){
-
-  const target=$("page-notifications");
-
-  if(!currentUser) return;
-
-  target.innerHTML=`
-    <div class="card cardPad">
-      <div class="sectionTitle">🔔 Notifications</div>
-      <div id="notificationList">Loading...</div>
-    </div>`;
-
-  try{
-
-    const {data,error}=await db
-      .from("notifications")
-      .select("*")
-      .eq("receiver_id",currentUser.id)
-      .order("created_at",{ascending:false})
-      .limit(50);
-
-    if(error) throw error;
-
-    $("notificationList").innerHTML=(data||[]).map(n=>`
-      <div class="stat" style="margin-bottom:8px">
-        ${esc(n.text||"Notification")}
-        <small style="display:block;color:var(--muted)">
-          ${new Date(n.created_at).toLocaleString("bn-BD")}
-        </small>
-      </div>
-    `).join("")||"No notifications";
-
-  }catch(e){
-
-    $("notificationList").textContent="Notifications unavailable.";
-
-  }
-
-}
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-$("globalSearch").addEventListener("keydown",e=>{
-
-  if(e.key!=="Enter") return;
-
-  const q=e.target.value.trim();
-
-  if(!q) return;
-
-  openPage("search");
-
-  const target=$("page-search");
-
-  target.innerHTML=`
-    <div class="card cardPad">
-      <div class="sectionTitle">🔎 Search</div>
-      <p>Search result for: <b>${esc(q)}</b></p>
-      <div class="stat">
-        People • Posts • Reels • Videos • Pages • Groups • Marketplace • Events • Hashtags • Locations
-      </div>
-    </div>`;
 
 });
 
-/* =========================================================
-   STORY / COMPOSER EXTRA OPTIONS
-========================================================= */
+function loadPremiumAudio(event){
 
-function openStoryCreator(){
-  openModal("storyModal");
+  const file = event.target.files[0];
+
+  if(!file) return;
+
+  premiumAudioFile = file;
+
+  document.getElementById("audioNameInput").value =
+    file.name;
 }
 
-function addFeeling(){
+function loadPremiumCover(event){
 
-  const v=prompt("Feeling লিখুন:", "😊 Feeling happy");
+  const file = event.target.files[0];
 
-  if(v){
-    $("postText").value+="\n"+v;
-  }
+  if(!file) return;
 
+  premiumCoverFile = file;
+
+  const preview =
+    document.getElementById("coverPreview");
+
+  preview.innerHTML = "";
+
+  const img =
+    document.createElement("img");
+
+  img.src = URL.createObjectURL(file);
+
+  preview.appendChild(img);
 }
 
-function addLocation(){
+function captureVideoCover(){
 
-  const v=prompt("Location লিখুন:");
+  const video =
+    document.getElementById("premiumVideo");
 
-  if(v){
-    $("postText").value+="\n📍 "+v;
-  }
+  if(!video.src) return;
 
-}
+  const canvas =
+    document.createElement("canvas");
 
-function addTag(){
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
-  const v=prompt("Tag username/name:");
+  const ctx =
+    canvas.getContext("2d");
 
-  if(v){
-    $("postText").value+=" @"+v;
-  }
+  ctx.filter =
+    getComputedStyle(video).filter;
 
-}
-
-function addHashtag(){
-
-  const v=prompt("Hashtag:", "#MySocialApp");
-
-  if(v){
-    $("postText").value+=" "+(v.startsWith("#")?v:"#"+v);
-  }
-
-}
-
-function addPoll(){
-
-  $("postText").value+="\n📊 Poll: ";
-  toast("Poll UI added to composer");
-
-}
-
-function setPrivacy(){
-
-  $("postPrivacy").focus();
-
-}
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function toggleTheme(){
-
-  document.body.classList.toggle("dark");
-
-  localStorage.setItem(
-    "msa_theme",
-    document.body.classList.contains("dark")?"dark":"light"
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
   );
 
+  canvas.toBlob(function(blob){
+
+    if(!blob) return;
+
+    premiumCoverFile =
+      new File(
+        [blob],
+        "reel-cover.jpg",
+        {type:"image/jpeg"}
+      );
+
+    const preview =
+      document.getElementById("coverPreview");
+
+    preview.innerHTML = "";
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      URL.createObjectURL(blob);
+
+    preview.appendChild(img);
+
+  },"image/jpeg",.92);
 }
 
-if(localStorage.getItem("msa_theme")==="dark"){
-  document.body.classList.add("dark");
-}
+function resetVideoEditor(){
 
-/* =========================================================
-   DOWNLOAD DATA
-========================================================= */
+  premiumRotation = 0;
+  premiumZoom = 100;
+  premiumSpeed = 1;
+  premiumFilter = "none";
 
-async function downloadMyData(){
+  document.getElementById("brightnessControl").value = 100;
+  document.getElementById("contrastControl").value = 100;
+  document.getElementById("saturationControl").value = 100;
+  document.getElementById("zoomControl").value = 100;
+  document.getElementById("volumeControl").value = 100;
 
-  if(!currentUser) return;
+  document.getElementById("brightnessValue").innerText = "100%";
+  document.getElementById("contrastValue").innerText = "100%";
+  document.getElementById("saturationValue").innerText = "100%";
+  document.getElementById("zoomValue").innerText = "100%";
+  document.getElementById("volumeValue").innerText = "100%";
 
-  const result={
-    user:{
-      id:currentUser.id,
-      email:currentUser.email
-    },
-    profile:currentProfile,
-    exported_at:new Date().toISOString()
-  };
+  const video =
+    document.getElementById("premiumVideo");
 
-  try{
+  if(video){
 
-    const posts=await db
-      .from("posts")
-      .select("*")
-      .eq("user_id",currentUser.id);
-
-    result.posts=posts.data||[];
-
-  }catch(e){
-    result.posts=[];
+    video.style.filter = "none";
+    video.style.transform = "none";
+    video.playbackRate = 1;
+    video.volume = 1;
+    video.muted = false;
   }
 
-  const blob=new Blob(
-    [JSON.stringify(result,null,2)],
-    {type:"application/json"}
-  );
+  const text =
+    document.getElementById("premiumTextOverlay");
 
-  const url=URL.createObjectURL(blob);
+  const emoji =
+    document.getElementById("premiumEmojiOverlay");
 
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="my-social-app-data.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-
+  if(text) text.innerText = "";
+  if(emoji) emoji.innerText = "";
 }
 
-async function resetPassword(){
+function playFinalPreview(){
 
-  const email=currentUser?.email;
+  const video =
+    document.getElementById("premiumVideo");
 
-  if(!email){
-    toast("Email পাওয়া যায়নি");
+  if(!video.src){
+
+    alert("আগে একটি ভিডিও নির্বাচন করুন");
     return;
   }
 
-  try{
+  video.currentTime = trimStartSeconds;
 
-    const {error}=await db.auth.resetPasswordForEmail(
-      email,
-      {
-        redirectTo:window.location.origin+window.location.pathname
-      }
-    );
+  video.playbackRate = premiumSpeed;
 
-    if(error) throw error;
-
-    toast("Password reset email পাঠানো হয়েছে");
-
-  }catch(e){
-
-    toast(e.message||"Password reset failed");
-
-  }
+  video.play();
 
 }
 
-/* =========================================================
-   INIT
-========================================================= */
+async function applyPremiumUpload(){
 
-boot();
+  if(!premiumVideoFile){
+
+    alert("প্রথমে একটি ভিডিও নির্বাচন করুন");
+    return;
+  }
+
+  const status =
+    document.getElementById("premiumUploadStatus");
+
+  status.innerText =
+    "⏳ Upload প্রস্তুত হচ্ছে...";
+
+  /*
+    IMPORTANT:
+
+    Browser CSS effects যেমন brightness,
+    filter, zoom, rotation ইত্যাদি
+    শুধু Preview-তে দেখায়।
+
+    যদি edited effect-সহ নতুন video file
+    তৈরি করতে চান, তাহলে browser-side
+    Canvas/MediaRecorder বা server-side
+    video processing দরকার।
+
+    এখানে original video Supabase Storage-এ
+    upload করার জন্য আপনার existing
+    reel upload function-এ data পাঠানো হবে।
+  */
+
+  const reelData = {
+
+    videoFile: premiumVideoFile,
+
+    coverFile: premiumCoverFile,
+
+    audioFile: premiumAudioFile,
+
+    caption:
+      document.getElementById("reelCaption").value,
+
+    location:
+      document.getElementById("reelLocation").value,
+
+    privacy:
+      document.getElementById("reelPrivacy").value,
+
+    audioName:
+      document.getElementById("audioNameInput").value,
+
+    commentsAllowed:
+      document.getElementById("commentsAllowed").checked,
+
+    likesAllowed:
+      document.getElementById("likesAllowed").checked,
+
+    sharingAllowed:
+      document.getElementById("sharingAllowed").checked,
+
+    monetization:
+      document.getElementById("reelMonetization").checked,
+
+    speed: premiumSpeed,
+
+    rotation: premiumRotation,
+
+    zoom: premiumZoom,
+
+    filter: premiumFilter,
+
+    brightness:
+      document.getElementById("brightnessControl").value,
+
+    contrast:
+      document.getElementById("contrastControl").value,
+
+    saturation:
+      document.getElementById("saturationControl").value,
+
+    trimStart: trimStartSeconds,
+
+    trimEnd: trimEndSeconds
+  };
+
+  /*
+     আপনার existing upload function থাকলে
+     এখানে সেটি call করুন:
+
+     await uploadReelToSupabase(reelData);
+  */
+
+  window.premiumEditedReelData = reelData;
+
+  status.innerText =
+    "✅ Editor settings প্রস্তুত। এখন আপনার existing Supabase Reel Upload function-এ এই data পাঠানো যাবে।";
+
+  console.log(
+    "Premium Reel Data:",
+    reelData
+  );
+
+}
 
 </script>
-</body>
-</html>
