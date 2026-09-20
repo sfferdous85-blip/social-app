@@ -2,645 +2,574 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1877f2">
-<meta name="description" content="My Social App">
 <title>My Social App</title>
 
-<style>
-:root{
- --primary:#1877f2;
- --primary2:#0866ff;
- --bg:#f0f2f5;
- --card:#fff;
- --text:#050505;
- --muted:#65676b;
- --border:#dddfe2;
- --hover:#f2f2f2;
- --danger:#e41e3f;
- --success:#31a24c;
- --shadow:0 2px 8px rgba(0,0,0,.12);
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-body.dark{
- --bg:#18191a;
- --card:#242526;
- --text:#e4e6eb;
- --muted:#b0b3b8;
- --border:#3e4042;
- --hover:#3a3b3c;
-}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;border:0}
-img,video{max-width:100%}
-.hidden{display:none!important}
-.app{min-height:100vh}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-/* TOPBAR */
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  background:#f0f2f5;
+  color:#1c1e21;
+}
+body.dark{
+  background:#18191a;
+  color:#e4e6eb;
+}
+button,input,textarea,select{
+  font:inherit;
+}
+button{
+  cursor:pointer;
+}
 .topbar{
- position:sticky;top:0;z-index:1000;
- height:62px;background:var(--card);
- border-bottom:1px solid var(--border);
- display:flex;align-items:center;padding:0 12px;gap:10px;
- box-shadow:0 1px 4px rgba(0,0,0,.08)
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:60px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 15px;
+  box-shadow:0 1px 4px #0002;
+}
+.dark .topbar{
+  background:#242526;
 }
 .logo{
- font-size:25px;font-weight:800;color:var(--primary);
- white-space:nowrap
+  color:#1877f2;
+  font-size:25px;
+  font-weight:800;
 }
 .search{
- width:250px;background:var(--bg);border-radius:25px;
- padding:10px 15px;border:0;outline:none;color:var(--text)
+  width:240px;
+  padding:10px 14px;
+  border:0;
+  border-radius:25px;
+  background:#f0f2f5;
+  outline:0;
 }
-.top-actions{margin-left:auto;display:flex;gap:7px}
-.iconbtn{
- width:42px;height:42px;border-radius:50%;
- background:var(--bg);color:var(--text);
- display:flex;align-items:center;justify-content:center;
- font-size:19px
+.dark .search{
+  background:#3a3b3c;
+  color:#fff;
 }
-.iconbtn:hover{background:var(--hover)}
-.avatar{
- width:40px;height:40px;border-radius:50%;object-fit:cover;
- background:#ddd
+.spacer{flex:1}
+.navbtn{
+  border:0;
+  background:transparent;
+  padding:10px;
+  border-radius:10px;
 }
-
-/* LAYOUT */
+.navbtn:hover{
+  background:#eee;
+}
+.dark .navbtn:hover{
+  background:#3a3b3c;
+}
 .layout{
- max-width:1450px;margin:auto;
- display:grid;grid-template-columns:260px minmax(0,680px) 280px;
- gap:18px;padding:18px 12px
+  max-width:1250px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:220px minmax(0,650px) 260px;
+  gap:18px;
+  padding:18px;
 }
-.left,.right{position:sticky;top:80px;height:max-content}
+.sidebar,.rightbar{
+  position:sticky;
+  top:78px;
+  height:max-content;
+}
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.menu button{
+  border:0;
+  background:transparent;
+  text-align:left;
+  padding:12px;
+  border-radius:10px;
+}
+.menu button:hover{
+  background:#ddd;
+}
+.dark .menu button:hover{
+  background:#3a3b3c;
+}
 .card{
- background:var(--card);border-radius:12px;
- box-shadow:var(--shadow);margin-bottom:14px;
- overflow:hidden
+  background:#fff;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 1px 3px #0002;
 }
-.menu-item{
- display:flex;align-items:center;gap:13px;
- padding:12px;border-radius:10px;
- color:var(--text);font-weight:600
+.dark .card{
+  background:#242526;
 }
-.menu-item:hover{background:var(--hover)}
-.menu-icon{font-size:22px;width:28px;text-align:center}
-
-/* FEED */
-.story-row{
- display:flex;gap:10px;overflow-x:auto;padding:12px
+.auth{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
-.story{
- min-width:105px;height:165px;border-radius:12px;
- overflow:hidden;position:relative;background:#ddd;
- cursor:pointer
+.authbox{
+  width:100%;
+  max-width:430px;
 }
-.story img,.story video{
- width:100%;height:100%;object-fit:cover
+.authbox h1{
+  color:#1877f2;
+  text-align:center;
+  font-size:38px;
 }
-.story span{
- position:absolute;bottom:0;left:0;right:0;
- padding:35px 7px 8px;color:white;
- background:linear-gradient(transparent,rgba(0,0,0,.75));
- font-size:12px;font-weight:bold
+.authbox input{
+  width:100%;
+  padding:14px;
+  margin:6px 0;
+  border:1px solid #ccd0d5;
+  border-radius:8px;
 }
-.create-post{padding:13px}
-.create-top{display:flex;gap:10px;align-items:center}
-.post-input{
- flex:1;background:var(--bg);border-radius:25px;
- padding:12px 16px;color:var(--muted);cursor:pointer
+.primary{
+  width:100%;
+  border:0;
+  background:#1877f2;
+  color:#fff;
+  padding:13px;
+  border-radius:8px;
+  font-weight:bold;
 }
-.create-tools{
- display:grid;grid-template-columns:repeat(4,1fr);
- margin-top:12px;border-top:1px solid var(--border);padding-top:10px
+.green{
+  background:#42b72a;
 }
-.tool{
- background:none;color:var(--text);padding:10px;border-radius:8px
+.muted{
+  color:#65676b;
 }
-.tool:hover{background:var(--hover)}
-
-.post-head{
- display:flex;gap:10px;padding:14px
+.avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#ddd;
 }
-.post-user{font-weight:bold}
-.post-time{font-size:12px;color:var(--muted);margin-top:3px}
-.post-menu{margin-left:auto;background:none;color:var(--muted);font-size:20px}
-.post-text{padding:0 14px 12px;white-space:pre-wrap}
-.post-media{
- width:100%;max-height:650px;object-fit:cover;
- background:#000
+.userrow{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
-.post-stats{
- display:flex;justify-content:space-between;
- padding:9px 14px;color:var(--muted);font-size:14px
+.create{
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
-.post-actions{
- display:grid;grid-template-columns:repeat(4,1fr);
- border-top:1px solid var(--border)
+.create input{
+  flex:1;
+  border:0;
+  background:#f0f2f5;
+  padding:12px 16px;
+  border-radius:25px;
 }
-.post-action{
- padding:11px;background:none;color:var(--muted);font-weight:bold
+.dark .create input{
+  background:#3a3b3c;
+  color:#fff;
 }
-.post-action:hover{background:var(--hover)}
-.post-action.active{color:var(--primary)}
-
-.comments{padding:0 14px 12px}
+.posthead{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.posttext{
+  white-space:pre-wrap;
+  margin:12px 0;
+  line-height:1.5;
+}
+.postimg,.postvideo{
+  width:100%;
+  max-height:650px;
+  object-fit:cover;
+  border-radius:10px;
+}
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+  margin-top:10px;
+}
+.dark .actions{
+  border-color:#3e4042;
+}
+.actions button{
+  border:0;
+  background:transparent;
+  padding:11px 4px;
+}
+.actions button:hover{
+  background:#eee;
+}
+.dark .actions button:hover{
+  background:#3a3b3c;
+}
+.commentbox{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.commentbox input{
+  flex:1;
+  border:0;
+  background:#f0f2f5;
+  border-radius:20px;
+  padding:10px 14px;
+}
+.dark .commentbox input{
+  background:#3a3b3c;
+  color:#fff;
+}
 .comment{
- display:flex;gap:8px;margin-top:10px
+  margin-top:8px;
+  padding:8px 12px;
+  border-radius:12px;
+  background:#f0f2f5;
 }
-.comment-body{
- background:var(--bg);border-radius:15px;padding:8px 11px;
- flex:1
+.dark .comment{
+  background:#3a3b3c;
 }
-.comment-name{font-size:13px;font-weight:bold}
-.comment-text{font-size:14px;margin-top:3px}
-.comment-input{
- width:100%;border:0;background:var(--bg);
- border-radius:20px;padding:10px 14px;outline:none;color:var(--text)
+.profilecover{
+  height:230px;
+  background:#1877f2;
+  border-radius:12px 12px 0 0;
+  background-size:cover;
+  background-position:center;
 }
-
-/* SECTION */
-.section-title{
- font-size:22px;font-weight:800;padding:17px 16px 10px
+.profilemain{
+  padding:15px;
+  margin-bottom:15px;
 }
-.section-sub{color:var(--muted);padding:0 16px 15px}
-
-/* GRID */
-.grid{
- display:grid;grid-template-columns:repeat(2,1fr);
- gap:12px;padding:12px
+.profilephoto{
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  border:5px solid #fff;
+  object-fit:cover;
+  margin-top:-70px;
+  background:#ddd;
 }
-.grid3{grid-template-columns:repeat(3,1fr)}
-.tile{
- background:var(--card);border:1px solid var(--border);
- border-radius:12px;overflow:hidden
+.dark .profilephoto{
+  border-color:#242526;
 }
-.tile-img{
- width:100%;height:180px;object-fit:cover;background:#ddd
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
-.tile-body{padding:12px}
-.tile-title{font-weight:bold}
-.tile-meta{font-size:13px;color:var(--muted);margin-top:5px}
-
-/* PROFILE */
-.cover{
- height:280px;background:linear-gradient(135deg,#1877f2,#7b2cff);
- position:relative
+.smallbtn{
+  border:0;
+  padding:9px 14px;
+  border-radius:7px;
+  background:#e4e6eb;
 }
-.cover img{width:100%;height:100%;object-fit:cover}
-.profile-head{
- padding:0 20px 18px;position:relative
+.dark .smallbtn{
+  background:#3a3b3c;
+  color:#fff;
 }
-.profile-avatar{
- width:145px;height:145px;border-radius:50%;
- border:5px solid var(--card);
- margin-top:-72px;object-fit:cover;background:#ddd
-}
-.profile-name{font-size:27px;font-weight:800;margin-top:8px}
-.profile-bio{color:var(--muted);margin:5px 0 12px}
-.profile-actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{
- padding:10px 16px;border-radius:8px;
- background:var(--primary);color:#fff;font-weight:bold
-}
-.btn.secondary{background:var(--bg);color:var(--text)}
-.btn.danger{background:var(--danger)}
-.btn.success{background:var(--success)}
-
-/* REELS */
-.reels-container{
- background:#050505;min-height:600px;
- display:flex;justify-content:center
-}
-.reel{
- width:min(100%,420px);height:650px;
- position:relative;background:#111;overflow:hidden
-}
-.reel video,.reel img{
- width:100%;height:100%;object-fit:cover
-}
-.reel-info{
- position:absolute;left:15px;right:70px;bottom:20px;color:white;
- text-shadow:0 1px 4px #000
-}
-.reel-actions{
- position:absolute;right:12px;bottom:35px;
- display:flex;flex-direction:column;gap:15px
-}
-.reel-btn{
- width:48px;height:48px;border-radius:50%;
- background:rgba(0,0,0,.5);color:#fff;font-size:20px
-}
-
-/* CHAT */
-.chat-layout{
- display:grid;grid-template-columns:260px 1fr;
- height:650px
-}
-.chat-list{border-right:1px solid var(--border);overflow:auto}
-.chat-person{
- display:flex;gap:10px;padding:12px;cursor:pointer
-}
-.chat-person:hover{background:var(--hover)}
-.chat-window{display:flex;flex-direction:column}
-.chat-header{padding:13px;border-bottom:1px solid var(--border);font-weight:bold}
-.messages{flex:1;overflow:auto;padding:15px}
-.msg{
- max-width:70%;padding:10px 13px;border-radius:18px;
- margin:7px 0;background:var(--bg)
-}
-.msg.me{margin-left:auto;background:var(--primary);color:white}
-.chat-compose{
- display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)
-}
-.chat-compose input{
- flex:1;border:0;background:var(--bg);
- border-radius:22px;padding:11px;color:var(--text);outline:none
-}
-
-/* MODAL */
 .modal{
- position:fixed;inset:0;background:rgba(0,0,0,.65);
- z-index:3000;display:flex;align-items:center;justify-content:center;
- padding:15px
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:500;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
 }
-.modal-box{
- width:min(650px,100%);max-height:90vh;overflow:auto;
- background:var(--card);border-radius:14px
+.modal.show{display:flex}
+.modalbox{
+  width:100%;
+  max-width:520px;
+  max-height:90vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  padding:20px;
 }
-.modal-head{
- display:flex;align-items:center;padding:15px;
- border-bottom:1px solid var(--border)
+.dark .modalbox{
+  background:#242526;
 }
-.modal-head h2{margin:0}
-.close{margin-left:auto;background:none;color:var(--muted);font-size:25px}
-.modal-body{padding:15px}
-.form-group{margin-bottom:12px}
-.form-group label{display:block;font-weight:bold;margin-bottom:6px}
-.form-control{
- width:100%;padding:11px;border:1px solid var(--border);
- border-radius:8px;background:var(--card);color:var(--text);outline:none
+.modalbox input,
+.modalbox textarea,
+.modalbox select{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border:1px solid #ccd0d5;
+  border-radius:8px;
 }
-textarea.form-control{min-height:110px;resize:vertical}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* NOTIFICATION */
-.notification{
- display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--border)
+.dark .modalbox input,
+.dark .modalbox textarea,
+.dark .modalbox select{
+  background:#3a3b3c;
+  color:#fff;
+  border-color:#555;
 }
-.notification.unread{background:rgba(24,119,242,.08)}
-.dot{
- width:9px;height:9px;border-radius:50%;background:var(--primary);
- margin-top:7px
+.reactions{
+  display:flex;
+  gap:4px;
+  margin:7px 0;
 }
-
-/* SETTINGS */
-.setting{
- display:flex;align-items:center;justify-content:space-between;
- padding:15px;border-bottom:1px solid var(--border)
+.reactions button{
+  border:0;
+  background:#f0f2f5;
+  border-radius:20px;
+  padding:6px 10px;
 }
-.setting-info strong{display:block}
-.setting-info small{color:var(--muted)}
-.switch{
- width:48px;height:26px;border-radius:20px;background:#aaa;
- position:relative
+.dark .reactions button{
+  background:#3a3b3c;
+  color:#fff;
 }
-.switch:after{
- content:"";width:20px;height:20px;background:#fff;
- border-radius:50%;position:absolute;top:3px;left:3px
+.hidden{display:none!important}
+.status{
+  text-align:center;
+  padding:10px;
 }
-.switch.on{background:var(--primary)}
-.switch.on:after{left:25px}
-
-/* ADMIN */
-.stat-grid{
- display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:15px
+.mobilebar{
+  display:none;
 }
-.stat{
- padding:18px;border-radius:12px;background:var(--bg)
+@media(max-width:950px){
+  .layout{
+    grid-template-columns:70px minmax(0,1fr);
+  }
+  .rightbar{display:none}
+  .sidebar span{display:none}
 }
-.stat b{font-size:25px;display:block}
-.admin-table{width:100%;border-collapse:collapse}
-.admin-table th,.admin-table td{
- padding:10px;border-bottom:1px solid var(--border);text-align:left
-}
-
-/* TOAST */
-.toast{
- position:fixed;right:15px;bottom:20px;z-index:5000;
- background:#222;color:#fff;padding:13px 18px;
- border-radius:10px;display:none;box-shadow:var(--shadow)
-}
-.toast.show{display:block}
-
-/* MOBILE */
-.mobile-nav{
- display:none;position:fixed;bottom:0;left:0;right:0;
- background:var(--card);z-index:1500;
- border-top:1px solid var(--border);
- grid-template-columns:repeat(5,1fr)
-}
-.mobile-nav button{
- background:none;padding:9px;color:var(--muted);font-size:20px
-}
-.mobile-nav small{display:block;font-size:10px}
-
-@media(max-width:1100px){
- .layout{grid-template-columns:210px minmax(0,1fr)}
- .right{display:none}
-}
-@media(max-width:750px){
- .topbar{height:56px}
- .logo{font-size:20px}
- .search{display:none}
- .layout{display:block;padding:8px;padding-bottom:70px}
- .left{display:none}
- .mobile-nav{display:grid}
- .grid,.grid3{grid-template-columns:1fr}
- .form-row{grid-template-columns:1fr}
- .cover{height:200px}
- .profile-avatar{width:110px;height:110px;margin-top:-55px}
- .profile-name{font-size:23px}
- .chat-layout{grid-template-columns:1fr;height:600px}
- .chat-list{display:none}
- .stat-grid{grid-template-columns:repeat(2,1fr)}
- .create-tools{grid-template-columns:repeat(2,1fr)}
+@media(max-width:650px){
+  .topbar{
+    height:55px;
+  }
+  .logo{
+    font-size:20px;
+  }
+  .search{
+    width:130px;
+  }
+  .layout{
+    display:block;
+    padding:8px;
+  }
+  .sidebar{display:none}
+  .mobilebar{
+    display:flex;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:200;
+    background:#fff;
+    box-shadow:0 -2px 6px #0002;
+    justify-content:space-around;
+    padding:7px;
+  }
+  .dark .mobilebar{
+    background:#242526;
+  }
+  .mobilebar button{
+    border:0;
+    background:transparent;
+    font-size:20px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="app" class="app">
+<div id="authScreen" class="auth">
+  <div class="authbox">
+    <h1>My Social App</h1>
 
-<!-- TOP BAR -->
+    <div class="card">
+      <input id="authEmail" type="email" placeholder="Email">
+      <input id="authPassword" type="password" placeholder="Password">
+
+      <button class="primary" onclick="login()">Login</button>
+
+      <br><br>
+
+      <button class="primary green" onclick="signup()">
+        Create New Account
+      </button>
+
+      <div id="authMsg" class="status muted"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+
 <header class="topbar">
   <div class="logo">My Social App</div>
 
-  <input id="globalSearch"
-         class="search"
-         placeholder="🔎 Search My Social App"
-         onkeydown="if(event.key==='Enter')doSearch(this.value)">
+  <input
+    id="searchInput"
+    class="search"
+    placeholder="Search..."
+    onkeydown="if(event.key==='Enter') searchUsers()"
+  >
 
-  <div class="top-actions">
-    <button class="iconbtn" onclick="openPage('home')" title="Home">🏠</button>
-    <button class="iconbtn" onclick="openPage('reels')" title="Reels">🎬</button>
-    <button class="iconbtn" onclick="openPage('messages')" title="Messages">💬</button>
-    <button class="iconbtn" onclick="openPage('notifications')" title="Notifications">🔔</button>
-    <button class="iconbtn" onclick="toggleDark()" title="Theme">🌙</button>
-    <button class="iconbtn" onclick="openPage('profile')" title="Profile">👤</button>
-  </div>
+  <div class="spacer"></div>
+
+  <button class="navbtn" onclick="toggleDark()">🌙</button>
+  <button class="navbtn" onclick="openProfile()">👤</button>
+  <button class="navbtn" onclick="logout()">🚪</button>
 </header>
-
 
 <div class="layout">
 
-<!-- LEFT SIDEBAR -->
-<aside class="left">
-
+<aside class="sidebar">
   <div class="card">
-    <div class="menu-item" onclick="openPage('profile')">
-      <span class="menu-icon">👤</span>
-      <span id="sideName">My Profile</span>
-    </div>
-
-    <div class="menu-item" onclick="openPage('home')">
-      <span class="menu-icon">🏠</span> Home
-    </div>
-
-    <div class="menu-item" onclick="openPage('feeds')">
-      <span class="menu-icon">📰</span> Feeds
-    </div>
-
-    <div class="menu-item" onclick="openPage('friends')">
-      <span class="menu-icon">👥</span> Friends
-    </div>
-
-    <div class="menu-item" onclick="openPage('reels')">
-      <span class="menu-icon">🎬</span> Reels
-    </div>
-
-    <div class="menu-item" onclick="openPage('stories')">
-      <span class="menu-icon">📖</span> Stories
-    </div>
-
-    <div class="menu-item" onclick="openPage('messages')">
-      <span class="menu-icon">💬</span> Messenger
-    </div>
-
-    <div class="menu-item" onclick="openPage('groups')">
-      <span class="menu-icon">👥</span> Groups
-    </div>
-
-    <div class="menu-item" onclick="openPage('pages')">
-      <span class="menu-icon">📄</span> Pages
-    </div>
-
-    <div class="menu-item" onclick="openPage('marketplace')">
-      <span class="menu-icon">🛒</span> Marketplace
-    </div>
-
-    <div class="menu-item" onclick="openPage('events')">
-      <span class="menu-icon">📅</span> Events
-    </div>
-
-    <div class="menu-item" onclick="openPage('saved')">
-      <span class="menu-icon">🔖</span> Saved
-    </div>
-
-    <div class="menu-item" onclick="openPage('live')">
-      <span class="menu-icon">🔴</span> Live
-    </div>
-
-    <div class="menu-item" onclick="openPage('creator')">
-      <span class="menu-icon">💰</span> Creator Dashboard
-    </div>
-
-    <div class="menu-item" onclick="openPage('settings')">
-      <span class="menu-icon">⚙️</span> Settings
-    </div>
-
-    <div class="menu-item" onclick="openPage('admin')">
-      <span class="menu-icon">👑</span> Admin
+    <div class="menu">
+      <button onclick="showHome()">🏠 <span>Home</span></button>
+      <button onclick="openProfile()">👤 <span>Profile</span></button>
+      <button onclick="loadFriends()">👥 <span>Friends</span></button>
+      <button onclick="loadNotifications()">🔔 <span>Notifications</span></button>
+      <button onclick="loadReels()">🎬 <span>Reels</span></button>
+      <button onclick="loadSaved()">🔖 <span>Saved</span></button>
+      <button onclick="showSettings()">⚙️ <span>Settings</span></button>
     </div>
   </div>
-
 </aside>
 
-
-<!-- MAIN -->
 <main id="main"></main>
 
-
-<!-- RIGHT SIDEBAR -->
-<aside class="right">
+<aside class="rightbar">
 
   <div class="card">
-    <div class="section-title">People You May Know</div>
-
-    <div class="chat-person">
-      <div class="avatar">👤</div>
-      <div>
-        <b>Suggested User</b>
-        <small style="display:block;color:var(--muted)">5 mutual friends</small>
-        <button class="btn" style="padding:6px 10px;margin-top:5px"
-                onclick="toast('Friend request sent')">
-          Add Friend
-        </button>
-      </div>
-    </div>
-
-    <div class="chat-person">
-      <div class="avatar">👤</div>
-      <div>
-        <b>New Friend</b>
-        <small style="display:block;color:var(--muted)">Suggested for you</small>
-        <button class="btn" style="padding:6px 10px;margin-top:5px"
-                onclick="toast('Following')">
-          Follow
-        </button>
-      </div>
-    </div>
+    <b>My Social App</b>
+    <p class="muted">Connect with people and share your moments.</p>
   </div>
 
   <div class="card">
-    <div class="section-title">Trending</div>
-    <div class="menu-item">🔥 #Trending</div>
-    <div class="menu-item">📈 Popular Videos</div>
-    <div class="menu-item">🎬 Popular Reels</div>
-    <div class="menu-item">🌎 Explore</div>
+    <b>Quick Actions</b>
+    <br><br>
+    <button class="smallbtn" onclick="openPostModal()">➕ Create Post</button>
+    <br><br>
+    <button class="smallbtn" onclick="openProfile()">👤 My Profile</button>
   </div>
 
 </aside>
 
 </div>
+
+<div class="mobilebar">
+  <button onclick="showHome()">🏠</button>
+  <button onclick="loadReels()">🎬</button>
+  <button onclick="openPostModal()">➕</button>
+  <button onclick="loadNotifications()">🔔</button>
+  <button onclick="openProfile()">👤</button>
 </div>
 
+</div>
 
-<!-- MOBILE NAV -->
-<nav class="mobile-nav">
-  <button onclick="openPage('home')">🏠<small>Home</small></button>
-  <button onclick="openPage('reels')">🎬<small>Reels</small></button>
-  <button onclick="openPage('messages')">💬<small>Chat</small></button>
-  <button onclick="openPage('notifications')">🔔<small>Alerts</small></button>
-  <button onclick="openPage('settings')">☰<small>Menu</small></button>
-</nav>
+<!-- POST MODAL -->
+<div id="postModal" class="modal">
+  <div class="modalbox">
 
+    <h2>Create Post</h2>
 
-<!-- MODAL -->
-<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="modalTitle">Create</h2>
-      <button class="close" onclick="closeModal()">×</button>
+    <textarea
+      id="postText"
+      rows="5"
+      placeholder="What's on your mind?"
+    ></textarea>
+
+    <select id="postPrivacy">
+      <option value="public">🌎 Public</option>
+      <option value="friends">👥 Friends</option>
+      <option value="only_me">🔒 Only Me</option>
+    </select>
+
+    <input id="postLocation" placeholder="📍 Location">
+
+    <input id="postImage" type="file" accept="image/*">
+
+    <input id="postVideo" type="file" accept="video/*">
+
+    <div class="row">
+      <button class="primary" onclick="createPost()">Publish</button>
+      <button class="smallbtn" onclick="closeModal('postModal')">Cancel</button>
     </div>
-    <div id="modalBody" class="modal-body"></div>
+
+    <div id="postMsg" class="status"></div>
+
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal">
+  <div class="modalbox">
 
+    <h2>Edit Profile</h2>
+
+    <input id="editName" placeholder="Name">
+    <input id="editUsername" placeholder="Username">
+    <textarea id="editBio" rows="3" placeholder="Bio"></textarea>
+
+    <label>Profile Photo</label>
+    <input id="profileFile" type="file" accept="image/*">
+
+    <label>Cover Photo</label>
+    <input id="coverFile" type="file" accept="image/*">
+
+    <button class="primary" onclick="saveProfile()">Save Profile</button>
+
+    <br><br>
+
+    <button class="smallbtn" onclick="closeModal('profileModal')">
+      Cancel
+    </button>
+
+    <div id="profileMsg" class="status"></div>
+
+  </div>
+</div>
 
 <script>
-/* ============================================================
-   MY SOCIAL APP
-   MASTER FRONTEND
-   ============================================================ */
-
-/* ------------------------------------------------------------
+/* ============================================
    SUPABASE CONFIG
-   ------------------------------------------------------------ */
+============================================ */
 
 const SUPABASE_URL =
-  localStorage.getItem("SUPABASE_URL") || "";
+  "https://skereuaizdczbvjplisi.supabase.co";
 
-const SUPABASE_ANON_KEY =
-  localStorage.getItem("SUPABASE_ANON_KEY") || "";
+const SUPABASE_KEY =
+  "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-let supabaseClient = null;
+const { createClient } =
+  supabase;
 
-/*
-  Supabase JS will be connected when you add the CDN below
-  and your URL / anon key.
-*/
-function setupSupabase(){
+const db = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
-    console.log("Supabase URL/Key not configured yet.");
-    return;
-  }
-
-  if(typeof window.supabase === "undefined"){
-    console.log("Supabase library not loaded.");
-    return;
-  }
-
-  supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
-  console.log("Supabase connected");
-}
+let currentUser = null;
+let currentProfile = null;
 
 
-/* ------------------------------------------------------------
-   APP STATE
-   ------------------------------------------------------------ */
-
-const state = {
-
-  page:"home",
-
-  user:{
-    id:null,
-    name:"SF Ferdous",
-    username:"ferdous",
-    bio:"Welcome to My Social App",
-    photo:"",
-    cover:""
-  },
-
-  posts:[],
-
-  reels:[],
-
-  stories:[],
-
-  notifications:[],
-
-  messages:[],
-
-  friends:[],
-
-  groups:[],
-
-  pages:[],
-
-  marketplace:[],
-
-  events:[],
-
-  saved:[],
-
-  dark:false,
-
-  feedMode:"home"
-
-};
-
-
-/* ------------------------------------------------------------
+/* ============================================
    HELPERS
-   ------------------------------------------------------------ */
+============================================ */
 
 function $(id){
   return document.getElementById(id);
 }
 
 function escapeHTML(value){
-
   return String(value ?? "")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
@@ -650,3878 +579,1619 @@ function escapeHTML(value){
 }
 
 function toast(message){
-
-  const el=$("toast");
-
-  el.textContent=message;
-
-  el.classList.add("show");
-
-  clearTimeout(window.__toast);
-
-  window.__toast=setTimeout(()=>{
-    el.classList.remove("show");
-  },2500);
+  alert(message);
 }
 
-function closeModal(){
-  $("modal").classList.add("hidden");
+function closeModal(id){
+  $(id).classList.remove("show");
 }
 
-function openModal(title,html){
-
-  $("modalTitle").textContent=title;
-
-  $("modalBody").innerHTML=html;
-
-  $("modal").classList.remove("hidden");
-}
-
-function formatTime(){
-
-  return new Date().toLocaleString("bn-BD",{
-    dateStyle:"short",
-    timeStyle:"short"
-  });
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "dark",
+    document.body.classList.contains("dark")
+  );
 }
 
 
-/* ------------------------------------------------------------
-   PAGE ROUTER
-   ------------------------------------------------------------ */
+/* ============================================
+   AUTH
+============================================ */
 
-function openPage(page){
+async function signup(){
 
-  state.page=page;
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
 
-  renderPage();
+  if(!email || !password){
+    $("authMsg").textContent =
+      "Email এবং Password দিন";
+    return;
+  }
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-}
+  if(password.length < 6){
+    $("authMsg").textContent =
+      "Password কমপক্ষে 6 অক্ষরের হতে হবে";
+    return;
+  }
 
-function renderPage(){
+  $("authMsg").textContent =
+    "Account তৈরি হচ্ছে...";
 
-  const main=$("main");
+  const {data,error} =
+    await db.auth.signUp({
+      email,
+      password
+    });
 
-  switch(state.page){
+  if(error){
+    $("authMsg").textContent =
+      error.message;
+    return;
+  }
 
-    case "home":
-      main.innerHTML=homePage();
-      break;
+  if(data.user){
 
-    case "feeds":
-      main.innerHTML=feedsPage();
-      break;
+    await createInitialProfile(
+      data.user
+    );
 
-    case "reels":
-      main.innerHTML=reelsPage();
-      break;
-
-    case "stories":
-      main.innerHTML=storiesPage();
-      break;
-
-    case "profile":
-      main.innerHTML=profilePage();
-      break;
-
-    case "friends":
-      main.innerHTML=friendsPage();
-      break;
-
-    case "messages":
-      main.innerHTML=messagesPage();
-      break;
-
-    case "notifications":
-      main.innerHTML=notificationsPage();
-      break;
-
-    case "groups":
-      main.innerHTML=groupsPage();
-      break;
-
-    case "pages":
-      main.innerHTML=pagesPage();
-      break;
-
-    case "marketplace":
-      main.innerHTML=marketplacePage();
-      break;
-
-    case "events":
-      main.innerHTML=eventsPage();
-      break;
-
-    case "saved":
-      main.innerHTML=savedPage();
-      break;
-
-    case "live":
-      main.innerHTML=livePage();
-      break;
-
-    case "creator":
-      main.innerHTML=creatorPage();
-      break;
-
-    case "settings":
-      main.innerHTML=settingsPage();
-      break;
-
-    case "admin":
-      main.innerHTML=adminPage();
-      break;
-
-    case "search":
-      main.innerHTML=searchPage();
-      break;
-
-    default:
-      main.innerHTML=homePage();
+    $("authMsg").textContent =
+      "Account তৈরি হয়েছে। এখন Login করুন।";
   }
 }
 
 
-/* ============================================================
+async function login(){
+
+  const email =
+    $("authEmail").value.trim();
+
+  const password =
+    $("authPassword").value;
+
+  if(!email || !password){
+    $("authMsg").textContent =
+      "Email এবং Password দিন";
+    return;
+  }
+
+  $("authMsg").textContent =
+    "Login হচ্ছে...";
+
+  const {data,error} =
+    await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if(error){
+    $("authMsg").textContent =
+      error.message;
+    return;
+  }
+
+  currentUser = data.user;
+
+  await initializeApp();
+}
+
+
+async function logout(){
+
+  await db.auth.signOut();
+
+  currentUser = null;
+  currentProfile = null;
+
+  $("app").classList.add("hidden");
+  $("authScreen").classList.remove("hidden");
+}
+
+
+async function createInitialProfile(user){
+
+  const {data,error} =
+    await db
+      .from("profiles")
+      .insert({
+        id:user.id,
+        name:
+          user.email?.split("@")[0] ||
+          "User",
+        username:
+          "user_" +
+          user.id.substring(0,8),
+        bio:""
+      })
+      .select()
+      .single();
+
+  if(!error){
+    currentProfile = data;
+  }
+}
+
+
+/* ============================================
+   APP INIT
+============================================ */
+
+async function initializeApp(){
+
+  $("authScreen").classList.add("hidden");
+  $("app").classList.remove("hidden");
+
+  if(localStorage.getItem("dark")==="true"){
+    document.body.classList.add("dark");
+  }
+
+  await loadMyProfile();
+  await showHome();
+}
+
+
+async function loadMyProfile(){
+
+  if(!currentUser) return;
+
+  const {data,error} =
+    await db
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  if(!data){
+    await createInitialProfile(currentUser);
+    return;
+  }
+
+  currentProfile = data;
+}
+
+
+/* ============================================
    HOME
-   ============================================================ */
+============================================ */
 
-function homePage(){
+async function showHome(){
 
-  return `
+  $("main").innerHTML = `
+    <div class="card create">
+      <img
+        class="avatar"
+        src="${escapeHTML(
+          currentProfile?.profile_photo ||
+          "https://placehold.co/100x100"
+        )}"
+      >
 
-  ${storiesStrip()}
+      <input
+        placeholder="What's on your mind?"
+        onclick="openPostModal()"
+        readonly
+      >
+    </div>
 
-  <div class="card create-post">
-
-    <div class="create-top">
-
-      <div class="avatar">👤</div>
-
-      <div class="post-input"
-           onclick="openCreatePost()">
-        What's on your mind?
+    <div id="feed">
+      <div class="card status">
+        Loading posts...
       </div>
-
     </div>
-
-    <div class="create-tools">
-
-      <button class="tool"
-              onclick="openCreatePost('video')">
-        🎥 Live/Video
-      </button>
-
-      <button class="tool"
-              onclick="openCreatePost('photo')">
-        🖼️ Photo/Video
-      </button>
-
-      <button class="tool"
-              onclick="openCreateStory()">
-        📖 Story
-      </button>
-
-      <button class="tool"
-              onclick="openCreatePost('feeling')">
-        😊 Feeling/Activity
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Feed
-    </div>
-
-    <div style="display:flex;gap:7px;padding:0 12px 12px;overflow:auto">
-
-      <button class="btn"
-              onclick="changeFeed('home')">
-        Home
-      </button>
-
-      <button class="btn secondary"
-              onclick="changeFeed('friends')">
-        Friends
-      </button>
-
-      <button class="btn secondary"
-              onclick="changeFeed('following')">
-        Following
-      </button>
-
-      <button class="btn secondary"
-              onclick="changeFeed('favorites')">
-        Favorites
-      </button>
-
-      <button class="btn secondary"
-              onclick="changeFeed('trending')">
-        Trending
-      </button>
-
-    </div>
-
-  </div>
-
-
-  ${postsHTML()}
-
   `;
+
+  await loadPosts();
 }
 
 
-/* ============================================================
-   STORIES
-   ============================================================ */
+async function loadPosts(){
 
-function storiesStrip(){
+  const {data,error} =
+    await db
+      .from("posts")
+      .select(`
+        *,
+        profiles:user_id(
+          id,
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .order("created_at",{ascending:false})
+      .limit(50);
 
-  return `
+  if(error){
 
-  <div class="card">
+    console.error(error);
 
-    <div class="story-row">
-
-      <div class="story"
-           onclick="openCreateStory()"
-           style="background:linear-gradient(135deg,#1877f2,#7b2cff)">
-
-        <div style="
-          position:absolute;
-          left:0;right:0;top:0;bottom:0;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-size:40px">
-          ➕
-        </div>
-
-        <span>Create Story</span>
-
+    $("feed").innerHTML = `
+      <div class="card">
+        <b>Posts load হয়নি</b>
+        <p>${escapeHTML(error.message)}</p>
       </div>
+    `;
 
-
-      <div class="story"
-           onclick="viewStory('Your Friend')">
-
-        <div style="
-          width:100%;height:100%;
-          background:linear-gradient(135deg,#ff0066,#ffcc00)">
-        </div>
-
-        <span>Your Friend</span>
-
-      </div>
-
-
-      <div class="story"
-           onclick="viewStory('Creator')">
-
-        <div style="
-          width:100%;height:100%;
-          background:linear-gradient(135deg,#00c6ff,#0072ff)">
-        </div>
-
-        <span>Creator</span>
-
-      </div>
-
-
-      <div class="story"
-           onclick="viewStory('Popular')">
-
-        <div style="
-          width:100%;height:100%;
-          background:linear-gradient(135deg,#7928ca,#ff0080)">
-        </div>
-
-        <span>Popular</span>
-
-      </div>
-
-    </div>
-
-  </div>
-  `;
-}
-
-
-/* ============================================================
-   POSTS
-   ============================================================ */
-
-function postsHTML(){
-
-  if(!state.posts.length){
-
-    return demoPosts();
+    return;
   }
 
-  return state.posts.map(postHTML).join("");
+  if(!data?.length){
+
+    $("feed").innerHTML = `
+      <div class="card status">
+        এখনো কোনো Post নেই। প্রথম Post তুমি করো! 🎉
+      </div>
+    `;
+
+    return;
+  }
+
+  $("feed").innerHTML =
+    data.map(postHTML).join("");
+
+  for(const post of data){
+    await loadPostStats(post.id);
+  }
 }
 
 
-function demoPosts(){
-
-  return `
-
-  ${postHTML({
-    id:"demo1",
-    user:"SF Ferdous",
-    text:"Welcome to My Social App! 🚀",
-    time:"Just now",
-    likes:1,
-    comments:0,
-    shares:0
-  })}
-
-  ${postHTML({
-    id:"demo2",
-    user:"My Social App",
-    text:"এখানে Photo, Video, Reels, Stories, Friends, Groups, Pages, Marketplace এবং আরও অনেক ফিচার থাকবে।",
-    time:"Today",
-    likes:12,
-    comments:3,
-    shares:2
-  })}
-
-  `;
-}
-
+/* ============================================
+   POST HTML
+============================================ */
 
 function postHTML(post){
 
-  return `
-
-  <article class="card" id="post-${escapeHTML(post.id)}">
-
-    <div class="post-head">
-
-      <div class="avatar">👤</div>
-
-      <div>
-
-        <div class="post-user">
-          ${escapeHTML(post.user || "User")}
-        </div>
-
-        <div class="post-time">
-          ${escapeHTML(post.time || formatTime())}
-          · 🌎
-        </div>
-
-      </div>
-
-      <button class="post-menu"
-              onclick="postMenu('${escapeHTML(post.id)}')">
-        ⋯
-      </button>
-
-    </div>
-
-
-    <div class="post-text">
-      ${escapeHTML(post.text || "")}
-    </div>
-
-
-    ${post.image ? `
-      <img class="post-media"
-           src="${escapeHTML(post.image)}"
-           alt="Post">
-    `:""}
-
-
-    ${post.video ? `
-      <video class="post-media"
-             src="${escapeHTML(post.video)}"
-             controls
-             playsinline>
-      </video>
-    `:""}
-
-
-    <div class="post-stats">
-
-      <span>
-        👍 ❤️ ${post.likes || 0}
-      </span>
-
-      <span>
-        ${post.comments || 0} comments ·
-        ${post.shares || 0} shares
-      </span>
-
-    </div>
-
-
-    <div class="post-actions">
-
-      <button class="post-action"
-              onclick="reactPost('${escapeHTML(post.id)}','like')">
-        👍 Like
-      </button>
-
-      <button class="post-action"
-              onclick="openComment('${escapeHTML(post.id)}')">
-        💬 Comment
-      </button>
-
-      <button class="post-action"
-              onclick="sharePost('${escapeHTML(post.id)}')">
-        ↗️ Share
-      </button>
-
-      <button class="post-action"
-              onclick="savePost('${escapeHTML(post.id)}')">
-        🔖 Save
-      </button>
-
-    </div>
-
-
-    <div class="comments">
-
-      <div style="display:flex;gap:8px;margin-top:10px">
-
-        <div class="avatar">👤</div>
-
-        <input class="comment-input"
-               id="comment-${escapeHTML(post.id)}"
-               placeholder="Write a comment..."
-               onkeydown="
-                 if(event.key==='Enter')
-                 addComment('${escapeHTML(post.id)}',this.value)
-               ">
-
-      </div>
-
-    </div>
-
-  </article>
-
-  `;
-}
-
-
-/* ============================================================
-   CREATE POST
-   ============================================================ */
-
-function openCreatePost(type="text"){
-
-  openModal(
-    "Create Post",
-    `
-
-    <div class="form-group">
-
-      <textarea id="newPostText"
-                class="form-control"
-                placeholder="What's on your mind?"></textarea>
-
-    </div>
-
-
-    <div class="form-row">
-
-      <div class="form-group">
-
-        <label>Privacy</label>
-
-        <select id="postPrivacy"
-                class="form-control">
-
-          <option>Public</option>
-          <option>Friends</option>
-          <option>Friends except...</option>
-          <option>Specific friends</option>
-          <option>Only me</option>
-
-        </select>
-
-      </div>
-
-
-      <div class="form-group">
-
-        <label>Feeling</label>
-
-        <select id="postFeeling"
-                class="form-control">
-
-          <option>None</option>
-          <option>😊 Happy</option>
-          <option>❤️ Loved</option>
-          <option>😢 Sad</option>
-          <option>😎 Excited</option>
-          <option>😴 Tired</option>
-
-        </select>
-
-      </div>
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>Location</label>
-
-      <input id="postLocation"
-             class="form-control"
-             placeholder="Add location">
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>Tag people</label>
-
-      <input id="postTags"
-             class="form-control"
-             placeholder="@username">
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>Hashtags</label>
-
-      <input id="postHashtags"
-             class="form-control"
-             placeholder="#social #friends">
-
-    </div>
-
-
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-
-      <button class="btn"
-              onclick="createPost()">
-        Publish
-      </button>
-
-      <button class="btn secondary"
-              onclick="addPollField()">
-        📊 Poll
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Photo upload hook ready')">
-        🖼️ Photo
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Video upload hook ready')">
-        🎥 Video
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('GIF hook ready')">
-        GIF
-      </button>
-
-    </div>
-
-    `
-  );
-}
-
-
-function createPost(){
-
-  const text=$("newPostText").value.trim();
-
-  if(!text){
-    toast("Write something first");
-    return;
+  const profile =
+    post.profiles || {};
+
+  let media = "";
+
+  if(post.image_url){
+    media += `
+      <img
+        class="postimg"
+        src="${escapeHTML(post.image_url)}"
+      >
+    `;
   }
 
-  const post={
-
-    id:"local_"+Date.now(),
-
-    user:state.user.name,
-
-    text,
-
-    time:"Just now",
-
-    likes:0,
-
-    comments:0,
-
-    shares:0,
-
-    privacy:$("postPrivacy").value,
-
-    feeling:$("postFeeling").value,
-
-    location:$("postLocation").value,
-
-    tags:$("postTags").value,
-
-    hashtags:$("postHashtags").value
-
-  };
-
-  state.posts.unshift(post);
-
-  closeModal();
-
-  openPage("home");
-
-  toast("Post published");
-
-  saveLocal();
-}
-
-
-/* ============================================================
-   REACTIONS / COMMENTS / SHARE
-   ============================================================ */
-
-function reactPost(id,type){
-
-  toast(
-    type==="like"
-    ?"👍 Like added"
-    :"Reaction added"
-  );
-
-  /*
-    Supabase:
-    post_likes
-    post_reactions
-  */
-}
-
-
-function addComment(id,text){
-
-  if(!text.trim()) return;
-
-  toast("Comment added");
-
-  const input=$("comment-"+id);
-
-  if(input) input.value="";
-
-  /*
-    Supabase:
-    comments
-    comment_reactions
-    comment_replies
-  */
-}
-
-
-function openComment(id){
-
-  openModal(
-    "Comments",
-    `
-
-    <div class="comments">
-
-      <div class="comment">
-
-        <div class="avatar">👤</div>
-
-        <div class="comment-body">
-
-          <div class="comment-name">
-            Demo User
-          </div>
-
-          <div class="comment-text">
-            Nice post! ❤️
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div style="display:flex;gap:8px;margin-top:15px">
-
-        <input id="modalComment"
-               class="comment-input"
-               placeholder="Write comment...">
-
-        <button class="btn"
-                onclick="
-                  addComment('${id}',$('modalComment').value);
-                  closeModal();
-                ">
-          Send
-        </button>
-
-      </div>
-
-    </div>
-
-    `
-  );
-}
-
-
-function sharePost(id){
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"My Social App",
-      text:"Check this post"
-    }).catch(()=>{});
-
-  }else{
-
-    toast("Share link copied");
-
-  }
-}
-
-
-function savePost(id){
-
-  if(!state.saved.includes(id))
-    state.saved.push(id);
-
-  toast("Saved");
-
-  saveLocal();
-}
-
-
-function postMenu(id){
-
-  openModal(
-    "Post Options",
-    `
-
-    <button class="menu-item"
-            onclick="toast('Edit mode');closeModal()">
-      ✏️ Edit post
-    </button>
-
-    <button class="menu-item"
-            onclick="savePost('${id}');closeModal()">
-      🔖 Save post
-    </button>
-
-    <button class="menu-item"
-            onclick="toast('Notifications enabled');closeModal()">
-      🔔 Turn on notifications
-    </button>
-
-    <button class="menu-item"
-            onclick="toast('Not interested');closeModal()">
-      🚫 Not interested
-    </button>
-
-    <button class="menu-item"
-            onclick="toast('Post reported');closeModal()">
-      🚩 Report post
-    </button>
-
-    <button class="menu-item"
-            onclick="closeModal()">
-      🗑️ Delete
-    </button>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   REELS
-   ============================================================ */
-
-function reelsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🎬 Reels
-    </div>
-
-    <div class="section-sub">
-      Short videos, music, creators and recommendations
-    </div>
-
-    <div style="padding:0 15px 15px;display:flex;gap:8px;flex-wrap:wrap">
-
-      <button class="btn"
-              onclick="openCreateReel()">
-        ➕ Create Reel
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Reels feed refreshed')">
-        🔄 Refresh
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Watch history')">
-        🕘 History
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Saved reels')">
-        🔖 Saved
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="reels-container">
-
-      <div class="reel">
-
-        <div style="
-          width:100%;height:100%;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          color:white;
-          font-size:60px;
-          background:linear-gradient(135deg,#111,#333)">
-          ▶️
-        </div>
-
-        <div class="reel-info">
-
-          <b>@creator</b>
-
-          <div style="margin-top:7px">
-            Welcome to My Social App 🎬
-          </div>
-
-          <div style="margin-top:7px">
-            #reels #video #social
-          </div>
-
-        </div>
-
-
-        <div class="reel-actions">
-
-          <button class="reel-btn"
-                  onclick="toast('❤️ Liked')">
-            ❤️
-          </button>
-
-          <button class="reel-btn"
-                  onclick="openReelComments()">
-            💬
-          </button>
-
-          <button class="reel-btn"
-                  onclick="sharePost('reel1')">
-            ↗️
-          </button>
-
-          <button class="reel-btn"
-                  onclick="toast('Saved')">
-            🔖
-          </button>
-
-          <button class="reel-btn"
-                  onclick="toast('Following creator')">
-            👤
-          </button>
-
-          <button class="reel-btn"
-                  onclick="toast('More options')">
-            ⋯
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openCreateReel(){
-
-  openModal(
-    "Create Reel",
-    `
-
-    <div class="form-group">
-
-      <label>Video URL</label>
-
-      <input id="reelVideo"
-             class="form-control"
-             placeholder="Supabase Storage video URL">
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Caption</label>
-
-      <textarea id="reelCaption"
-                class="form-control"
-                placeholder="Write caption..."></textarea>
-
-    </div>
-
-    <div class="form-row">
-
-      <input class="form-control"
-             placeholder="🎵 Music / Audio">
-
-      <input class="form-control"
-             placeholder="#hashtags">
-
-    </div>
-
-    <br>
-
-    <button class="btn"
-            onclick="createReel()">
-      Publish Reel
-    </button>
-
-    <button class="btn secondary"
-            onclick="toast('Draft saved')">
-      Save Draft
-    </button>
-
-    `
-  );
-}
-
-
-function createReel(){
-
-  const video=$("reelVideo").value.trim();
-  const caption=$("reelCaption").value.trim();
-
-  if(!video){
-
-    toast("Add video URL first");
-
-    return;
+  if(post.video_url){
+    media += `
+      <video
+        class="postvideo"
+        controls
+        playsinline
+        src="${escapeHTML(post.video_url)}"
+      ></video>
+    `;
   }
 
-  state.reels.unshift({
-    id:"reel_"+Date.now(),
-    video,
-    caption,
-    user:state.user.name
-  });
-
-  closeModal();
-
-  toast("Reel added");
-
-  saveLocal();
-}
-
-
-function openReelComments(){
-
-  openModal(
-    "Reel Comments",
-    `
-
-    <div class="comment">
-
-      <div class="avatar">👤</div>
-
-      <div class="comment-body">
-
-        <b>User</b>
-
-        <div>🔥 Great reel!</div>
-
-        <small>❤️ 2 · Reply</small>
-
-      </div>
-
-    </div>
-
-    <br>
-
-    <div style="display:flex;gap:8px">
-
-      <input class="comment-input"
-             placeholder="Write a comment...">
-
-      <button class="btn"
-              onclick="toast('Reel comment added')">
-        Send
-      </button>
-
-    </div>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   STORIES
-   ============================================================ */
-
-function storiesPage(){
-
   return `
+    <article
+      class="card"
+      id="post-${post.id}"
+    >
 
-  <div class="card">
+      <div class="posthead">
 
-    <div class="section-title">
-      📖 Stories
-    </div>
+        <img
+          class="avatar"
+          src="${escapeHTML(
+            profile.profile_photo ||
+            "https://placehold.co/100x100"
+          )}"
+        >
 
-    <div class="section-sub">
-      Create stories with photo, video, text, music, stickers,
-      polls, questions, mentions and locations.
-    </div>
+        <div>
+          <b>
+            ${escapeHTML(
+              profile.name ||
+              "User"
+            )}
+          </b>
 
-    <div style="padding:0 15px 15px">
+          <div class="muted">
+            @${escapeHTML(
+              profile.username || ""
+            )}
+          </div>
 
-      <button class="btn"
-              onclick="openCreateStory()">
-        ➕ Create Story
-      </button>
+          <small class="muted">
+            ${new Date(
+              post.created_at
+            ).toLocaleString()}
+          </small>
+        </div>
 
-    </div>
-
-  </div>
-
-  <div class="grid">
-
-    <div class="tile">
-
-      <div style="
-        height:250px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:60px;
-        background:linear-gradient(135deg,#1877f2,#7b2cff)">
-        📖
       </div>
 
-      <div class="tile-body">
-        <b>Your Story</b>
-        <div class="tile-meta">Add a new story</div>
+      <div class="posttext">
+        ${escapeHTML(post.text || "")}
       </div>
 
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openCreateStory(){
-
-  openModal(
-    "Create Story",
-    `
-
-    <div class="form-group">
-
-      <label>Story Type</label>
-
-      <select id="storyType"
-              class="form-control">
-
-        <option>Text</option>
-        <option>Photo</option>
-        <option>Video</option>
-        <option>Music</option>
-
-      </select>
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Text</label>
-
-      <textarea id="storyText"
-                class="form-control"
-                placeholder="Write your story..."></textarea>
-
-    </div>
-
-    <div class="form-row">
-
-      <input class="form-control"
-             placeholder="🎵 Music">
-
-      <input class="form-control"
-             placeholder="📍 Location">
-
-    </div>
-
-    <br>
-
-    <div style="display:flex;gap:7px;flex-wrap:wrap">
-
-      <button class="btn secondary"
-              onclick="toast('Sticker added')">
-        😊 Sticker
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('GIF added')">
-        GIF
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Poll added')">
-        📊 Poll
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Question added')">
-        ❓ Question
-      </button>
-
-    </div>
-
-    <br>
-
-    <button class="btn"
-            onclick="createStory()">
-      Publish Story
-    </button>
-
-    `
-  );
-}
-
-
-function createStory(){
-
-  const text=$("storyText").value.trim();
-
-  state.stories.unshift({
-    id:"story_"+Date.now(),
-    text
-  });
-
-  closeModal();
-
-  toast("Story published");
-
-  saveLocal();
-}
-
-
-function viewStory(name){
-
-  openModal(
-    name+"'s Story",
-    `
-
-    <div style="
-      height:500px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:linear-gradient(135deg,#1877f2,#7b2cff);
-      color:#fff;
-      font-size:28px;
-      text-align:center">
-      ${escapeHTML(name)}<br>
-      Story
-    </div>
-
-    <div style="padding:12px">
-
-      <input class="comment-input"
-             placeholder="Reply to story...">
-
-    </div>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   PROFILE
-   ============================================================ */
-
-function profilePage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="cover">
+      ${media}
 
       ${
-        state.user.cover
-        ? `<img src="${escapeHTML(state.user.cover)}">`
+        post.location
+        ? `<div class="muted">📍 ${escapeHTML(post.location)}</div>`
         : ""
       }
 
-    </div>
-
-
-    <div class="profile-head">
-
-      <div class="profile-avatar"
-           style="
-             display:flex;
-             align-items:center;
-             justify-content:center;
-             font-size:55px">
-        👤
+      <div id="stats-${post.id}"
+           class="muted"
+           style="margin:8px 0">
+        Loading...
       </div>
 
-      <div class="profile-name">
-        ${escapeHTML(state.user.name)}
-      </div>
+      <div class="actions">
 
-      <div class="profile-bio">
-        ${escapeHTML(state.user.bio)}
-      </div>
-
-      <div style="color:var(--muted);margin-bottom:12px">
-        👥 0 Friends · Followers 0 · Following 0
-      </div>
-
-
-      <div class="profile-actions">
-
-        <button class="btn"
-                onclick="openEditProfile()">
-          ✏️ Edit Profile
+        <button onclick="toggleLike(${post.id})">
+          ❤️ Like
         </button>
 
-        <button class="btn secondary"
-                onclick="toast('Profile link copied')">
-          🔗 Share Profile
+        <button onclick="chooseReaction(${post.id})">
+          😍 Reaction
         </button>
 
-        <button class="btn secondary"
-                onclick="toast('Profile settings')">
-          ⚙️
+        <button onclick="focusComment(${post.id})">
+          💬 Comment
+        </button>
+
+        <button onclick="sharePost(${post.id})">
+          ↗ Share
         </button>
 
       </div>
 
-    </div>
+      <div class="reactions">
+        <button onclick="react(${post.id},'like')">👍</button>
+        <button onclick="react(${post.id},'love')">❤️</button>
+        <button onclick="react(${post.id},'haha')">😂</button>
+        <button onclick="react(${post.id},'wow')">😮</button>
+        <button onclick="react(${post.id},'sad')">😢</button>
+        <button onclick="react(${post.id},'angry')">😡</button>
+      </div>
 
-  </div>
+      <div class="commentbox">
+        <input
+          id="comment-${post.id}"
+          placeholder="Write a comment..."
+        >
+        <button
+          class="smallbtn"
+          onclick="addComment(${post.id})"
+        >
+          Send
+        </button>
+      </div>
 
+      <div id="comments-${post.id}"></div>
 
-  <div class="card">
+      ${
+        currentUser?.id === post.user_id
+        ? `
+          <br>
+          <button
+            class="smallbtn"
+            onclick="deletePost(${post.id})"
+          >
+            🗑️ Delete
+          </button>
+        `
+        : ""
+      }
 
-    <div class="section-title">
-      Profile
-    </div>
-
-    <div style="display:flex;gap:8px;padding:0 15px 15px;overflow:auto">
-
-      <button class="btn">Posts</button>
-      <button class="btn secondary">About</button>
-      <button class="btn secondary">Friends</button>
-      <button class="btn secondary">Photos</button>
-      <button class="btn secondary">Videos</button>
-      <button class="btn secondary">Reels</button>
-      <button class="btn secondary">More</button>
-
-    </div>
-
-  </div>
-
-
-  ${postsHTML()}
-
+    </article>
   `;
+}
+
+
+/* ============================================
+   POST CREATE
+============================================ */
+
+function openPostModal(){
+  $("postModal").classList.add("show");
+}
+
+
+async function createPost(){
+
+  if(!currentUser){
+    toast("Login করুন");
+    return;
+  }
+
+  const text =
+    $("postText").value.trim();
+
+  const privacy =
+    $("postPrivacy").value;
+
+  const location =
+    $("postLocation").value.trim();
+
+  const image =
+    $("postImage").files[0];
+
+  const video =
+    $("postVideo").files[0];
+
+  if(!text && !image && !video){
+    $("postMsg").textContent =
+      "Post-এর মধ্যে কিছু দিন";
+    return;
+  }
+
+  $("postMsg").textContent =
+    "Uploading...";
+
+  let imageUrl = null;
+  let videoUrl = null;
+
+  try{
+
+    if(image){
+
+      const path =
+        `${currentUser.id}/${Date.now()}-${image.name}`;
+
+      const {error} =
+        await db.storage
+          .from("post-images")
+          .upload(path,image,{
+            upsert:false
+          });
+
+      if(error) throw error;
+
+      const {data} =
+        db.storage
+          .from("post-images")
+          .getPublicUrl(path);
+
+      imageUrl =
+        data.publicUrl;
+    }
+
+
+    if(video){
+
+      const path =
+        `${currentUser.id}/${Date.now()}-${video.name}`;
+
+      const {error} =
+        await db.storage
+          .from("media")
+          .upload(path,video,{
+            upsert:false
+          });
+
+      if(error) throw error;
+
+      const {data} =
+        db.storage
+          .from("media")
+          .getPublicUrl(path);
+
+      videoUrl =
+        data.publicUrl;
+    }
+
+
+    const {error} =
+      await db
+        .from("posts")
+        .insert({
+          user_id:currentUser.id,
+          text,
+          image_url:imageUrl,
+          video_url:videoUrl,
+          privacy,
+          location
+        });
+
+    if(error) throw error;
+
+    $("postText").value="";
+    $("postLocation").value="";
+    $("postImage").value="";
+    $("postVideo").value="";
+
+    closeModal("postModal");
+
+    await showHome();
+
+  }catch(error){
+
+    console.error(error);
+
+    $("postMsg").textContent =
+      error.message;
+  }
+}
+
+
+/* ============================================
+   LIKE
+============================================ */
+
+async function toggleLike(postId){
+
+  if(!currentUser){
+    toast("Login করুন");
+    return;
+  }
+
+  const {data} =
+    await db
+      .from("post_likes")
+      .select("id")
+      .eq("post_id",postId)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+  if(data){
+
+    await db
+      .from("post_likes")
+      .delete()
+      .eq("id",data.id);
+
+  }else{
+
+    await db
+      .from("post_likes")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id
+      });
+  }
+
+  await loadPostStats(postId);
+}
+
+
+async function react(postId,reaction){
+
+  if(!currentUser){
+    toast("Login করুন");
+    return;
+  }
+
+  const {data} =
+    await db
+      .from("post_reactions")
+      .select("id,reaction")
+      .eq("post_id",postId)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+  if(data){
+
+    if(data.reaction===reaction){
+
+      await db
+        .from("post_reactions")
+        .delete()
+        .eq("id",data.id);
+
+    }else{
+
+      await db
+        .from("post_reactions")
+        .update({reaction})
+        .eq("id",data.id);
+    }
+
+  }else{
+
+    await db
+      .from("post_reactions")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id,
+        reaction
+      });
+  }
+
+  await loadPostStats(postId);
+}
+
+
+function chooseReaction(postId){
+  const reaction =
+    prompt(
+      "Reaction লিখুন: like / love / haha / wow / sad / angry"
+    );
+
+  if(
+    ["like","love","haha","wow","sad","angry"]
+      .includes((reaction||"").toLowerCase())
+  ){
+    react(postId,reaction.toLowerCase());
+  }
+}
+
+
+/* ============================================
+   POST STATS
+============================================ */
+
+async function loadPostStats(postId){
+
+  const likes =
+    await db
+      .from("post_likes")
+      .select("id",{count:"exact",head:true})
+      .eq("post_id",postId);
+
+  const reactions =
+    await db
+      .from("post_reactions")
+      .select("id,reaction")
+      .eq("post_id",postId);
+
+  const comments =
+    await db
+      .from("comments")
+      .select("id",{count:"exact",head:true})
+      .eq("post_id",postId);
+
+  const reactionCount =
+    reactions.data?.length || 0;
+
+  const text =
+    `❤️ ${likes.count || 0}  •  😍 ${reactionCount}  •  💬 ${comments.count || 0}`;
+
+  const el =
+    $(`stats-${postId}`);
+
+  if(el){
+    el.textContent=text;
+  }
+
+  await loadComments(postId);
+}
+
+
+/* ============================================
+   COMMENTS
+============================================ */
+
+function focusComment(postId){
+  const input =
+    $(`comment-${postId}`);
+
+  if(input){
+    input.focus();
+  }
+}
+
+
+async function addComment(postId){
+
+  if(!currentUser){
+    toast("Login করুন");
+    return;
+  }
+
+  const input =
+    $(`comment-${postId}`);
+
+  const text =
+    input.value.trim();
+
+  if(!text) return;
+
+  const {error} =
+    await db
+      .from("comments")
+      .insert({
+        post_id:postId,
+        user_id:currentUser.id,
+        text
+      });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  input.value="";
+
+  await loadPostStats(postId);
+}
+
+
+async function loadComments(postId){
+
+  const {data,error} =
+    await db
+      .from("comments")
+      .select(`
+        *,
+        profiles:user_id(
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .eq("post_id",postId)
+      .order("created_at",{ascending:true})
+      .limit(20);
+
+  if(error) return;
+
+  const box =
+    $(`comments-${postId}`);
+
+  if(!box) return;
+
+  box.innerHTML =
+    (data||[]).map(c=>`
+
+      <div class="comment">
+
+        <b>
+          ${escapeHTML(
+            c.profiles?.name ||
+            "User"
+          )}
+        </b>
+
+        <div>
+          ${escapeHTML(c.text)}
+        </div>
+
+      </div>
+
+    `).join("");
+}
+
+
+/* ============================================
+   DELETE POST
+============================================ */
+
+async function deletePost(postId){
+
+  if(!confirm("এই Post Delete করবেন?")){
+    return;
+  }
+
+  const {error} =
+    await db
+      .from("posts")
+      .delete()
+      .eq("id",postId)
+      .eq("user_id",currentUser.id);
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  await showHome();
+}
+
+
+/* ============================================
+   SHARE
+============================================ */
+
+async function sharePost(postId){
+
+  const url =
+    location.href.split("#")[0] +
+    "#post-" +
+    postId;
+
+  if(navigator.share){
+
+    await navigator.share({
+      title:"My Social App",
+      text:"Check this post",
+      url
+    });
+
+  }else{
+
+    await navigator.clipboard.writeText(url);
+
+    toast("Post link copied");
+  }
+}
+
+
+/* ============================================
+   PROFILE
+============================================ */
+
+async function openProfile(){
+
+  if(!currentUser) return;
+
+  await loadMyProfile();
+
+  const p =
+    currentProfile || {};
+
+  $("main").innerHTML = `
+
+    <div class="card">
+
+      <div
+        class="profilecover"
+        style="
+          background-image:url('${escapeHTML(
+            p.cover_photo ||
+            "https://placehold.co/1200x300"
+          )}')
+        "
+      ></div>
+
+      <div class="profilemain">
+
+        <img
+          class="profilephoto"
+          src="${escapeHTML(
+            p.profile_photo ||
+            "https://placehold.co/300x300"
+          )}"
+        >
+
+        <h2>
+          ${escapeHTML(
+            p.name || "User"
+          )}
+        </h2>
+
+        <div class="muted">
+          @${escapeHTML(
+            p.username || ""
+          )}
+        </div>
+
+        <p>
+          ${escapeHTML(
+            p.bio || ""
+          )}
+        </p>
+
+        <div class="row">
+
+          <button
+            class="smallbtn"
+            onclick="openEditProfile()"
+          >
+            ✏️ Edit Profile
+          </button>
+
+          <button
+            class="smallbtn"
+            onclick="loadFollowers()"
+          >
+            👥 Followers
+          </button>
+
+          <button
+            class="smallbtn"
+            onclick="loadFollowing()"
+          >
+            ➕ Following
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h3>My Posts</h3>
+    </div>
+
+    <div id="profilePosts"></div>
+  `;
+
+  const {data} =
+    await db
+      .from("posts")
+      .select(`
+        *,
+        profiles:user_id(
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .eq("user_id",currentUser.id)
+      .order("created_at",{ascending:false});
+
+  $("profilePosts").innerHTML =
+    (data||[]).map(postHTML).join("");
+
+  for(const post of data||[]){
+    await loadPostStats(post.id);
+  }
 }
 
 
 function openEditProfile(){
 
-  openModal(
-    "Edit Profile",
-    `
+  $("editName").value =
+    currentProfile?.name || "";
 
-    <div class="form-group">
+  $("editUsername").value =
+    currentProfile?.username || "";
 
-      <label>Name</label>
+  $("editBio").value =
+    currentProfile?.bio || "";
 
-      <input id="editName"
-             class="form-control"
-             value="${escapeHTML(state.user.name)}">
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Username</label>
-
-      <input id="editUsername"
-             class="form-control"
-             value="${escapeHTML(state.user.username)}">
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Bio</label>
-
-      <textarea id="editBio"
-                class="form-control">${escapeHTML(state.user.bio)}</textarea>
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Profile Photo URL</label>
-
-      <input id="editPhoto"
-             class="form-control"
-             value="${escapeHTML(state.user.photo)}">
-
-    </div>
-
-    <div class="form-group">
-
-      <label>Cover Photo URL</label>
-
-      <input id="editCover"
-             class="form-control"
-             value="${escapeHTML(state.user.cover)}">
-
-    </div>
-
-    <button class="btn"
-            onclick="saveProfile()">
-      Save Changes
-    </button>
-
-    `
-  );
+  $("profileModal").classList.add("show");
 }
 
 
-function saveProfile(){
+async function uploadImage(bucket,file){
 
-  state.user.name=$("editName").value;
-  state.user.username=$("editUsername").value;
-  state.user.bio=$("editBio").value;
-  state.user.photo=$("editPhoto").value;
-  state.user.cover=$("editCover").value;
+  if(!file) return null;
 
-  $("sideName").textContent=state.user.name;
+  const path =
+    `${currentUser.id}/${Date.now()}-${file.name}`;
 
-  closeModal();
+  const {error} =
+    await db.storage
+      .from(bucket)
+      .upload(path,file,{
+        upsert:false
+      });
 
-  renderPage();
+  if(error) throw error;
 
-  saveLocal();
+  const {data} =
+    db.storage
+      .from(bucket)
+      .getPublicUrl(path);
 
-  toast("Profile updated");
+  return data.publicUrl;
 }
 
 
-/* ============================================================
-   FRIENDS
-   ============================================================ */
-
-function friendsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      👥 Friends
-    </div>
-
-    <div style="padding:0 15px 15px;display:flex;gap:8px;flex-wrap:wrap">
-
-      <button class="btn">All Friends</button>
-      <button class="btn secondary">Friend Requests</button>
-      <button class="btn secondary">Suggestions</button>
-      <button class="btn secondary">Birthdays</button>
-      <button class="btn secondary">Custom Lists</button>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid">
-
-    ${friendCard("Rahim")}
-    ${friendCard("Karim")}
-    ${friendCard("Sakib")}
-    ${friendCard("Nusrat")}
-    ${friendCard("Friend")}
-    ${friendCard("Creator")}
-
-  </div>
-
-  `;
-}
-
-
-function friendCard(name){
-
-  return `
-
-  <div class="tile">
-
-    <div style="
-      height:170px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:var(--bg);
-      font-size:65px">
-      👤
-    </div>
-
-    <div class="tile-body">
-
-      <div class="tile-title">
-        ${name}
-      </div>
-
-      <div class="tile-meta">
-        5 mutual friends
-      </div>
-
-      <div style="display:flex;gap:6px;margin-top:10px">
-
-        <button class="btn"
-                onclick="toast('Friend request sent')">
-          Add Friend
-        </button>
-
-        <button class="btn secondary"
-                onclick="toast('Removed')">
-          Remove
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-/* ============================================================
-   MESSAGES
-   ============================================================ */
-
-function messagesPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="chat-layout">
-
-      <div class="chat-list">
-
-        <div style="padding:12px;font-weight:bold">
-          Messenger
-        </div>
-
-        <input class="form-control"
-               style="margin:0 10px;width:calc(100% - 20px)"
-               placeholder="Search chats">
-
-        ${chatPerson("Rahim")}
-        ${chatPerson("Karim")}
-        ${chatPerson("Creator")}
-        ${chatPerson("Group Chat")}
-
-      </div>
-
-
-      <div class="chat-window">
-
-        <div class="chat-header">
-          💬 Select a conversation
-        </div>
-
-        <div class="messages">
-
-          <div class="msg">
-            Hello 👋
-          </div>
-
-          <div class="msg me">
-            Hi! Welcome to My Social App.
-          </div>
-
-        </div>
-
-        <div class="chat-compose">
-
-          <button class="iconbtn">😊</button>
-          <button class="iconbtn">🖼️</button>
-          <button class="iconbtn">🎤</button>
-
-          <input placeholder="Type a message..."
-                 id="messageInput">
-
-          <button class="btn"
-                  onclick="sendMessage()">
-            Send
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function chatPerson(name){
-
-  return `
-
-  <div class="chat-person"
-       onclick="openChat('${name}')">
-
-    <div class="avatar">👤</div>
-
-    <div>
-      <b>${name}</b>
-      <small style="display:block;color:var(--muted)">
-        Active now
-      </small>
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openChat(name){
-
-  toast("Opening chat with "+name);
-
-  /*
-    Supabase:
-    conversations
-    conversation_members
-    messages
-    message_reactions
-    message_attachments
-  */
-}
-
-
-function sendMessage(){
-
-  const input=$("messageInput");
-
-  if(!input.value.trim()) return;
-
-  toast("Message sent");
-
-  input.value="";
-}
-
-
-/* ============================================================
-   NOTIFICATIONS
-   ============================================================ */
-
-function notificationsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🔔 Notifications
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <button class="btn"
-              onclick="markAllRead()">
-        Mark all as read
-      </button>
-
-    </div>
-
-    ${notification("❤️","Someone liked your post")}
-    ${notification("💬","Someone commented on your post")}
-    ${notification("👥","You have a new friend request")}
-    ${notification("🎬","A creator you follow posted a reel")}
-    ${notification("📅","You have an upcoming event")}
-    ${notification("💰","Creator earnings updated")}
-
-  </div>
-
-  `;
-}
-
-
-function notification(icon,text){
-
-  return `
-
-  <div class="notification unread">
-
-    <div style="font-size:25px">
-      ${icon}
-    </div>
-
-    <div style="flex:1">
-      ${text}
-      <small style="display:block;color:var(--muted)">
-        Recently
-      </small>
-    </div>
-
-    <div class="dot"></div>
-
-  </div>
-
-  `;
-}
-
-
-function markAllRead(){
-
-  toast("All notifications marked as read");
-}
-
-
-/* ============================================================
-   GROUPS
-   ============================================================ */
-
-function groupsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      👥 Groups
-    </div>
-
-    <div class="section-sub">
-      Discover, create and manage communities.
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <button class="btn"
-              onclick="openCreateGroup()">
-        ➕ Create Group
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid">
-
-    ${groupCard("My Friends Group","Public")}
-    ${groupCard("Creators Bangladesh","Public")}
-    ${groupCard("Technology","Private")}
-    ${groupCard("Video Creators","Public")}
-
-  </div>
-
-  `;
-}
-
-
-function groupCard(name,privacy){
-
-  return `
-
-  <div class="tile">
-
-    <div style="
-      height:150px;
-      background:linear-gradient(135deg,#1877f2,#7b2cff);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:55px">
-      👥
-    </div>
-
-    <div class="tile-body">
-
-      <div class="tile-title">${name}</div>
-
-      <div class="tile-meta">
-        ${privacy} · 1.2K members
-      </div>
-
-      <button class="btn"
-              style="margin-top:10px"
-              onclick="toast('Joined group')">
-        Join
-      </button>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openCreateGroup(){
-
-  openModal(
-    "Create Group",
-    `
-
-    <div class="form-group">
-      <label>Group Name</label>
-      <input class="form-control"
-             placeholder="Group name">
-    </div>
-
-    <div class="form-group">
-      <label>Privacy</label>
-      <select class="form-control">
-        <option>Public</option>
-        <option>Private</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea class="form-control"></textarea>
-    </div>
-
-    <button class="btn"
-            onclick="closeModal();toast('Group created')">
-      Create Group
-    </button>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   PAGES
-   ============================================================ */
-
-function pagesPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      📄 Pages
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <button class="btn"
-              onclick="openCreatePage()">
-        ➕ Create Page
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid">
-
-    ${pageCard("SF Media")}
-    ${pageCard("My Social App")}
-    ${pageCard("Creator Hub")}
-    ${pageCard("Technology News")}
-
-  </div>
-
-  `;
-}
-
-
-function pageCard(name){
-
-  return `
-
-  <div class="tile">
-
-    <div style="
-      height:150px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:55px;
-      background:var(--bg)">
-      📄
-    </div>
-
-    <div class="tile-body">
-
-      <div class="tile-title">${name}</div>
-
-      <div class="tile-meta">
-        10K followers
-      </div>
-
-      <button class="btn"
-              style="margin-top:10px"
-              onclick="toast('Following page')">
-        Follow
-      </button>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openCreatePage(){
-
-  openModal(
-    "Create Page",
-    `
-
-    <div class="form-group">
-      <label>Page Name</label>
-      <input class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label>Category</label>
-      <input class="form-control"
-             placeholder="Business, Creator, Media...">
-    </div>
-
-    <div class="form-group">
-      <label>Bio</label>
-      <textarea class="form-control"></textarea>
-    </div>
-
-    <button class="btn"
-            onclick="closeModal();toast('Page created')">
-      Create Page
-    </button>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   MARKETPLACE
-   ============================================================ */
-
-function marketplacePage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🛒 Marketplace
-    </div>
-
-    <div style="padding:0 15px 15px;display:flex;gap:8px">
-
-      <input class="form-control"
-             placeholder="Search Marketplace">
-
-      <button class="btn"
-              onclick="openListing()">
-        Sell
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid">
-
-    ${productCard("Smartphone","৳25,000")}
-    ${productCard("Laptop","৳55,000")}
-    ${productCard("Camera","৳40,000")}
-    ${productCard("Headphone","৳3,500")}
-    ${productCard("Motorbike","৳150,000")}
-    ${productCard("Furniture","৳20,000")}
-
-  </div>
-
-  `;
-}
-
-
-function productCard(name,price){
-
-  return `
-
-  <div class="tile">
-
-    <div style="
-      height:190px;
-      background:var(--bg);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:65px">
-      🛍️
-    </div>
-
-    <div class="tile-body">
-
-      <div class="tile-title">${name}</div>
-
-      <div style="
-        font-size:18px;
-        font-weight:bold;
-        margin-top:7px">
-        ${price}
-      </div>
-
-      <div class="tile-meta">
-        Mymensingh · Used/New
-      </div>
-
-      <button class="btn"
-              style="margin-top:10px"
-              onclick="toast('Opening seller chat')">
-        Message Seller
-      </button>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openListing(){
-
-  openModal(
-    "Create Marketplace Listing",
-    `
-
-    <div class="form-group">
-      <label>Title</label>
-      <input class="form-control">
-    </div>
-
-    <div class="form-row">
-      <input class="form-control" placeholder="Price">
-      <input class="form-control" placeholder="Category">
-    </div>
-
-    <br>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea class="form-control"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Location</label>
-      <input class="form-control">
-    </div>
-
-    <button class="btn"
-            onclick="closeModal();toast('Listing created')">
-      Publish Listing
-    </button>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   EVENTS
-   ============================================================ */
-
-function eventsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      📅 Events
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <button class="btn"
-              onclick="openCreateEvent()">
-        ➕ Create Event
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid">
-
-    ${eventCard("Creator Meetup","20 October 2026")}
-    ${eventCard("Technology Event","5 November 2026")}
-    ${eventCard("Community Event","15 November 2026")}
-    ${eventCard("Live Workshop","1 December 2026")}
-
-  </div>
-
-  `;
-}
-
-
-function eventCard(name,date){
-
-  return `
-
-  <div class="tile">
-
-    <div style="
-      height:150px;
-      background:linear-gradient(135deg,#1877f2,#00c6ff);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:45px">
-      📅
-    </div>
-
-    <div class="tile-body">
-
-      <div class="tile-title">
-        ${name}
-      </div>
-
-      <div class="tile-meta">
-        ${date}
-      </div>
-
-      <button class="btn"
-              style="margin-top:10px"
-              onclick="toast('Interested')">
-        Interested
-      </button>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function openCreateEvent(){
-
-  openModal(
-    "Create Event",
-    `
-
-    <div class="form-group">
-      <label>Event Name</label>
-      <input class="form-control">
-    </div>
-
-    <div class="form-row">
-      <input class="form-control" type="date">
-      <input class="form-control" type="time">
-    </div>
-
-    <br>
-
-    <input class="form-control"
-           placeholder="Location">
-
-    <br>
-
-    <textarea class="form-control"
-              placeholder="Description"></textarea>
-
-    <br>
-
-    <button class="btn"
-            onclick="closeModal();toast('Event created')">
-      Create Event
-    </button>
-
-    `
-  );
-}
-
-
-/* ============================================================
-   SAVED
-   ============================================================ */
-
-function savedPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🔖 Saved
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <button class="btn">All</button>
-      <button class="btn secondary">Posts</button>
-      <button class="btn secondary">Reels</button>
-      <button class="btn secondary">Videos</button>
-      <button class="btn secondary">Marketplace</button>
-
-    </div>
-
-  </div>
-
-  <div class="card">
-
-    <div class="section-sub">
-      ${state.saved.length
-        ? state.saved.length+" saved items"
-        : "No saved items yet."}
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-/* ============================================================
-   LIVE
-   ============================================================ */
-
-function livePage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🔴 Live Video
-    </div>
-
-    <div class="section-sub">
-      Go live with camera and microphone.
-    </div>
-
-    <div style="padding:0 15px 15px;display:flex;gap:8px;flex-wrap:wrap">
-
-      <button class="btn"
-              onclick="startLive()">
-        🔴 Go Live
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Camera settings')">
-        📷 Camera
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Microphone settings')">
-        🎤 Microphone
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div style="
-      height:400px;
-      background:#050505;
-      color:white;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:55px">
-      📹
-    </div>
-
-    <div style="padding:15px">
-
-      <b>Live Preview</b>
-
-      <div style="color:var(--muted);margin-top:6px">
-        Viewer count · Comments · Reactions · Moderators
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function startLive(){
-
-  toast("Live system ready — camera/WebRTC backend will be connected later");
-
-}
-
-
-/* ============================================================
-   CREATOR DASHBOARD
-   ============================================================ */
-
-function creatorPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      💰 Creator Dashboard
-    </div>
-
-    <div class="section-sub">
-      Content performance, earnings and monetization.
-    </div>
-
-  </div>
-
-
-  <div class="stat-grid">
-
-    ${stat("Followers","0")}
-    ${stat("Views","0")}
-    ${stat("Engagement","0")}
-    ${stat("Earnings","৳0")}
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Monetization
-    </div>
-
-    ${settingRow(
-      "Professional Mode",
-      "Creator tools and analytics",
-      true
-    )}
-
-    ${settingRow(
-      "Ads Revenue",
-      "Content monetization",
-      false
-    )}
-
-    ${settingRow(
-      "Stars",
-      "Fan support",
-      false
-    )}
-
-    ${settingRow(
-      "Subscriptions",
-      "Monthly supporter subscriptions",
-      false
-    )}
-
-    ${settingRow(
-      "Gifts",
-      "Creator gifts",
-      false
-    )}
-
-    ${settingRow(
-      "Brand Collaborations",
-      "Sponsored content tools",
-      false
-    )}
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Analytics
-    </div>
-
-    <div class="grid">
-
-      <div class="tile">
-        <div class="tile-body">
-          <b>Reach</b>
-          <div style="font-size:30px;margin-top:10px">0</div>
-        </div>
-      </div>
-
-      <div class="tile">
-        <div class="tile-body">
-          <b>Watch Time</b>
-          <div style="font-size:30px;margin-top:10px">0</div>
-        </div>
-      </div>
-
-      <div class="tile">
-        <div class="tile-body">
-          <b>Likes</b>
-          <div style="font-size:30px;margin-top:10px">0</div>
-        </div>
-      </div>
-
-      <div class="tile">
-        <div class="tile-body">
-          <b>Shares</b>
-          <div style="font-size:30px;margin-top:10px">0</div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function stat(title,value){
-
-  return `
-
-  <div class="stat">
-    <span>${title}</span>
-    <b>${value}</b>
-    <small style="color:var(--muted)">
-      Last 28 days
-    </small>
-  </div>
-
-  `;
-}
-
-
-/* ============================================================
-   SETTINGS
-   ============================================================ */
-
-function settingsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      ⚙️ Settings & Privacy
-    </div>
-
-    ${settingRow(
-      "Account",
-      "Name, username, email and phone",
-      false,
-      "openAccountSettings()"
-    )}
-
-    ${settingRow(
-      "Privacy",
-      "Control who can see your content",
-      false,
-      "openPrivacySettings()"
-    )}
-
-    ${settingRow(
-      "Security",
-      "Password, sessions and login security",
-      false,
-      "openSecuritySettings()"
-    )}
-
-    ${settingRow(
-      "Notifications",
-      "Notification preferences",
-      false,
-      "openNotificationSettings()"
-    )}
-
-    ${settingRow(
-      "Blocked users",
-      "Manage blocked accounts",
-      false,
-      "toast('Blocked users')"
-    )}
-
-    ${settingRow(
-      "Tagging & Mentions",
-      "Control tags and mentions",
-      false,
-      "toast('Tagging settings')"
-    )}
-
-    ${settingRow(
-      "Story Privacy",
-      "Control story audience",
-      false,
-      "toast('Story privacy')"
-    )}
-
-    ${settingRow(
-      "Download Your Data",
-      "Export account information",
-      false,
-      "downloadData()"
-    )}
-
-    ${settingRow(
-      "Dark Mode",
-      "Use dark appearance",
-      state.dark,
-      "toggleDark()"
-    )}
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Account Management
-    </div>
-
-    <div style="padding:15px;display:flex;gap:8px;flex-wrap:wrap">
-
-      <button class="btn secondary"
-              onclick="logout()">
-        🚪 Logout
-      </button>
-
-      <button class="btn secondary"
-              onclick="toast('Logout from all devices')">
-        🔐 Logout All Devices
-      </button>
-
-      <button class="btn danger"
-              onclick="confirmDelete()">
-        🗑️ Delete Account
-      </button>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-function settingRow(title,description,on=false,action=""){
-
-  return `
-
-  <div class="setting"
-       ${action ? `onclick="${action}" style="cursor:pointer"`:""}>
-
-    <div class="setting-info">
-
-      <strong>${title}</strong>
-
-      <small>${description}</small>
-
-    </div>
-
-    ${
-      action
-      ? `<span>›</span>`
-      : `<div class="switch ${on?"on":""}"></div>`
-    }
-
-  </div>
-
-  `;
-}
-
-
-function toggleDark(){
-
-  state.dark=!state.dark;
-
-  document.body.classList.toggle("dark",state.dark);
-
-  localStorage.setItem(
-    "darkMode",
-    state.dark ? "1":"0"
-  );
-
-  renderPage();
-}
-
-
-function openAccountSettings(){
-
-  openModal(
-    "Account Settings",
-    `
-
-    <div class="form-group">
-      <label>Email</label>
-      <input class="form-control"
-             type="email"
-             placeholder="Email">
-    </div>
-
-    <div class="form-group">
-      <label>Phone</label>
-      <input class="form-control"
-             placeholder="+880">
-    </div>
-
-    <button class="btn"
-            onclick="closeModal();toast('Account settings saved')">
-      Save
-    </button>
-
-    `
-  );
-}
-
-
-function openPrivacySettings(){
-
-  openModal(
-    "Privacy",
-    `
-
-    ${settingRow(
-      "Profile visibility",
-      "Who can see your profile",
-      false
-    )}
-
-    ${settingRow(
-      "Friend requests",
-      "Who can send requests",
-      false
-    )}
-
-    ${settingRow(
-      "Search visibility",
-      "Allow people to find you",
-      true
-    )}
-
-    ${settingRow(
-      "Online status",
-      "Show when you're active",
-      true
-    )}
-
-    `
-  );
-}
-
-
-function openSecuritySettings(){
-
-  openModal(
-    "Security",
-    `
-
-    <button class="menu-item">
-      🔑 Change Password
-    </button>
-
-    <button class="menu-item">
-      🔐 Two-Factor Authentication
-    </button>
-
-    <button class="menu-item">
-      🔑 Passkey
-    </button>
-
-    <button class="menu-item">
-      📱 Login Sessions
-    </button>
-
-    <button class="menu-item">
-      🚪 Logout All Devices
-    </button>
-
-    `
-  );
-}
-
-
-function openNotificationSettings(){
-
-  openModal(
-    "Notification Settings",
-    `
-
-    ${settingRow(
-      "Likes and reactions",
-      "Notify me about reactions",
-      true
-    )}
-
-    ${settingRow(
-      "Comments",
-      "Notify me about comments",
-      true
-    )}
-
-    ${settingRow(
-      "Friend requests",
-      "Notify me about requests",
-      true
-    )}
-
-    ${settingRow(
-      "Messages",
-      "Message notifications",
-      true
-    )}
-
-    ${settingRow(
-      "Reels",
-      "Creator/reel notifications",
-      true
-    )}
-
-    `
-  );
-}
-
-
-function downloadData(){
-
-  const data=JSON.stringify(state,null,2);
-
-  const blob=new Blob([data],{
-    type:"application/json"
-  });
-
-  const url=URL.createObjectURL(blob);
-
-  const a=document.createElement("a");
-
-  a.href=url;
-  a.download="my-social-app-data.json";
-
-  a.click();
-
-  URL.revokeObjectURL(url);
-
-  toast("Data downloaded");
-}
-
-
-function confirmDelete(){
-
-  if(confirm("Delete account? This action cannot be undone.")){
-
-    toast("Delete-account workflow ready");
-
-  }
-}
-
-
-function logout(){
-
-  state.user.id=null;
-
-  toast("Logged out");
-
-  /*
-    Supabase:
-    supabase.auth.signOut()
-  */
-}
-
-
-/* ============================================================
-   ADMIN PANEL
-   ============================================================ */
-
-function adminPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      👑 Admin Dashboard
-    </div>
-
-    <div class="section-sub">
-      Users, posts, reports, moderation, pages, groups,
-      monetization and system controls.
-    </div>
-
-  </div>
-
-
-  <div class="stat-grid">
-
-    ${stat("Users","0")}
-    ${stat("Posts","0")}
-    ${stat("Reels","0")}
-    ${stat("Reports","0")}
-    ${stat("Groups","0")}
-    ${stat("Pages","0")}
-    ${stat("Listings","0")}
-    ${stat("Revenue","৳0")}
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Admin Tools
-    </div>
-
-    <div class="grid">
-
-      ${adminTile("👥","Users","Manage users")}
-      ${adminTile("📝","Posts","Manage posts")}
-      ${adminTile("🎬","Reels","Manage reels")}
-      ${adminTile("📖","Stories","Manage stories")}
-      ${adminTile("🚩","Reports","Review reports")}
-      ${adminTile("🛡️","Moderation","Moderation actions")}
-      ${adminTile("📄","Pages","Manage pages")}
-      ${adminTile("👥","Groups","Manage groups")}
-      ${adminTile("🛒","Marketplace","Review listings")}
-      ${adminTile("💰","Monetization","Creator earnings")}
-      ${adminTile("📊","Analytics","System analytics")}
-      ${adminTile("⚙️","App Settings","System settings")}
-      ${adminTile("📜","Audit Logs","Admin activity")}
-      ${adminTile("🔐","Roles","Permissions")}
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Reports
-    </div>
-
-    <table class="admin-table">
-
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Reason</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <tr>
-          <td>Post</td>
-          <td>Spam</td>
-          <td>Pending</td>
-          <td>
-            <button class="btn"
-                    onclick="toast('Report reviewed')">
-              Review
-            </button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>User</td>
-          <td>Other</td>
-          <td>Pending</td>
-          <td>
-            <button class="btn"
-                    onclick="toast('User reviewed')">
-              Review
-            </button>
-          </td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-  `;
-}
-
-
-function adminTile(icon,title,desc){
-
-  return `
-
-  <div class="tile"
-       onclick="toast('${title} module')"
-       style="cursor:pointer">
-
-    <div class="tile-body">
-
-      <div style="font-size:35px">
-        ${icon}
-      </div>
-
-      <div class="tile-title">
-        ${title}
-      </div>
-
-      <div class="tile-meta">
-        ${desc}
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-/* ============================================================
-   SEARCH
-   ============================================================ */
-
-function doSearch(query){
-
-  query=query.trim();
-
-  if(!query){
-
-    toast("Type something to search");
-
-    return;
-  }
-
-  localStorage.setItem(
-    "lastSearch",
-    query
-  );
-
-  openPage("search");
-
-}
-
-
-function searchPage(){
-
-  const query=
-    localStorage.getItem("lastSearch") || "";
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      🔎 Search
-    </div>
-
-    <div style="padding:0 15px 15px">
-
-      <div style="display:flex;gap:8px">
-
-        <input id="searchPageInput"
-               class="form-control"
-               value="${escapeHTML(query)}"
-               placeholder="Search...">
-
-        <button class="btn"
-                onclick="
-                  doSearch($('searchPageInput').value)
-                ">
-          Search
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div style="display:flex;gap:8px;padding:12px;overflow:auto">
-
-      <button class="btn">All</button>
-      <button class="btn secondary">People</button>
-      <button class="btn secondary">Posts</button>
-      <button class="btn secondary">Reels</button>
-      <button class="btn secondary">Videos</button>
-      <button class="btn secondary">Pages</button>
-      <button class="btn secondary">Groups</button>
-      <button class="btn secondary">Marketplace</button>
-      <button class="btn secondary">Events</button>
-      <button class="btn secondary">Hashtags</button>
-      <button class="btn secondary">Places</button>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="section-title">
-      Search Results
-    </div>
-
-    <div class="section-sub">
-      Results for: <b>${escapeHTML(query)}</b>
-    </div>
-
-  </div>
-
-  `;
-}
-
-
-/* ============================================================
-   FEEDS / EXPLORE
-   ============================================================ */
-
-function feedsPage(){
-
-  return `
-
-  <div class="card">
-
-    <div class="section-title">
-      📰 Feeds
-    </div>
-
-    <div class="section-sub">
-      Choose what you want to see.
-    </div>
-
-  </div>
-
-  <div class="card">
-
-    ${settingRow(
-      "Home",
-      "Recommended content",
-      true,
-      "changeFeed('home')"
-    )}
-
-    ${settingRow(
-      "Friends",
-      "Posts from friends",
-      false,
-      "changeFeed('friends')"
-    )}
-
-    ${settingRow(
-      "Following",
-      "People and pages you follow",
-      false,
-      "changeFeed('following')"
-    )}
-
-    ${settingRow(
-      "Favorites",
-      "Your favorite accounts",
-      false,
-      "changeFeed('favorites')"
-    )}
-
-    ${settingRow(
-      "Trending",
-      "Popular content",
-      false,
-      "changeFeed('trending')"
-    )}
-
-    ${settingRow(
-      "Explore",
-      "Discover new content",
-      false,
-      "toast('Explore')"
-    )}
-
-    ${settingRow(
-      "Local",
-      "Content around you",
-      false,
-      "toast('Local feed')"
-    )}
-
-  </div>
-
-  `;
-}
-
-
-function changeFeed(mode){
-
-  state.feedMode=mode;
-
-  toast(
-    "Feed: "+mode
-  );
-
-  openPage("home");
-}
-
-
-/* ============================================================
-   EXTRA FEATURES MENU
-   ============================================================ */
-
-function addPollField(){
-
-  toast("Poll builder added");
-
-}
-
-
-function report(type,id){
-
-  toast(
-    "Report submitted: "+type
-  );
-
-  /*
-    reports table
-  */
-}
-
-
-function blockUser(id){
-
-  toast("User blocked");
-
-  /*
-    blocked_users
-  */
-}
-
-
-function followUser(id){
-
-  toast("Following");
-
-  /*
-    follows
-  */
-}
-
-
-function unfollowUser(id){
-
-  toast("Unfollowed");
-
-}
-
-
-function sendFriendRequest(id){
-
-  toast("Friend request sent");
-
-  /*
-    friend_requests
-  */
-}
-
-
-function acceptFriendRequest(id){
-
-  toast("Friend request accepted");
-
-}
-
-
-function rejectFriendRequest(id){
-
-  toast("Friend request rejected");
-
-}
-
-
-/* ============================================================
-   LOCAL STORAGE
-   ============================================================ */
-
-function saveLocal(){
+async function saveProfile(){
 
   try{
 
-    localStorage.setItem(
-      "mySocialAppState",
-      JSON.stringify({
-        posts:state.posts,
-        reels:state.reels,
-        stories:state.stories,
-        saved:state.saved,
-        user:state.user
-      })
-    );
+    const name =
+      $("editName").value.trim();
 
-  }catch(e){
+    const username =
+      $("editUsername").value.trim();
 
-    console.log(e);
+    const bio =
+      $("editBio").value.trim();
 
-  }
+    const profileFile =
+      $("profileFile").files[0];
 
-}
+    const coverFile =
+      $("coverFile").files[0];
 
+    let profilePhoto =
+      currentProfile?.profile_photo ||
+      null;
 
-function loadLocal(){
+    let coverPhoto =
+      currentProfile?.cover_photo ||
+      null;
 
-  try{
+    $("profileMsg").textContent =
+      "Saving...";
 
-    const raw=
-      localStorage.getItem(
-        "mySocialAppState"
-      );
-
-    if(!raw) return;
-
-    const data=JSON.parse(raw);
-
-    if(data.posts)
-      state.posts=data.posts;
-
-    if(data.reels)
-      state.reels=data.reels;
-
-    if(data.stories)
-      state.stories=data.stories;
-
-    if(data.saved)
-      state.saved=data.saved;
-
-    if(data.user)
-      state.user={
-        ...state.user,
-        ...data.user
-      };
-
-  }catch(e){
-
-    console.log(e);
-
-  }
-
-}
-
-
-/* ============================================================
-   SUPABASE DATABASE HOOKS
-   ============================================================ */
-
-async function loadSupabaseData(){
-
-  if(!supabaseClient)
-    return;
-
-  try{
-
-    /*
-      profiles
-      posts
-      comments
-      reels
-      notifications
-      follows
-      etc.
-    */
-
-    const {data,error}=
-      await supabaseClient
-      .from("posts")
-      .select("*")
-      .order("created_at",{ascending:false})
-      .limit(50);
-
-    if(error){
-
-      console.log(
-        "Posts query:",
-        error.message
-      );
-
-      return;
+    if(profileFile){
+      profilePhoto =
+        await uploadImage(
+          "profile-photos",
+          profileFile
+        );
     }
 
-    if(data){
-
-      state.posts=data.map(p=>({
-
-        id:p.id,
-
-        user:p.user_id || "User",
-
-        text:p.text || "",
-
-        time:p.created_at
-          ? new Date(p.created_at).toLocaleString()
-          : "Recently",
-
-        likes:0,
-
-        comments:0,
-
-        shares:0,
-
-        image:p.image_url || "",
-
-        video:p.video_url || ""
-
-      }));
-
+    if(coverFile){
+      coverPhoto =
+        await uploadImage(
+          "cover-photos",
+          coverFile
+        );
     }
 
-    renderPage();
+    const {data,error} =
+      await db
+        .from("profiles")
+        .upsert({
+          id:currentUser.id,
+          name,
+          username,
+          bio,
+          profile_photo:profilePhoto,
+          cover_photo:coverPhoto,
+          updated_at:new Date().toISOString()
+        })
+        .select()
+        .single();
+
+    if(error) throw error;
+
+    currentProfile=data;
+
+    closeModal("profileModal");
+
+    await openProfile();
 
   }catch(error){
 
-    console.log(
-      "Supabase error:",
-      error
-    );
-
+    $("profileMsg").textContent =
+      error.message;
   }
-
 }
 
 
-/* ============================================================
-   REALTIME HOOK
-   ============================================================ */
+/* ============================================
+   SEARCH
+============================================ */
 
-function setupRealtime(){
+async function searchUsers(){
 
-  if(!supabaseClient)
-    return;
+  const q =
+    $("searchInput").value.trim();
 
-  /*
-    Later:
+  if(!q) return;
 
-    supabaseClient
-      .channel('posts-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event:'*',
-          schema:'public',
-          table:'posts'
-        },
-        payload=>{
-          loadSupabaseData();
-        }
+  const {data,error} =
+    await db
+      .from("profiles")
+      .select("*")
+      .or(
+        `name.ilike.%${q}%,username.ilike.%${q}%`
       )
-      .subscribe();
+      .limit(30);
 
-  */
-
-}
-
-
-/* ============================================================
-   AUTH HOOKS
-   ============================================================ */
-
-async function checkAuth(){
-
-  if(!supabaseClient)
+  if(error){
+    toast(error.message);
     return;
+  }
 
-  try{
+  $("main").innerHTML = `
+    <div class="card">
+      <h2>Search Results</h2>
+    </div>
 
-    const {
-      data:{
-        session
-      }
-    }=
-      await supabaseClient
-      .auth
-      .getSession();
+    ${
+      (data||[]).map(p=>`
 
-    if(session){
+        <div class="card">
 
-      state.user.id=
-        session.user.id;
+          <div class="userrow">
 
-      state.user.email=
-        session.user.email;
+            <img
+              class="avatar"
+              src="${escapeHTML(
+                p.profile_photo ||
+                "https://placehold.co/100x100"
+              )}"
+            >
 
-      console.log(
-        "Logged in:",
-        session.user.email
-      );
+            <div>
+              <b>${escapeHTML(p.name)}</b>
+              <div class="muted">
+                @${escapeHTML(p.username||"")}
+              </div>
+            </div>
 
+            <div class="spacer"></div>
+
+            ${
+              p.id !== currentUser.id
+              ? `
+                <button
+                  class="smallbtn"
+                  onclick="toggleFollow('${p.id}')"
+                >
+                  Follow
+                </button>
+              `
+              : ""
+            }
+
+          </div>
+
+        </div>
+
+      `).join("")
     }
-
-  }catch(e){
-
-    console.log(e);
-
-  }
-
+  `;
 }
 
 
-/* ============================================================
-   PWA / INSTALL
-   ============================================================ */
+/* ============================================
+   FOLLOW
+============================================ */
 
-let deferredInstallPrompt=null;
+async function toggleFollow(userId){
 
-window.addEventListener(
-  "beforeinstallprompt",
-  event=>{
+  if(userId===currentUser.id) return;
 
-    event.preventDefault();
+  const {data} =
+    await db
+      .from("follows")
+      .select("id")
+      .eq("follower_id",currentUser.id)
+      .eq("following_id",userId)
+      .maybeSingle();
 
-    deferredInstallPrompt=event;
+  if(data){
 
+    await db
+      .from("follows")
+      .delete()
+      .eq("id",data.id);
+
+    toast("Unfollowed");
+
+  }else{
+
+    await db
+      .from("follows")
+      .insert({
+        follower_id:currentUser.id,
+        following_id:userId
+      });
+
+    toast("Following");
   }
-);
-
-
-async function installApp(){
-
-  if(!deferredInstallPrompt){
-
-    toast(
-      "Browser menu থেকে Add to Home Screen ব্যবহার করুন"
-    );
-
-    return;
-  }
-
-  deferredInstallPrompt.prompt();
-
-  await deferredInstallPrompt.userChoice;
-
-  deferredInstallPrompt=null;
-
 }
 
 
-/* ============================================================
-   DARK MODE RESTORE
-   ============================================================ */
+async function loadFollowers(){
 
-function restoreTheme(){
+  const {data} =
+    await db
+      .from("follows")
+      .select(`
+        follower_id,
+        profiles:follower_id(
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .eq("following_id",currentUser.id);
 
-  state.dark=
-    localStorage.getItem("darkMode")==="1";
-
-  document.body.classList.toggle(
-    "dark",
-    state.dark
+  renderUsers(
+    "Followers",
+    (data||[]).map(x=>x.profiles)
   );
-
 }
 
 
-/* ============================================================
-   START APP
-   ============================================================ */
+async function loadFollowing(){
 
-async function startApp(){
+  const {data} =
+    await db
+      .from("follows")
+      .select(`
+        following_id,
+        profiles:following_id(
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .eq("follower_id",currentUser.id);
 
-  loadLocal();
-
-  restoreTheme();
-
-  $("sideName").textContent=
-    state.user.name;
-
-  renderPage();
-
-  setupSupabase();
-
-  await checkAuth();
-
-  await loadSupabaseData();
-
-  setupRealtime();
-
+  renderUsers(
+    "Following",
+    (data||[]).map(x=>x.profiles)
+  );
 }
 
 
-startApp();
+function renderUsers(title,users){
 
+  $("main").innerHTML = `
+    <div class="card">
+      <h2>${title}</h2>
+    </div>
 
-/* ============================================================
-   GLOBAL KEYBOARD SHORTCUTS
-   ============================================================ */
+    ${
+      users.map(p=>`
 
-document.addEventListener(
-  "keydown",
-  event=>{
+        <div class="card">
 
-    if(event.key==="/" &&
-       document.activeElement.tagName!=="INPUT" &&
-       document.activeElement.tagName!=="TEXTAREA"){
+          <div class="userrow">
 
-      event.preventDefault();
+            <img
+              class="avatar"
+              src="${escapeHTML(
+                p?.profile_photo ||
+                "https://placehold.co/100x100"
+              )}"
+            >
 
-      $("globalSearch").focus();
+            <div>
+              <b>${escapeHTML(
+                p?.name || "User"
+              )}</b>
 
+              <div class="muted">
+                @${escapeHTML(
+                  p?.username || ""
+                )}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      `).join("")
     }
+  `;
+}
 
-    if(event.key==="Escape"){
 
-      closeModal();
+/* ============================================
+   REELS
+============================================ */
 
+async function loadReels(){
+
+  const {data,error} =
+    await db
+      .from("reels")
+      .select(`
+        *,
+        profiles:user_id(
+          name,
+          username,
+          profile_photo
+        )
+      `)
+      .order("created_at",{ascending:false})
+      .limit(30);
+
+  if(error){
+
+    $("main").innerHTML = `
+      <div class="card">
+        <h2>Reels</h2>
+        <p>${escapeHTML(error.message)}</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  $("main").innerHTML = `
+
+    <div class="card">
+      <h2>🎬 Reels</h2>
+      <button
+        class="smallbtn"
+        onclick="createReel()"
+      >
+        ➕ Upload Reel
+      </button>
+    </div>
+
+    ${
+      (data||[]).map(r=>`
+
+        <div class="card">
+
+          <div class="userrow">
+
+            <img
+              class="avatar"
+              src="${escapeHTML(
+                r.profiles?.profile_photo ||
+                "https://placehold.co/100x100"
+              )}"
+            >
+
+            <b>
+              ${escapeHTML(
+                r.profiles?.name ||
+                "User"
+              )}
+            </b>
+
+          </div>
+
+          <p>${escapeHTML(r.caption||"")}</p>
+
+          <video
+            class="postvideo"
+            controls
+            playsinline
+            src="${escapeHTML(r.video_url)}"
+          ></video>
+
+        </div>
+
+      `).join("")
     }
+  `;
+}
 
+
+async function createReel(){
+
+  const input =
+    document.createElement("input");
+
+  input.type="file";
+  input.accept="video/*";
+
+  input.onchange =
+    async function(){
+
+      const file =
+        input.files[0];
+
+      if(!file) return;
+
+      try{
+
+        const path =
+          `${currentUser.id}/${Date.now()}-${file.name}`;
+
+        const {error} =
+          await db.storage
+            .from("reels")
+            .upload(path,file,{
+              upsert:false
+            });
+
+        if(error) throw error;
+
+        const {data} =
+          db.storage
+            .from("reels")
+            .getPublicUrl(path);
+
+        const caption =
+          prompt("Reel caption লিখুন") || "";
+
+        const {error:insertError} =
+          await db
+            .from("reels")
+            .insert({
+              user_id:currentUser.id,
+              video_url:data.publicUrl,
+              caption
+            });
+
+        if(insertError)
+          throw insertError;
+
+        toast("Reel uploaded");
+
+        await loadReels();
+
+      }catch(error){
+
+        toast(error.message);
+      }
+    };
+
+  input.click();
+}
+
+
+/* ============================================
+   NOTIFICATIONS
+============================================ */
+
+async function loadNotifications(){
+
+  const {data,error} =
+    await db
+      .from("notifications")
+      .select("*")
+      .eq("receiver_id",currentUser.id)
+      .order("created_at",{ascending:false})
+      .limit(50);
+
+  $("main").innerHTML = `
+
+    <div class="card">
+      <h2>🔔 Notifications</h2>
+    </div>
+
+    ${
+      error
+      ? `
+        <div class="card">
+          ${escapeHTML(error.message)}
+        </div>
+      `
+      :
+      (data||[]).map(n=>`
+
+        <div class="card">
+          ${escapeHTML(n.text)}
+          <div class="muted">
+            ${new Date(
+              n.created_at
+            ).toLocaleString()}
+          </div>
+        </div>
+
+      `).join("")
+    }
+  `;
+}
+
+
+/* ============================================
+   SAVED
+============================================ */
+
+async function loadSaved(){
+
+  const {data,error} =
+    await db
+      .from("saved_posts")
+      .select(`
+        *,
+        posts(
+          *,
+          profiles:user_id(
+            name,
+            username,
+            profile_photo
+          )
+        )
+      `)
+      .eq("user_id",currentUser.id)
+      .order("created_at",{ascending:false});
+
+  $("main").innerHTML = `
+
+    <div class="card">
+      <h2>🔖 Saved</h2>
+    </div>
+
+    ${
+      error
+      ? `<div class="card">${escapeHTML(error.message)}</div>`
+      :
+      (data||[])
+        .filter(x=>x.posts)
+        .map(x=>postHTML(x.posts))
+        .join("")
+    }
+  `;
+}
+
+
+/* ============================================
+   SETTINGS
+============================================ */
+
+function showSettings(){
+
+  $("main").innerHTML = `
+
+    <div class="card">
+
+      <h2>⚙️ Settings</h2>
+
+      <button
+        class="smallbtn"
+        onclick="toggleDark()"
+      >
+        🌙 Dark / Light Mode
+      </button>
+
+      <br><br>
+
+      <button
+        class="smallbtn"
+        onclick="logout()"
+      >
+        🚪 Logout
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Account</h3>
+
+      <p>Email:
+        ${escapeHTML(
+          currentUser?.email || ""
+        )}
+      </p>
+
+      <p class="muted">
+        More account, privacy and security
+        options will be connected here.
+      </p>
+
+    </div>
+  `;
+}
+
+
+/* ============================================
+   SESSION
+============================================ */
+
+async function checkSession(){
+
+  const {data} =
+    await db.auth.getSession();
+
+  if(data.session?.user){
+
+    currentUser =
+      data.session.user;
+
+    await initializeApp();
+
+  }else{
+
+    $("authScreen")
+      .classList
+      .remove("hidden");
+
+    $("app")
+      .classList
+      .add("hidden");
+  }
+}
+
+
+/* ============================================
+   AUTH STATE
+============================================ */
+
+db.auth.onAuthStateChange(
+  async (event,session)=>{
+
+    if(session?.user){
+
+      currentUser =
+        session.user;
+
+      if(event==="SIGNED_IN"){
+        await initializeApp();
+      }
+
+    }else{
+
+      currentUser=null;
+      currentProfile=null;
+    }
   }
 );
 
 
-/* ============================================================
-   FUTURE MODULE REGISTRY
-   ============================================================ */
+/* ============================================
+   START
+============================================ */
 
-const FEATURES={
+checkSession();
 
-  feed:[
-    "home",
-    "friends",
-    "following",
-    "favorites",
-    "explore",
-    "local",
-    "trending",
-    "recommended",
-    "memories",
-    "birthdays",
-    "feed_preferences",
-    "hide",
-    "snooze",
-    "not_interested",
-    "reconnect",
-    "why_seen"
-  ],
-
-  posts:[
-    "text",
-    "photo",
-    "multiple_photos",
-    "video",
-    "gif",
-    "link_preview",
-    "background",
-    "feeling",
-    "location",
-    "tag",
-    "mention",
-    "hashtag",
-    "poll",
-    "privacy",
-    "edit",
-    "delete",
-    "pin",
-    "share",
-    "copy_link",
-    "save",
-    "notifications"
-  ],
-
-  reactions:[
-    "like",
-    "love",
-    "haha",
-    "wow",
-    "sad",
-    "angry",
-    "reaction_list",
-    "comment",
-    "reply",
-    "nested_reply",
-    "comment_reaction",
-    "comment_edit",
-    "comment_delete",
-    "comment_sort"
-  ],
-
-  reels:[
-    "upload",
-    "fullscreen",
-    "music",
-    "audio",
-    "caption",
-    "text",
-    "effects",
-    "filters",
-    "hashtags",
-    "mentions",
-    "remix",
-    "drafts",
-    "clip",
-    "reaction",
-    "comments",
-    "share",
-    "save",
-    "follow_creator",
-    "views",
-    "watch_history",
-    "recommended",
-    "trending",
-    "not_interested"
-  ],
-
-  stories:[
-    "photo",
-    "video",
-    "text",
-    "music",
-    "stickers",
-    "gif",
-    "poll",
-    "question",
-    "mention",
-    "location",
-    "reaction",
-    "reply",
-    "viewer_list",
-    "privacy",
-    "archive",
-    "highlights",
-    "delete"
-  ],
-
-  profile:[
-    "photo",
-    "cover",
-    "name",
-    "username",
-    "bio",
-    "intro",
-    "posts",
-    "photos",
-    "videos",
-    "reels",
-    "friends",
-    "followers",
-    "following",
-    "about",
-    "featured",
-    "pinned_posts",
-    "edit_profile"
-  ],
-
-  friends:[
-    "requests",
-    "accept",
-    "reject",
-    "cancel",
-    "remove",
-    "follow",
-    "unfollow",
-    "followers",
-    "following",
-    "mutual",
-    "suggestions",
-    "lists",
-    "favorites",
-    "block",
-    "unblock",
-    "restrict"
-  ],
-
-  messenger:[
-    "one_to_one",
-    "group_chat",
-    "community",
-    "text",
-    "emoji",
-    "gif",
-    "sticker",
-    "photo",
-    "video",
-    "file",
-    "voice",
-    "video_call",
-    "message_reaction",
-    "reply",
-    "edit",
-    "delete",
-    "forward",
-    "seen",
-    "unread",
-    "typing",
-    "online",
-    "search",
-    "archive",
-    "mute",
-    "block",
-    "requests"
-  ],
-
-  notifications:[
-    "likes",
-    "comments",
-    "replies",
-    "shares",
-    "friend_requests",
-    "accepted",
-    "follows",
-    "mentions",
-    "tags",
-    "messages",
-    "groups",
-    "pages",
-    "events",
-    "marketplace",
-    "creator",
-    "mark_read",
-    "mark_all_read"
-  ],
-
-  search:[
-    "people",
-    "posts",
-    "reels",
-    "videos",
-    "pages",
-    "groups",
-    "marketplace",
-    "events",
-    "hashtags",
-    "locations",
-    "history",
-    "filters"
-  ],
-
-  groups:[
-    "create",
-    "public",
-    "private",
-    "members",
-    "admin",
-    "moderator",
-    "join",
-    "leave",
-    "requests",
-    "posts",
-    "reels",
-    "videos",
-    "polls",
-    "events",
-    "files",
-    "rules",
-    "pinned",
-    "announcements",
-    "chat",
-    "channels",
-    "badges",
-    "reports",
-    "moderation"
-  ],
-
-  pages:[
-    "create",
-    "profile",
-    "cover",
-    "posts",
-    "reels",
-    "stories",
-    "followers",
-    "likes",
-    "reviews",
-    "messaging",
-    "admins",
-    "roles",
-    "moderators",
-    "scheduled_posts",
-    "insights",
-    "analytics",
-    "monetization"
-  ],
-
-  marketplace:[
-    "buy",
-    "sell",
-    "listing",
-    "photos",
-    "video",
-    "price",
-    "category",
-    "location",
-    "search",
-    "filters",
-    "seller_profile",
-    "chat",
-    "save",
-    "collections",
-    "report",
-    "orders"
-  ],
-
-  events:[
-    "create",
-    "public",
-    "private",
-    "date",
-    "time",
-    "location",
-    "description",
-    "cover",
-    "invite",
-    "going",
-    "interested",
-    "maybe",
-    "discussion",
-    "posts",
-    "notifications",
-    "recommendations"
-  ],
-
-  creator:[
-    "professional_mode",
-    "dashboard",
-    "analytics",
-    "reach",
-    "engagement",
-    "followers",
-    "views",
-    "earnings",
-    "monetization",
-    "ads",
-    "stars",
-    "subscriptions",
-    "gifts",
-    "brand_deals",
-    "payouts"
-  ],
-
-  safety:[
-    "report",
-    "block",
-    "restrict",
-    "spam",
-    "moderation",
-    "suspension",
-    "appeal",
-    "audit"
-  ],
-
-  admin:[
-    "dashboard",
-    "users",
-    "profiles",
-    "posts",
-    "reels",
-    "stories",
-    "comments",
-    "reports",
-    "pages",
-    "groups",
-    "events",
-    "marketplace",
-    "messages",
-    "banned",
-    "suspended",
-    "roles",
-    "permissions",
-    "monetization",
-    "earnings",
-    "analytics",
-    "settings",
-    "announcements",
-    "audit_logs"
-  ]
-
-};
-
-console.log(
-  "My Social App Master Features:",
-  FEATURES
-);
-
-</script>
-
-
-<!-- Supabase JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-/*
-  Re-run connection after Supabase library loads.
-*/
-if(typeof setupSupabase==="function"){
-
-  setupSupabase();
-
-  if(typeof checkAuth==="function")
-    checkAuth();
-
-  if(typeof loadSupabaseData==="function")
-    loadSupabaseData();
-
-  if(typeof setupRealtime==="function")
-    setupRealtime();
-
-}
 </script>
 
 </body>
