@@ -4,1536 +4,911 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<meta name="description" content="My Social App">
-
-<title>My Social App</title>
+<title>My Social App + ISP Panel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#111827}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
+
+.top{
+ position:sticky;top:0;z-index:100;
+ background:#111827;color:white;padding:12px 15px;
+ display:flex;align-items:center;gap:10px
+}
+.logo{font-size:21px;font-weight:800;flex:1}
+.iconbtn{
+ background:#263244;color:white;border-radius:12px;
+ padding:9px 11px
 }
 
-:root{
-  --bg:#f4f6f8;
-  --card:#fff;
-  --text:#111827;
-  --muted:#6b7280;
-  --line:#e5e7eb;
-  --primary:#7c3aed;
-  --primary2:#ec4899;
-  --danger:#ef4444;
-  --success:#16a34a;
-  --shadow:0 8px 30px rgba(0,0,0,.08);
+.container{max-width:1100px;margin:auto;padding:15px 15px 90px}
+
+.card{
+ background:white;border-radius:18px;padding:16px;
+ margin-bottom:14px;
+ box-shadow:0 5px 20px rgba(0,0,0,.07)
 }
 
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
+.login{
+ max-width:430px;margin:70px auto;padding:25px;
+ background:white;border-radius:22px;
+ box-shadow:0 15px 40px rgba(0,0,0,.12)
 }
-
-button,
-input,
-textarea,
-select{
-  font:inherit;
+.login h1{text-align:center}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:700;margin-bottom:5px}
+.field input,.field select,.field textarea{
+ width:100%;padding:12px;border:1px solid #d1d5db;
+ border-radius:12px;background:white
 }
-
-button{
-  cursor:pointer;
-  border:0;
+.primary{
+ background:#2563eb;color:white;padding:12px 16px;
+ border-radius:12px;font-weight:700
 }
-
-.hidden{
-  display:none!important;
-}
-
-/* AUTH */
-
-#authScreen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:
-    radial-gradient(circle at top left,#7c3aed 0,transparent 35%),
-    radial-gradient(circle at bottom right,#ec4899 0,transparent 35%),
-    #111827;
-}
-
-.authBox{
-  width:100%;
-  max-width:430px;
-  background:rgba(255,255,255,.97);
-  border-radius:25px;
-  padding:28px;
-  box-shadow:0 30px 80px rgba(0,0,0,.35);
-}
-
-.logo{
-  font-size:30px;
-  font-weight:900;
-  text-align:center;
-  margin-bottom:8px;
-  background:linear-gradient(90deg,#7c3aed,#ec4899);
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.authSub{
-  text-align:center;
-  color:var(--muted);
-  margin-bottom:25px;
-}
+.success{background:#16a34a;color:white;padding:12px 16px;border-radius:12px}
+.danger{background:#dc2626;color:white;padding:10px 14px;border-radius:10px}
+.secondary{background:#e5e7eb;color:#111827;padding:10px 14px;border-radius:10px}
 
 .tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:18px;
+ display:flex;gap:8px;overflow:auto;padding:10px 0;
+ position:sticky;top:57px;z-index:90;background:#f4f6f8
 }
-
-.tab{
-  flex:1;
-  padding:11px;
-  border-radius:12px;
-  background:#f3f4f6;
-  color:#555;
-  font-weight:700;
-}
-
-.tab.active{
-  background:var(--primary);
-  color:white;
-}
-
-.field{
-  margin-bottom:14px;
-}
-
-.field label{
-  display:block;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.field input,
-.field textarea,
-.field select{
-  width:100%;
-  border:1px solid var(--line);
-  background:white;
-  border-radius:13px;
-  padding:13px;
-  outline:none;
-}
-
-.field input:focus,
-.field textarea:focus,
-.field select:focus{
-  border-color:var(--primary);
-}
-
-.primaryBtn{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  background:linear-gradient(90deg,#7c3aed,#ec4899);
-  color:white;
-  font-weight:800;
-}
-
-.secondaryBtn{
-  padding:11px 15px;
-  border-radius:12px;
-  background:#f3f4f6;
-  font-weight:700;
-}
-
-.dangerBtn{
-  padding:11px 15px;
-  border-radius:12px;
-  background:#fee2e2;
-  color:#b91c1c;
-  font-weight:700;
-}
-
-.successBtn{
-  padding:11px 15px;
-  border-radius:12px;
-  background:#dcfce7;
-  color:#166534;
-  font-weight:700;
-}
-
-.message{
-  margin-top:12px;
-  padding:11px;
-  border-radius:12px;
-  background:#f3f4f6;
-  font-size:14px;
-}
-
-/* APP */
-
-#app{
-  min-height:100vh;
-}
-
-.topbar{
-  height:62px;
-  position:fixed;
-  left:0;
-  right:0;
-  top:0;
-  z-index:100;
-  background:rgba(255,255,255,.94);
-  backdrop-filter:blur(15px);
-  border-bottom:1px solid var(--line);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 14px;
-}
-
-.topLogo{
-  font-size:20px;
-  font-weight:900;
-  background:linear-gradient(90deg,#7c3aed,#ec4899);
-  -webkit-background-clip:text;
-  color:transparent;
-  white-space:nowrap;
-}
-
-.searchBox{
-  flex:1;
-  max-width:500px;
-  margin:auto;
-}
-
-.searchBox input{
-  width:100%;
-  border:0;
-  background:#f1f3f5;
-  padding:11px 15px;
-  border-radius:30px;
-  outline:none;
-}
-
-.topActions{
-  display:flex;
-  gap:6px;
-}
-
-.iconBtn{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:#f3f4f6;
-  font-size:19px;
-}
-
-.main{
-  max-width:1100px;
-  margin:auto;
-  padding:82px 14px 90px;
-}
-
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
-
-/* FEED */
-
-.composer{
-  background:var(--card);
-  border-radius:20px;
-  padding:15px;
-  box-shadow:var(--shadow);
-  margin-bottom:18px;
-}
-
-.composer textarea{
-  width:100%;
-  min-height:80px;
-  resize:none;
-  border:0;
-  outline:0;
-  font-size:16px;
-}
-
-.composerTools{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-  border-top:1px solid var(--line);
-  padding-top:12px;
-  margin-top:10px;
-}
-
-.toolBtn{
-  padding:10px 12px;
-  border-radius:12px;
-  background:#f3f4f6;
-  font-weight:700;
-}
-
-.fileInput{
-  display:none;
-}
-
-.post{
-  background:var(--card);
-  border-radius:20px;
-  box-shadow:var(--shadow);
-  margin-bottom:18px;
-  overflow:hidden;
-}
-
-.postHeader{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:15px;
-}
-
-.avatar{
-  width:43px;
-  height:43px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#ddd;
-}
-
-.postName{
-  font-weight:800;
-}
-
-.postDate{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.postText{
-  padding:0 15px 15px;
-  white-space:pre-wrap;
-  line-height:1.5;
-}
-
-.postMedia{
-  width:100%;
-  max-height:650px;
-  object-fit:cover;
-  display:block;
-}
-
-.postActions{
-  display:flex;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-}
-
-.postAction{
-  flex:1;
-  padding:13px 5px;
-  background:white;
-  font-weight:700;
-}
-
-.postAction:hover{
-  background:#f8fafc;
-}
-
-.comments{
-  padding:12px 15px;
-}
-
-.commentInput{
-  display:flex;
-  gap:8px;
-}
-
-.commentInput input{
-  flex:1;
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:10px 13px;
-}
-
-.comment{
-  margin-top:10px;
-  background:#f3f4f6;
-  border-radius:14px;
-  padding:9px 12px;
-}
-
-/* REELS */
-
-.reelsWrap{
-  max-width:600px;
-  margin:auto;
-}
-
-.reelCard{
-  background:#000;
-  border-radius:22px;
-  overflow:hidden;
-  margin-bottom:20px;
-  position:relative;
-  min-height:600px;
-}
-
-.reelCard video{
-  width:100%;
-  height:650px;
-  object-fit:cover;
-  display:block;
-}
-
-.reelOverlay{
-  position:absolute;
-  left:15px;
-  right:15px;
-  bottom:15px;
-  color:white;
-  text-shadow:0 2px 5px #000;
-}
-
-.reelButtons{
-  position:absolute;
-  right:12px;
-  bottom:90px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.reelBtn{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:19px;
-}
-
-/* PROFILE */
-
-.cover{
-  height:230px;
-  border-radius:22px 22px 0 0;
-  background:
-    linear-gradient(135deg,#7c3aed,#ec4899);
-  position:relative;
-  background-size:cover;
-  background-position:center;
-}
-
-.profileCard{
-  background:white;
-  border-radius:22px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
+.tabs button{
+ white-space:nowrap;background:white;padding:10px 14px;
+ border-radius:12px;font-weight:700
 }
+.tabs button.active{background:#111827;color:white}
 
-.profileAvatar{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  border:5px solid white;
-  object-fit:cover;
-  position:absolute;
-  bottom:-55px;
-  left:25px;
-  background:#ddd;
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px
 }
-
-.profileInfo{
-  padding:70px 20px 20px;
-}
-
-.profileName{
-  font-size:25px;
-  font-weight:900;
-}
-
-.profileBio{
-  color:var(--muted);
-  margin-top:7px;
-}
-
-.profileStats{
-  display:flex;
-  gap:25px;
-  margin-top:15px;
-}
-
-.stat strong{
-  display:block;
-  font-size:20px;
-}
-
-.stat span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* SETTINGS */
-
-.settingsCard,
-.monetizationCard,
-.ispCard{
-  background:white;
-  border-radius:20px;
-  padding:18px;
-  box-shadow:var(--shadow);
-  margin-bottom:15px;
-}
-
-.settingsItem{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 0;
-  border-bottom:1px solid var(--line);
+.stat{
+ padding:16px;background:white;border-radius:17px;
+ box-shadow:0 5px 18px rgba(0,0,0,.06)
 }
+.stat b{display:block;font-size:25px;margin-top:5px}
 
-.settingsItem:last-child{
-  border-bottom:0;
-}
-
-/* ISP */
-
-.ispHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-  margin-bottom:15px;
-  flex-wrap:wrap;
-}
-
-.ispHeader h2{
-  font-size:25px;
-}
-
-.ispGrid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 
-.ispStat{
-  background:#f8fafc;
-  padding:18px;
-  border-radius:16px;
-}
-
-.ispStat small{
-  color:var(--muted);
-}
-
-.ispStat strong{
-  display:block;
-  font-size:25px;
-  margin-top:5px;
-}
-
-.customer{
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-  margin-top:10px;
-}
-
-.customerTop{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px;border-bottom:1px solid #eee}
+.tablewrap{overflow:auto}
 
 .badge{
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:800;
+ display:inline-block;padding:5px 9px;border-radius:999px;
+ background:#e5e7eb;font-size:12px;font-weight:700
 }
+.active{background:#dcfce7;color:#166534}
+.expired{background:#fee2e2;color:#991b1b}
+.pending{background:#fef3c7;color:#92400e}
 
-.badge.active{
-  background:#dcfce7;
-  color:#166534;
+.bottom{
+ position:fixed;bottom:0;left:0;right:0;
+ background:white;border-top:1px solid #ddd;
+ display:flex;justify-content:space-around;
+ padding:9px 5px;z-index:200
 }
-
-.badge.expired{
-  background:#fee2e2;
-  color:#991b1b;
+.bottom button{
+ background:none;font-size:12px;color:#374151
 }
+.bottom span{display:block;font-size:20px}
 
-.tableWrap{
-  overflow:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,
-td{
-  text-align:left;
-  padding:11px;
-  border-bottom:1px solid var(--line);
-  white-space:nowrap;
-}
-
-th{
-  background:#f8fafc;
-}
-
-/* BOTTOM */
-
-.bottomNav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  height:68px;
-  background:rgba(255,255,255,.96);
-  backdrop-filter:blur(15px);
-  border-top:1px solid var(--line);
-  display:flex;
-  z-index:100;
-}
-
-.navBtn{
-  flex:1;
-  background:white;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:3px;
-  font-size:20px;
-}
-
-.navBtn span{
-  font-size:10px;
-}
-
-.navBtn.active{
-  color:var(--primary);
-}
-
-/* MODAL */
+.page{display:none}
+.page.active{display:block}
 
 .modal{
-  position:fixed;
-  inset:0;
-  z-index:300;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:15px;
+ position:fixed;inset:0;background:rgba(0,0,0,.55);
+ z-index:500;padding:20px;overflow:auto
+}
+.modalbox{
+ max-width:600px;margin:30px auto;background:white;
+ border-radius:20px;padding:20px
 }
 
-.modal.show{
-  display:flex;
+.notice{
+ padding:12px;border-radius:12px;background:#eff6ff;
+ margin-bottom:10px
 }
 
-.modalBox{
-  width:100%;
-  max-width:520px;
-  max-height:90vh;
-  overflow:auto;
-  background:white;
-  border-radius:22px;
-  padding:20px;
+.socialpost img,.socialpost video{
+ width:100%;border-radius:15px;margin-top:10px
 }
 
-.modalHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
+@media(max-width:750px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ th,td{font-size:13px}
+ .container{padding-left:10px;padding-right:10px}
 }
 
-/* TOAST */
-
-#toast{
-  position:fixed;
-  left:50%;
-  bottom:85px;
-  transform:translateX(-50%);
-  z-index:500;
-  background:#111827;
-  color:white;
-  padding:12px 18px;
-  border-radius:30px;
-  display:none;
-  max-width:90%;
-  text-align:center;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-  .topLogo{
-    font-size:17px;
-  }
-
-  .searchBox{
-    display:none;
-  }
-
-  .main{
-    padding-left:9px;
-    padding-right:9px;
-  }
-
-  .ispGrid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .cover{
-    height:190px;
-  }
-
-  .reelCard video{
-    height:650px;
-  }
-}
-
-@media(max-width:430px){
-  .authBox{
-    padding:20px;
-  }
-
-  .ispGrid{
-    grid-template-columns:1fr 1fr;
-  }
+@media(min-width:900px){
+ .bottom{display:none}
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
+<!-- =========================================================
+ AUTH
+========================================================= -->
 
 <section id="authScreen">
 
-  <div class="authBox">
+<div class="login">
 
-    <div class="logo">My Social App</div>
+<h1>My Social App</h1>
+<p style="text-align:center;color:#6b7280">
+Social + ISP Management System
+</p>
 
-    <div class="authSub">
-      Social • Reels • Creator • ISP
-    </div>
+<div class="field">
+<label>Email</label>
+<input id="loginEmail" type="email" placeholder="Email">
+</div>
 
-    <div class="tabs">
-      <button id="loginTab" class="tab active" onclick="showAuth('login')">
-        Login
-      </button>
+<div class="field">
+<label>Password</label>
+<input id="loginPassword" type="password" placeholder="Password">
+</div>
 
-      <button id="signupTab" class="tab" onclick="showAuth('signup')">
-        Sign Up
-      </button>
-    </div>
+<button class="primary" style="width:100%" onclick="login()">
+Login
+</button>
 
-    <form id="loginForm">
+<br><br>
 
-      <div class="field">
-        <label>Email</label>
-        <input
-          id="loginEmail"
-          type="email"
-          required
-          autocomplete="email"
-          placeholder="আপনার email">
-      </div>
+<button class="secondary" style="width:100%" onclick="signup()">
+Create Account
+</button>
 
-      <div class="field">
-        <label>Password</label>
-        <input
-          id="loginPassword"
-          type="password"
-          required
-          autocomplete="current-password"
-          placeholder="Password">
-      </div>
+<p id="authMsg"></p>
 
-      <button class="primaryBtn" type="submit">
-        Login
-      </button>
+</div>
+</section>
 
-      <button
-        type="button"
-        class="secondaryBtn"
-        style="width:100%;margin-top:10px"
-        onclick="resetPassword()">
-        Forgot Password
-      </button>
 
-    </form>
+<!-- =========================================================
+ MAIN APP
+========================================================= -->
 
-    <form id="signupForm" class="hidden">
+<section id="appScreen" class="hidden">
 
-      <div class="field">
-        <label>Name</label>
-        <input
-          id="signupName"
-          type="text"
-          required
-          placeholder="আপনার নাম">
-      </div>
+<header class="top">
+<div class="logo">My Social App</div>
+<button class="iconbtn" onclick="showPage('notifications')">🔔</button>
+<button class="iconbtn" onclick="logout()">Logout</button>
+</header>
 
-      <div class="field">
-        <label>Email</label>
-        <input
-          id="signupEmail"
-          type="email"
-          required
-          autocomplete="email"
-          placeholder="Email">
-      </div>
+<div class="container">
 
-      <div class="field">
-        <label>Password</label>
-        <input
-          id="signupPassword"
-          type="password"
-          minlength="6"
-          required
-          autocomplete="new-password"
-          placeholder="কমপক্ষে ৬ অক্ষর">
-      </div>
+<div class="tabs">
 
-      <button class="primaryBtn" type="submit">
-        Create Account
-      </button>
+<button onclick="showPage('home')">🏠 Social</button>
+<button onclick="showPage('reels')">🎬 Reels</button>
+<button onclick="showPage('profile')">👤 Profile</button>
+<button onclick="showPage('ispDashboard')">📡 ISP</button>
+<button onclick="showPage('customers')">👥 Customers</button>
+<button onclick="showPage('packages')">📦 Packages</button>
+<button onclick="showPage('billing')">🧾 Billing</button>
+<button onclick="showPage('payments')">💳 Payments</button>
+<button onclick="showPage('invoices')">🧾 Invoices</button>
+<button onclick="showPage('expenses')">💰 Expenses</button>
+<button onclick="showPage('online')">🌐 Online</button>
+<button onclick="showPage('network')">📡 Network</button>
+<button onclick="showPage('support')">🎫 Support</button>
+<button onclick="showPage('staff')">👨‍💼 Staff</button>
+<button onclick="showPage('reports')">📊 Reports</button>
+<button onclick="showPage('ispSettings')">⚙️ ISP Settings</button>
 
-    </form>
+</div>
 
-    <div id="authMessage" class="message hidden"></div>
 
-  </div>
+<!-- =========================================================
+ SOCIAL HOME
+========================================================= -->
+
+<section id="home" class="page active">
+
+<div class="card">
+<h2>Social Feed</h2>
+
+<div class="field">
+<textarea id="postText" rows="3"
+placeholder="What's happening?"></textarea>
+</div>
+
+<div class="actions">
+<input id="postImage" type="file" accept="image/*">
+<button class="primary" onclick="createPost()">Post</button>
+</div>
+</div>
+
+<div id="feed"></div>
 
 </section>
 
 
-<!-- APP -->
+<!-- =========================================================
+ REELS
+========================================================= -->
 
-<section id="app" class="hidden">
+<section id="reels" class="page">
 
-  <header class="topbar">
+<div class="card">
+<h2>🎬 Reels</h2>
 
-    <div class="topLogo">
-      My Social
-    </div>
+<div class="field">
+<input id="reelCaption" placeholder="Caption">
+</div>
 
-    <div class="searchBox">
-      <input
-        id="searchInput"
-        type="search"
-        placeholder="Search..."
-        onkeydown="if(event.key==='Enter')searchUsers()">
-    </div>
+<div class="field">
+<input id="reelVideo" type="file" accept="video/*">
+</div>
 
-    <div class="topActions">
+<button class="primary" onclick="uploadReel()">
+Upload Reel
+</button>
 
-      <button class="iconBtn" onclick="openNotifications()">
-        🔔
-      </button>
+</div>
 
-      <button class="iconBtn" onclick="openPage('settings')">
-        ⚙️
-      </button>
-
-    </div>
-
-  </header>
-
-
-  <main class="main">
-
-    <!-- HOME -->
-
-    <section id="page-home" class="page active">
-
-      <div class="composer">
-
-        <textarea
-          id="postText"
-          placeholder="আপনার মনে কী চলছে?"></textarea>
-
-        <div class="composerTools">
-
-          <label class="toolBtn">
-            📷 Photo
-            <input
-              id="postImage"
-              class="fileInput"
-              type="file"
-              accept="image/*">
-          </label>
-
-          <label class="toolBtn">
-            🎬 Video
-            <input
-              id="postVideo"
-              class="fileInput"
-              type="file"
-              accept="video/*">
-          </label>
-
-          <button class="toolBtn" onclick="createPost()">
-            🚀 Post
-          </button>
-
-        </div>
-
-        <div id="postStatus"></div>
-
-      </div>
-
-      <div id="feed">
-        <div class="settingsCard">
-          পোস্ট লোড হচ্ছে...
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- REELS -->
-
-    <section id="page-reels" class="page">
-
-      <div class="reelsWrap">
-
-        <div class="ispHeader">
-          <h2>Reels</h2>
-
-          <label class="primaryBtn" style="width:auto">
-            + Upload Reel
-            <input
-              id="reelFile"
-              class="fileInput"
-              type="file"
-              accept="video/*"
-              onchange="uploadReel()">
-          </label>
-        </div>
-
-        <div id="reels">
-          <div class="settingsCard">
-            Reels লোড হচ্ছে...
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-
-    <section id="page-profile" class="page">
-
-      <div class="profileCard">
-
-        <div
-          id="cover"
-          class="cover">
-
-          <img
-            id="profileAvatar"
-            class="profileAvatar"
-            src=""
-            alt="avatar">
-
-        </div>
-
-        <div class="profileInfo">
-
-          <div
-            id="profileName"
-            class="profileName">
-            User
-          </div>
-
-          <div
-            id="profileBio"
-            class="profileBio">
-            Bio
-          </div>
-
-          <div class="profileStats">
-
-            <div class="stat">
-              <strong id="postCount">0</strong>
-              <span>Posts</span>
-            </div>
-
-            <div class="stat">
-              <strong id="followerCount">0</strong>
-              <span>Followers</span>
-            </div>
-
-            <div class="stat">
-              <strong id="followingCount">0</strong>
-              <span>Following</span>
-            </div>
-
-          </div>
-
-          <button
-            class="primaryBtn"
-            style="margin-top:18px"
-            onclick="openProfileEdit()">
-            Edit Profile
-          </button>
-
-        </div>
-
-      </div>
-
-      <div style="height:18px"></div>
-
-      <div id="profilePosts"></div>
-
-    </section>
-
-
-    <!-- SEARCH -->
-
-    <section id="page-search" class="page">
-
-      <div class="settingsCard">
-
-        <h2>Search</h2>
-
-        <div class="field" style="margin-top:15px">
-
-          <input
-            id="userSearch"
-            placeholder="Name বা email লিখুন">
-
-        </div>
-
-        <button
-          class="primaryBtn"
-          onclick="searchUsers()">
-          Search
-        </button>
-
-      </div>
-
-      <div id="searchResults"></div>
-
-    </section>
-
-
-    <!-- MONETIZATION -->
-
-    <section id="page-monetization" class="page">
-
-      <div class="monetizationCard">
-
-        <h2>💰 Creator Monetization</h2>
-
-        <p style="color:var(--muted);margin-top:7px">
-          আপনার creator earnings এবং withdrawal পরিচালনা করুন।
-        </p>
-
-        <div class="ispGrid" style="margin-top:18px">
-
-          <div class="ispStat">
-            <small>Total Earnings</small>
-            <strong id="totalEarnings">৳0</strong>
-          </div>
-
-          <div class="ispStat">
-            <small>Available</small>
-            <strong id="availableEarnings">৳0</strong>
-          </div>
-
-          <div class="ispStat">
-            <small>Pending</small>
-            <strong id="pendingEarnings">৳0</strong>
-          </div>
-
-          <div class="ispStat">
-            <small>Withdrawn</small>
-            <strong id="withdrawnEarnings">৳0</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="monetizationCard">
-
-        <h3>💳 bKash Withdrawal</h3>
-
-        <div class="field" style="margin-top:15px">
-          <label>bKash Number</label>
-          <input
-            id="bkashNumber"
-            placeholder="01XXXXXXXXX">
-        </div>
-
-        <div class="field">
-          <label>Amount</label>
-          <input
-            id="withdrawAmount"
-            type="number"
-            min="1"
-            placeholder="Amount">
-        </div>
-
-        <button
-          class="primaryBtn"
-          onclick="requestWithdrawal()">
-          Request Withdrawal
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- ISP -->
-
-    <section id="page-isp" class="page">
-
-      <div class="ispHeader">
-
-        <h2>🌐 ISP Panel</h2>
-
-        <button
-          class="primaryBtn"
-          style="width:auto"
-          onclick="openCustomerModal()">
-          + Customer
-        </button>
-
-      </div>
-
-
-      <div class="ispGrid">
-
-        <div class="ispStat">
-          <small>Total Customers</small>
-          <strong id="ispTotal">0</strong>
-        </div>
-
-        <div class="ispStat">
-          <small>Active</small>
-          <strong id="ispActive">0</strong>
-        </div>
-
-        <div class="ispStat">
-          <small>Expired</small>
-          <strong id="ispExpired">0</strong>
-        </div>
-
-        <div class="ispStat">
-          <small>Due</small>
-          <strong id="ispDue">৳0</strong>
-        </div>
-
-      </div>
-
-
-      <div class="ispCard" style="margin-top:15px">
-
-        <div class="ispHeader">
-          <h3>Customers</h3>
-
-          <button
-            class="secondaryBtn"
-            onclick="loadISPCustomers()">
-            🔄 Refresh
-          </button>
-        </div>
-
-        <div id="ispCustomers">
-          Loading...
-        </div>
-
-      </div>
-
-
-      <div class="ispCard">
-
-        <div class="ispHeader">
-          <h3>ISP Packages</h3>
-
-          <button
-            class="primaryBtn"
-            style="width:auto"
-            onclick="openPackageModal()">
-            + Package
-          </button>
-        </div>
-
-        <div id="ispPackages">
-          Loading...
-        </div>
-
-      </div>
-
-
-      <div class="ispCard">
-
-        <h3>Payment Records</h3>
-
-        <div class="tableWrap">
-          <table>
-
-            <thead>
-              <tr>
-                <th>Customer</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-
-            <tbody id="ispPayments"></tbody>
-
-          </table>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SETTINGS -->
-
-    <section id="page-settings" class="page">
-
-      <div class="settingsCard">
-
-        <h2>⚙️ Settings</h2>
-
-        <div class="settingsItem">
-          <div>
-            <strong>Account</strong>
-            <div id="settingsEmail" style="color:var(--muted)"></div>
-          </div>
-        </div>
-
-        <div class="settingsItem">
-
-          <div>
-            <strong>Dark Mode</strong>
-            <div style="color:var(--muted)">
-              App appearance
-            </div>
-          </div>
-
-          <button
-            class="secondaryBtn"
-            onclick="toggleDark()">
-            Toggle
-          </button>
-
-        </div>
-
-        <div class="settingsItem">
-
-          <div>
-            <strong>Notifications</strong>
-          </div>
-
-          <button
-            class="secondaryBtn"
-            onclick="openNotifications()">
-            Open
-          </button>
-
-        </div>
-
-        <div class="settingsItem">
-
-          <div>
-            <strong>Logout</strong>
-          </div>
-
-          <button
-            class="dangerBtn"
-            onclick="logout()">
-            Logout
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- BOTTOM NAV -->
-
-  <nav class="bottomNav">
-
-    <button
-      class="navBtn active"
-      data-page="home"
-      onclick="openPage('home')">
-      🏠
-      <span>Home</span>
-    </button>
-
-    <button
-      class="navBtn"
-      data-page="reels"
-      onclick="openPage('reels')">
-      🎬
-      <span>Reels</span>
-    </button>
-
-    <button
-      class="navBtn"
-      data-page="search"
-      onclick="openPage('search')">
-      🔎
-      <span>Search</span>
-    </button>
-
-    <button
-      class="navBtn"
-      data-page="profile"
-      onclick="openPage('profile')">
-      👤
-      <span>Profile</span>
-    </button>
-
-    <button
-      class="navBtn"
-      data-page="isp"
-      onclick="openPage('isp')">
-      🌐
-      <span>ISP</span>
-    </button>
-
-  </nav>
+<div id="reelList"></div>
 
 </section>
 
 
-<!-- PROFILE MODAL -->
+<!-- =========================================================
+ PROFILE
+========================================================= -->
 
-<div id="profileModal" class="modal">
+<section id="profile" class="page">
 
-  <div class="modalBox">
+<div class="card">
 
-    <div class="modalHead">
-      <h2>Edit Profile</h2>
+<h2>👤 Profile</h2>
 
-      <button
-        class="iconBtn"
-        onclick="closeModal('profileModal')">
-        ✕
-      </button>
-    </div>
+<div class="field">
+<label>Name</label>
+<input id="profileName">
+</div>
 
-    <div class="field">
-      <label>Name</label>
-      <input id="editName">
-    </div>
+<div class="field">
+<label>Bio</label>
+<textarea id="profileBio"></textarea>
+</div>
 
-    <div class="field">
-      <label>Bio</label>
-      <textarea id="editBio"></textarea>
-    </div>
+<div class="field">
+<label>Profile Photo URL</label>
+<input id="profilePhoto">
+</div>
 
-    <div class="field">
-      <label>Avatar URL</label>
-      <input
-        id="editAvatar"
-        placeholder="https://...">
-    </div>
+<div class="field">
+<label>Cover Photo URL</label>
+<input id="coverPhoto">
+</div>
 
-    <div class="field">
-      <label>Cover URL</label>
-      <input
-        id="editCover"
-        placeholder="https://...">
-    </div>
+<button class="primary" onclick="saveProfile()">
+Save Profile
+</button>
 
-    <button
-      class="primaryBtn"
-      onclick="saveProfile()">
-      Save Profile
-    </button>
+</div>
 
-  </div>
+</section>
+
+
+<!-- =========================================================
+ ISP DASHBOARD
+========================================================= -->
+
+<section id="ispDashboard" class="page">
+
+<h2>📡 ISP Dashboard</h2>
+
+<div class="grid">
+
+<div class="stat">
+Customers
+<b id="statCustomers">0</b>
+</div>
+
+<div class="stat">
+Active
+<b id="statActive">0</b>
+</div>
+
+<div class="stat">
+Expired
+<b id="statExpired">0</b>
+</div>
+
+<div class="stat">
+Packages
+<b id="statPackages">0</b>
+</div>
+
+<div class="stat">
+Payments
+<b id="statPayments">0</b>
+</div>
+
+<div class="stat">
+Collection
+<b id="statCollection">৳0</b>
+</div>
+
+<div class="stat">
+Expenses
+<b id="statExpenses">৳0</b>
+</div>
+
+<div class="stat">
+Online
+<b id="statOnline">0</b>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Quick Actions</h3>
+
+<div class="actions">
+<button class="primary" onclick="openCustomerModal()">➕ Customer</button>
+<button class="primary" onclick="openPackageModal()">➕ Package</button>
+<button class="success" onclick="openPaymentModal()">💳 Payment</button>
+<button class="secondary" onclick="showPage('billing')">🧾 Billing</button>
+<button class="secondary" onclick="showPage('network')">📡 Network</button>
+</div>
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ CUSTOMERS
+========================================================= -->
+
+<section id="customers" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">👥 Customers</h2>
+<button class="primary" onclick="openCustomerModal()">+ Add</button>
+</div>
+
+<input id="customerSearch"
+placeholder="Search customer..."
+oninput="renderCustomers()"
+style="width:100%;padding:12px;border:1px solid #ddd;border-radius:12px">
+
+</div>
+
+<div class="card tablewrap">
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Phone</th>
+<th>Package</th>
+<th>Bill</th>
+<th>Expiry</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="customerTable"></tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ PACKAGES
+========================================================= -->
+
+<section id="packages" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">📦 Packages</h2>
+<button class="primary" onclick="openPackageModal()">+ Package</button>
+</div>
+
+<div id="packageList"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ BILLING
+========================================================= -->
+
+<section id="billing" class="page">
+
+<div class="card">
+
+<h2>🧾 Billing</h2>
+
+<div class="grid">
+
+<div class="stat">
+Total Bills
+<b id="billCount">0</b>
+</div>
+
+<div class="stat">
+Total Amount
+<b id="billAmount">৳0</b>
+</div>
+
+<div class="stat">
+Paid
+<b id="billPaid">৳0</b>
+</div>
+
+<div class="stat">
+Due
+<b id="billDue">৳0</b>
+</div>
+
+</div>
+
+</div>
+
+<div class="card tablewrap">
+
+<table>
+<thead>
+<tr>
+<th>Customer</th>
+<th>Month</th>
+<th>Amount</th>
+<th>Paid</th>
+<th>Due</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="billTable"></tbody>
+</table>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ PAYMENTS
+========================================================= -->
+
+<section id="payments" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">💳 Payments</h2>
+<button class="success" onclick="openPaymentModal()">+ Payment</button>
+</div>
+
+<div class="tablewrap">
+
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Customer</th>
+<th>Amount</th>
+<th>Method</th>
+<th>Transaction</th>
+</tr>
+</thead>
+<tbody id="paymentTable"></tbody>
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ INVOICES
+========================================================= -->
+
+<section id="invoices" class="page">
+
+<div class="card">
+
+<h2>🧾 Invoices</h2>
+
+<div class="tablewrap">
+<table>
+
+<thead>
+<tr>
+<th>Invoice</th>
+<th>Customer</th>
+<th>Amount</th>
+<th>Paid</th>
+<th>Due</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="invoiceTable"></tbody>
+
+</table>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ EXPENSES
+========================================================= -->
+
+<section id="expenses" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">💰 Expenses</h2>
+<button class="danger" onclick="openExpenseModal()">+ Expense</button>
+</div>
+
+<div class="tablewrap">
+
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Category</th>
+<th>Amount</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody id="expenseTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ ONLINE USERS
+========================================================= -->
+
+<section id="online" class="page">
+
+<div class="card">
+
+<h2>🌐 Online Users</h2>
+
+<div id="onlineList"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ NETWORK
+========================================================= -->
+
+<section id="network" class="page">
+
+<div class="card">
+
+<h2>📡 Network Management</h2>
+
+<div class="actions">
+<button class="primary" onclick="openRouterModal()">
+➕ MikroTik Router
+</button>
+
+<button class="primary" onclick="openPPPoEModal()">
+➕ PPPoE Account
+</button>
+
+<button class="secondary" onclick="openBandwidthModal()">
+⚡ Bandwidth Profile
+</button>
+
+<button class="secondary" onclick="openOLTModal()">
+📡 Add OLT
+</button>
+
+<button class="secondary" onclick="openONUModal()">
+📶 Add ONU
+</button>
+</div>
 
 </div>
 
 
-<!-- CUSTOMER MODAL -->
+<div class="card">
 
-<div id="customerModal" class="modal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <h2>New ISP Customer</h2>
-
-      <button
-        class="iconBtn"
-        onclick="closeModal('customerModal')">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="field">
-      <label>Customer Name</label>
-      <input id="customerName">
-    </div>
-
-    <div class="field">
-      <label>Phone</label>
-      <input id="customerPhone">
-    </div>
-
-    <div class="field">
-      <label>Address</label>
-      <textarea id="customerAddress"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Package</label>
-      <select id="customerPackage"></select>
-    </div>
-
-    <div class="field">
-      <label>Monthly Bill</label>
-      <input
-        id="customerBill"
-        type="number">
-    </div>
-
-    <div class="field">
-      <label>Due Date</label>
-      <input
-        id="customerDueDate"
-        type="date">
-    </div>
-
-    <button
-      class="primaryBtn"
-      onclick="saveCustomer()">
-      Save Customer
-    </button>
-
-  </div>
+<h3>📡 MikroTik Routers</h3>
+<div id="routerList"></div>
 
 </div>
 
 
-<!-- PACKAGE MODAL -->
+<div class="card">
 
-<div id="packageModal" class="modal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <h2>New ISP Package</h2>
-
-      <button
-        class="iconBtn"
-        onclick="closeModal('packageModal')">
-        ✕
-      </button>
-
-    </div>
-
-    <div class="field">
-      <label>Package Name</label>
-      <input id="packageName">
-    </div>
-
-    <div class="field">
-      <label>Speed</label>
-      <input
-        id="packageSpeed"
-        placeholder="20 Mbps">
-    </div>
-
-    <div class="field">
-      <label>Monthly Price</label>
-      <input
-        id="packagePrice"
-        type="number">
-    </div>
-
-    <button
-      class="primaryBtn"
-      onclick="savePackage()">
-      Save Package
-    </button>
-
-  </div>
+<h3>🔑 PPPoE Accounts</h3>
+<div id="pppoeList"></div>
 
 </div>
 
 
-<!-- NOTIFICATION MODAL -->
+<div class="card">
 
-<div id="notificationModal" class="modal">
-
-  <div class="modalBox">
-
-    <div class="modalHead">
-
-      <h2>🔔 Notifications</h2>
-
-      <button
-        class="iconBtn"
-        onclick="closeModal('notificationModal')">
-        ✕
-      </button>
-
-    </div>
-
-    <div id="notifications">
-      No notifications
-    </div>
-
-  </div>
+<h3>⚡ Bandwidth Profiles</h3>
+<div id="bandwidthList"></div>
 
 </div>
 
 
-<div id="toast"></div>
+<div class="card">
+
+<h3>📡 OLT Devices</h3>
+<div id="oltList"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>📶 ONU / ONT Devices</h3>
+<div id="onuList"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ SUPPORT
+========================================================= -->
+
+<section id="support" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">🎫 Support Tickets</h2>
+<button class="primary" onclick="openTicketModal()">+ Ticket</button>
+</div>
+
+<div id="ticketList"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ STAFF
+========================================================= -->
+
+<section id="staff" class="page">
+
+<div class="card">
+
+<div class="actions">
+<h2 style="flex:1">👨‍💼 Staff</h2>
+<button class="primary" onclick="openStaffModal()">+ Staff</button>
+</div>
+
+<div id="staffList"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ REPORTS
+========================================================= -->
+
+<section id="reports" class="page">
+
+<div class="card">
+
+<h2>📊 Reports</h2>
+
+<div class="grid">
+
+<div class="stat">
+Monthly Collection
+<b id="reportCollection">৳0</b>
+</div>
+
+<div class="stat">
+Monthly Expense
+<b id="reportExpense">৳0</b>
+</div>
+
+<div class="stat">
+Net
+<b id="reportNet">৳0</b>
+</div>
+
+<div class="stat">
+Outstanding
+<b id="reportOutstanding">৳0</b>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Customer Status</h3>
+<div id="statusReport"></div>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ ISP SETTINGS
+========================================================= -->
+
+<section id="ispSettings" class="page">
+
+<div class="card">
+
+<h2>⚙️ ISP Settings</h2>
+
+<div class="field">
+<label>Business Name</label>
+<input id="ispBusinessName">
+</div>
+
+<div class="field">
+<label>Phone</label>
+<input id="ispPhone">
+</div>
+
+<div class="field">
+<label>Email</label>
+<input id="ispEmail">
+</div>
+
+<div class="field">
+<label>Address</label>
+<textarea id="ispAddress"></textarea>
+</div>
+
+<div class="field">
+<label>Support Phone</label>
+<input id="ispSupportPhone">
+</div>
+
+<div class="field">
+<label>bKash Number</label>
+<input id="ispBkash">
+</div>
+
+<div class="field">
+<label>Nagad Number</label>
+<input id="ispNagad">
+</div>
+
+<div class="field">
+<label>Currency</label>
+<input id="ispCurrency" value="BDT">
+</div>
+
+<button class="primary" onclick="saveISPSettings()">
+Save Settings
+</button>
+
+</div>
+
+</section>
+
+
+<!-- =========================================================
+ NOTIFICATIONS
+========================================================= -->
+
+<section id="notifications" class="page">
+
+<div class="card">
+
+<h2>🔔 Notifications</h2>
+
+<div id="notificationList"></div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- =========================================================
+ BOTTOM NAV
+========================================================= -->
+
+<nav class="bottom">
+
+<button onclick="showPage('home')">
+<span>🏠</span>Home
+</button>
+
+<button onclick="showPage('reels')">
+<span>🎬</span>Reels
+</button>
+
+<button onclick="showPage('ispDashboard')">
+<span>📡</span>ISP
+</button>
+
+<button onclick="showPage('customers')">
+<span>👥</span>Customers
+</button>
+
+<button onclick="showPage('profile')">
+<span>👤</span>Profile
+</button>
+
+</nav>
+
+</section>
+
+
+<!-- =========================================================
+ MODAL
+========================================================= -->
+
+<div id="modal" class="modal hidden">
+
+<div class="modalbox">
+
+<div class="actions">
+<h2 id="modalTitle" style="flex:1">Form</h2>
+<button class="secondary" onclick="closeModal()">✕</button>
+</div>
+
+<div id="modalContent"></div>
+
+</div>
+
+</div>
 
 
 <script>
 
 /* =========================================================
-   SUPABASE CONFIG
+ SUPABASE
 ========================================================= */
 
 const SUPABASE_URL =
@@ -1542,2665 +917,2397 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-const {createClient} =
-supabase;
+const {createClient} = supabase;
 
-const db =
-createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const db = createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
 let currentUser = null;
-let profile = null;
-let ispPackages = [];
+
+let customers = [];
+let packages = [];
+let payments = [];
+let invoices = [];
+let expenses = [];
+let bills = [];
+let onlineUsers = [];
+let routers = [];
+let pppoe = [];
+let bandwidth = [];
+let olts = [];
+let onus = [];
+let tickets = [];
+let staff = [];
 
 
 /* =========================================================
-   HELPERS
+ AUTH
 ========================================================= */
 
-function $(id){
-  return document.getElementById(id);
+async function login(){
+
+const email =
+document.getElementById("loginEmail").value.trim();
+
+const password =
+document.getElementById("loginPassword").value;
+
+if(!email || !password){
+authMessage("Email এবং password দিন");
+return;
 }
 
-function escapeHTML(value){
-  if(value === null || value === undefined){
-    return "";
-  }
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function toast(message){
-
-  const t = $("toast");
-
-  t.textContent = message;
-  t.style.display = "block";
-
-  setTimeout(()=>{
-    t.style.display = "none";
-  },3000);
-}
-
-function showMessage(message){
-
-  const el = $("authMessage");
-
-  el.textContent = message;
-  el.classList.remove("hidden");
-}
-
-function closeModal(id){
-  $(id).classList.remove("show");
-}
-
-
-/* =========================================================
-   AUTH UI
-========================================================= */
-
-function showAuth(type){
-
-  if(type === "login"){
-
-    $("loginForm").classList.remove("hidden");
-    $("signupForm").classList.add("hidden");
-
-    $("loginTab").classList.add("active");
-    $("signupTab").classList.remove("active");
-
-  }else{
-
-    $("loginForm").classList.add("hidden");
-    $("signupForm").classList.remove("hidden");
-
-    $("loginTab").classList.remove("active");
-    $("signupTab").classList.add("active");
-
-  }
-
-  $("authMessage").classList.add("hidden");
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-$("loginForm").addEventListener(
-"submit",
-async function(e){
-
-  e.preventDefault();
-
-  const email =
-    $("loginEmail").value.trim();
-
-  const password =
-    $("loginPassword").value;
-
-  if(!email || !password){
-    showMessage("Email এবং password দিন");
-    return;
-  }
-
-  showMessage("Login হচ্ছে...");
-
-  const {data,error} =
-    await db.auth.signInWithPassword({
-      email,
-      password
-    });
-
-  if(error){
-
-    console.error(error);
-
-    showMessage(
-      "Login failed: " + error.message
-    );
-
-    return;
-  }
-
-  currentUser = data.user;
-
-  await startApp();
-
+const {data,error} =
+await db.auth.signInWithPassword({
+email,
+password
 });
 
-
-/* =========================================================
-   SIGNUP
-========================================================= */
-
-$("signupForm").addEventListener(
-"submit",
-async function(e){
-
-  e.preventDefault();
-
-  const name =
-    $("signupName").value.trim();
-
-  const email =
-    $("signupEmail").value.trim();
-
-  const password =
-    $("signupPassword").value;
-
-  if(password.length < 6){
-    showMessage(
-      "Password কমপক্ষে ৬ অক্ষরের হতে হবে"
-    );
-    return;
-  }
-
-  showMessage("Account তৈরি হচ্ছে...");
-
-  const {data,error} =
-    await db.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          name:name
-        }
-      }
-    });
-
-  if(error){
-
-    console.error(error);
-
-    showMessage(
-      "Signup failed: " + error.message
-    );
-
-    return;
-  }
-
-  if(data.user){
-
-    currentUser = data.user;
-
-    await createProfileIfNeeded(name);
-
-    if(data.session){
-      await startApp();
-    }else{
-
-      showMessage(
-        "Account তৈরি হয়েছে। Email confirmation চালু থাকলে email verify করে Login করুন।"
-      );
-
-    }
-
-  }
-
-});
-
-
-/* =========================================================
-   PASSWORD RESET
-========================================================= */
-
-async function resetPassword(){
-
-  const email =
-    prompt("আপনার account email দিন:");
-
-  if(!email) return;
-
-  const {error} =
-    await db.auth.resetPasswordForEmail(
-      email.trim(),
-      {
-        redirectTo:
-          window.location.origin +
-          window.location.pathname
-      }
-    );
-
-  if(error){
-    showMessage(error.message);
-  }else{
-    showMessage(
-      "Password reset email পাঠানো হয়েছে।"
-    );
-  }
+if(error){
+authMessage(error.message);
+return;
 }
 
+currentUser=data.user;
 
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-db.auth.onAuthStateChange(
-async(event,session)=>{
-
-  if(session && session.user){
-
-    currentUser =
-      session.user;
-
-    await startApp();
-
-  }
-
-});
-
-
-async function checkSession(){
-
-  const {data,error} =
-    await db.auth.getSession();
-
-  if(error){
-
-    console.error(error);
-
-    return;
-  }
-
-  if(data.session){
-
-    currentUser =
-      data.session.user;
-
-    await startApp();
-
-  }else{
-
-    showAuthScreen();
-
-  }
+await startApp();
 
 }
 
 
-/* =========================================================
-   START APP
-========================================================= */
+async function signup(){
+
+const email =
+document.getElementById("loginEmail").value.trim();
+
+const password =
+document.getElementById("loginPassword").value;
+
+if(!email || !password){
+authMessage("Email এবং password দিন");
+return;
+}
+
+const {data,error} =
+await db.auth.signUp({
+email,
+password
+});
+
+if(error){
+authMessage(error.message);
+return;
+}
+
+authMessage(
+"Account তৈরি হয়েছে। Email verification প্রয়োজন হলে email verify করুন।"
+);
+
+}
+
+
+function authMessage(msg){
+
+document.getElementById("authMsg").textContent=msg;
+
+}
+
+
+async function logout(){
+
+await db.auth.signOut();
+
+currentUser=null;
+
+document
+.getElementById("appScreen")
+.classList.add("hidden");
+
+document
+.getElementById("authScreen")
+.classList.remove("hidden");
+
+}
+
 
 async function startApp(){
 
-  $("authScreen")
-    .classList.add("hidden");
+document
+.getElementById("authScreen")
+.classList.add("hidden");
 
-  $("app")
-    .classList.remove("hidden");
+document
+.getElementById("appScreen")
+.classList.remove("hidden");
 
-  $("settingsEmail").textContent =
-    currentUser.email || "";
+await loadAll();
 
-  await createProfileIfNeeded(
-    currentUser.user_metadata?.name ||
-    currentUser.email?.split("@")[0] ||
-    "User"
-  );
-
-  await loadProfile();
-
-  await loadFeed();
-
-  await loadReels();
-
-  await loadMonetization();
-
-  await loadISPCustomers();
-
-  await loadISPPackages();
-
-  await loadISPPayments();
+showPage("home");
 
 }
 
 
-function showAuthScreen(){
+db.auth.onAuthStateChange((event,session)=>{
 
-  $("authScreen")
-    .classList.remove("hidden");
+if(session && !currentUser){
 
-  $("app")
-    .classList.add("hidden");
+currentUser=session.user;
+
+startApp();
 
 }
+
+});
 
 
 /* =========================================================
-   PROFILE
+ NAVIGATION
 ========================================================= */
 
-async function createProfileIfNeeded(name){
+function showPage(id){
 
-  if(!currentUser) return;
+document
+.querySelectorAll(".page")
+.forEach(p=>p.classList.remove("active"));
 
-  const {data,error} =
-    await db
-      .from("profiles")
-      .select("id")
-      .eq("id",currentUser.id)
-      .maybeSingle();
+const page=document.getElementById(id);
 
-  if(error){
+if(page) page.classList.add("active");
 
-    console.log(
-      "Profile lookup:",
-      error.message
-    );
+loadPageData(id);
 
-    return;
-  }
-
-  if(!data){
-
-    const result =
-      await db
-        .from("profiles")
-        .insert({
-          id:currentUser.id,
-          name:name,
-          bio:"",
-          profile_photo:"",
-          cover_photo:""
-        });
-
-    if(result.error){
-
-      console.log(
-        "Profile create:",
-        result.error.message
-      );
-
-    }
-
-  }
+window.scrollTo(0,0);
 
 }
 
 
-async function loadProfile(){
+async function loadPageData(id){
 
-  if(!currentUser) return;
+if(id==="home") await loadFeed();
+if(id==="reels") await loadReels();
 
-  const {data,error} =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq("id",currentUser.id)
-      .maybeSingle();
-
-  if(error){
-
-    console.log(
-      "Profile:",
-      error.message
-    );
-
-    return;
-  }
-
-  profile = data || {};
-
-  $("profileName").textContent =
-    profile.name ||
-    currentUser.email ||
-    "User";
-
-  $("profileBio").textContent =
-    profile.bio || "";
-
-  $("profileAvatar").src =
-    profile.profile_photo ||
-    "https://ui-avatars.com/api/?name=" +
-    encodeURIComponent(
-      profile.name || "User"
-    );
-
-  if(profile.cover_photo){
-
-    $("cover").style.backgroundImage =
-      `url("${profile.cover_photo}")`;
-
-  }
-
-  await loadProfileStats();
-
-}
-
-
-async function loadProfileStats(){
-
-  if(!currentUser) return;
-
-  try{
-
-    const posts =
-      await db
-        .from("posts")
-        .select("id",{count:"exact",head:true})
-        .eq("user_id",currentUser.id);
-
-    $("postCount").textContent =
-      posts.count || 0;
-
-  }catch(e){}
-
-  try{
-
-    const following =
-      await db
-        .from("follows")
-        .select("id",{count:"exact",head:true})
-        .eq("follower_id",currentUser.id);
-
-    $("followingCount").textContent =
-      following.count || 0;
-
-  }catch(e){
-
-    $("followingCount").textContent = 0;
-
-  }
-
-  try{
-
-    const followers =
-      await db
-        .from("follows")
-        .select("id",{count:"exact",head:true})
-        .eq("following_id",currentUser.id);
-
-    $("followerCount").textContent =
-      followers.count || 0;
-
-  }catch(e){
-
-    $("followerCount").textContent = 0;
-
-  }
-
-}
-
-
-function openProfileEdit(){
-
-  $("editName").value =
-    profile?.name || "";
-
-  $("editBio").value =
-    profile?.bio || "";
-
-  $("editAvatar").value =
-    profile?.profile_photo || "";
-
-  $("editCover").value =
-    profile?.cover_photo || "";
-
-  $("profileModal")
-    .classList.add("show");
-
-}
-
-
-async function saveProfile(){
-
-  const update = {
-
-    name:
-      $("editName").value.trim(),
-
-    bio:
-      $("editBio").value.trim(),
-
-    profile_photo:
-      $("editAvatar").value.trim(),
-
-    cover_photo:
-      $("editCover").value.trim()
-
-  };
-
-  const {error} =
-    await db
-      .from("profiles")
-      .update(update)
-      .eq("id",currentUser.id);
-
-  if(error){
-
-    toast(
-      "Profile save failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-  closeModal("profileModal");
-
-  await loadProfile();
-
-  toast("Profile updated");
+if(id==="ispDashboard") await loadDashboard();
+if(id==="customers") await loadCustomers();
+if(id==="packages") await loadPackages();
+if(id==="billing") await loadBills();
+if(id==="payments") await loadPayments();
+if(id==="invoices") await loadInvoices();
+if(id==="expenses") await loadExpenses();
+if(id==="online") await loadOnlineUsers();
+if(id==="network") await loadNetwork();
+if(id==="support") await loadTickets();
+if(id==="staff") await loadStaff();
+if(id==="reports") await loadReports();
+if(id==="ispSettings") await loadISPSettings();
+if(id==="notifications") await loadNotifications();
 
 }
 
 
 /* =========================================================
-   NAVIGATION
+ MODAL
 ========================================================= */
 
-function openPage(page){
+function openModal(title,html){
 
-  document
-    .querySelectorAll(".page")
-    .forEach(el=>{
-      el.classList.remove("active");
-    });
+document.getElementById("modalTitle").textContent=title;
+document.getElementById("modalContent").innerHTML=html;
+document.getElementById("modal").classList.remove("hidden");
 
-  const target =
-    $("page-"+page);
+}
 
-  if(target){
-    target.classList.add("active");
-  }
+function closeModal(){
 
-  document
-    .querySelectorAll(".navBtn")
-    .forEach(btn=>{
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page === page
-      );
-    });
-
-  if(page === "home"){
-    loadFeed();
-  }
-
-  if(page === "reels"){
-    loadReels();
-  }
-
-  if(page === "profile"){
-    loadProfile();
-    loadProfilePosts();
-  }
-
-  if(page === "monetization"){
-    loadMonetization();
-  }
-
-  if(page === "isp"){
-    loadISPCustomers();
-    loadISPPackages();
-    loadISPPayments();
-  }
+document.getElementById("modal").classList.add("hidden");
 
 }
 
 
 /* =========================================================
-   UPLOAD FILE
-========================================================= */
-
-async function uploadToStorage(file){
-
-  if(!file) return null;
-
-  const ext =
-    file.name.split(".").pop();
-
-  const path =
-    currentUser.id +
-    "/" +
-    Date.now() +
-    "." +
-    ext;
-
-  const {error} =
-    await db.storage
-      .from("post-images")
-      .upload(
-        path,
-        file,
-        {
-          upsert:false,
-          contentType:file.type
-        }
-      );
-
-  if(error){
-
-    console.error(error);
-
-    throw new Error(
-      "Storage upload failed: " +
-      error.message
-    );
-
-  }
-
-  const {data} =
-    db.storage
-      .from("post-images")
-      .getPublicUrl(path);
-
-  return data.publicUrl;
-
-}
-
-
-/* =========================================================
-   CREATE POST
-========================================================= */
-
-async function createPost(){
-
-  if(!currentUser){
-    toast("Login করুন");
-    return;
-  }
-
-  const text =
-    $("postText").value.trim();
-
-  const imageFile =
-    $("postImage").files[0];
-
-  const videoFile =
-    $("postVideo").files[0];
-
-  if(!text && !imageFile && !videoFile){
-
-    toast("Post করার জন্য কিছু দিন");
-
-    return;
-  }
-
-  try{
-
-    $("postStatus").textContent =
-      "Uploading...";
-
-    let image_url = null;
-
-    if(imageFile){
-
-      image_url =
-        await uploadToStorage(imageFile);
-
-    }
-
-    let video_url = null;
-
-    if(videoFile){
-
-      video_url =
-        await uploadToStorage(videoFile);
-
-    }
-
-    const postData = {
-
-      user_id:
-        currentUser.id,
-
-      text:
-        text || null,
-
-      image_url:
-        image_url,
-
-      created_at:
-        new Date().toISOString()
-
-    };
-
-    /*
-      Existing posts table may not contain video_url.
-      Therefore video is stored through post_media
-      when available.
-    */
-
-    const {data,error} =
-      await db
-        .from("posts")
-        .insert(postData)
-        .select()
-        .single();
-
-    if(error){
-
-      throw error;
-
-    }
-
-    if(video_url && data?.id){
-
-      const mediaResult =
-        await db
-          .from("post_media")
-          .insert({
-            post_id:data.id,
-            media_url:video_url,
-            media_type:"video",
-            sort_order:0
-          });
-
-      if(mediaResult.error){
-
-        console.log(
-          "post_media:",
-          mediaResult.error.message
-        );
-
-      }
-
-    }
-
-    $("postText").value = "";
-
-    $("postImage").value = "";
-
-    $("postVideo").value = "";
-
-    $("postStatus").textContent = "";
-
-    toast("Post published");
-
-    await loadFeed();
-
-  }catch(error){
-
-    console.error(error);
-
-    $("postStatus").textContent = "";
-
-    toast(
-      "Post failed: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD FEED
-========================================================= */
-
-async function loadFeed(){
-
-  const feed =
-    $("feed");
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("posts")
-        .select("*")
-        .order("created_at",{ascending:false})
-        .limit(50);
-
-    if(error) throw error;
-
-    if(!data || !data.length){
-
-      feed.innerHTML =
-        `<div class="settingsCard">
-          এখনো কোনো পোস্ট নেই।
-        </div>`;
-
-      return;
-    }
-
-    feed.innerHTML = "";
-
-    for(const post of data){
-
-      const html =
-        await renderPost(post);
-
-      feed.insertAdjacentHTML(
-        "beforeend",
-        html
-      );
-
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    feed.innerHTML =
-      `<div class="settingsCard">
-        Feed load error:<br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-/* =========================================================
-   RENDER POST
-========================================================= */
-
-async function renderPost(post){
-
-  let user = null;
-
-  try{
-
-    const result =
-      await db
-        .from("profiles")
-        .select("name,profile_photo")
-        .eq("id",post.user_id)
-        .maybeSingle();
-
-    user = result.data;
-
-  }catch(e){}
-
-  const name =
-    user?.name ||
-    "User";
-
-  const avatar =
-    user?.profile_photo ||
-    "https://ui-avatars.com/api/?name="+
-    encodeURIComponent(name);
-
-  let media = "";
-
-  if(post.image_url){
-
-    media +=
-      `<img
-        class="postMedia"
-        src="${escapeHTML(post.image_url)}"
-        alt="post">`;
-
-  }
-
-  const comments =
-    await getComments(post.id);
-
-  return `
-
-    <article class="post">
-
-      <div class="postHeader">
-
-        <img
-          class="avatar"
-          src="${escapeHTML(avatar)}">
-
-        <div>
-
-          <div class="postName">
-            ${escapeHTML(name)}
-          </div>
-
-          <div class="postDate">
-            ${formatDate(post.created_at)}
-          </div>
-
-        </div>
-
-      </div>
-
-      ${
-        post.text
-        ?
-        `<div class="postText">
-          ${escapeHTML(post.text)}
-        </div>`
-        :
-        ""
-      }
-
-      ${media}
-
-      <div class="postActions">
-
-        <button
-          class="postAction"
-          onclick="likePost('${post.id}')">
-          ❤️ Like
-        </button>
-
-        <button
-          class="postAction"
-          onclick="focusComment('${post.id}')">
-          💬 Comment
-        </button>
-
-        <button
-          class="postAction"
-          onclick="sharePost('${post.id}')">
-          ↗ Share
-        </button>
-
-      </div>
-
-      <div class="comments">
-
-        <div>
-          ${comments}
-        </div>
-
-        <div
-          class="commentInput"
-          style="margin-top:10px">
-
-          <input
-            id="comment-${post.id}"
-            placeholder="Write a comment...">
-
-          <button
-            class="secondaryBtn"
-            onclick="addComment('${post.id}')">
-            Send
-          </button>
-
-        </div>
-
-      </div>
-
-    </article>
-
-  `;
-
-}
-
-
-/* =========================================================
-   COMMENTS
-========================================================= */
-
-async function getComments(postId){
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("comments")
-        .select("*")
-        .eq("post_id",postId)
-        .order("created_at",{ascending:true})
-        .limit(20);
-
-    if(error) throw error;
-
-    if(!data?.length){
-      return "";
-    }
-
-    return data.map(c=>`
-
-      <div class="comment">
-
-        <strong>
-          User
-        </strong>
-
-        <div>
-          ${escapeHTML(c.text)}
-        </div>
-
-      </div>
-
-    `).join("");
-
-  }catch(e){
-
-    return "";
-
-  }
-
-}
-
-
-async function addComment(postId){
-
-  const input =
-    $("comment-"+postId);
-
-  const text =
-    input.value.trim();
-
-  if(!text) return;
-
-  const {error} =
-    await db
-      .from("comments")
-      .insert({
-        post_id:postId,
-        user_id:currentUser.id,
-        text:text,
-        created_at:new Date().toISOString()
-      });
-
-  if(error){
-
-    toast(
-      "Comment failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-  input.value = "";
-
-  toast("Comment added");
-
-  await loadFeed();
-
-}
-
-
-function focusComment(postId){
-
-  const input =
-    $("comment-"+postId);
-
-  if(input){
-
-    input.focus();
-
-  }
-
-}
-
-
-async function likePost(postId){
-
-  try{
-
-    const {error} =
-      await db
-        .from("post_likes")
-        .insert({
-          post_id:postId,
-          user_id:currentUser.id
-        });
-
-    if(error){
-
-      if(
-        error.code === "23505"
-      ){
-
-        toast("Already liked");
-
-      }else{
-
-        toast(
-          "Like error: " +
-          error.message
-        );
-
-      }
-
-      return;
-    }
-
-    toast("❤️ Liked");
-
-  }catch(e){
-
-    toast("Like failed");
-
-  }
-
-}
-
-
-function sharePost(postId){
-
-  const url =
-    window.location.origin +
-    window.location.pathname +
-    "?post="+
-    encodeURIComponent(postId);
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"My Social App",
-      url:url
-    });
-
-  }else{
-
-    navigator.clipboard?.writeText(url);
-
-    toast("Post link copied");
-
-  }
-
-}
-
-
-/* =========================================================
-   REELS
-========================================================= */
-
-async function loadReels(){
-
-  const container =
-    $("reels");
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("reels")
-        .select("*")
-        .order("created_at",{ascending:false})
-        .limit(30);
-
-    if(error) throw error;
-
-    if(!data?.length){
-
-      container.innerHTML =
-        `<div class="settingsCard">
-          এখনো কোনো Reel নেই।
-        </div>`;
-
-      return;
-    }
-
-    container.innerHTML =
-      data.map(reel=>`
-
-      <article class="reelCard">
-
-        <video
-          src="${escapeHTML(reel.video_url)}"
-          controls
-          playsinline
-          preload="metadata">
-        </video>
-
-        <div class="reelButtons">
-
-          <button
-            class="reelBtn"
-            onclick="likeReel('${reel.id}')">
-            ❤️
-          </button>
-
-          <button
-            class="reelBtn"
-            onclick="shareReel('${reel.id}')">
-            ↗
-          </button>
-
-        </div>
-
-        <div class="reelOverlay">
-
-          <strong>
-            ${escapeHTML(
-              reel.audio_name ||
-              "Original Audio"
-            )}
-          </strong>
-
-          <div style="margin-top:7px">
-            ${escapeHTML(
-              reel.caption || ""
-            )}
-          </div>
-
-        </div>
-
-      </article>
-
-      `).join("");
-
-  }catch(error){
-
-    console.error(error);
-
-    container.innerHTML =
-      `<div class="settingsCard">
-        Reel load error:<br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-async function uploadReel(){
-
-  const file =
-    $("reelFile").files[0];
-
-  if(!file) return;
-
-  try{
-
-    toast("Reel uploading...");
-
-    const url =
-      await uploadToStorage(file);
-
-    const {error} =
-      await db
-        .from("reels")
-        .insert({
-
-          user_id:
-            currentUser.id,
-
-          video_url:
-            url,
-
-          caption:
-            "My Reel",
-
-          audio_name:
-            "Original Audio",
-
-          views:0,
-
-          created_at:
-            new Date().toISOString()
-
-        });
-
-    if(error) throw error;
-
-    $("reelFile").value = "";
-
-    toast("Reel uploaded");
-
-    await loadReels();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      "Reel upload failed: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-async function likeReel(id){
-
-  try{
-
-    const {error} =
-      await db
-        .from("reel_reactions")
-        .insert({
-          reel_id:id,
-          user_id:currentUser.id,
-          reaction:"like"
-        });
-
-    if(error){
-
-      toast(
-        "Reel like: " +
-        error.message
-      );
-
-      return;
-    }
-
-    toast("❤️ Reel liked");
-
-  }catch(e){
-
-    toast("Reel like failed");
-
-  }
-
-}
-
-
-function shareReel(id){
-
-  const url =
-    window.location.origin +
-    window.location.pathname +
-    "?reel="+
-    encodeURIComponent(id);
-
-  if(navigator.share){
-
-    navigator.share({
-      title:"My Social App Reel",
-      url:url
-    });
-
-  }else{
-
-    navigator.clipboard?.writeText(url);
-
-    toast("Reel link copied");
-
-  }
-
-}
-
-
-/* =========================================================
-   PROFILE POSTS
-========================================================= */
-
-async function loadProfilePosts(){
-
-  const container =
-    $("profilePosts");
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("posts")
-        .select("*")
-        .eq("user_id",currentUser.id)
-        .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    container.innerHTML = "";
-
-    for(const post of data || []){
-
-      container.insertAdjacentHTML(
-        "beforeend",
-        await renderPost(post)
-      );
-
-    }
-
-  }catch(error){
-
-    container.innerHTML =
-      `<div class="settingsCard">
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-async function searchUsers(){
-
-  const query =
-    (
-      $("userSearch")?.value ||
-      $("searchInput")?.value ||
-      ""
-    ).trim();
-
-  if(!query){
-
-    openPage("search");
-
-    return;
-
-  }
-
-  openPage("search");
-
-  $("userSearch").value =
-    query;
-
-  const results =
-    $("searchResults");
-
-  results.innerHTML =
-    `<div class="settingsCard">
-      Searching...
-    </div>`;
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("profiles")
-        .select("id,name,bio,profile_photo")
-        .ilike("name","%"+query+"%")
-        .limit(30);
-
-    if(error) throw error;
-
-    if(!data?.length){
-
-      results.innerHTML =
-        `<div class="settingsCard">
-          কোনো user পাওয়া যায়নি।
-        </div>`;
-
-      return;
-
-    }
-
-    results.innerHTML =
-      data.map(user=>`
-
-      <div class="settingsCard">
-
-        <div style="
-          display:flex;
-          align-items:center;
-          gap:12px">
-
-          <img
-            class="avatar"
-            src="${escapeHTML(
-              user.profile_photo ||
-              "https://ui-avatars.com/api/?name="+
-              encodeURIComponent(
-                user.name || "User"
-              )
-            )}">
-
-          <div style="flex:1">
-
-            <strong>
-              ${escapeHTML(
-                user.name || "User"
-              )}
-            </strong>
-
-            <div style="
-              color:var(--muted);
-              font-size:13px">
-              ${escapeHTML(
-                user.bio || ""
-              )}
-            </div>
-
-          </div>
-
-          ${
-            user.id !== currentUser.id
-            ?
-            `<button
-              class="secondaryBtn"
-              onclick="followUser('${user.id}')">
-              Follow
-            </button>`
-            :
-            ""
-          }
-
-        </div>
-
-      </div>
-
-      `).join("");
-
-  }catch(error){
-
-    results.innerHTML =
-      `<div class="settingsCard">
-        Search error:<br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-async function followUser(userId){
-
-  const {error} =
-    await db
-      .from("follows")
-      .insert({
-        follower_id:currentUser.id,
-        following_id:userId
-      });
-
-  if(error){
-
-    if(error.code === "23505"){
-      toast("Already following");
-    }else{
-      toast(error.message);
-    }
-
-    return;
-
-  }
-
-  toast("Following");
-
-}
-
-
-/* =========================================================
-   MONETIZATION
-========================================================= */
-
-async function loadMonetization(){
-
-  if(!currentUser) return;
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("creator_earnings")
-        .select("*")
-        .eq("user_id",currentUser.id);
-
-    if(error) throw error;
-
-    let total = 0;
-    let pending = 0;
-    let withdrawn = 0;
-
-    for(const row of data || []){
-
-      const amount =
-        Number(
-          row.amount ||
-          row.earnings ||
-          row.total ||
-          0
-        );
-
-      total += amount;
-
-      const status =
-        String(
-          row.status || ""
-        ).toLowerCase();
-
-      if(status === "pending"){
-        pending += amount;
-      }
-
-      if(
-        status === "withdrawn" ||
-        status === "paid"
-      ){
-        withdrawn += amount;
-      }
-
-    }
-
-    const available =
-      Math.max(
-        0,
-        total - pending - withdrawn
-      );
-
-    $("totalEarnings").textContent =
-      "৳"+total.toFixed(2);
-
-    $("availableEarnings").textContent =
-      "৳"+available.toFixed(2);
-
-    $("pendingEarnings").textContent =
-      "৳"+pending.toFixed(2);
-
-    $("withdrawnEarnings").textContent =
-      "৳"+withdrawn.toFixed(2);
-
-  }catch(error){
-
-    console.log(
-      "Monetization:",
-      error.message
-    );
-
-  }
-
-}
-
-
-async function requestWithdrawal(){
-
-  const number =
-    $("bkashNumber")
-      .value
-      .trim();
-
-  const amount =
-    Number(
-      $("withdrawAmount").value
-    );
-
-  if(!/^01[3-9]\d{8}$/.test(number)){
-
-    toast(
-      "সঠিক bKash number দিন"
-    );
-
-    return;
-
-  }
-
-  if(!amount || amount <= 0){
-
-    toast(
-      "সঠিক amount দিন"
-    );
-
-    return;
-
-  }
-
-  try{
-
-    const {error} =
-      await db
-        .from("creator_earnings")
-        .insert({
-
-          user_id:
-            currentUser.id,
-
-          amount:
-            amount,
-
-          status:
-            "pending",
-
-          bkash_number:
-            number,
-
-          created_at:
-            new Date().toISOString()
-
-        });
-
-    if(error) throw error;
-
-    toast(
-      "Withdrawal request submitted"
-    );
-
-    $("bkashNumber").value = "";
-
-    $("withdrawAmount").value = "";
-
-    await loadMonetization();
-
-  }catch(error){
-
-    toast(
-      "Withdrawal error: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ISP PACKAGES
-========================================================= */
-
-async function loadISPPackages(){
-
-  const container =
-    $("ispPackages");
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("isp_packages")
-        .select("*")
-        .eq("owner_id",currentUser.id)
-        .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    ispPackages =
-      data || [];
-
-    container.innerHTML =
-      ispPackages.length
-      ?
-      ispPackages.map(pkg=>`
-
-        <div class="customer">
-
-          <div class="customerTop">
-
-            <div>
-
-              <strong>
-                ${escapeHTML(pkg.name)}
-              </strong>
-
-              <div style="
-                color:var(--muted);
-                margin-top:4px">
-
-                ${escapeHTML(
-                  pkg.speed || ""
-                )}
-
-              </div>
-
-            </div>
-
-            <strong>
-              ৳${Number(
-                pkg.price || 0
-              ).toFixed(0)}
-            </strong>
-
-          </div>
-
-        </div>
-
-      `).join("")
-      :
-      `<div style="color:var(--muted)">
-        কোনো package নেই।
-      </div>`;
-
-    populatePackageSelect();
-
-  }catch(error){
-
-    console.log(
-      "ISP packages:",
-      error.message
-    );
-
-    container.innerHTML =
-      `<div style="color:#b91c1c">
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-
-function populatePackageSelect(){
-
-  const select =
-    $("customerPackage");
-
-  select.innerHTML =
-    `<option value="">
-      Select Package
-    </option>` +
-    ispPackages.map(pkg=>
-      `<option value="${escapeHTML(pkg.id)}">
-        ${escapeHTML(pkg.name)}
-        - ৳${Number(pkg.price || 0)}
-      </option>`
-    ).join("");
-
-}
-
-
-function openPackageModal(){
-
-  $("packageName").value = "";
-
-  $("packageSpeed").value = "";
-
-  $("packagePrice").value = "";
-
-  $("packageModal")
-    .classList.add("show");
-
-}
-
-
-async function savePackage(){
-
-  const name =
-    $("packageName").value.trim();
-
-  const speed =
-    $("packageSpeed").value.trim();
-
-  const price =
-    Number(
-      $("packagePrice").value
-    );
-
-  if(!name){
-
-    toast("Package name দিন");
-
-    return;
-
-  }
-
-  const {error} =
-    await db
-      .from("isp_packages")
-      .insert({
-
-        owner_id:
-          currentUser.id,
-
-        name:name,
-
-        speed:speed,
-
-        price:price,
-
-        created_at:
-          new Date().toISOString()
-
-      });
-
-  if(error){
-
-    toast(
-      "Package error: " +
-      error.message
-    );
-
-    return;
-
-  }
-
-  closeModal("packageModal");
-
-  toast("Package created");
-
-  await loadISPPackages();
-
-}
-
-
-/* =========================================================
-   ISP CUSTOMER
+ CUSTOMERS
 ========================================================= */
 
 function openCustomerModal(){
 
-  if(!ispPackages.length){
+openModal("Add Customer",`
 
-    toast(
-      "আগে একটি ISP package তৈরি করুন"
-    );
+<div class="field">
+<label>Customer Code</label>
+<input id="f_code">
+</div>
 
-    openPackageModal();
+<div class="field">
+<label>Name *</label>
+<input id="f_name">
+</div>
 
-    return;
+<div class="field">
+<label>Phone</label>
+<input id="f_phone">
+</div>
 
-  }
+<div class="field">
+<label>Email</label>
+<input id="f_email">
+</div>
 
-  $("customerName").value = "";
+<div class="field">
+<label>Address</label>
+<textarea id="f_address"></textarea>
+</div>
 
-  $("customerPhone").value = "";
+<div class="field">
+<label>Area</label>
+<input id="f_area">
+</div>
 
-  $("customerAddress").value = "";
+<div class="field">
+<label>Username</label>
+<input id="f_username">
+</div>
 
-  $("customerBill").value = "";
+<div class="field">
+<label>Password</label>
+<input id="f_password">
+</div>
 
-  $("customerDueDate").value = "";
+<div class="field">
+<label>Package</label>
+<select id="f_package">
+<option value="">Select package</option>
+${packages.map(p=>`
+<option value="${p.id}">
+${esc(p.name)} - ৳${p.monthly_price||0}
+</option>`).join("")}
+</select>
+</div>
 
-  $("customerModal")
-    .classList.add("show");
+<div class="field">
+<label>Connection Type</label>
+<select id="f_connection">
+<option>PPPoE</option>
+<option>Static IP</option>
+<option>DHCP</option>
+<option>Fiber</option>
+<option>Wireless</option>
+</select>
+</div>
+
+<div class="field">
+<label>Router Name</label>
+<input id="f_router">
+</div>
+
+<div class="field">
+<label>IP Address</label>
+<input id="f_ip">
+</div>
+
+<div class="field">
+<label>MAC Address</label>
+<input id="f_mac">
+</div>
+
+<div class="field">
+<label>Monthly Bill</label>
+<input id="f_bill" type="number">
+</div>
+
+<div class="field">
+<label>Due Date</label>
+<input id="f_due" type="date">
+</div>
+
+<div class="field">
+<label>Expiry Date</label>
+<input id="f_expiry" type="date">
+</div>
+
+<div class="field">
+<label>Notes</label>
+<textarea id="f_notes"></textarea>
+</div>
+
+<button class="primary" onclick="saveCustomer()">
+Save Customer
+</button>
+
+`);
 
 }
 
 
 async function saveCustomer(){
 
-  const name =
-    $("customerName").value.trim();
-
-  const phone =
-    $("customerPhone").value.trim();
-
-  const address =
-    $("customerAddress").value.trim();
-
-  const packageId =
-    $("customerPackage").value;
-
-  const bill =
-    Number(
-      $("customerBill").value
-    );
-
-  const dueDate =
-    $("customerDueDate").value;
-
-  if(!name || !phone){
-
-    toast(
-      "Customer name এবং phone দিন"
-    );
-
-    return;
-
-  }
-
-  const {error} =
-    await db
-      .from("isp_customers")
-      .insert({
-
-        owner_id:
-          currentUser.id,
-
-        name:name,
-
-        phone:phone,
-
-        address:address,
-
-        package_id:
-          packageId || null,
-
-        monthly_bill:
-          bill || 0,
-
-        due_date:
-          dueDate || null,
-
-        status:"active",
-
-        created_at:
-          new Date().toISOString()
-
-      });
-
-  if(error){
-
-    toast(
-      "Customer error: " +
-      error.message
-    );
-
-    return;
-
-  }
-
-  closeModal("customerModal");
-
-  toast("Customer added");
-
-  await loadISPCustomers();
-
+if(!currentUser){
+alert("Login করুন");
+return;
 }
 
+const name=document.getElementById("f_name").value.trim();
 
-async function loadISPCustomers(){
-
-  const container =
-    $("ispCustomers");
-
-  try{
-
-    const {data,error} =
-      await db
-        .from("isp_customers")
-        .select(`
-          *,
-          isp_packages(
-            name,
-            speed,
-            price
-          )
-        `)
-        .eq("owner_id",currentUser.id)
-        .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    const customers =
-      data || [];
-
-    let active = 0;
-    let expired = 0;
-    let due = 0;
-
-    const today =
-      new Date();
-
-    customers.forEach(c=>{
-
-      const d =
-        c.due_date
-        ?
-        new Date(c.due_date)
-        :
-        null;
-
-      if(d && d < today){
-
-        expired++;
-
-      }else{
-
-        active++;
-
-      }
-
-      due +=
-        Number(
-          c.monthly_bill || 0
-        );
-
-    });
-
-    $("ispTotal").textContent =
-      customers.length;
-
-    $("ispActive").textContent =
-      active;
-
-    $("ispExpired").textContent =
-      expired;
-
-    $("ispDue").textContent =
-      "৳"+due.toFixed(0);
-
-    if(!customers.length){
-
-      container.innerHTML =
-        `<div style="color:var(--muted)">
-          কোনো customer নেই।
-        </div>`;
-
-      return;
-
-    }
-
-    container.innerHTML =
-      customers.map(c=>{
-
-        const expired =
-          c.due_date &&
-          new Date(c.due_date) <
-          new Date();
-
-        return `
-
-          <div class="customer">
-
-            <div class="customerTop">
-
-              <div>
-
-                <strong>
-                  ${escapeHTML(c.name)}
-                </strong>
-
-                <div style="
-                  color:var(--muted);
-                  margin-top:5px">
-
-                  📱 ${escapeHTML(c.phone)}
-
-                </div>
-
-                <div style="
-                  color:var(--muted);
-                  margin-top:3px">
-
-                  📦 ${
-                    escapeHTML(
-                      c.isp_packages?.name ||
-                      "No package"
-                    )
-                  }
-
-                </div>
-
-              </div>
-
-              <span class="badge ${
-                expired
-                ? "expired"
-                : "active"
-              }">
-
-                ${
-                  expired
-                  ? "EXPIRED"
-                  : "ACTIVE"
-                }
-
-              </span>
-
-            </div>
-
-            <div style="
-              display:flex;
-              justify-content:space-between;
-              margin-top:12px">
-
-              <span>
-                Bill:
-                <strong>
-                  ৳${Number(
-                    c.monthly_bill || 0
-                  ).toFixed(0)}
-                </strong>
-              </span>
-
-              <span>
-                Due:
-                ${
-                  c.due_date ||
-                  "Not set"
-                }
-              </span>
-
-            </div>
-
-            <div style="
-              display:flex;
-              gap:7px;
-              margin-top:12px">
-
-              <button
-                class="successBtn"
-                onclick="markCustomerPaid('${c.id}')">
-                ✓ Paid
-              </button>
-
-              <button
-                class="dangerBtn"
-                onclick="deleteCustomer('${c.id}')">
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
-
-  }catch(error){
-
-    console.error(error);
-
-    container.innerHTML =
-      `<div style="color:#b91c1c">
-        ISP Customer error:<br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
+if(!name){
+alert("Customer name দিন");
+return;
 }
 
+const obj={
 
-async function markCustomerPaid(customerId){
+owner_id:currentUser.id,
 
-  const {data:customer} =
-    await db
-      .from("isp_customers")
-      .select("*")
-      .eq("id",customerId)
-      .maybeSingle();
+customer_code:
+document.getElementById("f_code").value || null,
 
-  if(!customer){
+name:name,
 
-    toast("Customer পাওয়া যায়নি");
+phone:
+document.getElementById("f_phone").value || null,
 
-    return;
+email:
+document.getElementById("f_email").value || null,
 
-  }
+address:
+document.getElementById("f_address").value || null,
 
-  const amount =
-    Number(
-      customer.monthly_bill || 0
-    );
+area:
+document.getElementById("f_area").value || null,
 
-  const {error} =
-    await db
-      .from("isp_payments")
-      .insert({
+username:
+document.getElementById("f_username").value || null,
 
-        owner_id:
-          currentUser.id,
+password:
+document.getElementById("f_password").value || null,
 
-        customer_id:
-          customerId,
+package_id:
+document.getElementById("f_package").value || null,
 
-        amount:
-          amount,
+connection_type:
+document.getElementById("f_connection").value || null,
 
-        method:
-          "Cash",
+router_name:
+document.getElementById("f_router").value || null,
 
-        paid_at:
-          new Date().toISOString()
+ip_address:
+document.getElementById("f_ip").value || null,
 
-      });
+mac_address:
+document.getElementById("f_mac").value || null,
 
-  if(error){
+monthly_bill:
+Number(document.getElementById("f_bill").value)||0,
 
-    toast(
-      "Payment error: " +
-      error.message
-    );
+due_date:
+document.getElementById("f_due").value || null,
 
-    return;
+expiry_date:
+document.getElementById("f_expiry").value || null,
 
-  }
+status:"active",
 
-  /*
-    Update due date by one month.
-    No expiry_date column is used.
-  */
+notes:
+document.getElementById("f_notes").value || null
 
-  let nextDate =
-    new Date();
+};
 
-  if(customer.due_date){
+const {error}=await db
+.from("isp_customers")
+.insert(obj);
 
-    nextDate =
-      new Date(customer.due_date);
-
-    nextDate.setMonth(
-      nextDate.getMonth()+1
-    );
-
-  }else{
-
-    nextDate.setMonth(
-      nextDate.getMonth()+1
-    );
-
-  }
-
-  const isoDate =
-    nextDate
-      .toISOString()
-      .slice(0,10);
-
-  const result =
-    await db
-      .from("isp_customers")
-      .update({
-        due_date:isoDate,
-        status:"active"
-      })
-      .eq("id",customerId);
-
-  if(result.error){
-
-    toast(
-      "Due date update: " +
-      result.error.message
-    );
-
-  }else{
-
-    toast("Payment recorded");
-
-  }
-
-  await loadISPCustomers();
-
-  await loadISPPayments();
-
+if(error){
+alert(error.message);
+return;
 }
 
+closeModal();
 
-async function deleteCustomer(id){
+await loadCustomers();
 
-  if(
-    !confirm(
-      "এই customer delete করবেন?"
-    )
-  ) return;
-
-  const {error} =
-    await db
-      .from("isp_customers")
-      .delete()
-      .eq("id",id)
-      .eq("owner_id",currentUser.id);
-
-  if(error){
-
-    toast(error.message);
-
-    return;
-
-  }
-
-  toast("Customer deleted");
-
-  await loadISPCustomers();
+alert("Customer saved");
 
 }
 
 
 /* =========================================================
-   ISP PAYMENTS
+ LOAD CUSTOMERS
 ========================================================= */
 
-async function loadISPPayments(){
+async function loadCustomers(){
 
-  const tbody =
-    $("ispPayments");
+if(!currentUser)return;
 
-  try{
+const {data,error}=await db
+.from("isp_customers")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
 
-    const {data,error} =
-      await db
-        .from("isp_payments")
-        .select(`
-          *,
-          isp_customers(name)
-        `)
-        .eq("owner_id",currentUser.id)
-        .order("paid_at",{ascending:false})
-        .limit(100);
+if(error){
+console.error(error);
+return;
+}
 
-    if(error) throw error;
+customers=data||[];
 
-    tbody.innerHTML =
-      (data || []).map(p=>`
+renderCustomers();
 
-        <tr>
+updateStats();
 
-          <td>
-            ${escapeHTML(
-              p.isp_customers?.name ||
-              "Customer"
-            )}
-          </td>
+}
 
-          <td>
-            ৳${Number(
-              p.amount || 0
-            ).toFixed(0)}
-          </td>
 
-          <td>
-            ${escapeHTML(
-              p.method || ""
-            )}
-          </td>
+function renderCustomers(){
 
-          <td>
-            ${formatDate(
-              p.paid_at
-            )}
-          </td>
+const q=
+(document.getElementById("customerSearch")?.value||"")
+.toLowerCase();
 
-        </tr>
+const list=customers.filter(c=>
+(c.name||"").toLowerCase().includes(q) ||
+(c.phone||"").toLowerCase().includes(q) ||
+(c.customer_code||"").toLowerCase().includes(q)
+);
 
-      `).join("");
+document.getElementById("customerTable").innerHTML=
+list.map(c=>`
 
-  }catch(error){
+<tr>
 
-    console.log(
-      "ISP payments:",
-      error.message
-    );
+<td>${esc(c.customer_code||"-")}</td>
 
-    tbody.innerHTML =
-      `<tr>
-        <td colspan="4">
-          ${escapeHTML(error.message)}
-        </td>
-      </tr>`;
+<td>${esc(c.name||"-")}</td>
 
-  }
+<td>${esc(c.phone||"-")}</td>
+
+<td>${packageName(c.package_id)}</td>
+
+<td>৳${c.monthly_bill||c.monthly_fee||0}</td>
+
+<td>${c.expiry_date||"-"}</td>
+
+<td>
+<span class="badge ${
+c.status==="active"?"active":
+c.status==="expired"?"expired":""
+}">
+${esc(c.status||"unknown")}
+</span>
+</td>
+
+<td>
+
+<button class="secondary"
+onclick="customerDetails('${c.id}')">
+View
+</button>
+
+</td>
+
+</tr>
+
+`).join("");
+
+}
+
+
+function customerDetails(id){
+
+const c=customers.find(x=>x.id===id);
+
+if(!c)return;
+
+openModal("Customer Details",`
+
+<h3>${esc(c.name)}</h3>
+
+<p>Code: ${esc(c.customer_code||"-")}</p>
+<p>Phone: ${esc(c.phone||"-")}</p>
+<p>Email: ${esc(c.email||"-")}</p>
+<p>Address: ${esc(c.address||"-")}</p>
+<p>Area: ${esc(c.area||"-")}</p>
+<p>Username: ${esc(c.username||"-")}</p>
+<p>Package: ${packageName(c.package_id)}</p>
+<p>IP: ${esc(c.ip_address||"-")}</p>
+<p>MAC: ${esc(c.mac_address||"-")}</p>
+<p>Bill: ৳${c.monthly_bill||c.monthly_fee||0}</p>
+<p>Due: ${c.due_date||"-"}</p>
+<p>Expiry: ${c.expiry_date||"-"}</p>
+
+<div class="actions">
+
+<button class="success"
+onclick="activateCustomer('${c.id}')">
+Activate
+</button>
+
+<button class="danger"
+onclick="suspendCustomer('${c.id}')">
+Suspend
+</button>
+
+</div>
+
+`);
+
+}
+
+
+async function activateCustomer(id){
+
+const {error}=await db
+.from("isp_customers")
+.update({
+status:"active",
+updated_at:new Date().toISOString()
+})
+.eq("id",id)
+.eq("owner_id",currentUser.id);
+
+if(error)alert(error.message);
+else{
+closeModal();
+loadCustomers();
+}
+
+}
+
+
+async function suspendCustomer(id){
+
+const {error}=await db
+.from("isp_customers")
+.update({
+status:"suspended",
+updated_at:new Date().toISOString()
+})
+.eq("id",id)
+.eq("owner_id",currentUser.id);
+
+if(error)alert(error.message);
+else{
+closeModal();
+loadCustomers();
+}
 
 }
 
 
 /* =========================================================
-   NOTIFICATIONS
+ PACKAGES
 ========================================================= */
 
-async function openNotifications(){
+function openPackageModal(){
 
-  $("notificationModal")
-    .classList.add("show");
+openModal("Add Package",`
 
-  const box =
-    $("notifications");
+<div class="field">
+<label>Name</label>
+<input id="p_name">
+</div>
 
-  try{
+<div class="field">
+<label>Download Mbps</label>
+<input id="p_down" type="number">
+</div>
 
-    const {data,error} =
-      await db
-        .from("notifications")
-        .select("*")
-        .eq("receiver_id",currentUser.id)
-        .order("created_at",{ascending:false})
-        .limit(50);
+<div class="field">
+<label>Upload Mbps</label>
+<input id="p_up" type="number">
+</div>
 
-    if(error) throw error;
+<div class="field">
+<label>Monthly Price</label>
+<input id="p_price" type="number">
+</div>
 
-    if(!data?.length){
+<div class="field">
+<label>Setup Fee</label>
+<input id="p_setup" type="number">
+</div>
 
-      box.innerHTML =
-        `<div style="color:var(--muted)">
-          কোনো notification নেই।
-        </div>`;
+<div class="field">
+<label>Validity Days</label>
+<input id="p_validity" type="number" value="30">
+</div>
 
-      return;
+<div class="field">
+<label>Description</label>
+<textarea id="p_desc"></textarea>
+</div>
 
-    }
+<button class="primary" onclick="savePackage()">
+Save Package
+</button>
 
-    box.innerHTML =
-      data.map(n=>`
-
-        <div class="comment">
-
-          ${escapeHTML(
-            n.text || "Notification"
-          )}
-
-          <div style="
-            font-size:11px;
-            color:var(--muted);
-            margin-top:5px">
-
-            ${formatDate(
-              n.created_at
-            )}
-
-          </div>
-
-        </div>
-
-      `).join("");
-
-  }catch(error){
-
-    box.innerHTML =
-      `<div>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
+`);
 
 }
 
 
-/* =========================================================
-   DARK MODE
-========================================================= */
+async function savePackage(){
 
-function toggleDark(){
+const name=document.getElementById("p_name").value.trim();
 
-  const dark =
-    document.body.dataset.dark === "1";
-
-  if(dark){
-
-    document.body.dataset.dark = "0";
-
-    document.documentElement.style
-      .setProperty("--bg","#f4f6f8");
-
-    document.documentElement.style
-      .setProperty("--card","#fff");
-
-    document.documentElement.style
-      .setProperty("--text","#111827");
-
-  }else{
-
-    document.body.dataset.dark = "1";
-
-    document.documentElement.style
-      .setProperty("--bg","#0b1120");
-
-    document.documentElement.style
-      .setProperty("--card","#111827");
-
-    document.documentElement.style
-      .setProperty("--text","#f9fafb");
-
-  }
-
+if(!name){
+alert("Package name দিন");
+return;
 }
 
+const {error}=await db
+.from("isp_packages")
+.insert({
 
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-  await db.auth.signOut();
-
-  currentUser = null;
-
-  profile = null;
-
-  showAuthScreen();
-
-  showAuth("login");
-
-}
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function formatDate(value){
-
-  if(!value) return "";
-
-  try{
-
-    return new Date(value)
-      .toLocaleString(
-        "bn-BD",
-        {
-          dateStyle:"medium",
-          timeStyle:"short"
-        }
-      );
-
-  }catch(e){
-
-    return value;
-
-  }
-
-}
-
-
-/* =========================================================
-   CLOSE MODALS BY BACKDROP
-========================================================= */
-
-document
-  .querySelectorAll(".modal")
-  .forEach(modal=>{
-
-    modal.addEventListener(
-      "click",
-      function(e){
-
-        if(e.target === modal){
-
-          modal.classList.remove(
-            "show"
-          );
-
-        }
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-window.addEventListener(
-"load",
-async()=>{
-
-  try{
-
-    await checkSession();
-
-  }catch(error){
-
-    console.error(error);
-
-    showMessage(
-      "App initialization error: " +
-      error.message
-    );
-
-  }
+owner_id:currentUser.id,
+name:name,
+download_mbps:Number(document.getElementById("p_down").value)||0,
+upload_mbps:Number(document.getElementById("p_up").value)||0,
+monthly_price:Number(document.getElementById("p_price").value)||0,
+setup_fee:Number(document.getElementById("p_setup").value)||0,
+validity_days:Number(document.getElementById("p_validity").value)||30,
+description:document.getElementById("p_desc").value||null,
+status:"active"
 
 });
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+
+await loadPackages();
+
+alert("Package saved");
+
+}
+
+
+async function loadPackages(){
+
+const {data,error}=await db
+.from("isp_packages")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error){
+console.error(error);
+return;
+}
+
+packages=data||[];
+
+document.getElementById("packageList").innerHTML=
+packages.map(p=>`
+
+<div class="card">
+
+<h3>${esc(p.name)}</h3>
+
+<p>
+⚡ ${p.download_mbps||0} Mbps ↓ /
+${p.upload_mbps||0} Mbps ↑
+</p>
+
+<p>💰 ৳${p.monthly_price||0}/month</p>
+
+<p>Setup: ৳${p.setup_fee||0}</p>
+
+<p>Validity: ${p.validity_days||0} days</p>
+
+<span class="badge active">
+${esc(p.status||"active")}
+</span>
+
+</div>
+
+`).join("");
+
+}
+
+
+function packageName(id){
+
+const p=packages.find(x=>x.id===id);
+
+return p?p.name:"No package";
+
+}
+
+
+/* =========================================================
+ PAYMENTS
+========================================================= */
+
+function openPaymentModal(){
+
+openModal("Add Payment",`
+
+<div class="field">
+<label>Customer</label>
+
+<select id="pay_customer">
+
+<option value="">Select customer</option>
+
+${customers.map(c=>`
+<option value="${c.id}">
+${esc(c.name)} - ${esc(c.phone||"")}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Amount</label>
+<input id="pay_amount" type="number">
+</div>
+
+<div class="field">
+<label>Payment Method</label>
+
+<select id="pay_method">
+<option>Cash</option>
+<option>bKash</option>
+<option>Nagad</option>
+<option>Bank</option>
+<option>Online</option>
+</select>
+
+</div>
+
+<div class="field">
+<label>Transaction ID</label>
+<input id="pay_tx">
+</div>
+
+<div class="field">
+<label>Payment Month</label>
+<input id="pay_month" type="month">
+</div>
+
+<div class="field">
+<label>Note</label>
+<textarea id="pay_note"></textarea>
+</div>
+
+<button class="success" onclick="savePayment()">
+Save Payment
+</button>
+
+`);
+
+}
+
+
+async function savePayment(){
+
+const customer_id=
+document.getElementById("pay_customer").value;
+
+const amount=
+Number(document.getElementById("pay_amount").value)||0;
+
+if(!customer_id || amount<=0){
+alert("Customer এবং amount দিন");
+return;
+}
+
+const method=
+document.getElementById("pay_method").value;
+
+const tx=
+document.getElementById("pay_tx").value||null;
+
+const {error}=await db
+.from("isp_payments")
+.insert({
+
+owner_id:currentUser.id,
+customer_id:customer_id,
+amount:amount,
+payment_method:method,
+method:method,
+transaction_id:tx,
+payment_month:
+document.getElementById("pay_month").value||null,
+paid_at:new Date().toISOString(),
+received_by:currentUser.id,
+note:document.getElementById("pay_note").value||null
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+
+await loadPayments();
+
+alert("Payment saved");
+
+}
+
+
+async function loadPayments(){
+
+const {data,error}=await db
+.from("isp_payments")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("paid_at",{ascending:false});
+
+if(error)return;
+
+payments=data||[];
+
+document.getElementById("paymentTable").innerHTML=
+payments.map(p=>`
+
+<tr>
+
+<td>${dateOnly(p.paid_at)}</td>
+
+<td>${customerName(p.customer_id)}</td>
+
+<td>৳${p.amount||0}</td>
+
+<td>${esc(p.payment_method||p.method||"-")}</td>
+
+<td>${esc(p.transaction_id||"-")}</td>
+
+</tr>
+
+`).join("");
+
+updateStats();
+
+}
+
+
+/* =========================================================
+ BILLING
+========================================================= */
+
+async function loadBills(){
+
+const {data,error}=await db
+.from("isp_bills")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+bills=data||[];
+
+let amount=0;
+let paid=0;
+let due=0;
+
+bills.forEach(b=>{
+amount+=Number(b.amount)||0;
+paid+=Number(b.paid_amount)||0;
+due+=Number(b.due_amount)||0;
+});
+
+document.getElementById("billCount").textContent=bills.length;
+document.getElementById("billAmount").textContent="৳"+amount;
+document.getElementById("billPaid").textContent="৳"+paid;
+document.getElementById("billDue").textContent="৳"+due;
+
+document.getElementById("billTable").innerHTML=
+bills.map(b=>`
+
+<tr>
+<td>${customerName(b.customer_id)}</td>
+<td>${esc(b.billing_month||"-")}</td>
+<td>৳${b.amount||0}</td>
+<td>৳${b.paid_amount||0}</td>
+<td>৳${b.due_amount||0}</td>
+<td>${esc(b.status||"-")}</td>
+</tr>
+
+`).join("");
+
+}
+
+
+/* =========================================================
+ INVOICES
+========================================================= */
+
+async function loadInvoices(){
+
+const {data,error}=await db
+.from("isp_invoices")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+invoices=data||[];
+
+document.getElementById("invoiceTable").innerHTML=
+invoices.map(i=>`
+
+<tr>
+<td>${esc(i.invoice_no||"-")}</td>
+<td>${customerName(i.customer_id)}</td>
+<td>৳${i.amount||0}</td>
+<td>৳${i.paid_amount||0}</td>
+<td>৳${i["due amount"]||Math.max(0,(i.amount||0)-(i.paid_amount||0))}</td>
+<td>${esc(i.status||"-")}</td>
+</tr>
+
+`).join("");
+
+}
+
+
+/* =========================================================
+ EXPENSES
+========================================================= */
+
+function openExpenseModal(){
+
+openModal("Add Expense",`
+
+<div class="field">
+<label>Title</label>
+<input id="e_title">
+</div>
+
+<div class="field">
+<label>Amount</label>
+<input id="e_amount" type="number">
+</div>
+
+<div class="field">
+<label>Category</label>
+<input id="e_category">
+</div>
+
+<div class="field">
+<label>Date</label>
+<input id="e_date" type="date">
+</div>
+
+<div class="field">
+<label>Note</label>
+<textarea id="e_note"></textarea>
+</div>
+
+<button class="danger" onclick="saveExpense()">
+Save Expense
+</button>
+
+`);
+
+}
+
+
+async function saveExpense(){
+
+const title=document.getElementById("e_title").value.trim();
+
+const amount=
+Number(document.getElementById("e_amount").value)||0;
+
+if(!title || amount<=0){
+alert("Title এবং amount দিন");
+return;
+}
+
+const {error}=await db
+.from("isp_expenses")
+.insert({
+
+owner_id:currentUser.id,
+title:title,
+amount:amount,
+category:document.getElementById("e_category").value||null,
+expense_date:document.getElementById("e_date").value||new Date().toISOString().slice(0,10),
+note:document.getElementById("e_note").value||null
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+
+await loadExpenses();
+
+}
+
+
+async function loadExpenses(){
+
+const {data,error}=await db
+.from("isp_expenses")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("expense_date",{ascending:false});
+
+if(error)return;
+
+expenses=data||[];
+
+document.getElementById("expenseTable").innerHTML=
+expenses.map(e=>`
+
+<tr>
+<td>${esc(e.title)}</td>
+<td>${esc(e.category||"-")}</td>
+<td>৳${e.amount||0}</td>
+<td>${e.expense_date||"-"}</td>
+</tr>
+
+`).join("");
+
+updateStats();
+
+}
+
+
+/* =========================================================
+ ONLINE USERS
+========================================================= */
+
+async function loadOnlineUsers(){
+
+const {data,error}=await db
+.from("isp_online_users")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("last_seen",{ascending:false});
+
+if(error)return;
+
+onlineUsers=data||[];
+
+document.getElementById("onlineList").innerHTML=
+onlineUsers.map(u=>`
+
+<div class="card">
+
+<b>${esc(u.username||"-")}</b>
+
+<p>IP: ${esc(u.ip_address||"-")}</p>
+<p>MAC: ${esc(u.mac_address||"-")}</p>
+<p>Router: ${esc(u.router_name||"-")}</p>
+<p>Uptime: ${esc(u.uptime||"-")}</p>
+
+<p>
+↓ ${u.download_mbps||0} Mbps /
+↑ ${u.upload_mbps||0} Mbps
+</p>
+
+<span class="badge active">
+${esc(u.status||"online")}
+</span>
+
+</div>
+
+`).join("");
+
+updateStats();
+
+}
+
+
+/* =========================================================
+ NETWORK
+========================================================= */
+
+async function loadNetwork(){
+
+await Promise.all([
+loadRouters(),
+loadPPPoE(),
+loadBandwidth(),
+loadOLTs(),
+loadONUs()
+]);
+
+}
+
+
+async function loadRouters(){
+
+const {data,error}=await db
+.from("isp_routers")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+routers=data||[];
+
+document.getElementById("routerList").innerHTML=
+routers.map(r=>`
+
+<div class="notice">
+
+<b>${esc(r.name||"-")}</b>
+
+<p>
+Host: ${esc(r.host||"-")} :
+${r.port||8728}
+</p>
+
+<p>
+Status:
+<span class="badge">${esc(r.status||"offline")}</span>
+</p>
+
+</div>
+
+`).join("");
+
+}
+
+
+function openRouterModal(){
+
+openModal("MikroTik Router",`
+
+<div class="notice">
+API credentials এখানে frontend-এ ব্যবহার করবেন না।
+Backend/Edge Function দিয়ে MikroTik connect করতে হবে।
+</div>
+
+<div class="field">
+<label>Name</label>
+<input id="r_name">
+</div>
+
+<div class="field">
+<label>Host/IP</label>
+<input id="r_host">
+</div>
+
+<div class="field">
+<label>API Port</label>
+<input id="r_port" type="number" value="8728">
+</div>
+
+<div class="field">
+<label>Username</label>
+<input id="r_user">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="r_pass" type="password">
+</div>
+
+<button class="primary" onclick="saveRouter()">
+Save Router
+</button>
+
+`);
+
+}
+
+
+async function saveRouter(){
+
+const {error}=await db
+.from("isp_routers")
+.insert({
+
+owner_id:currentUser.id,
+name:document.getElementById("r_name").value,
+host:document.getElementById("r_host").value,
+port:Number(document.getElementById("r_port").value)||8728,
+username:document.getElementById("r_user").value,
+password:document.getElementById("r_pass").value,
+api_enabled:false,
+status:"offline"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadRouters();
+
+}
+
+
+/* =========================================================
+ PPPoE
+========================================================= */
+
+async function loadPPPoE(){
+
+const {data,error}=await db
+.from("isp_pppoe_accounts")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+pppoe=data||[];
+
+document.getElementById("pppoeList").innerHTML=
+pppoe.map(p=>`
+
+<div class="notice">
+
+<b>${esc(p.username||"-")}</b>
+
+<p>
+Profile: ${esc(p.profile_name||"-")}
+</p>
+
+<p>
+Status:
+<span class="badge">${esc(p.status||"-")}</span>
+</p>
+
+</div>
+
+`).join("");
+
+}
+
+
+function openPPPoEModal(){
+
+openModal("PPPoE Account",`
+
+<div class="field">
+<label>Customer</label>
+
+<select id="pp_customer">
+<option value="">Select</option>
+
+${customers.map(c=>`
+<option value="${c.id}">
+${esc(c.name)}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Router</label>
+
+<select id="pp_router">
+
+${routers.map(r=>`
+<option value="${r.id}">
+${esc(r.name)}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Username</label>
+<input id="pp_user">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="pp_pass">
+</div>
+
+<div class="field">
+<label>Profile</label>
+<input id="pp_profile">
+</div>
+
+<button class="primary" onclick="savePPPoE()">
+Save PPPoE
+</button>
+
+`);
+
+}
+
+
+async function savePPPoE(){
+
+const {error}=await db
+.from("isp_pppoe_accounts")
+.insert({
+
+owner_id:currentUser.id,
+
+customer_id:
+document.getElementById("pp_customer").value||null,
+
+router_id:
+document.getElementById("pp_router").value||null,
+
+username:
+document.getElementById("pp_user").value,
+
+password:
+document.getElementById("pp_pass").value,
+
+profile_name:
+document.getElementById("pp_profile").value||null,
+
+status:"active",
+auto_suspend:true
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadPPPoE();
+
+}
+
+
+/* =========================================================
+ BANDWIDTH
+========================================================= */
+
+async function loadBandwidth(){
+
+const {data,error}=await db
+.from("isp_bandwidth_profiles")
+.select("*")
+.eq("owner_id",currentUser.id);
+
+if(error)return;
+
+bandwidth=data||[];
+
+document.getElementById("bandwidthList").innerHTML=
+bandwidth.map(b=>`
+
+<div class="notice">
+<b>${esc(b.name||"-")}</b>
+<br>
+↓ ${b.download_mbps||0} Mbps /
+↑ ${b.upload_mbps||0} Mbps
+</div>
+
+`).join("");
+
+}
+
+
+function openBandwidthModal(){
+
+openModal("Bandwidth Profile",`
+
+<div class="field">
+<label>Name</label>
+<input id="bw_name">
+</div>
+
+<div class="field">
+<label>Download Mbps</label>
+<input id="bw_down" type="number">
+</div>
+
+<div class="field">
+<label>Upload Mbps</label>
+<input id="bw_up" type="number">
+</div>
+
+<button class="primary" onclick="saveBandwidth()">
+Save
+</button>
+
+`);
+
+}
+
+
+async function saveBandwidth(){
+
+const {error}=await db
+.from("isp_bandwidth_profiles")
+.insert({
+
+owner_id:currentUser.id,
+name:document.getElementById("bw_name").value,
+download_mbps:Number(document.getElementById("bw_down").value)||0,
+upload_mbps:Number(document.getElementById("bw_up").value)||0,
+status:"active"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadBandwidth();
+
+}
+
+
+/* =========================================================
+ OLT
+========================================================= */
+
+async function loadOLTs(){
+
+const {data,error}=await db
+.from("isp_olt_devices")
+.select("*")
+.eq("owner_id",currentUser.id);
+
+if(error)return;
+
+olts=data||[];
+
+document.getElementById("oltList").innerHTML=
+olts.map(o=>`
+
+<div class="notice">
+<b>${esc(o.name||"-")}</b>
+<p>${esc(o.vendor||"-")} — ${esc(o.host||"-")}</p>
+<span class="badge">${esc(o.status||"offline")}</span>
+</div>
+
+`).join("");
+
+}
+
+
+function openOLTModal(){
+
+openModal("OLT Device",`
+
+<div class="field">
+<label>Name</label>
+<input id="olt_name">
+</div>
+
+<div class="field">
+<label>Vendor</label>
+<input id="olt_vendor">
+</div>
+
+<div class="field">
+<label>Host/IP</label>
+<input id="olt_host">
+</div>
+
+<div class="field">
+<label>Port</label>
+<input id="olt_port" type="number">
+</div>
+
+<div class="field">
+<label>Username</label>
+<input id="olt_user">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="olt_pass" type="password">
+</div>
+
+<div class="field">
+<label>Location</label>
+<input id="olt_location">
+</div>
+
+<button class="primary" onclick="saveOLT()">
+Save OLT
+</button>
+
+`);
+
+}
+
+
+async function saveOLT(){
+
+const {error}=await db
+.from("isp_olt_devices")
+.insert({
+
+owner_id:currentUser.id,
+name:document.getElementById("olt_name").value,
+vendor:document.getElementById("olt_vendor").value||null,
+host:document.getElementById("olt_host").value||null,
+port:Number(document.getElementById("olt_port").value)||null,
+username:document.getElementById("olt_user").value||null,
+password:document.getElementById("olt_pass").value||null,
+location:document.getElementById("olt_location").value||null,
+status:"offline"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadOLTs();
+
+}
+
+
+/* =========================================================
+ ONU
+========================================================= */
+
+async function loadONUs(){
+
+const {data,error}=await db
+.from("isp_onu_devices")
+.select("*")
+.eq("owner_id",currentUser.id);
+
+if(error)return;
+
+onus=data||[];
+
+document.getElementById("onuList").innerHTML=
+onus.map(o=>`
+
+<div class="notice">
+<b>${esc(o.serial_number||"-")}</b>
+<p>Model: ${esc(o.model||"-")}</p>
+<p>PON: ${esc(o.pon_port||"-")}</p>
+<p>RX: ${o.optical_rx||"-"} / TX: ${o.optical_tx||"-"}</p>
+<span class="badge">${esc(o.status||"offline")}</span>
+</div>
+
+`).join("");
+
+}
+
+
+function openONUModal(){
+
+openModal("ONU / ONT",`
+
+<div class="field">
+<label>Customer</label>
+
+<select id="onu_customer">
+
+${customers.map(c=>`
+<option value="${c.id}">
+${esc(c.name)}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>OLT</label>
+
+<select id="onu_olt">
+
+${olts.map(o=>`
+<option value="${o.id}">
+${esc(o.name)}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Serial Number</label>
+<input id="onu_serial">
+</div>
+
+<div class="field">
+<label>PON Port</label>
+<input id="onu_pon">
+</div>
+
+<div class="field">
+<label>ONU Number</label>
+<input id="onu_number">
+</div>
+
+<div class="field">
+<label>Model</label>
+<input id="onu_model">
+</div>
+
+<div class="field">
+<label>MAC</label>
+<input id="onu_mac">
+</div>
+
+<button class="primary" onclick="saveONU()">
+Save ONU
+</button>
+
+`);
+
+}
+
+
+async function saveONU(){
+
+const {error}=await db
+.from("isp_onu_devices")
+.insert({
+
+owner_id:currentUser.id,
+customer_id:document.getElementById("onu_customer").value||null,
+olt_id:document.getElementById("onu_olt").value||null,
+serial_number:document.getElementById("onu_serial").value||null,
+pon_port:document.getElementById("onu_pon").value||null,
+onu_number:document.getElementById("onu_number").value||null,
+model:document.getElementById("onu_model").value||null,
+mac_address:document.getElementById("onu_mac").value||null,
+status:"offline"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadONUs();
+
+}
+
+
+/* =========================================================
+ SUPPORT TICKETS
+========================================================= */
+
+async function loadTickets(){
+
+const {data,error}=await db
+.from("isp_tickets")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+tickets=data||[];
+
+document.getElementById("ticketList").innerHTML=
+tickets.map(t=>`
+
+<div class="card">
+
+<h3>${esc(t.subject||"No subject")}</h3>
+
+<p>${esc(t.description||"")}</p>
+
+<span class="badge">${esc(t.status||"open")}</span>
+
+<span class="badge">${esc(t.priority||"normal")}</span>
+
+</div>
+
+`).join("");
+
+}
+
+
+function openTicketModal(){
+
+openModal("Support Ticket",`
+
+<div class="field">
+<label>Customer</label>
+
+<select id="t_customer">
+
+${customers.map(c=>`
+<option value="${c.id}">
+${esc(c.name)}
+</option>
+`).join("")}
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Subject</label>
+<input id="t_subject">
+</div>
+
+<div class="field">
+<label>Description</label>
+<textarea id="t_desc"></textarea>
+</div>
+
+<div class="field">
+<label>Priority</label>
+
+<select id="t_priority">
+<option>low</option>
+<option selected>normal</option>
+<option>high</option>
+<option>urgent</option>
+</select>
+
+</div>
+
+<button class="primary" onclick="saveTicket()">
+Create Ticket
+</button>
+
+`);
+
+}
+
+
+async function saveTicket(){
+
+const {error}=await db
+.from("isp_tickets")
+.insert({
+
+owner_id:currentUser.id,
+customer_id:document.getElementById("t_customer").value||null,
+ticket_no:"T-"+Date.now(),
+subject:document.getElementById("t_subject").value,
+description:document.getElementById("t_desc").value,
+priority:document.getElementById("t_priority").value,
+status:"open"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadTickets();
+
+}
+
+
+/* =========================================================
+ STAFF
+========================================================= */
+
+async function loadStaff(){
+
+const {data,error}=await db
+.from("isp_staff")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+staff=data||[];
+
+document.getElementById("staffList").innerHTML=
+staff.map(s=>`
+
+<div class="card">
+
+<h3>${esc(s.name||"-")}</h3>
+<p>${esc(s.email||"-")}</p>
+<p>${esc(s.phone||"-")}</p>
+
+<span class="badge">
+${esc(s.role||"staff")}
+</span>
+
+</div>
+
+`).join("");
+
+}
+
+
+function openStaffModal(){
+
+openModal("Add Staff",`
+
+<div class="field">
+<label>Name</label>
+<input id="s_name">
+</div>
+
+<div class="field">
+<label>Email</label>
+<input id="s_email">
+</div>
+
+<div class="field">
+<label>Phone</label>
+<input id="s_phone">
+</div>
+
+<div class="field">
+<label>Role</label>
+
+<select id="s_role">
+<option>admin</option>
+<option>billing</option>
+<option>support</option>
+<option>technician</option>
+<option>staff</option>
+</select>
+
+</div>
+
+<button class="primary" onclick="saveStaff()">
+Save Staff
+</button>
+
+`);
+
+}
+
+
+async function saveStaff(){
+
+const {error}=await db
+.from("isp_staff")
+.insert({
+
+owner_id:currentUser.id,
+name:document.getElementById("s_name").value,
+email:document.getElementById("s_email").value||null,
+phone:document.getElementById("s_phone").value||null,
+role:document.getElementById("s_role").value,
+status:"active"
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+closeModal();
+loadStaff();
+
+}
+
+
+/* =========================================================
+ ISP SETTINGS
+========================================================= */
+
+async function loadISPSettings(){
+
+const {data,error}=await db
+.from("isp_settings")
+.select("*")
+.eq("owner_id",currentUser.id)
+.limit(1)
+.maybeSingle();
+
+if(error)return;
+
+if(!data)return;
+
+document.getElementById("ispBusinessName").value=data.business_name||"";
+document.getElementById("ispPhone").value=data.phone||"";
+document.getElementById("ispEmail").value=data.email||"";
+document.getElementById("ispAddress").value=data.address||"";
+document.getElementById("ispSupportPhone").value=data.support_phone||"";
+document.getElementById("ispBkash").value=data.bkash_number||"";
+document.getElementById("ispNagad").value=data.nagad_number||"";
+document.getElementById("ispCurrency").value=data.currency||"BDT";
+
+}
+
+
+async function saveISPSettings(){
+
+const obj={
+
+owner_id:currentUser.id,
+business_name:
+document.getElementById("ispBusinessName").value||null,
+
+phone:
+document.getElementById("ispPhone").value||null,
+
+email:
+document.getElementById("ispEmail").value||null,
+
+address:
+document.getElementById("ispAddress").value||null,
+
+support_phone:
+document.getElementById("ispSupportPhone").value||null,
+
+bkash_number:
+document.getElementById("ispBkash").value||null,
+
+nagad_number:
+document.getElementById("ispNagad").value||null,
+
+currency:
+document.getElementById("ispCurrency").value||"BDT"
+
+};
+
+const {data,error}=await db
+.from("isp_settings")
+.upsert(obj,{onConflict:"owner_id"})
+.select();
+
+if(error){
+alert(error.message);
+return;
+}
+
+alert("ISP settings saved");
+
+}
+
+
+/* =========================================================
+ NOTIFICATIONS
+========================================================= */
+
+async function loadNotifications(){
+
+const {data,error}=await db
+.from("isp_notifications")
+.select("*")
+.eq("owner_id",currentUser.id)
+.order("created_at",{ascending:false});
+
+if(error)return;
+
+document.getElementById("notificationList").innerHTML=
+(data||[]).map(n=>`
+
+<div class="notice">
+
+<b>${esc(n.type||"Notification")}</b>
+
+<p>${esc(n.message||n.text||"")}</p>
+
+<small>${dateOnly(n.created_at)}</small>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* =========================================================
+ REPORTS
+========================================================= */
+
+async function loadReports(){
+
+let collection=0;
+let expense=0;
+let outstanding=0;
+
+payments.forEach(p=>{
+collection+=Number(p.amount)||0;
+});
+
+expenses.forEach(e=>{
+expense+=Number(e.amount)||0;
+});
+
+bills.forEach(b=>{
+outstanding+=Number(b.due_amount)||0;
+});
+
+document.getElementById("reportCollection").textContent="৳"+collection;
+document.getElementById("reportExpense").textContent="৳"+expense;
+document.getElementById("reportNet").textContent="৳"+(collection-expense);
+document.getElementById("reportOutstanding").textContent="৳"+outstanding;
+
+const active=customers.filter(c=>c.status==="active").length;
+const expired=customers.filter(c=>c.status==="expired").length;
+const suspended=customers.filter(c=>c.status==="suspended").length;
+
+document.getElementById("statusReport").innerHTML=`
+
+<p>🟢 Active: <b>${active}</b></p>
+<p>🔴 Expired: <b>${expired}</b></p>
+<p>🟠 Suspended: <b>${suspended}</b></p>
+
+`;
+
+}
+
+
+/* =========================================================
+ DASHBOARD
+========================================================= */
+
+async function loadDashboard(){
+
+await Promise.all([
+loadCustomers(),
+loadPackages(),
+loadPayments(),
+loadExpenses(),
+loadOnlineUsers()
+]);
+
+}
+
+
+function updateStats(){
+
+document.getElementById("statCustomers").textContent=
+customers.length;
+
+document.getElementById("statActive").textContent=
+customers.filter(c=>c.status==="active").length;
+
+document.getElementById("statExpired").textContent=
+customers.filter(c=>c.status==="expired").length;
+
+document.getElementById("statPackages").textContent=
+packages.length;
+
+document.getElementById("statPayments").textContent=
+payments.length;
+
+let collection=0;
+
+payments.forEach(p=>{
+collection+=Number(p.amount)||0;
+});
+
+document.getElementById("statCollection").textContent=
+"৳"+collection;
+
+let ex=0;
+
+expenses.forEach(e=>{
+ex+=Number(e.amount)||0;
+});
+
+document.getElementById("statExpenses").textContent=
+"৳"+ex;
+
+document.getElementById("statOnline").textContent=
+onlineUsers.length;
+
+}
+
+
+/* =========================================================
+ SOCIAL POSTS
+========================================================= */
+
+async function createPost(){
+
+const text=
+document.getElementById("postText").value.trim();
+
+const file=
+document.getElementById("postImage").files[0];
+
+let image_url=null;
+
+if(file){
+
+const path=
+`${currentUser.id}/${Date.now()}_${file.name}`;
+
+const {error}=await db.storage
+.from("post-images")
+.upload(path,file);
+
+if(error){
+alert(error.message);
+return;
+}
+
+const {data}=db.storage
+.from("post-images")
+.getPublicUrl(path);
+
+image_url=data.publicUrl;
+
+}
+
+const {error}=await db
+.from("posts")
+.insert({
+
+user_id:currentUser.id,
+text:text,
+image_url:image_url,
+privacy:"public",
+promoted:false,
+view_count:0
+
+});
+
+if(error){
+alert(error.message);
+return;
+}
+
+document.getElementById("postText").value="";
+
+await loadFeed();
+
+}
+
+
+async function loadFeed(){
+
+const {data,error}=await db
+.from("posts")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(30);
+
+if(error)return;
+
+document.getElementById("feed").innerHTML=
+(data||[]).map(p=>`
+
+<div class="card socialpost">
+
+<b>Post</b>
+
+<p>${esc(p.text||"")}</p>
+
+${p.image_url?
+`<img src="${escAttr(p.image_url)}">`:""}
+
+<div class="actions">
+
+<button class="secondary">
+❤️ Like
+</button>
+
+<button class="secondary">
+💬 Comment
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* =========================================================
+ REELS
+========================================================= */
+
+async function uploadReel(){
+
+const file=
+document.getElementById("reelVideo").files[0];
+
+if(!file){
+alert("Video select করুন");
+return;
+}
+
+const path=
+`reels/${currentUser.id}/${Date.now()}_${file.name}`;
+
+const {error}=await db.storage
+.from("post-images")
+.upload(path,file);
+
+if(error){
+alert(error.message);
+return;
+}
+
+const {data}=db.storage
+.from("post-images")
+.getPublicUrl(path);
+
+const {error:insertError}=await db
+.from("reels")
+.insert({
+
+user_id:currentUser.id,
+video_url:data.publicUrl,
+caption:
+document.getElementById("reelCaption").value||"",
+views:0,
+audio_name:""
+
+});
+
+if(insertError){
+alert(insertError.message);
+return;
+}
+
+alert("Reel uploaded");
+
+await loadReels();
+
+}
+
+
+async function loadReels(){
+
+const {data,error}=await db
+.from("reels")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(30);
+
+if(error)return;
+
+document.getElementById("reelList").innerHTML=
+(data||[]).map(r=>`
+
+<div class="card">
+
+<video
+src="${escAttr(r.video_url)}"
+controls
+playsinline
+style="width:100%;border-radius:16px">
+</video>
+
+<h3>${esc(r.caption||"")}</h3>
+
+<div class="actions">
+
+<button class="secondary">
+❤️ Like
+</button>
+
+<button class="secondary">
+💬 Comment
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* =========================================================
+ HELPERS
+========================================================= */
+
+function customerName(id){
+
+const c=customers.find(x=>x.id===id);
+
+return c?c.name:"Unknown";
+
+}
+
+
+function dateOnly(value){
+
+if(!value)return"-";
+
+try{
+return new Date(value).toLocaleDateString();
+}catch{
+return value;
+}
+
+}
+
+
+function esc(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function escAttr(value){
+
+return esc(value);
+
+}
+
+
+/* =========================================================
+ LOAD EVERYTHING
+========================================================= */
+
+async function loadAll(){
+
+await loadPackages();
+await loadCustomers();
+await loadPayments();
+await loadExpenses();
+await loadBills();
+await loadInvoices();
+await loadOnlineUsers();
+
+updateStats();
+
+}
+
+
+/* =========================================================
+ SESSION START
+========================================================= */
+
+(async()=>{
+
+const {data}=await db.auth.getSession();
+
+if(data.session){
+
+currentUser=data.session.user;
+
+await startApp();
+
+}
+
+})();
 
 </script>
 
