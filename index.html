@@ -4,367 +4,779 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>My Social App + ISP Panel</title>
+<title>My Social App</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
 :root{
- --bg:#f4f6fb;
- --card:#fff;
- --text:#111827;
- --muted:#6b7280;
- --primary:#2563eb;
- --primary2:#7c3aed;
- --border:#e5e7eb;
- --danger:#dc2626;
- --success:#16a34a;
- --warning:#d97706;
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#6366f1;
+  --primary2:#8b5cf6;
+  --danger:#ef4444;
+  --success:#10b981;
+  --warning:#f59e0b;
+  --shadow:0 8px 30px rgba(15,23,42,.08);
 }
+
 body.dark{
- --bg:#0b1020;
- --card:#121a2d;
- --text:#f8fafc;
- --muted:#94a3b8;
- --border:#263248;
+  --bg:#0b1120;
+  --card:#111827;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#243047;
+  --shadow:0 8px 30px rgba(0,0,0,.25);
 }
+
 body{
- margin:0;
- background:var(--bg);
- color:var(--text);
- font-family:Arial,Helvetica,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
 }
-button,input,select,textarea{
- font:inherit;
+
+button,input,textarea,select{
+  font:inherit;
 }
+
 button{
- border:0;
- cursor:pointer;
+  cursor:pointer;
 }
-.hidden{display:none!important}
-.app{
- min-height:100vh;
+
+.hidden{
+  display:none!important;
 }
-.topbar{
- height:64px;
- position:sticky;
- top:0;
- z-index:50;
- background:var(--card);
- border-bottom:1px solid var(--border);
- display:flex;
- align-items:center;
- justify-content:space-between;
- padding:0 16px;
-}
-.logo{
- font-size:20px;
- font-weight:800;
- background:linear-gradient(90deg,#2563eb,#7c3aed);
- -webkit-background-clip:text;
- color:transparent;
-}
-.top-actions{
- display:flex;
- gap:8px;
-}
-.iconbtn{
- width:40px;
- height:40px;
- border-radius:50%;
- background:var(--bg);
- color:var(--text);
-}
-.layout{
- display:flex;
- max-width:1500px;
- margin:auto;
-}
-.sidebar{
- width:250px;
- min-height:calc(100vh - 64px);
- padding:16px;
- border-right:1px solid var(--border);
- background:var(--card);
- position:sticky;
- top:64px;
- align-self:flex-start;
-}
-.navbtn{
- width:100%;
- text-align:left;
- padding:13px;
- margin-bottom:6px;
- border-radius:12px;
- background:transparent;
- color:var(--text);
-}
-.navbtn:hover,.navbtn.active{
- background:rgba(37,99,235,.12);
- color:var(--primary);
-}
-.main{
- flex:1;
- padding:20px;
- min-width:0;
-}
-.card{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:18px;
- padding:18px;
- margin-bottom:18px;
- box-shadow:0 8px 30px rgba(0,0,0,.04);
-}
-.grid{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:14px;
-}
-.stat{
- padding:18px;
- border-radius:16px;
- background:var(--card);
- border:1px solid var(--border);
-}
-.stat .number{
- font-size:28px;
- font-weight:800;
- margin-top:8px;
-}
-.muted{color:var(--muted)}
-h1,h2,h3{margin-top:0}
-.btn{
- padding:11px 16px;
- border-radius:10px;
- background:var(--primary);
- color:#fff;
- font-weight:700;
-}
-.btn.secondary{
- background:var(--bg);
- color:var(--text);
- border:1px solid var(--border);
-}
-.btn.danger{background:var(--danger)}
-.btn.success{background:var(--success)}
-.btn.warning{background:var(--warning)}
-.form-grid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
-}
-.field label{
- display:block;
- font-size:13px;
- color:var(--muted);
- margin-bottom:6px;
-}
-.field input,
-.field select,
-.field textarea{
- width:100%;
- padding:12px;
- border:1px solid var(--border);
- border-radius:10px;
- background:var(--bg);
- color:var(--text);
- outline:none;
-}
-.field textarea{
- min-height:90px;
- resize:vertical;
-}
-.actions{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
-}
-.table-wrap{
- overflow:auto;
-}
-table{
- width:100%;
- border-collapse:collapse;
- min-width:850px;
-}
-th,td{
- padding:12px;
- border-bottom:1px solid var(--border);
- text-align:left;
-}
-th{
- color:var(--muted);
- font-size:13px;
-}
-.badge{
- display:inline-block;
- padding:5px 9px;
- border-radius:999px;
- font-size:12px;
- font-weight:700;
-}
-.badge.active,.badge.paid,.badge.online{
- background:#dcfce7;
- color:#166534;
-}
-.badge.expired,.badge.unpaid,.badge.offline{
- background:#fee2e2;
- color:#991b1b;
-}
-.badge.pending{
- background:#fef3c7;
- color:#92400e;
-}
-.search{
- width:100%;
- padding:13px;
- border:1px solid var(--border);
- background:var(--bg);
- color:var(--text);
- border-radius:12px;
- margin-bottom:14px;
-}
-.mobile-nav{
- display:none;
-}
-.login{
- min-height:100vh;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:20px;
-}
-.login-box{
- width:100%;
- max-width:420px;
- background:var(--card);
- padding:28px;
- border-radius:22px;
- border:1px solid var(--border);
- box-shadow:0 20px 60px rgba(0,0,0,.1);
-}
-.login-box h1{
- text-align:center;
-}
-.login-box .field{
- margin-bottom:12px;
-}
-.error{
- color:var(--danger);
- font-size:14px;
- margin:10px 0;
-}
-.success-text{
- color:var(--success);
- font-size:14px;
- margin:10px 0;
-}
-.empty{
- text-align:center;
- padding:35px;
- color:var(--muted);
-}
-.profile-card{
- display:flex;
- gap:16px;
- align-items:center;
-}
-.avatar{
- width:70px;
- height:70px;
- border-radius:50%;
- object-fit:cover;
- background:var(--bg);
-}
-.post{
- border:1px solid var(--border);
- border-radius:16px;
- padding:16px;
- margin-bottom:14px;
-}
-.post img,.post video{
- width:100%;
- max-height:500px;
- object-fit:cover;
- border-radius:12px;
-}
-.reel{
- background:#000;
- border-radius:18px;
- overflow:hidden;
-}
-.reel video{
- width:100%;
- max-height:650px;
-}
-.modal{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.6);
- z-index:100;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:15px;
-}
-.modal-box{
- width:100%;
- max-width:650px;
- max-height:90vh;
- overflow:auto;
- background:var(--card);
- border-radius:20px;
- padding:20px;
-}
-.modal-head{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:15px;
-}
-.toast{
- position:fixed;
- bottom:25px;
- left:50%;
- transform:translateX(-50%);
- background:#111827;
- color:#fff;
- padding:12px 18px;
- border-radius:12px;
- z-index:200;
- display:none;
-}
-@media(max-width:900px){
- .sidebar{display:none}
- .main{padding:12px;padding-bottom:80px}
- .grid{grid-template-columns:repeat(2,1fr)}
- .mobile-nav{
+
+/* ================= AUTH ================= */
+
+#authScreen{
+  min-height:100vh;
   display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at top left,#818cf8,transparent 35%),
+    radial-gradient(circle at bottom right,#c084fc,transparent 35%),
+    var(--bg);
+}
+
+.auth-box{
+  width:100%;
+  max-width:430px;
+  background:rgba(255,255,255,.95);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:28px;
+  padding:30px;
+  box-shadow:0 25px 70px rgba(0,0,0,.15);
+}
+
+.dark .auth-box{
+  background:#111827;
+}
+
+.logo{
+  width:62px;
+  height:62px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 15px;
+  color:white;
+  font-size:27px;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+}
+
+.auth-box h1{
+  text-align:center;
+  margin-bottom:7px;
+}
+
+.auth-box p{
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:25px;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:13px;
+  padding:13px 14px;
+  outline:none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--primary);
+}
+
+.primary-btn{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:14px;
+  color:white;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+}
+
+.auth-switch{
+  margin-top:18px;
+  text-align:center;
+  font-size:14px;
+}
+
+.link-btn{
+  border:0;
+  background:none;
+  color:var(--primary);
+  font-weight:700;
+}
+
+/* ================= APP ================= */
+
+#app{
+  display:none;
+}
+
+.app-shell{
+  min-height:100vh;
+}
+
+.topbar{
+  height:64px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  min-width:220px;
+}
+
+.brand-logo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+}
+
+.search-box{
+  flex:1;
+  max-width:520px;
+  position:relative;
+}
+
+.search-box input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:10px 18px;
+  background:var(--bg);
+  color:var(--text);
+  outline:none;
+}
+
+.top-actions{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.layout{
+  display:flex;
+}
+
+.sidebar{
+  width:245px;
+  min-height:calc(100vh - 64px);
+  background:var(--card);
+  border-right:1px solid var(--border);
   position:fixed;
+  left:0;
+  top:64px;
+  bottom:0;
+  padding:18px 12px;
+  overflow-y:auto;
+}
+
+.nav-title{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  padding:15px 12px 7px;
+  text-transform:uppercase;
+}
+
+.nav-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 13px;
+  margin:3px 0;
+  border:0;
+  background:none;
+  color:var(--text);
+  border-radius:12px;
+  text-align:left;
+  font-weight:600;
+}
+
+.nav-btn:hover{
+  background:var(--bg);
+}
+
+.nav-btn.active{
+  color:var(--primary);
+  background:rgba(99,102,241,.1);
+}
+
+.main{
+  margin-left:245px;
+  width:calc(100% - 245px);
+  min-height:calc(100vh - 64px);
+  padding:22px;
+}
+
+.view{
+  display:none;
+  max-width:1100px;
+  margin:auto;
+}
+
+.view.active{
+  display:block;
+}
+
+.page-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.page-header h2{
+  font-size:25px;
+}
+
+.page-header p{
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+
+.grid{
+  display:grid;
+  gap:16px;
+}
+
+.grid-2{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.grid-3{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.grid-4{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+/* ================= HOME ================= */
+
+.create-post{
+  margin-bottom:18px;
+}
+
+.create-row{
+  display:flex;
+  gap:12px;
+}
+
+.avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  background:linear-gradient(135deg,#c7d2fe,#ddd6fe);
+}
+
+.create-post textarea{
+  flex:1;
+  min-height:80px;
+  resize:none;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:13px;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.post-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:12px;
+}
+
+.post{
+  margin-bottom:18px;
+}
+
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:13px;
+}
+
+.post-name{
+  font-weight:800;
+}
+
+.post-time{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.post-text{
+  white-space:pre-wrap;
+  line-height:1.55;
+  margin-bottom:13px;
+}
+
+.post-media{
+  width:100%;
+  max-height:600px;
+  object-fit:cover;
+  border-radius:15px;
+  background:#000;
+}
+
+.post-footer{
+  display:flex;
+  gap:8px;
+  margin-top:13px;
+}
+
+.action-btn{
+  flex:1;
+  padding:10px;
+  border:0;
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.action-btn:hover{
+  background:var(--border);
+}
+
+/* ================= REELS ================= */
+
+.reels-feed{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;
+}
+
+.reel{
+  position:relative;
+  background:#000;
+  border-radius:20px;
+  overflow:hidden;
+  min-height:480px;
+}
+
+.reel video{
+  width:100%;
+  height:520px;
+  object-fit:cover;
+}
+
+.reel-info{
+  position:absolute;
   bottom:0;
   left:0;
   right:0;
-  height:62px;
-  background:var(--card);
-  border-top:1px solid var(--border);
-  z-index:80;
- }
- .mobile-nav button{
-  flex:1;
-  background:transparent;
-  color:var(--muted);
-  font-size:11px;
- }
- .mobile-nav button.active{color:var(--primary)}
+  padding:20px;
+  color:#fff;
+  background:linear-gradient(transparent,rgba(0,0,0,.85));
 }
-@media(max-width:600px){
- .form-grid{grid-template-columns:1fr}
- .grid{grid-template-columns:1fr 1fr}
- .topbar{padding:0 10px}
- .main{padding:10px;padding-bottom:80px}
- .card{padding:14px}
+
+.reel-user{
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+/* ================= PROFILE ================= */
+
+.cover{
+  height:230px;
+  border-radius:20px 20px 0 0;
+  background:linear-gradient(135deg,#6366f1,#a855f7,#ec4899);
+  background-size:cover;
+  background-position:center;
+}
+
+.profile-main{
+  margin-top:-55px;
+  position:relative;
+  padding:0 20px 20px;
+}
+
+.profile-avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  border:5px solid var(--card);
+  background:var(--bg);
+}
+
+.profile-name{
+  font-size:25px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.profile-bio{
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.profile-stats{
+  display:flex;
+  gap:30px;
+  margin-top:15px;
+}
+
+.profile-stat strong{
+  display:block;
+}
+
+.profile-stat span{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* ================= ISP ================= */
+
+.isp-stat{
+  padding:20px;
+  border-radius:18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+.isp-stat-icon{
+  font-size:25px;
+  margin-bottom:10px;
+}
+
+.isp-stat-number{
+  font-size:28px;
+  font-weight:800;
+}
+
+.isp-stat-label{
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:13px 10px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  white-space:nowrap;
+}
+
+th{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.badge{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.badge-success{
+  color:#047857;
+  background:#d1fae5;
+}
+
+.badge-danger{
+  color:#b91c1c;
+  background:#fee2e2;
+}
+
+.badge-warning{
+  color:#92400e;
+  background:#fef3c7;
+}
+
+.badge-info{
+  color:#1d4ed8;
+  background:#dbeafe;
+}
+
+.small-btn{
+  border:0;
+  border-radius:9px;
+  padding:8px 11px;
+  background:var(--bg);
+  color:var(--text);
+  margin-right:4px;
+}
+
+.small-btn.primary{
+  background:var(--primary);
+  color:white;
+}
+
+.small-btn.danger{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.form-full{
+  grid-column:1/-1;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:700px;
+  max-height:90vh;
+  overflow:auto;
+  background:var(--card);
+  border-radius:22px;
+  padding:22px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.close-btn{
+  border:0;
+  background:var(--bg);
+  color:var(--text);
+  width:38px;
+  height:38px;
+  border-radius:50%;
+}
+
+.notice{
+  padding:13px 15px;
+  border-radius:12px;
+  margin-bottom:15px;
+  background:rgba(99,102,241,.1);
+  color:var(--text);
+}
+
+/* ================= MOBILE ================= */
+
+.mobile-nav{
+  display:none;
+}
+
+@media(max-width:800px){
+
+  .topbar{
+    padding:0 10px;
+  }
+
+  .brand{
+    min-width:auto;
+  }
+
+  .brand-text{
+    display:none;
+  }
+
+  .search-box{
+    margin-left:10px;
+  }
+
+  .sidebar{
+    display:none;
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+    padding:14px 12px 85px;
+  }
+
+  .grid-4{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .grid-3{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .grid-2{
+    grid-template-columns:1fr;
+  }
+
+  .mobile-nav{
+    position:fixed;
+    display:flex;
+    bottom:0;
+    left:0;
+    right:0;
+    height:64px;
+    background:var(--card);
+    border-top:1px solid var(--border);
+    z-index:80;
+    justify-content:space-around;
+    align-items:center;
+  }
+
+  .mobile-nav button{
+    border:0;
+    background:none;
+    color:var(--muted);
+    font-size:20px;
+  }
+
+  .mobile-nav button.active{
+    color:var(--primary);
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .page-header{
+    align-items:flex-start;
+  }
+
+  .page-header h2{
+    font-size:21px;
+  }
+
+  .reels-feed{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ================= TOAST ================= */
+
+#toast{
+  position:fixed;
+  right:18px;
+  bottom:85px;
+  z-index:200;
+  max-width:350px;
+  padding:13px 16px;
+  border-radius:12px;
+  background:#111827;
+  color:white;
+  display:none;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+#toast.show{
+  display:block;
 }
 </style>
 </head>
@@ -372,746 +784,1205 @@ th{
 <body>
 
 <!-- =====================================================
-     LOGIN
+     AUTH SCREEN
 ===================================================== -->
 
-<div id="loginScreen" class="login">
- <div class="login-box">
-  <h1>My Social App</h1>
-  <p class="muted" style="text-align:center">
-   Social App + ISP Management
-  </p>
+<div id="authScreen">
 
-  <div class="field">
-   <label>Email</label>
-   <input id="loginEmail" type="email" placeholder="Email">
+  <div class="auth-box">
+
+    <div class="logo">MS</div>
+
+    <h1>My Social App</h1>
+    <p>Social + Creator + ISP Management</p>
+
+    <div id="loginForm">
+
+      <div class="field">
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="your@email.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="Password">
+      </div>
+
+      <button class="primary-btn" onclick="login()">
+        Login
+      </button>
+
+      <div class="auth-switch">
+        অ্যাকাউন্ট নেই?
+        <button class="link-btn" onclick="showSignup()">
+          Sign Up
+        </button>
+      </div>
+
+    </div>
+
+
+    <div id="signupForm" class="hidden">
+
+      <div class="field">
+        <label>Name</label>
+        <input id="signupName" placeholder="Your name">
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="signupEmail" type="email" placeholder="your@email.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="signupPassword" type="password" placeholder="Minimum 6 characters">
+      </div>
+
+      <button class="primary-btn" onclick="signup()">
+        Create Account
+      </button>
+
+      <div class="auth-switch">
+        আগে থেকেই অ্যাকাউন্ট আছে?
+        <button class="link-btn" onclick="showLogin()">
+          Login
+        </button>
+      </div>
+
+    </div>
+
   </div>
-
-  <div class="field">
-   <label>Password</label>
-   <input id="loginPassword" type="password" placeholder="Password">
-  </div>
-
-  <div id="loginError" class="error"></div>
-
-  <button class="btn" style="width:100%" onclick="login()">
-   Login
-  </button>
-
-  <button class="btn secondary" style="width:100%;margin-top:8px"
-   onclick="signup()">
-   Create Account
-  </button>
- </div>
 </div>
 
 
 <!-- =====================================================
-     APP
+     MAIN APP
 ===================================================== -->
 
-<div id="app" class="app hidden">
+<div id="app">
 
-<header class="topbar">
- <div class="logo">My Social App</div>
+  <div class="app-shell">
 
- <div class="top-actions">
-  <button class="iconbtn" onclick="toggleDark()">🌙</button>
-  <button class="iconbtn" onclick="showPage('notifications')">🔔</button>
-  <button class="iconbtn" onclick="logout()">↪</button>
- </div>
-</header>
+    <!-- TOPBAR -->
 
-<div class="layout">
+    <header class="topbar">
 
-<aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">MS</div>
+        <div class="brand-text">My Social App</div>
+      </div>
 
- <button class="navbtn active" onclick="showPage('home',this)">
-  🏠 Home
- </button>
+      <div class="search-box">
+        <input
+          id="globalSearch"
+          placeholder="Search..."
+          onkeydown="if(event.key==='Enter')globalSearch()"
+        >
+      </div>
 
- <button class="navbtn" onclick="showPage('reels',this)">
-  🎬 Reels
- </button>
+      <div class="top-actions">
 
- <button class="navbtn" onclick="showPage('profile',this)">
-  👤 Profile
- </button>
+        <button class="icon-btn" onclick="toggleDarkMode()" title="Dark Mode">
+          🌙
+        </button>
 
- <hr style="border:0;border-top:1px solid var(--border)">
+        <button class="icon-btn" onclick="showView('notifications')" title="Notifications">
+          🔔
+        </button>
 
- <button class="navbtn" onclick="showPage('isp',this)">
-  🌐 ISP Panel
- </button>
+        <button class="icon-btn" onclick="showView('settings')" title="Settings">
+          ⚙️
+        </button>
 
- <button class="navbtn" onclick="showPage('customers',this)">
-  👥 Customers
- </button>
+      </div>
 
- <button class="navbtn" onclick="showPage('packages',this)">
-  📦 Packages
- </button>
-
- <button class="navbtn" onclick="showPage('payments',this)">
-  💰 Payments
- </button>
-
- <button class="navbtn" onclick="showPage('invoices',this)">
-  🧾 Invoices
- </button>
-
- <button class="navbtn" onclick="showPage('expenses',this)">
-  💸 Expenses
- </button>
-
- <button class="navbtn" onclick="showPage('tickets',this)">
-  🎫 Tickets
- </button>
-
- <button class="navbtn" onclick="showPage('online',this)">
-  🟢 Online Users
- </button>
-
- <button class="navbtn" onclick="showPage('staff',this)">
-  👨‍💼 Staff
- </button>
-
- <button class="navbtn" onclick="showPage('ispSettings',this)">
-  ⚙️ ISP Settings
- </button>
-
- <hr style="border:0;border-top:1px solid var(--border)">
-
- <button class="navbtn" onclick="showPage('settings',this)">
-  ⚙️ App Settings
- </button>
-
-</aside>
+    </header>
 
 
-<main class="main">
+    <div class="layout">
 
-<!-- =====================================================
-     HOME
-===================================================== -->
+      <!-- =================================================
+           SIDEBAR
+      ================================================= -->
 
-<section id="page-home" class="page">
+      <aside class="sidebar">
 
- <div class="card">
-  <h1>Welcome 👋</h1>
-  <p class="muted">
-   My Social App dashboard
-  </p>
- </div>
+        <button class="nav-btn active" data-view="home" onclick="showView('home')">
+          🏠 Home
+        </button>
 
- <div class="grid">
-  <div class="stat">
-   <div class="muted">Posts</div>
-   <div id="homePosts" class="number">0</div>
+        <button class="nav-btn" data-view="reels" onclick="showView('reels')">
+          🎬 Reels
+        </button>
+
+        <button class="nav-btn" data-view="profile" onclick="showView('profile')">
+          👤 Profile
+        </button>
+
+        <button class="nav-btn" data-view="search" onclick="showView('search')">
+          🔎 Search
+        </button>
+
+        <div class="nav-title">
+          Social
+        </div>
+
+        <button class="nav-btn" data-view="friends" onclick="showView('friends')">
+          👥 Friends
+        </button>
+
+        <button class="nav-btn" data-view="messages" onclick="showView('messages')">
+          💬 Messages
+        </button>
+
+        <button class="nav-btn" data-view="notifications" onclick="showView('notifications')">
+          🔔 Notifications
+        </button>
+
+        <div class="nav-title">
+          Creator
+        </div>
+
+        <button class="nav-btn" data-view="monetization" onclick="showView('monetization')">
+          💰 Monetization
+        </button>
+
+        <div class="nav-title">
+          ISP Management
+        </div>
+
+        <button class="nav-btn" data-view="isp-dashboard" onclick="showView('isp-dashboard')">
+          📊 ISP Dashboard
+        </button>
+
+        <button class="nav-btn" data-view="isp-customers" onclick="showView('isp-customers')">
+          👨‍💼 Customers
+        </button>
+
+        <button class="nav-btn" data-view="isp-packages" onclick="showView('isp-packages')">
+          📦 Packages
+        </button>
+
+        <button class="nav-btn" data-view="isp-payments" onclick="showView('isp-payments')">
+          💳 Payments
+        </button>
+
+        <button class="nav-btn" data-view="isp-invoices" onclick="showView('isp-invoices')">
+          🧾 Invoices
+        </button>
+
+        <button class="nav-btn" data-view="isp-expenses" onclick="showView('isp-expenses')">
+          💸 Expenses
+        </button>
+
+        <button class="nav-btn" data-view="isp-tickets" onclick="showView('isp-tickets')">
+          🎫 Tickets
+        </button>
+
+        <button class="nav-btn" data-view="isp-online" onclick="showView('isp-online')">
+          🟢 Online Users
+        </button>
+
+        <button class="nav-btn" data-view="isp-staff" onclick="showView('isp-staff')">
+          👨‍💻 Staff
+        </button>
+
+        <button class="nav-btn" data-view="isp-settings" onclick="showView('isp-settings')">
+          ⚙️ ISP Settings
+        </button>
+
+        <div class="nav-title">
+          Account
+        </div>
+
+        <button class="nav-btn" data-view="settings" onclick="showView('settings')">
+          ⚙️ Settings
+        </button>
+
+        <button class="nav-btn" onclick="logout()">
+          🚪 Logout
+        </button>
+
+      </aside>
+
+
+      <!-- =================================================
+           MAIN CONTENT
+      ================================================= -->
+
+      <main class="main">
+
+
+        <!-- =================================================
+             HOME ONLY
+        ================================================= -->
+
+        <section class="view active" data-view="home">
+
+          <div class="page-header">
+            <div>
+              <h2>Home</h2>
+              <p>Your social feed</p>
+            </div>
+          </div>
+
+
+          <div class="card create-post">
+
+            <div class="create-row">
+
+              <img id="homeAvatar"
+                   class="avatar"
+                   src="https://i.pravatar.cc/100">
+
+              <textarea
+                id="postText"
+                placeholder="What's on your mind?"
+              ></textarea>
+
+            </div>
+
+            <div class="post-actions">
+              <button class="primary-btn"
+                      style="width:auto;padding:10px 22px"
+                      onclick="createPost()">
+                Post
+              </button>
+            </div>
+
+          </div>
+
+
+          <div id="postsContainer"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             REELS
+        ================================================= -->
+
+        <section class="view" data-view="reels">
+
+          <div class="page-header">
+            <div>
+              <h2>Reels</h2>
+              <p>Short videos</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openModal('reelModal')">
+              + Upload Reel
+            </button>
+          </div>
+
+          <div id="reelsContainer" class="reels-feed"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             PROFILE
+        ================================================= -->
+
+        <section class="view" data-view="profile">
+
+          <div class="card">
+
+            <div id="profileCover" class="cover"></div>
+
+            <div class="profile-main">
+
+              <img
+                id="profileAvatar"
+                class="profile-avatar"
+                src="https://i.pravatar.cc/200">
+
+              <div class="profile-name" id="profileName">
+                User
+              </div>
+
+              <div class="profile-bio" id="profileBio">
+                Welcome to My Social App
+              </div>
+
+              <div class="profile-stats">
+
+                <div class="profile-stat">
+                  <strong id="followersCount">0</strong>
+                  <span>Followers</span>
+                </div>
+
+                <div class="profile-stat">
+                  <strong id="followingCount">0</strong>
+                  <span>Following</span>
+                </div>
+
+                <div class="profile-stat">
+                  <strong id="postCount">0</strong>
+                  <span>Posts</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <br>
+
+          <div class="card">
+
+            <h3>Edit Profile</h3>
+
+            <br>
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label>Name</label>
+                <input id="editName">
+              </div>
+
+              <div class="field">
+                <label>Profile Photo URL</label>
+                <input id="editPhoto">
+              </div>
+
+              <div class="field form-full">
+                <label>Bio</label>
+                <textarea id="editBio"></textarea>
+              </div>
+
+              <div class="field form-full">
+                <label>Cover Photo URL</label>
+                <input id="editCover">
+              </div>
+
+            </div>
+
+            <button
+              class="primary-btn"
+              style="width:auto;padding:11px 25px"
+              onclick="updateProfile()">
+              Save Profile
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SEARCH
+        ================================================= -->
+
+        <section class="view" data-view="search">
+
+          <div class="page-header">
+            <div>
+              <h2>Search</h2>
+              <p>Find users and content</p>
+            </div>
+          </div>
+
+          <div class="card">
+
+            <div class="field">
+              <input
+                id="searchInput"
+                placeholder="Search users..."
+                onkeydown="if(event.key==='Enter')performSearch()">
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="performSearch()">
+              Search
+            </button>
+
+            <div id="searchResults" style="margin-top:18px"></div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FRIENDS
+        ================================================= -->
+
+        <section class="view" data-view="friends">
+
+          <div class="page-header">
+            <div>
+              <h2>Friends</h2>
+              <p>Your friends and connections</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div id="friendsContainer">
+              No friends loaded yet.
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MESSAGES
+        ================================================= -->
+
+        <section class="view" data-view="messages">
+
+          <div class="page-header">
+            <div>
+              <h2>Messages</h2>
+              <p>Messenger-style chat area</p>
+            </div>
+          </div>
+
+          <div class="card">
+
+            <h3>Messenger</h3>
+
+            <p style="color:var(--muted);margin-top:8px">
+              Chat system can be connected to a messages table.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NOTIFICATIONS
+        ================================================= -->
+
+        <section class="view" data-view="notifications">
+
+          <div class="page-header">
+            <div>
+              <h2>Notifications</h2>
+              <p>Your latest notifications</p>
+            </div>
+          </div>
+
+          <div class="card" id="notificationsContainer">
+            Loading...
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MONETIZATION
+        ================================================= -->
+
+        <section class="view" data-view="monetization">
+
+          <div class="page-header">
+            <div>
+              <h2>Creator Monetization</h2>
+              <p>Creator earnings and withdrawal</p>
+            </div>
+          </div>
+
+          <div class="grid grid-3">
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">💰</div>
+              <div class="isp-stat-number" id="creatorBalance">
+                ৳0
+              </div>
+              <div class="isp-stat-label">
+                Balance
+              </div>
+            </div>
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">📈</div>
+              <div class="isp-stat-number">
+                ৳0
+              </div>
+              <div class="isp-stat-label">
+                This Month
+              </div>
+            </div>
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">💳</div>
+              <div class="isp-stat-number">
+                bKash
+              </div>
+              <div class="isp-stat-label">
+                Withdrawal
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP DASHBOARD
+             IMPORTANT: completely separate view
+        ================================================= -->
+
+        <section class="view" data-view="isp-dashboard">
+
+          <div class="page-header">
+
+            <div>
+              <h2>ISP Dashboard</h2>
+              <p>Internet Service Provider Management</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="loadISPData()">
+              ↻ Refresh
+            </button>
+
+          </div>
+
+
+          <div class="grid grid-4">
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">👥</div>
+              <div class="isp-stat-number" id="ispTotalCustomers">
+                0
+              </div>
+              <div class="isp-stat-label">
+                Total Customers
+              </div>
+            </div>
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">🟢</div>
+              <div class="isp-stat-number" id="ispActiveCustomers">
+                0
+              </div>
+              <div class="isp-stat-label">
+                Active
+              </div>
+            </div>
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">🔴</div>
+              <div class="isp-stat-number" id="ispExpiredCustomers">
+                0
+              </div>
+              <div class="isp-stat-label">
+                Expired
+              </div>
+            </div>
+
+            <div class="isp-stat">
+              <div class="isp-stat-icon">💰</div>
+              <div class="isp-stat-number" id="ispDueAmount">
+                ৳0
+              </div>
+              <div class="isp-stat-label">
+                Total Due
+              </div>
+            </div>
+
+          </div>
+
+          <br>
+
+          <div class="grid grid-2">
+
+            <div class="card">
+
+              <h3>Quick Actions</h3>
+
+              <br>
+
+              <button
+                class="small-btn primary"
+                onclick="openCustomerModal()">
+                + Add Customer
+              </button>
+
+              <button
+                class="small-btn"
+                onclick="showView('isp-packages')">
+                📦 Packages
+              </button>
+
+              <button
+                class="small-btn"
+                onclick="showView('isp-payments')">
+                💳 Payments
+              </button>
+
+              <button
+                class="small-btn"
+                onclick="showView('isp-invoices')">
+                🧾 Invoices
+              </button>
+
+            </div>
+
+
+            <div class="card">
+
+              <h3>ISP System</h3>
+
+              <p style="margin-top:10px;color:var(--muted)">
+                Customer management, packages, billing,
+                payments, invoices, expenses, tickets,
+                online users and staff management.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP CUSTOMERS
+        ================================================= -->
+
+        <section class="view" data-view="isp-customers">
+
+          <div class="page-header">
+
+            <div>
+              <h2>ISP Customers</h2>
+              <p>Manage broadband customers</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openCustomerModal()">
+              + Add Customer
+            </button>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="field">
+              <input
+                id="customerSearch"
+                placeholder="Search customer..."
+                oninput="filterCustomers()">
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Package</th>
+                    <th>Fee</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="customersTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP PACKAGES
+        ================================================= -->
+
+        <section class="view" data-view="isp-packages">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Internet Packages</h2>
+              <p>Manage speed and monthly packages</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openModal('packageModal')">
+              + Add Package
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Speed</th>
+                    <th>Price</th>
+                    <th>Billing</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody id="packagesTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP PAYMENTS
+        ================================================= -->
+
+        <section class="view" data-view="isp-payments">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Payments</h2>
+              <p>Customer payment collection</p>
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Reference</th>
+                    <th>Status</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="paymentsTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP INVOICES
+        ================================================= -->
+
+        <section class="view" data-view="isp-invoices">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Invoices</h2>
+              <p>Monthly billing invoices</p>
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Invoice</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="invoicesTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP EXPENSES
+        ================================================= -->
+
+        <section class="view" data-view="isp-expenses">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Expenses</h2>
+              <p>Track ISP business expenses</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openModal('expenseModal')">
+              + Add Expense
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+
+                <tbody id="expensesTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP TICKETS
+        ================================================= -->
+
+        <section class="view" data-view="isp-tickets">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Support Tickets</h2>
+              <p>Customer complaints and support</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openModal('ticketModal')">
+              + New Ticket
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <div id="ticketsContainer">
+              No tickets yet.
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP ONLINE USERS
+        ================================================= -->
+
+        <section class="view" data-view="isp-online">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Online Users</h2>
+              <p>Current connection monitoring</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="loadOnlineUsers()">
+              ↻ Refresh
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Username</th>
+                    <th>IP Address</th>
+                    <th>MAC Address</th>
+                    <th>Router</th>
+                    <th>Connected</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="onlineUsersTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP STAFF
+        ================================================= -->
+
+        <section class="view" data-view="isp-staff">
+
+          <div class="page-header">
+
+            <div>
+              <h2>ISP Staff</h2>
+              <p>Admin and staff management</p>
+            </div>
+
+            <button
+              class="small-btn primary"
+              onclick="openModal('staffModal')">
+              + Add Staff
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="staffTable">
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ISP SETTINGS
+        ================================================= -->
+
+        <section class="view" data-view="isp-settings">
+
+          <div class="page-header">
+
+            <div>
+              <h2>ISP Settings</h2>
+              <p>Configure your ISP business</p>
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label>ISP Name</label>
+                <input id="ispName" placeholder="My ISP">
+              </div>
+
+              <div class="field">
+                <label>Support Phone</label>
+                <input id="ispPhone" placeholder="01XXXXXXXXX">
+              </div>
+
+              <div class="field">
+                <label>Address</label>
+                <input id="ispAddress">
+              </div>
+
+              <div class="field">
+                <label>Billing Currency</label>
+                <select id="ispCurrency">
+                  <option>BDT</option>
+                </select>
+              </div>
+
+            </div>
+
+            <button
+              class="primary-btn"
+              style="width:auto;padding:11px 25px"
+              onclick="saveISPSettings()">
+              Save Settings
+            </button>
+
+          </div>
+
+          <br>
+
+          <div class="card">
+
+            <h3>Network Integration</h3>
+
+            <p style="color:var(--muted);margin-top:8px;line-height:1.6">
+              MikroTik / FreeRADIUS / NAS integration can be
+              connected through a secure backend or Supabase Edge
+              Function. Router credentials should never be placed
+              directly inside this public HTML file.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             GENERAL SETTINGS
+        ================================================= -->
+
+        <section class="view" data-view="settings">
+
+          <div class="page-header">
+
+            <div>
+              <h2>Settings</h2>
+              <p>Application settings</p>
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <h3>Account</h3>
+
+            <p id="settingsEmail"
+               style="color:var(--muted);margin-top:8px">
+            </p>
+
+            <br>
+
+            <button
+              class="small-btn"
+              onclick="toggleDarkMode()">
+              🌙 Toggle Dark Mode
+            </button>
+
+            <button
+              class="small-btn danger"
+              onclick="logout()">
+              Logout
+            </button>
+
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+
+    <!-- MOBILE NAV -->
+
+    <nav class="mobile-nav">
+
+      <button data-view="home"
+              class="active"
+              onclick="showView('home')">
+        🏠
+      </button>
+
+      <button data-view="reels"
+              onclick="showView('reels')">
+        🎬
+      </button>
+
+      <button data-view="profile"
+              onclick="showView('profile')">
+        👤
+      </button>
+
+      <button data-view="isp-dashboard"
+              onclick="showView('isp-dashboard')">
+        📊
+      </button>
+
+      <button data-view="settings"
+              onclick="showView('settings')">
+        ⚙️
+      </button>
+
+    </nav>
+
   </div>
-
-  <div class="stat">
-   <div class="muted">Reels</div>
-   <div id="homeReels" class="number">0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Customers</div>
-   <div id="homeCustomers" class="number">0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Revenue</div>
-   <div id="homeRevenue" class="number">৳0</div>
-  </div>
- </div>
-
- <div class="card" style="margin-top:18px">
-  <h2>Recent Posts</h2>
-  <div id="homeFeed">
-   <div class="empty">Loading...</div>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     REELS
-===================================================== -->
-
-<section id="page-reels" class="page hidden">
-
- <div class="card">
-  <h2>🎬 Reels</h2>
-  <div id="reelsList">
-   <div class="empty">Loading reels...</div>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     PROFILE
-===================================================== -->
-
-<section id="page-profile" class="page hidden">
-
- <div class="card">
-  <div class="profile-card">
-
-   <img id="profileAvatar"
-        class="avatar"
-        src=""
-        onerror="this.src='https://via.placeholder.com/100'">
-
-   <div>
-    <h2 id="profileName">User</h2>
-    <div id="profileEmail" class="muted"></div>
-    <div id="profileBio" class="muted"></div>
-   </div>
-
-  </div>
- </div>
-
- <div class="card">
-  <h2>Edit Profile</h2>
-
-  <div class="form-grid">
-
-   <div class="field">
-    <label>Name</label>
-    <input id="editName">
-   </div>
-
-   <div class="field">
-    <label>Profile Photo URL</label>
-    <input id="editAvatar">
-   </div>
-
-   <div class="field" style="grid-column:1/-1">
-    <label>Bio</label>
-    <textarea id="editBio"></textarea>
-   </div>
-
-  </div>
-
-  <button class="btn" onclick="saveProfile()">
-   Save Profile
-  </button>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     ISP DASHBOARD
-===================================================== -->
-
-<section id="page-isp" class="page hidden">
-
- <div class="card">
-  <h1>🌐 ISP Dashboard</h1>
-  <p class="muted">
-   Internet Service Provider Management
-  </p>
- </div>
-
- <div class="grid">
-
-  <div class="stat">
-   <div class="muted">Total Customers</div>
-   <div id="ispTotalCustomers" class="number">0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Active</div>
-   <div id="ispActiveCustomers" class="number">0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Expired</div>
-   <div id="ispExpiredCustomers" class="number">0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Online</div>
-   <div id="ispOnlineUsers" class="number">0</div>
-  </div>
-
- </div>
-
- <div class="grid" style="margin-top:14px">
-
-  <div class="stat">
-   <div class="muted">Collected</div>
-   <div id="ispCollected" class="number">৳0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Due</div>
-   <div id="ispDue" class="number">৳0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Expenses</div>
-   <div id="ispExpenses" class="number">৳0</div>
-  </div>
-
-  <div class="stat">
-   <div class="muted">Profit</div>
-   <div id="ispProfit" class="number">৳0</div>
-  </div>
-
- </div>
-
- <div class="card" style="margin-top:18px">
-  <div class="actions">
-   <button class="btn" onclick="openCustomerModal()">
-    + Add Customer
-   </button>
-
-   <button class="btn secondary" onclick="openPackageModal()">
-    + Add Package
-   </button>
-
-   <button class="btn success" onclick="openPaymentModal()">
-    + Payment
-   </button>
-
-   <button class="btn warning" onclick="openExpenseModal()">
-    + Expense
-   </button>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     CUSTOMERS
-===================================================== -->
-
-<section id="page-customers" class="page hidden">
-
- <div class="card">
-
-  <div class="actions" style="justify-content:space-between">
-   <div>
-    <h2>👥 Customers</h2>
-   </div>
-
-   <button class="btn" onclick="openCustomerModal()">
-    + Add Customer
-   </button>
-  </div>
-
-  <input
-   id="customerSearch"
-   class="search"
-   placeholder="Search customer..."
-   oninput="renderCustomers()">
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Code</th>
-      <th>Name</th>
-      <th>Phone</th>
-      <th>Username</th>
-      <th>Package</th>
-      <th>Expiry</th>
-      <th>Fee</th>
-      <th>Status</th>
-      <th>Action</th>
-     </tr>
-    </thead>
-    <tbody id="customersTable"></tbody>
-   </table>
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     PACKAGES
-===================================================== -->
-
-<section id="page-packages" class="page hidden">
-
- <div class="card">
-
-  <div class="actions" style="justify-content:space-between">
-   <h2>📦 Packages</h2>
-   <button class="btn" onclick="openPackageModal()">
-    + Add Package
-   </button>
-  </div>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Name</th>
-      <th>Speed</th>
-      <th>Download</th>
-      <th>Upload</th>
-      <th>Price</th>
-      <th>Validity</th>
-      <th>Status</th>
-      <th>Action</th>
-     </tr>
-    </thead>
-
-    <tbody id="packagesTable"></tbody>
-   </table>
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     PAYMENTS
-===================================================== -->
-
-<section id="page-payments" class="page hidden">
-
- <div class="card">
-
-  <div class="actions" style="justify-content:space-between">
-   <h2>💰 Payments</h2>
-
-   <button class="btn success" onclick="openPaymentModal()">
-    + Record Payment
-   </button>
-  </div>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Date</th>
-      <th>Customer</th>
-      <th>Amount</th>
-      <th>Method</th>
-      <th>Transaction</th>
-      <th>Status</th>
-     </tr>
-    </thead>
-    <tbody id="paymentsTable"></tbody>
-   </table>
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     INVOICES
-===================================================== -->
-
-<section id="page-invoices" class="page hidden">
-
- <div class="card">
-
-  <h2>🧾 Invoices</h2>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Invoice</th>
-      <th>Customer</th>
-      <th>Month</th>
-      <th>Total</th>
-      <th>Paid</th>
-      <th>Due</th>
-      <th>Status</th>
-     </tr>
-    </thead>
-    <tbody id="invoicesTable"></tbody>
-   </table>
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     EXPENSES
-===================================================== -->
-
-<section id="page-expenses" class="page hidden">
-
- <div class="card">
-
-  <div class="actions" style="justify-content:space-between">
-   <h2>💸 Expenses</h2>
-
-   <button class="btn warning" onclick="openExpenseModal()">
-    + Add Expense
-   </button>
-  </div>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Date</th>
-      <th>Title</th>
-      <th>Category</th>
-      <th>Amount</th>
-      <th>Method</th>
-     </tr>
-    </thead>
-    <tbody id="expensesTable"></tbody>
-   </table>
-  </div>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     TICKETS
-===================================================== -->
-
-<section id="page-tickets" class="page hidden">
-
- <div class="card">
-  <h2>🎫 Support Tickets</h2>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Customer</th>
-      <th>Subject</th>
-      <th>Category</th>
-      <th>Priority</th>
-      <th>Status</th>
-      <th>Date</th>
-     </tr>
-    </thead>
-
-    <tbody id="ticketsTable"></tbody>
-   </table>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     ONLINE USERS
-===================================================== -->
-
-<section id="page-online" class="page hidden">
-
- <div class="card">
-  <h2>🟢 Online Users</h2>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Username</th>
-      <th>IP</th>
-      <th>MAC</th>
-      <th>Router</th>
-      <th>Type</th>
-      <th>Download</th>
-      <th>Upload</th>
-      <th>Status</th>
-     </tr>
-    </thead>
-
-    <tbody id="onlineTable"></tbody>
-   </table>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     STAFF
-===================================================== -->
-
-<section id="page-staff" class="page hidden">
-
- <div class="card">
-  <h2>👨‍💼 Staff</h2>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Name</th>
-      <th>Phone</th>
-      <th>Email</th>
-      <th>Role</th>
-      <th>Status</th>
-     </tr>
-    </thead>
-    <tbody id="staffTable"></tbody>
-   </table>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     ISP SETTINGS
-===================================================== -->
-
-<section id="page-ispSettings" class="page hidden">
-
- <div class="card">
-
-  <h2>⚙️ ISP Settings</h2>
-
-  <div class="form-grid">
-
-   <div class="field">
-    <label>ISP Name</label>
-    <input id="ispName">
-   </div>
-
-   <div class="field">
-    <label>Owner Name</label>
-    <input id="ispOwner">
-   </div>
-
-   <div class="field">
-    <label>Phone</label>
-    <input id="ispPhone">
-   </div>
-
-   <div class="field">
-    <label>Email</label>
-    <input id="ispEmail">
-   </div>
-
-   <div class="field">
-    <label>Address</label>
-    <input id="ispAddress">
-   </div>
-
-   <div class="field">
-    <label>Support Phone</label>
-    <input id="ispSupportPhone">
-   </div>
-
-   <div class="field">
-    <label>bKash Number</label>
-    <input id="ispBkash">
-   </div>
-
-   <div class="field">
-    <label>Nagad Number</label>
-    <input id="ispNagad">
-   </div>
-
-   <div class="field">
-    <label>Rocket Number</label>
-    <input id="ispRocket">
-   </div>
-
-   <div class="field">
-    <label>Website</label>
-    <input id="ispWebsite">
-   </div>
-
-  </div>
-
-  <button class="btn" onclick="saveISPSettings()">
-   Save Settings
-  </button>
-
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     NOTIFICATIONS
-===================================================== -->
-
-<section id="page-notifications" class="page hidden">
-
- <div class="card">
-  <h2>🔔 Notifications</h2>
-  <div id="notificationsList">
-   <div class="empty">No notifications</div>
-  </div>
- </div>
-
-</section>
-
-
-<!-- =====================================================
-     APP SETTINGS
-===================================================== -->
-
-<section id="page-settings" class="page hidden">
-
- <div class="card">
-  <h2>⚙️ Settings</h2>
-
-  <div class="actions">
-   <button class="btn secondary" onclick="toggleDark()">
-    Toggle Dark Mode
-   </button>
-
-   <button class="btn danger" onclick="logout()">
-    Logout
-   </button>
-  </div>
- </div>
-
-</section>
-
-</main>
-</div>
-
-
-<!-- MOBILE NAV -->
-
-<nav class="mobile-nav">
-
- <button onclick="showPage('home',this)">
-  🏠<br>Home
- </button>
-
- <button onclick="showPage('reels',this)">
-  🎬<br>Reels
- </button>
-
- <button onclick="showPage('isp',this)">
-  🌐<br>ISP
- </button>
-
- <button onclick="showPage('customers',this)">
-  👥<br>Customers
- </button>
-
- <button onclick="showPage('profile',this)">
-  👤<br>Profile
- </button>
-
-</nav>
 
 </div>
 
@@ -1120,2146 +1991,2653 @@ th{
      CUSTOMER MODAL
 ===================================================== -->
 
-<div id="customerModal" class="modal hidden">
+<div class="modal" id="customerModal">
 
- <div class="modal-box">
+  <div class="modal-box">
 
-  <div class="modal-head">
-   <h2 id="customerModalTitle">Add Customer</h2>
-   <button class="iconbtn" onclick="closeModal('customerModal')">✕</button>
-  </div>
+    <div class="modal-head">
 
-  <input type="hidden" id="customerId">
+      <h2>Add ISP Customer</h2>
 
-  <div class="form-grid">
+      <button
+        class="close-btn"
+        onclick="closeModal('customerModal')">
+        ✕
+      </button>
 
-   <div class="field">
-    <label>Customer Code</label>
-    <input id="customerCode" placeholder="CUS001">
-   </div>
+    </div>
 
-   <div class="field">
-    <label>Name</label>
-    <input id="customerName" placeholder="Customer name">
-   </div>
+    <div class="form-grid">
 
-   <div class="field">
-    <label>Phone</label>
-    <input id="customerPhone">
-   </div>
+      <div class="field">
+        <label>Customer Code</label>
+        <input id="cCode" placeholder="CUS-001">
+      </div>
 
-   <div class="field">
-    <label>Email</label>
-    <input id="customerEmail">
-   </div>
+      <div class="field">
+        <label>Name</label>
+        <input id="cName">
+      </div>
 
-   <div class="field">
-    <label>Address</label>
-    <input id="customerAddress">
-   </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="cEmail" type="email">
+      </div>
 
-   <div class="field">
-    <label>Username</label>
-    <input id="customerUsername">
-   </div>
+      <div class="field">
+        <label>Username</label>
+        <input id="cUsername">
+      </div>
 
-   <div class="field">
-    <label>PPPoE Username</label>
-    <input id="customerPPPoEUsername">
-   </div>
+      <div class="field">
+        <label>Connection Type</label>
+        <select id="cType">
+          <option>PPPoE</option>
+          <option>DHCP</option>
+          <option>Static IP</option>
+          <option>Hotspot</option>
+        </select>
+      </div>
 
-   <div class="field">
-    <label>PPPoE Password</label>
-    <input id="customerPPPoEPassword" type="password">
-   </div>
+      <div class="field">
+        <label>IP Address</label>
+        <input id="cIP">
+      </div>
 
-   <div class="field">
-    <label>Package</label>
-    <select id="customerPackage"></select>
-   </div>
+      <div class="field">
+        <label>MAC Address</label>
+        <input id="cMAC">
+      </div>
 
-   <div class="field">
-    <label>Connection Type</label>
-    <select id="customerConnectionType">
-     <option>PPPoE</option>
-     <option>Static IP</option>
-     <option>DHCP</option>
-     <option>Hotspot</option>
-    </select>
-   </div>
+      <div class="field">
+        <label>Router Name</label>
+        <input id="cRouter">
+      </div>
 
-   <div class="field">
-    <label>IP Address</label>
-    <input id="customerIP">
-   </div>
+      <div class="field">
+        <label>Connection Date</label>
+        <input id="cConnectionDate" type="date">
+      </div>
 
-   <div class="field">
-    <label>MAC Address</label>
-    <input id="customerMAC">
-   </div>
+      <div class="field">
+        <label>Expiry Date</label>
+        <input id="cExpiry" type="date">
+      </div>
 
-   <div class="field">
-    <label>Router</label>
-    <input id="customerRouter">
-   </div>
+      <div class="field">
+        <label>Monthly Fee</label>
+        <input id="cFee" type="number" min="0">
+      </div>
 
-   <div class="field">
-    <label>Router IP</label>
-    <input id="customerRouterIP">
-   </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="cStatus">
+          <option value="active">Active</option>
+          <option value="expired">Expired</option>
+          <option value="suspended">Suspended</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
 
-   <div class="field">
-    <label>Connection Date</label>
-    <input id="customerConnectionDate" type="date">
-   </div>
+      <div class="field form-full">
+        <label>Notes</label>
+        <textarea id="cNotes"></textarea>
+      </div>
 
-   <div class="field">
-    <label>Expiry Date</label>
-    <input id="customerExpiry" type="date">
-   </div>
+    </div>
 
-   <div class="field">
-    <label>Monthly Fee</label>
-    <input id="customerFee" type="number">
-   </div>
-
-   <div class="field">
-    <label>Status</label>
-    <select id="customerStatus">
-     <option value="active">Active</option>
-     <option value="suspended">Suspended</option>
-     <option value="expired">Expired</option>
-     <option value="inactive">Inactive</option>
-    </select>
-   </div>
-
-   <div class="field" style="grid-column:1/-1">
-    <label>Notes</label>
-    <textarea id="customerNotes"></textarea>
-   </div>
+    <button
+      class="primary-btn"
+      onclick="saveCustomer()">
+      Save Customer
+    </button>
 
   </div>
-
-  <div id="customerError" class="error"></div>
-
-  <div class="actions">
-   <button class="btn" onclick="saveCustomer()">
-    Save Customer
-   </button>
-
-   <button class="btn secondary"
-           onclick="closeModal('customerModal')">
-    Cancel
-   </button>
-  </div>
-
- </div>
 
 </div>
 
 
-<!-- PACKAGE MODAL -->
+<!-- =====================================================
+     PACKAGE MODAL
+===================================================== -->
 
-<div id="packageModal" class="modal hidden">
+<div class="modal" id="packageModal">
 
- <div class="modal-box">
+  <div class="modal-box">
 
-  <div class="modal-head">
-   <h2>Add Package</h2>
-   <button class="iconbtn" onclick="closeModal('packageModal')">✕</button>
+    <div class="modal-head">
+
+      <h2>Add Package</h2>
+
+      <button
+        class="close-btn"
+        onclick="closeModal('packageModal')">
+        ✕
+      </button>
+
+    </div>
+
+    <div class="field">
+      <label>Package Name</label>
+      <input id="packageName">
+    </div>
+
+    <div class="field">
+      <label>Speed</label>
+      <input id="packageSpeed" placeholder="20 Mbps">
+    </div>
+
+    <div class="field">
+      <label>Monthly Price</label>
+      <input id="packagePrice" type="number">
+    </div>
+
+    <div class="field">
+      <label>Billing Cycle</label>
+      <select id="packageBilling">
+        <option value="monthly">Monthly</option>
+        <option value="weekly">Weekly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+    </div>
+
+    <button
+      class="primary-btn"
+      onclick="savePackage()">
+      Save Package
+    </button>
+
   </div>
-
-  <div class="form-grid">
-
-   <div class="field">
-    <label>Package Name</label>
-    <input id="packageName">
-   </div>
-
-   <div class="field">
-    <label>Speed</label>
-    <input id="packageSpeed" placeholder="10 Mbps">
-   </div>
-
-   <div class="field">
-    <label>Download Mbps</label>
-    <input id="packageDownload" type="number">
-   </div>
-
-   <div class="field">
-    <label>Upload Mbps</label>
-    <input id="packageUpload" type="number">
-   </div>
-
-   <div class="field">
-    <label>Monthly Price</label>
-    <input id="packagePrice" type="number">
-   </div>
-
-   <div class="field">
-    <label>Validity Days</label>
-    <input id="packageValidity" type="number" value="30">
-   </div>
-
-   <div class="field" style="grid-column:1/-1">
-    <label>Description</label>
-    <textarea id="packageDescription"></textarea>
-   </div>
-
-  </div>
-
-  <div id="packageError" class="error"></div>
-
-  <button class="btn" onclick="savePackage()">
-   Save Package
-  </button>
-
- </div>
 
 </div>
 
 
-<!-- PAYMENT MODAL -->
+<!-- =====================================================
+     EXPENSE MODAL
+===================================================== -->
 
-<div id="paymentModal" class="modal hidden">
+<div class="modal" id="expenseModal">
 
- <div class="modal-box">
+  <div class="modal-box">
 
-  <div class="modal-head">
-   <h2>Record Payment</h2>
-   <button class="iconbtn" onclick="closeModal('paymentModal')">✕</button>
-  </div>
+    <div class="modal-head">
 
-  <div class="form-grid">
+      <h2>Add Expense</h2>
 
-   <div class="field">
-    <label>Customer</label>
-    <select id="paymentCustomer"></select>
-   </div>
+      <button
+        class="close-btn"
+        onclick="closeModal('expenseModal')">
+        ✕
+      </button>
 
-   <div class="field">
-    <label>Amount</label>
-    <input id="paymentAmount" type="number">
-   </div>
+    </div>
 
-   <div class="field">
-    <label>Payment Method</label>
-    <select id="paymentMethod">
-     <option value="cash">Cash</option>
-     <option value="bkash">bKash</option>
-     <option value="nagad">Nagad</option>
-     <option value="rocket">Rocket</option>
-     <option value="bank">Bank</option>
-     <option value="online">Online</option>
-    </select>
-   </div>
+    <div class="field">
+      <label>Title</label>
+      <input id="expenseTitle">
+    </div>
 
-   <div class="field">
-    <label>Transaction ID</label>
-    <input id="paymentTransaction">
-   </div>
+    <div class="field">
+      <label>Category</label>
+      <input id="expenseCategory">
+    </div>
 
-   <div class="field">
-    <label>Month</label>
-    <input id="paymentMonth" placeholder="September">
-   </div>
+    <div class="field">
+      <label>Amount</label>
+      <input id="expenseAmount" type="number">
+    </div>
 
-   <div class="field">
-    <label>Year</label>
-    <input id="paymentYear" type="number">
-   </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="expenseNotes"></textarea>
+    </div>
+
+    <button
+      class="primary-btn"
+      onclick="saveExpense()">
+      Save Expense
+    </button>
 
   </div>
-
-  <div id="paymentError" class="error"></div>
-
-  <button class="btn success" onclick="savePayment()">
-   Save Payment
-  </button>
-
- </div>
 
 </div>
 
 
-<!-- EXPENSE MODAL -->
+<!-- =====================================================
+     TICKET MODAL
+===================================================== -->
 
-<div id="expenseModal" class="modal hidden">
+<div class="modal" id="ticketModal">
 
- <div class="modal-box">
+  <div class="modal-box">
 
-  <div class="modal-head">
-   <h2>Add Expense</h2>
-   <button class="iconbtn" onclick="closeModal('expenseModal')">✕</button>
-  </div>
+    <div class="modal-head">
 
-  <div class="form-grid">
+      <h2>New Ticket</h2>
 
-   <div class="field">
-    <label>Title</label>
-    <input id="expenseTitle">
-   </div>
+      <button
+        class="close-btn"
+        onclick="closeModal('ticketModal')">
+        ✕
+      </button>
 
-   <div class="field">
-    <label>Category</label>
-    <select id="expenseCategory">
-     <option>Internet</option>
-     <option>Server</option>
-     <option>Electricity</option>
-     <option>Staff</option>
-     <option>Office</option>
-     <option>Equipment</option>
-     <option>Other</option>
-    </select>
-   </div>
+    </div>
 
-   <div class="field">
-    <label>Amount</label>
-    <input id="expenseAmount" type="number">
-   </div>
+    <div class="field">
+      <label>Customer</label>
+      <input id="ticketCustomer">
+    </div>
 
-   <div class="field">
-    <label>Date</label>
-    <input id="expenseDate" type="date">
-   </div>
+    <div class="field">
+      <label>Subject</label>
+      <input id="ticketSubject">
+    </div>
 
-   <div class="field">
-    <label>Payment Method</label>
-    <select id="expenseMethod">
-     <option>cash</option>
-     <option>bkash</option>
-     <option>nagad</option>
-     <option>bank</option>
-    </select>
-   </div>
+    <div class="field">
+      <label>Message</label>
+      <textarea id="ticketMessage"></textarea>
+    </div>
 
-   <div class="field">
-    <label>Reference</label>
-    <input id="expenseReference">
-   </div>
+    <button
+      class="primary-btn"
+      onclick="saveTicket()">
+      Create Ticket
+    </button>
 
   </div>
-
-  <button class="btn warning" onclick="saveExpense()">
-   Save Expense
-  </button>
-
- </div>
 
 </div>
 
 
-<div id="toast" class="toast"></div>
+<!-- =====================================================
+     STAFF MODAL
+===================================================== -->
+
+<div class="modal" id="staffModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Add Staff</h2>
+
+      <button
+        class="close-btn"
+        onclick="closeModal('staffModal')">
+        ✕
+      </button>
+
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <input id="staffName">
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="staffEmail" type="email">
+    </div>
+
+    <div class="field">
+      <label>Role</label>
+      <select id="staffRole">
+        <option>admin</option>
+        <option>manager</option>
+        <option>support</option>
+        <option>collector</option>
+        <option>technician</option>
+      </select>
+    </div>
+
+    <button
+      class="primary-btn"
+      onclick="saveStaff()">
+      Save Staff
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     REEL MODAL
+===================================================== -->
+
+<div class="modal" id="reelModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Upload Reel</h2>
+
+      <button
+        class="close-btn"
+        onclick="closeModal('reelModal')">
+        ✕
+      </button>
+
+    </div>
+
+    <div class="field">
+      <label>Video URL</label>
+      <input id="reelVideoUrl" placeholder="Public video URL">
+    </div>
+
+    <div class="field">
+      <label>Caption</label>
+      <textarea id="reelCaption"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Audio Name</label>
+      <input id="reelAudio">
+    </div>
+
+    <button
+      class="primary-btn"
+      onclick="saveReel()">
+      Publish Reel
+    </button>
+
+  </div>
+
+</div>
+
+
+<div id="toast"></div>
 
 
 <script>
-/* =========================================================
-   SUPABASE CONFIG
-========================================================= */
+/* =====================================================
+   SUPABASE
+===================================================== */
 
 const SUPABASE_URL =
- "https://skereuaizdczbvjplisi.supabase.co";
+  "https://skereuaizdczbvjplisi.supabase.co";
 
 const SUPABASE_KEY =
- "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+  "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
 const supabaseClient =
- supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
- );
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
 
 let currentUser = null;
-
-let customers = [];
-let packages = [];
-let payments = [];
-let invoices = [];
-let expenses = [];
-let tickets = [];
-let onlineUsers = [];
-let staff = [];
-let posts = [];
-let reels = [];
+let currentProfile = null;
+let allCustomers = [];
 
 
-/* =========================================================
+/* =====================================================
    HELPERS
-========================================================= */
+===================================================== */
 
 function $(id){
- return document.getElementById(id);
+  return document.getElementById(id);
 }
 
 function toast(message){
- const t=$("toast");
- t.textContent=message;
- t.style.display="block";
+  const t = $("toast");
 
- setTimeout(()=>{
-  t.style.display="none";
- },2500);
+  t.textContent = message;
+  t.classList.add("show");
+
+  setTimeout(()=>{
+    t.classList.remove("show");
+  },3000);
 }
 
-function money(value){
- return "৳"+Number(value||0).toLocaleString("en-BD");
-}
+function escapeHTML(value){
+  if(value === null || value === undefined) return "";
 
-function esc(value){
- return String(value ?? "")
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-}
-
-function closeModal(id){
- $(id).classList.add("hidden");
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 
-/* =========================================================
-   AUTH
-========================================================= */
+/* =====================================================
+   AUTH SCREEN
+===================================================== */
 
-async function login(){
+function showLogin(){
 
- const email=$("loginEmail").value.trim();
- const password=$("loginPassword").value;
+  $("loginForm").classList.remove("hidden");
+  $("signupForm").classList.add("hidden");
 
- $("loginError").textContent="";
-
- if(!email || !password){
-  $("loginError").textContent="Email এবং password দিন।";
-  return;
- }
-
- const {data,error} =
-  await supabaseClient.auth.signInWithPassword({
-   email,
-   password
-  });
-
- if(error){
-  $("loginError").textContent=error.message;
-  return;
- }
-
- currentUser=data.user;
-
- await startApp();
 }
 
+function showSignup(){
+
+  $("loginForm").classList.add("hidden");
+  $("signupForm").classList.remove("hidden");
+
+}
+
+
+/* =====================================================
+   SIGNUP
+===================================================== */
 
 async function signup(){
 
- const email=$("loginEmail").value.trim();
- const password=$("loginPassword").value;
+  const name =
+    $("signupName").value.trim();
 
- $("loginError").textContent="";
+  const email =
+    $("signupEmail").value.trim();
 
- if(!email || !password){
-  $("loginError").textContent="Email এবং password দিন।";
-  return;
- }
+  const password =
+    $("signupPassword").value;
 
- if(password.length < 6){
-  $("loginError").textContent=
-   "Password কমপক্ষে 6 characters হতে হবে।";
-  return;
- }
+  if(!name || !email || !password){
 
- const {data,error} =
-  await supabaseClient.auth.signUp({
-   email,
-   password
-  });
+    toast("সব তথ্য পূরণ করো");
+    return;
 
- if(error){
-  $("loginError").textContent=error.message;
-  return;
- }
+  }
 
- if(data.user){
-  toast("Account তৈরি হয়েছে।");
- }
+  if(password.length < 6){
+
+    toast("Password কমপক্ষে 6 অক্ষরের হতে হবে");
+    return;
+
+  }
+
+  const {data,error} =
+    await supabaseClient.auth.signUp({
+      email,
+      password,
+      options:{
+        data:{
+          name:name
+        }
+      }
+    });
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+  toast(
+    "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে email verify করো।"
+  );
+
+  showLogin();
 
 }
 
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function login(){
+
+  const email =
+    $("loginEmail").value.trim();
+
+  const password =
+    $("loginPassword").value;
+
+  if(!email || !password){
+
+    toast("Email এবং password দাও");
+    return;
+
+  }
+
+  const {data,error} =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+  currentUser = data.user;
+
+  await bootApp();
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 async function logout(){
 
- await supabaseClient.auth.signOut();
+  await supabaseClient.auth.signOut();
 
- currentUser=null;
+  currentUser = null;
 
- $("app").classList.add("hidden");
- $("loginScreen").classList.remove("hidden");
-}
+  $("app").style.display = "none";
+  $("authScreen").style.display = "flex";
 
-
-/* =========================================================
-   APP START
-========================================================= */
-
-async function startApp(){
-
- $("loginScreen").classList.add("hidden");
- $("app").classList.remove("hidden");
-
- await loadProfile();
- await loadAllISP();
- await loadSocial();
- await loadISPSettings();
-
- showPage("home");
+  showLogin();
 
 }
 
+
+/* =====================================================
+   APP BOOT
+===================================================== */
+
+async function bootApp(){
+
+  $("authScreen").style.display = "none";
+  $("app").style.display = "block";
+
+  await loadProfile();
+  await loadPosts();
+  await loadReels();
+
+  loadISPData();
+  loadPackages();
+  loadPayments();
+  loadInvoices();
+  loadExpenses();
+  loadOnlineUsers();
+  loadStaff();
+
+  showView("home");
+
+}
+
+
+/* =====================================================
+   SESSION CHECK
+===================================================== */
+
+async function checkSession(){
+
+  const {
+    data:{
+      session
+    }
+  } =
+  await supabaseClient.auth.getSession();
+
+  if(session){
+
+    currentUser = session.user;
+
+    await bootApp();
+
+  }else{
+
+    $("authScreen").style.display = "flex";
+    $("app").style.display = "none";
+
+  }
+
+}
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
 
 supabaseClient.auth.onAuthStateChange(
- async(event,session)=>{
+  async(event,session)=>{
 
-  if(session && !currentUser){
+    if(event === "SIGNED_IN" && session){
 
-   currentUser=session.user;
+      currentUser = session.user;
 
-   setTimeout(()=>{
-    startApp();
-   },0);
+    }
 
-  }
+    if(event === "SIGNED_OUT"){
 
-  if(!session){
+      currentUser = null;
 
-   currentUser=null;
-
-   $("app").classList.add("hidden");
-   $("loginScreen").classList.remove("hidden");
+    }
 
   }
-
- }
 );
 
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
+/* =====================================================
+   VIEW SYSTEM
+   THIS IS THE MAIN FIX
+===================================================== */
 
-function showPage(page,button){
+function showView(viewName){
 
- document.querySelectorAll(".page")
- .forEach(x=>x.classList.add("hidden"));
+  document
+    .querySelectorAll(".view")
+    .forEach(view=>{
 
- const target=$("page-"+page);
+      view.classList.remove("active");
 
- if(target){
-  target.classList.remove("hidden");
- }
+    });
 
- document.querySelectorAll(".navbtn")
- .forEach(x=>x.classList.remove("active"));
 
- if(button){
-  button.classList.add("active");
- }
+  const target =
+    document.querySelector(
+      `.view[data-view="${viewName}"]`
+    );
 
- if(page==="home") loadSocial();
- if(page==="reels") loadReels();
- if(page==="customers") loadCustomers();
- if(page==="packages") loadPackages();
- if(page==="payments") loadPayments();
- if(page==="invoices") loadInvoices();
- if(page==="expenses") loadExpenses();
- if(page==="tickets") loadTickets();
- if(page==="online") loadOnlineUsers();
- if(page==="staff") loadStaff();
- if(page==="isp") loadAllISP();
+
+  if(target){
+
+    target.classList.add("active");
+
+  }
+
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(btn=>{
+
+      btn.classList.remove("active");
+
+      if(btn.dataset.view === viewName){
+
+        btn.classList.add("active");
+
+      }
+
+    });
+
+
+  document
+    .querySelectorAll(".mobile-nav button")
+    .forEach(btn=>{
+
+      btn.classList.remove("active");
+
+      if(btn.dataset.view === viewName){
+
+        btn.classList.add("active");
+
+      }
+
+    });
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+
+  /* Load data only when its page is opened */
+
+  if(viewName === "isp-dashboard"){
+    loadISPData();
+  }
+
+  if(viewName === "isp-customers"){
+    loadCustomers();
+  }
+
+  if(viewName === "isp-packages"){
+    loadPackages();
+  }
+
+  if(viewName === "isp-payments"){
+    loadPayments();
+  }
+
+  if(viewName === "isp-invoices"){
+    loadInvoices();
+  }
+
+  if(viewName === "isp-expenses"){
+    loadExpenses();
+  }
+
+  if(viewName === "isp-online"){
+    loadOnlineUsers();
+  }
+
+  if(viewName === "isp-staff"){
+    loadStaff();
+  }
 
 }
 
 
-/* =========================================================
-   DARK MODE
-========================================================= */
-
-function toggleDark(){
-
- document.body.classList.toggle("dark");
-
- localStorage.setItem(
-  "darkMode",
-  document.body.classList.contains("dark")
- );
-
-}
-
-if(localStorage.getItem("darkMode")==="true"){
- document.body.classList.add("dark");
-}
-
-
-/* =========================================================
+/* =====================================================
    PROFILE
-========================================================= */
+===================================================== */
 
 async function loadProfile(){
 
- if(!currentUser)return;
+  if(!currentUser) return;
 
- $("profileEmail").textContent=currentUser.email || "";
-
- const {data,error} =
-  await supabaseClient
-   .from("profiles")
-   .select("*")
-   .eq("id",currentUser.id)
-   .maybeSingle();
-
- if(error){
-  return;
- }
-
- if(data){
-
-  $("profileName").textContent=
-   data.name || currentUser.email;
-
-  $("profileBio").textContent=
-   data.bio || "";
-
-  $("profileAvatar").src=
-   data.profile_photo ||
-   "https://via.placeholder.com/100";
-
-  $("editName").value=data.name || "";
-  $("editBio").value=data.bio || "";
-  $("editAvatar").value=data.profile_photo || "";
-
- }
-
-}
+  let {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
 
 
-async function saveProfile(){
+  if(error){
 
- if(!currentUser)return;
+    console.log("Profile error:",error);
 
- const name=$("editName").value.trim();
- const bio=$("editBio").value.trim();
- const photo=$("editAvatar").value.trim();
-
- const {error} =
-  await supabaseClient
-   .from("profiles")
-   .upsert({
-    id:currentUser.id,
-    name:name,
-    bio:bio,
-    profile_photo:photo
-   });
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- toast("Profile saved");
- await loadProfile();
-
-}
-
-
-/* =========================================================
-   SOCIAL POSTS
-========================================================= */
-
-async function loadSocial(){
-
- try{
-
-  const result =
-   await supabaseClient
-    .from("posts")
-    .select("*")
-    .order("created_at",{ascending:false})
-    .limit(20);
-
-  if(result.error){
-   $("homeFeed").innerHTML=
-    '<div class="empty">Posts load হয়নি</div>';
-   return;
   }
 
-  posts=result.data || [];
 
-  $("homePosts").textContent=posts.length;
+  if(!data){
 
-  $("homeFeed").innerHTML=
-   posts.length
-   ? posts.map(renderPost).join("")
-   : '<div class="empty">No posts yet</div>';
+    const name =
+      currentUser.user_metadata?.name ||
+      currentUser.email?.split("@")[0] ||
+      "User";
 
-  const r =
-   await supabaseClient
-    .from("reels")
-    .select("id")
-    .limit(100);
 
-  $("homeReels").textContent=
-   (r.data||[]).length;
+    const result =
+      await supabaseClient
+        .from("profiles")
+        .insert({
 
- }catch(e){
+          id:currentUser.id,
+          name:name,
+          bio:"Welcome to My Social App"
 
-  console.log(e);
+        })
+        .select()
+        .single();
 
- }
+
+    data = result.data;
+
+  }
+
+
+  currentProfile = data || {};
+
+
+  const name =
+    currentProfile.name ||
+    currentUser.email?.split("@")[0] ||
+    "User";
+
+
+  const bio =
+    currentProfile.bio ||
+    "Welcome to My Social App";
+
+
+  const photo =
+    currentProfile.profile_photo ||
+    "https://i.pravatar.cc/200";
+
+
+  $("profileName").textContent = name;
+  $("profileBio").textContent = bio;
+
+  $("profileAvatar").src = photo;
+  $("homeAvatar").src = photo;
+
+  $("editName").value = name;
+  $("editBio").value = bio;
+  $("editPhoto").value =
+    currentProfile.profile_photo || "";
+  $("editCover").value =
+    currentProfile.cover_photo || "";
+
+
+  if(currentProfile.cover_photo){
+
+    $("profileCover").style.backgroundImage =
+      `url("${currentProfile.cover_photo}")`;
+
+  }
+
+
+  $("settingsEmail").textContent =
+    currentUser.email || "";
 
 }
 
 
-function renderPost(post){
+/* =====================================================
+   UPDATE PROFILE
+===================================================== */
 
- let media="";
+async function updateProfile(){
 
- if(post.image_url){
-  media=
-   `<img src="${esc(post.image_url)}"
-         onerror="this.style.display='none'">`;
- }
+  if(!currentUser) return;
 
- return `
- <div class="post">
-  <div style="font-weight:700">
-   Social Post
-  </div>
+  const name =
+    $("editName").value.trim();
 
-  <p>${esc(post.text || "")}</p>
+  const bio =
+    $("editBio").value.trim();
 
-  ${media}
+  const photo =
+    $("editPhoto").value.trim();
 
-  <div class="muted" style="margin-top:8px">
-   ${esc(post.created_at || "")}
-  </div>
- </div>
- `;
+  const cover =
+    $("editCover").value.trim();
+
+
+  const {error} =
+    await supabaseClient
+      .from("profiles")
+      .update({
+
+        name,
+        bio,
+        profile_photo:photo,
+        cover_photo:cover,
+        last_seen:new Date().toISOString()
+
+      })
+      .eq("id",currentUser.id);
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  toast("Profile updated");
+
+  await loadProfile();
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   POSTS
+===================================================== */
+
+async function createPost(){
+
+  if(!currentUser){
+
+    toast("Login required");
+    return;
+
+  }
+
+  const text =
+    $("postText").value.trim();
+
+  if(!text){
+
+    toast("Post লিখো");
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+      .from("posts")
+      .insert({
+
+        user_id:currentUser.id,
+        text:text,
+        privacy:"public",
+        view_count:0
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  $("postText").value = "";
+
+  toast("Post published");
+
+  await loadPosts();
+
+}
+
+
+async function loadPosts(){
+
+  const container =
+    $("postsContainer");
+
+  if(!container) return;
+
+
+  const {data,error} =
+    await supabaseClient
+      .from("posts")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(30);
+
+
+  if(error){
+
+    console.log(error);
+
+    container.innerHTML =
+      `<div class="card">
+        Unable to load posts.
+      </div>`;
+
+    return;
+
+  }
+
+
+  if(!data || !data.length){
+
+    container.innerHTML =
+      `<div class="card">
+        <strong>No posts yet.</strong>
+        <p style="color:var(--muted);margin-top:5px">
+          Create your first post.
+        </p>
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    data.map(post=>{
+
+      const profile =
+        currentProfile &&
+        post.user_id === currentUser?.id
+        ? currentProfile
+        : null;
+
+
+      const name =
+        profile?.name ||
+        "User";
+
+
+      return `
+
+        <article class="card post">
+
+          <div class="post-head">
+
+            <img
+              class="avatar"
+              src="${
+                profile?.profile_photo ||
+                "https://i.pravatar.cc/100"
+              }">
+
+            <div>
+
+              <div class="post-name">
+                ${escapeHTML(name)}
+              </div>
+
+              <div class="post-time">
+                ${formatDate(post.created_at)}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          ${
+            post.text
+            ?
+            `<div class="post-text">
+              ${escapeHTML(post.text)}
+            </div>`
+            :
+            ""
+          }
+
+
+          ${
+            post.image_url
+            ?
+            `<img
+              class="post-media"
+              src="${escapeHTML(post.image_url)}">`
+            :
+            ""
+          }
+
+
+          <div class="post-footer">
+
+            <button
+              class="action-btn"
+              onclick="likePost('${post.id}')">
+              ❤️ Like
+            </button>
+
+            <button
+              class="action-btn">
+              💬 Comment
+            </button>
+
+            <button
+              class="action-btn">
+              ↗ Share
+            </button>
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+}
+
+
+async function likePost(postId){
+
+  if(!currentUser) return;
+
+  const {error} =
+    await supabaseClient
+      .from("post_likes")
+      .insert({
+
+        post_id:postId,
+        user_id:currentUser.id
+
+      });
+
+
+  if(error){
+
+    if(error.code === "23505"){
+
+      toast("Already liked");
+
+    }else{
+
+      toast(error.message);
+
+    }
+
+    return;
+
+  }
+
+
+  toast("Liked ❤️");
+
+}
+
+
+/* =====================================================
    REELS
-========================================================= */
+===================================================== */
 
 async function loadReels(){
 
- const {data,error} =
-  await supabaseClient
-   .from("reels")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(30);
+  const container =
+    $("reelsContainer");
 
- if(error){
-  $("reelsList").innerHTML=
-   `<div class="empty">${esc(error.message)}</div>`;
-  return;
- }
+  if(!container) return;
 
- reels=data||[];
 
- $("reelsList").innerHTML=
-  reels.length
-  ? reels.map(r=>`
-    <div class="card">
-     <div class="reel">
-      <video
-       src="${esc(r.video_url)}"
-       controls
-       playsinline
-       loop>
-      </video>
-     </div>
+  const {data,error} =
+    await supabaseClient
+      .from("reels")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(30);
 
-     <h3 style="margin-top:12px">
-      ${esc(r.caption || "")}
-     </h3>
 
-     <div class="muted">
-      👁 ${Number(r.views||0)} views
-     </div>
-    </div>
-   `).join("")
-  : '<div class="empty">No reels</div>';
+  if(error){
+
+    console.log(error);
+
+    container.innerHTML =
+      `<div class="card">
+        Unable to load reels.
+      </div>`;
+
+    return;
+
+  }
+
+
+  if(!data || !data.length){
+
+    container.innerHTML =
+      `<div class="card">
+        No reels yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    data.map(reel=>`
+
+      <div class="reel">
+
+        <video
+          src="${escapeHTML(reel.video_url)}"
+          controls
+          playsinline
+          loop>
+        </video>
+
+        <div class="reel-info">
+
+          <div class="reel-user">
+            @creator
+          </div>
+
+          <div>
+            ${escapeHTML(reel.caption || "")}
+          </div>
+
+          <div style="margin-top:6px;font-size:12px">
+            ❤️ ${reel.views || 0} views
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join("");
 
 }
 
 
-/* =========================================================
-   ISP LOAD ALL
-========================================================= */
+async function saveReel(){
 
-async function loadAllISP(){
+  if(!currentUser){
 
- await Promise.all([
-  loadCustomers(),
-  loadPackages(),
-  loadPayments(),
-  loadInvoices(),
-  loadExpenses(),
-  loadTickets(),
-  loadOnlineUsers(),
-  loadStaff()
- ]);
+    toast("Login required");
+    return;
 
- updateISPDashboard();
+  }
+
+
+  const video =
+    $("reelVideoUrl").value.trim();
+
+  const caption =
+    $("reelCaption").value.trim();
+
+  const audio =
+    $("reelAudio").value.trim();
+
+
+  if(!video){
+
+    toast("Video URL দাও");
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+      .from("reels")
+      .insert({
+
+        user_id:currentUser.id,
+        video_url:video,
+        caption:caption,
+        audio_name:audio,
+        views:0
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  closeModal("reelModal");
+
+  $("reelVideoUrl").value = "";
+  $("reelCaption").value = "";
+  $("reelAudio").value = "";
+
+  toast("Reel published");
+
+  await loadReels();
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   ISP DASHBOARD
+===================================================== */
+
+async function loadISPData(){
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("isp_customers")
+        .select("*");
+
+
+    if(error){
+
+      console.log("ISP customer error:",error);
+      return;
+
+    }
+
+
+    const customers =
+      data || [];
+
+
+    const total =
+      customers.length;
+
+
+    const active =
+      customers.filter(
+        x=>x.status === "active"
+      ).length;
+
+
+    const expired =
+      customers.filter(x=>{
+
+        if(x.status === "expired")
+          return true;
+
+        if(!x.expiry_date)
+          return false;
+
+        return new Date(x.expiry_date) < new Date();
+
+      }).length;
+
+
+    const due =
+      customers.reduce(
+        (sum,x)=>{
+
+          const fee =
+            Number(x.monthly_fee || 0);
+
+          return sum + fee;
+
+        },
+        0
+      );
+
+
+    $("ispTotalCustomers").textContent =
+      total;
+
+
+    $("ispActiveCustomers").textContent =
+      active;
+
+
+    $("ispExpiredCustomers").textContent =
+      expired;
+
+
+    $("ispDueAmount").textContent =
+      "৳" + due.toLocaleString();
+
+
+    allCustomers = customers;
+
+
+    renderCustomers(customers);
+
+
+  }catch(err){
+
+    console.log(err);
+
+  }
+
+}
+
+
+/* =====================================================
    CUSTOMERS
-========================================================= */
+===================================================== */
 
 async function loadCustomers(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_customers")
-   .select("*")
-   .order("created_at",{ascending:false});
-
- if(error){
-  console.log("Customers:",error.message);
-  return;
- }
-
- customers=data||[];
-
- $("homeCustomers").textContent=customers.length;
-
- renderCustomers();
-
- updateISPDashboard();
-
-}
+  const {data,error} =
+    await supabaseClient
+      .from("isp_customers")
+      .select("*")
+      .order("created_at",{ascending:false});
 
 
-function renderCustomers(){
+  if(error){
 
- const body=$("customersTable");
+    toast(error.message);
+    return;
 
- if(!body)return;
+  }
 
- const q=
-  ($("customerSearch")?.value||"")
-  .toLowerCase();
 
- const list=
-  customers.filter(c=>{
+  allCustomers =
+    data || [];
 
-   const s=[
-    c.customer_code,
-    c.name,
-    c.phone,
-    c.username,
-    c.pppoe_username,
-    c.ip_address
-   ].join(" ").toLowerCase();
 
-   return s.includes(q);
-
-  });
-
- body.innerHTML=
-  list.length
-  ? list.map(c=>`
-
-   <tr>
-
-    <td>${esc(c.customer_code)}</td>
-
-    <td>${esc(c.name)}</td>
-
-    <td>${esc(c.phone)}</td>
-
-    <td>${esc(c.username || c.pppoe_username)}</td>
-
-    <td>${esc(c.package_name || "")}</td>
-
-    <td>${esc(c.expiry_date || "-")}</td>
-
-    <td>${money(c.monthly_fee)}</td>
-
-    <td>
-     <span class="badge ${esc(c.status||"")}">
-      ${esc(c.status||"unknown")}
-     </span>
-    </td>
-
-    <td>
-     <div class="actions">
-
-      <button
-       class="btn secondary"
-       onclick="editCustomer('${c.id}')">
-       Edit
-      </button>
-
-      <button
-       class="btn danger"
-       onclick="deleteCustomer('${c.id}')">
-       Delete
-      </button>
-
-     </div>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-    <td colspan="9">
-     <div class="empty">No customers found</div>
-    </td>
-   </tr>`;
+  renderCustomers(allCustomers);
 
 }
 
 
-/* =========================================================
-   CUSTOMER MODAL
-========================================================= */
+function renderCustomers(customers){
 
-async function openCustomerModal(){
+  const table =
+    $("customersTable");
 
- $("customerModalTitle").textContent="Add Customer";
- $("customerId").value="";
+  if(!table) return;
 
- [
-  "customerCode",
-  "customerName",
-  "customerPhone",
-  "customerEmail",
-  "customerAddress",
-  "customerUsername",
-  "customerPPPoEUsername",
-  "customerPPPoEPassword",
-  "customerIP",
-  "customerMAC",
-  "customerRouter",
-  "customerRouterIP",
-  "customerConnectionDate",
-  "customerExpiry",
-  "customerFee",
-  "customerNotes"
- ].forEach(id=>$(id).value="");
 
- $("customerStatus").value="active";
- $("customerConnectionType").value="PPPoE";
+  if(!customers.length){
 
- await fillPackageSelect();
+    table.innerHTML =
+      `<tr>
+        <td colspan="8">
+          No customers found.
+        </td>
+      </tr>`;
 
- $("customerModal").classList.remove("hidden");
+    return;
+
+  }
+
+
+  table.innerHTML =
+    customers.map(c=>{
+
+      let status =
+        c.status || "active";
+
+
+      if(
+        c.expiry_date &&
+        new Date(c.expiry_date) < new Date() &&
+        status === "active"
+      ){
+
+        status = "expired";
+
+      }
+
+
+      let badge =
+        status === "active"
+        ? "badge-success"
+        : status === "expired"
+        ? "badge-danger"
+        : "badge-warning";
+
+
+      return `
+
+        <tr>
+
+          <td>
+            ${escapeHTML(c.customer_code || "-")}
+          </td>
+
+          <td>
+            ${escapeHTML(c.name || "-")}
+          </td>
+
+          <td>
+            ${escapeHTML(c.username || "-")}
+          </td>
+
+          <td>
+            ${escapeHTML(c.package_name || "-")}
+          </td>
+
+          <td>
+            ৳${Number(c.monthly_fee || 0).toLocaleString()}
+          </td>
+
+          <td>
+            ${escapeHTML(c.expiry_date || "-")}
+          </td>
+
+          <td>
+            <span class="badge ${badge}">
+              ${escapeHTML(status)}
+            </span>
+          </td>
+
+          <td>
+
+            <button
+              class="small-btn"
+              onclick="renewCustomer('${c.id}')">
+              Renew
+            </button>
+
+            <button
+              class="small-btn danger"
+              onclick="suspendCustomer('${c.id}')">
+              Suspend
+            </button>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join("");
 
 }
 
 
-async function fillPackageSelect(){
+function filterCustomers(){
 
- const select=$("customerPackage");
+  const q =
+    $("customerSearch").value
+      .trim()
+      .toLowerCase();
 
- select.innerHTML=
-  '<option value="">Select Package</option>';
 
- packages.forEach(p=>{
+  const filtered =
+    allCustomers.filter(c=>{
 
-  const option=document.createElement("option");
+      const text =
+        [
+          c.name,
+          c.customer_code,
+          c.username,
+          c.email,
+          c.ip_address,
+          c.mac_address
+        ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-  option.value=p.id;
-  option.textContent=
-   `${p.name||"Package"} - ${money(p.monthly_price)}`;
 
-  select.appendChild(option);
+      return text.includes(q);
 
- });
+    });
+
+
+  renderCustomers(filtered);
 
 }
 
 
-async function editCustomer(id){
+/* =====================================================
+   ADD CUSTOMER
+===================================================== */
 
- const c=customers.find(x=>x.id===id);
+function openCustomerModal(){
 
- if(!c)return;
-
- await fillPackageSelect();
-
- $("customerModalTitle").textContent="Edit Customer";
- $("customerId").value=c.id||"";
- $("customerCode").value=c.customer_code||"";
- $("customerName").value=c.name||"";
- $("customerPhone").value=c.phone||"";
- $("customerEmail").value=c.email||"";
- $("customerAddress").value=c.address||"";
- $("customerUsername").value=c.username||"";
- $("customerPPPoEUsername").value=c.pppoe_username||"";
- $("customerPPPoEPassword").value="";
- $("customerPackage").value=c.package_id||"";
- $("customerConnectionType").value=c.connection_type||"PPPoE";
- $("customerIP").value=c.ip_address||"";
- $("customerMAC").value=c.mac_address||"";
- $("customerRouter").value=c.router_name||"";
- $("customerRouterIP").value=c.router_ip||"";
- $("customerConnectionDate").value=c.connection_date||"";
- $("customerExpiry").value=c.expiry_date||"";
- $("customerFee").value=c.monthly_fee||"";
- $("customerStatus").value=c.status||"active";
- $("customerNotes").value=c.notes||"";
-
- $("customerModal").classList.remove("hidden");
+  openModal("customerModal");
 
 }
 
 
 async function saveCustomer(){
 
- const id=$("customerId").value;
+  if(!currentUser){
 
- const packageId=$("customerPackage").value;
+    toast("Login required");
+    return;
 
- const selectedPackage=
-  packages.find(p=>p.id===packageId);
+  }
 
- const payload={
 
-  customer_code:$("customerCode").value.trim(),
-  name:$("customerName").value.trim(),
-  phone:$("customerPhone").value.trim(),
-  email:$("customerEmail").value.trim(),
-  address:$("customerAddress").value.trim(),
+  const row = {
 
-  username:$("customerUsername").value.trim(),
+    customer_code:
+      $("cCode").value.trim(),
 
-  pppoe_username:
-   $("customerPPPoEUsername").value.trim(),
+    name:
+      $("cName").value.trim(),
 
-  package_id:
-   packageId || null,
+    email:
+      $("cEmail").value.trim(),
 
-  package_name:
-   selectedPackage?.name || "",
+    username:
+      $("cUsername").value.trim(),
 
-  connection_type:
-   $("customerConnectionType").value,
+    connection_type:
+      $("cType").value,
 
-  ip_address:
-   $("customerIP").value.trim(),
+    ip_address:
+      $("cIP").value.trim(),
 
-  mac_address:
-   $("customerMAC").value.trim(),
+    mac_address:
+      $("cMAC").value.trim(),
 
-  router_name:
-   $("customerRouter").value.trim(),
+    router_name:
+      $("cRouter").value.trim(),
 
-  router_ip:
-   $("customerRouterIP").value.trim(),
+    connection_date:
+      $("cConnectionDate").value || null,
 
-  connection_date:
-   $("customerConnectionDate").value || null,
+    expiry_date:
+      $("cExpiry").value || null,
 
-  expiry_date:
-   $("customerExpiry").value || null,
+    monthly_fee:
+      Number($("cFee").value || 0),
 
-  monthly_fee:
-   Number($("customerFee").value||0),
+    status:
+      $("cStatus").value,
 
-  status:
-   $("customerStatus").value,
+    notes:
+      $("cNotes").value.trim(),
 
-  service_status:
-   $("customerStatus").value,
+    created_by:
+      currentUser.id
 
-  notes:
-   $("customerNotes").value.trim(),
+  };
 
-  updated_at:new Date().toISOString()
 
- };
+  if(!row.name){
 
- const pppoePassword=
-  $("customerPPPoEPassword").value;
+    toast("Customer name দাও");
+    return;
 
- if(pppoePassword){
-  payload.pppoe_password=pppoePassword;
- }
+  }
 
- let result;
 
- if(id){
+  const {error} =
+    await supabaseClient
+      .from("isp_customers")
+      .insert(row);
 
-  result=
-   await supabaseClient
-    .from("isp_customers")
-    .update(payload)
-    .eq("id",id);
 
- }else{
+  if(error){
 
-  payload.created_at=
-   new Date().toISOString();
+    toast(error.message);
+    return;
 
-  result=
-   await supabaseClient
-    .from("isp_customers")
-    .insert(payload);
+  }
 
- }
 
- if(result.error){
+  closeModal("customerModal");
 
-  $("customerError").textContent=
-   result.error.message;
+  toast("Customer added");
 
-  return;
-
- }
-
- closeModal("customerModal");
-
- toast(
-  id
-  ? "Customer updated"
-  : "Customer added"
- );
-
- await loadCustomers();
+  await loadCustomers();
+  await loadISPData();
 
 }
 
 
-async function deleteCustomer(id){
+/* =====================================================
+   RENEW CUSTOMER
+===================================================== */
 
- if(!confirm("এই customer delete করবেন?"))return;
+async function renewCustomer(id){
 
- const {error} =
-  await supabaseClient
-   .from("isp_customers")
-   .delete()
-   .eq("id",id);
+  const customer =
+    allCustomers.find(x=>x.id === id);
 
- if(error){
-  toast(error.message);
-  return;
- }
 
- toast("Customer deleted");
+  if(!customer) return;
 
- await loadCustomers();
+
+  let date =
+    customer.expiry_date
+    ? new Date(customer.expiry_date)
+    : new Date();
+
+
+  if(date < new Date())
+    date = new Date();
+
+
+  date.setMonth(
+    date.getMonth()+1
+  );
+
+
+  const expiry =
+    date.toISOString().slice(0,10);
+
+
+  const {error} =
+    await supabaseClient
+      .from("isp_customers")
+      .update({
+
+        expiry_date:expiry,
+        status:"active"
+
+      })
+      .eq("id",id);
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  toast("Customer renewed");
+
+  await loadCustomers();
+  await loadISPData();
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   SUSPEND CUSTOMER
+===================================================== */
+
+async function suspendCustomer(id){
+
+  const {error} =
+    await supabaseClient
+      .from("isp_customers")
+      .update({
+        status:"suspended"
+      })
+      .eq("id",id);
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  toast("Customer suspended");
+
+  await loadCustomers();
+  await loadISPData();
+
+}
+
+
+/* =====================================================
    PACKAGES
-========================================================= */
+===================================================== */
 
 async function loadPackages(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_packages")
-   .select("*")
-   .order("created_at",{ascending:false});
+  const table =
+    $("packagesTable");
 
- if(error){
-  console.log("Packages:",error.message);
-  return;
- }
-
- packages=data||[];
-
- renderPackages();
-
-}
+  if(!table) return;
 
 
-function renderPackages(){
-
- const body=$("packagesTable");
-
- if(!body)return;
-
- body.innerHTML=
-  packages.length
-  ? packages.map(p=>`
-
-   <tr>
-
-    <td>${esc(p.name)}</td>
-    <td>${esc(p.speed)}</td>
-    <td>${esc(p.download_mbps)} Mbps</td>
-    <td>${esc(p.upload_mbps)} Mbps</td>
-    <td>${money(p.monthly_price)}</td>
-    <td>${esc(p.validity_days)} days</td>
-
-    <td>
-     <span class="badge active">
-      ${esc(p.status||"active")}
-     </span>
-    </td>
-
-    <td>
-     <button
-      class="btn danger"
-      onclick="deletePackage('${p.id}')">
-      Delete
-     </button>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="8">
-    <div class="empty">No packages</div>
-   </td>
-  </tr>`;
-
-}
+  const {data,error} =
+    await supabaseClient
+      .from("isp_packages")
+      .select("*")
+      .order("created_at",{ascending:false});
 
 
-function openPackageModal(){
+  if(error){
 
- [
-  "packageName",
-  "packageSpeed",
-  "packageDownload",
-  "packageUpload",
-  "packagePrice",
-  "packageDescription"
- ].forEach(id=>$(id).value="");
+    console.log(error);
 
- $("packageValidity").value=30;
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
 
- $("packageModal").classList.remove("hidden");
+    return;
+
+  }
+
+
+  if(!data || !data.length){
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          No packages.
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    data.map(p=>`
+
+      <tr>
+
+        <td>
+          ${escapeHTML(p.name || "-")}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            p.speed || p.speed_mbps || "-"
+          )}
+        </td>
+
+        <td>
+          ৳${Number(p.price || p.monthly_price || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            p.billing_cycle || "monthly"
+          )}
+        </td>
+
+        <td>
+          <span class="badge badge-success">
+            Active
+          </span>
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
 async function savePackage(){
 
- const payload={
+  const name =
+    $("packageName").value.trim();
 
-  name:$("packageName").value.trim(),
+  const speed =
+    $("packageSpeed").value.trim();
 
-  speed:$("packageSpeed").value.trim(),
+  const price =
+    Number($("packagePrice").value || 0);
 
-  download_mbps:
-   Number($("packageDownload").value||0),
-
-  upload_mbps:
-   Number($("packageUpload").value||0),
-
-  monthly_price:
-   Number($("packagePrice").value||0),
-
-  validity_days:
-   Number($("packageValidity").value||30),
-
-  description:
-   $("packageDescription").value.trim(),
-
-  status:"active"
-
- };
-
- if(!payload.name){
-  $("packageError").textContent=
-   "Package name দিন।";
-  return;
- }
-
- const {error} =
-  await supabaseClient
-   .from("isp_packages")
-   .insert(payload);
-
- if(error){
-  $("packageError").textContent=error.message;
-  return;
- }
-
- closeModal("packageModal");
-
- toast("Package added");
-
- await loadPackages();
-
-}
+  const billing =
+    $("packageBilling").value;
 
 
-async function deletePackage(id){
+  if(!name){
 
- if(!confirm("Package delete করবেন?"))return;
+    toast("Package name দাও");
+    return;
 
- const {error} =
-  await supabaseClient
-   .from("isp_packages")
-   .delete()
-   .eq("id",id);
+  }
 
- if(error){
-  toast(error.message);
-  return;
- }
 
- toast("Package deleted");
+  const {error} =
+    await supabaseClient
+      .from("isp_packages")
+      .insert({
 
- await loadPackages();
+        name,
+        speed,
+        price,
+        billing_cycle:billing,
+        status:"active"
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  closeModal("packageModal");
+
+  toast("Package saved");
+
+  await loadPackages();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    PAYMENTS
-========================================================= */
+===================================================== */
 
 async function loadPayments(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_payments")
-   .select("*")
-   .order("paid_at",{ascending:false})
-   .limit(200);
+  const table =
+    $("paymentsTable");
 
- if(error){
-  console.log("Payments:",error.message);
-  return;
- }
-
- payments=data||[];
-
- renderPayments();
-
- updateISPDashboard();
-
-}
+  if(!table) return;
 
 
-function renderPayments(){
-
- const body=$("paymentsTable");
-
- if(!body)return;
-
- body.innerHTML=
-  payments.length
-  ? payments.map(p=>`
-
-   <tr>
-
-    <td>${esc(p.paid_at||"")}</td>
-
-    <td>
-     ${esc(p.customer_name || p.customer_code || "")}
-    </td>
-
-    <td>${money(p.amount)}</td>
-
-    <td>${esc(p.payment_method)}</td>
-
-    <td>${esc(p.transaction_id||"-")}</td>
-
-    <td>
-     <span class="badge paid">
-      ${esc(p.status||"paid")}
-     </span>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="6">
-    <div class="empty">No payments</div>
-   </td>
-  </tr>`;
-
-}
+  const {data,error} =
+    await supabaseClient
+      .from("isp_payments")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(100);
 
 
-async function openPaymentModal(){
+  if(error){
 
- const select=$("paymentCustomer");
+    console.log(error);
 
- select.innerHTML=
-  '<option value="">Select Customer</option>';
+    table.innerHTML =
+      `<tr>
+        <td colspan="6">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
 
- customers.forEach(c=>{
+    return;
 
-  const o=document.createElement("option");
+  }
 
-  o.value=c.id;
 
-  o.textContent=
-   `${c.customer_code||""} - ${c.name||""}`;
+  if(!data?.length){
 
-  select.appendChild(o);
+    table.innerHTML =
+      `<tr>
+        <td colspan="6">
+          No payments yet.
+        </td>
+      </tr>`;
 
- });
+    return;
 
- $("paymentAmount").value="";
- $("paymentTransaction").value="";
- $("paymentMonth").value=
-  new Date().toLocaleString("en-US",{month:"long"});
- $("paymentYear").value=
-  new Date().getFullYear();
+  }
 
- $("paymentModal").classList.remove("hidden");
+
+  table.innerHTML =
+    data.map(p=>`
+
+      <tr>
+
+        <td>
+          ${formatDate(p.created_at)}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            p.customer_name || p.customer_id || "-"
+          )}
+        </td>
+
+        <td>
+          ৳${Number(p.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            p.payment_method || p.method || "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(p.reference || "-")}
+        </td>
+
+        <td>
+          <span class="badge badge-success">
+            ${escapeHTML(p.status || "paid")}
+          </span>
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
-async function savePayment(){
-
- const customerId=
-  $("paymentCustomer").value;
-
- const customer=
-  customers.find(c=>c.id===customerId);
-
- const amount=
-  Number($("paymentAmount").value||0);
-
- if(!customer){
-  $("paymentError").textContent=
-   "Customer select করুন।";
-  return;
- }
-
- if(amount<=0){
-  $("paymentError").textContent=
-   "Payment amount দিন।";
-  return;
- }
-
- const payload={
-
-  customer_id:customer.id,
-
-  customer_code:
-   customer.customer_code,
-
-  customer_name:
-   customer.name,
-
-  amount,
-
-  payment_method:
-   $("paymentMethod").value,
-
-  transaction_id:
-   $("paymentTransaction").value.trim(),
-
-  payment_month:
-   $("paymentMonth").value,
-
-  payment_year:
-   Number($("paymentYear").value),
-
-  status:"paid",
-
-  paid_at:
-   new Date().toISOString()
-
- };
-
- const {error} =
-  await supabaseClient
-   .from("isp_payments")
-   .insert(payload);
-
- if(error){
-  $("paymentError").textContent=
-   error.message;
-  return;
- }
-
- /* update customer payment info */
-
- await supabaseClient
-  .from("isp_customers")
-  .update({
-   paid_amount:
-    Number(customer.paid_amount||0)+amount,
-
-   due_amount:
-    Math.max(
-     0,
-     Number(customer.due_amount||0)-amount
-    ),
-
-   last_payment_date:
-    new Date().toISOString().slice(0,10),
-
-   last_payment_amount:
-    amount,
-
-   updated_at:
-    new Date().toISOString()
-  })
-  .eq("id",customer.id);
-
- closeModal("paymentModal");
-
- toast("Payment saved");
-
- await loadCustomers();
- await loadPayments();
-
-}
-
-
-/* =========================================================
+/* =====================================================
    INVOICES
-========================================================= */
+===================================================== */
 
 async function loadInvoices(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_invoices")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(200);
+  const table =
+    $("invoicesTable");
 
- if(error){
-  console.log("Invoices:",error.message);
-  return;
- }
+  if(!table) return;
 
- invoices=data||[];
 
- renderInvoices();
+  const {data,error} =
+    await supabaseClient
+      .from("isp_invoices")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(100);
+
+
+  if(error){
+
+    console.log(error);
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="6">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="6">
+          No invoices.
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    data.map(i=>`
+
+      <tr>
+
+        <td>
+          ${escapeHTML(
+            i.invoice_number || i.id || "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            i.customer_name || i.customer_id || "-"
+          )}
+        </td>
+
+        <td>
+          ৳${Number(i.total_amount || i.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ৳${Number(i.due_amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ${escapeHTML(i.status || "unpaid")}
+        </td>
+
+        <td>
+          ${formatDate(i.created_at)}
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
-function renderInvoices(){
-
- const body=$("invoicesTable");
-
- if(!body)return;
-
- body.innerHTML=
-  invoices.length
-  ? invoices.map(i=>`
-
-   <tr>
-
-    <td>${esc(i.invoice_number||"-")}</td>
-
-    <td>
-     ${esc(i.customer_name||i.customer_code||"")}
-    </td>
-
-    <td>
-     ${esc(i.billing_month||"")}
-     ${esc(i.billing_year||"")}
-    </td>
-
-    <td>${money(i.total_amount)}</td>
-
-    <td>${money(i.paid_amount)}</td>
-
-    <td>${money(i.due_amount)}</td>
-
-    <td>
-     <span class="badge ${i.status==="paid"?"paid":"unpaid"}">
-      ${esc(i.status||"unpaid")}
-     </span>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="7">
-    <div class="empty">No invoices</div>
-   </td>
-  </tr>`;
-
-}
-
-
-/* =========================================================
+/* =====================================================
    EXPENSES
-========================================================= */
+===================================================== */
 
 async function loadExpenses(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_expenses")
-   .select("*")
-   .order("expense_date",{ascending:false})
-   .limit(200);
+  const table =
+    $("expensesTable");
 
- if(error){
-  console.log("Expenses:",error.message);
-  return;
- }
-
- expenses=data||[];
-
- renderExpenses();
-
- updateISPDashboard();
-
-}
+  if(!table) return;
 
 
-function renderExpenses(){
-
- const body=$("expensesTable");
-
- if(!body)return;
-
- body.innerHTML=
-  expenses.length
-  ? expenses.map(e=>`
-
-   <tr>
-    <td>${esc(e.expense_date)}</td>
-    <td>${esc(e.title)}</td>
-    <td>${esc(e.category)}</td>
-    <td>${money(e.amount)}</td>
-    <td>${esc(e.payment_method)}</td>
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="5">
-    <div class="empty">No expenses</div>
-   </td>
-  </tr>`;
-
-}
+  const {data,error} =
+    await supabaseClient
+      .from("isp_expenses")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(100);
 
 
-function openExpenseModal(){
+  if(error){
 
- $("expenseTitle").value="";
- $("expenseAmount").value="";
- $("expenseReference").value="";
- $("expenseDate").value=
-  new Date().toISOString().slice(0,10);
+    console.log(error);
 
- $("expenseModal").classList.remove("hidden");
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          No expenses.
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    data.map(e=>`
+
+      <tr>
+
+        <td>
+          ${formatDate(e.created_at)}
+        </td>
+
+        <td>
+          ${escapeHTML(e.title || "-")}
+        </td>
+
+        <td>
+          ${escapeHTML(e.category || "-")}
+        </td>
+
+        <td>
+          ৳${Number(e.amount || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ${escapeHTML(e.notes || "-")}
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
 async function saveExpense(){
 
- const amount=
-  Number($("expenseAmount").value||0);
+  const title =
+    $("expenseTitle").value.trim();
 
- if(amount<=0){
-  toast("Amount দিন");
-  return;
- }
+  const category =
+    $("expenseCategory").value.trim();
 
- const payload={
+  const amount =
+    Number($("expenseAmount").value || 0);
 
-  title:
-   $("expenseTitle").value.trim(),
-
-  category:
-   $("expenseCategory").value,
-
-  amount,
-
-  expense_date:
-   $("expenseDate").value,
-
-  payment_method:
-   $("expenseMethod").value,
-
-  reference:
-   $("expenseReference").value.trim(),
-
-  created_by:
-   currentUser?.id || null
-
- };
-
- const {error} =
-  await supabaseClient
-   .from("isp_expenses")
-   .insert(payload);
-
- if(error){
-  toast(error.message);
-  return;
- }
-
- closeModal("expenseModal");
-
- toast("Expense saved");
-
- await loadExpenses();
-
-}
+  const notes =
+    $("expenseNotes").value.trim();
 
 
-/* =========================================================
-   TICKETS
-========================================================= */
+  if(!title){
 
-async function loadTickets(){
+    toast("Expense title দাও");
+    return;
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_tickets")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(200);
+  }
 
- if(error){
-  console.log("Tickets:",error.message);
-  return;
- }
 
- tickets=data||[];
+  const {error} =
+    await supabaseClient
+      .from("isp_expenses")
+      .insert({
 
- renderTickets();
+        title,
+        category,
+        amount,
+        notes
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  closeModal("expenseModal");
+
+  toast("Expense saved");
+
+  await loadExpenses();
 
 }
 
 
-function renderTickets(){
-
- const body=$("ticketsTable");
-
- if(!body)return;
-
- body.innerHTML=
-  tickets.length
-  ? tickets.map(t=>`
-
-   <tr>
-
-    <td>
-     ${esc(t.customer_name||t.customer_code||"")}
-    </td>
-
-    <td>${esc(t.subject)}</td>
-
-    <td>${esc(t.category)}</td>
-
-    <td>
-     <span class="badge pending">
-      ${esc(t.priority)}
-     </span>
-    </td>
-
-    <td>${esc(t.status)}</td>
-
-    <td>${esc(t.created_at)}</td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="6">
-    <div class="empty">No tickets</div>
-   </td>
-  </tr>`;
-
-}
-
-
-/* =========================================================
+/* =====================================================
    ONLINE USERS
-========================================================= */
+===================================================== */
 
 async function loadOnlineUsers(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_online_users")
-   .select("*")
-   .order("last_seen",{ascending:false})
-   .limit(300);
+  const table =
+    $("onlineUsersTable");
 
- if(error){
-  console.log("Online:",error.message);
-  return;
- }
+  if(!table) return;
 
- onlineUsers=data||[];
 
- renderOnlineUsers();
+  const {data,error} =
+    await supabaseClient
+      .from("isp_online_users")
+      .select("*")
+      .order("connected_at",{ascending:false})
+      .limit(100);
 
- updateISPDashboard();
+
+  if(error){
+
+    console.log(error);
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    table.innerHTML =
+      `<tr>
+        <td colspan="5">
+          No online users recorded.
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    data.map(u=>`
+
+      <tr>
+
+        <td>
+          ${escapeHTML(u.username || "-")}
+        </td>
+
+        <td>
+          ${escapeHTML(u.ip_address || "-")}
+        </td>
+
+        <td>
+          ${escapeHTML(u.mac_address || "-")}
+        </td>
+
+        <td>
+          ${escapeHTML(u.router_name || "-")}
+        </td>
+
+        <td>
+          ${formatDate(u.connected_at)}
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
-function renderOnlineUsers(){
-
- const body=$("onlineTable");
-
- if(!body)return;
-
- body.innerHTML=
-  onlineUsers.length
-  ? onlineUsers.map(u=>`
-
-   <tr>
-
-    <td>${esc(u.username)}</td>
-
-    <td>${esc(u.ip_address)}</td>
-
-    <td>${esc(u.mac_address)}</td>
-
-    <td>${esc(u.router_name)}</td>
-
-    <td>${esc(u.connection_type)}</td>
-
-    <td>${esc(u.download_mbps)} Mbps</td>
-
-    <td>${esc(u.upload_mbps)} Mbps</td>
-
-    <td>
-     <span class="badge online">
-      ${esc(u.status)}
-     </span>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="8">
-    <div class="empty">
-     No online users / router API not connected
-    </div>
-   </td>
-  </tr>`;
-
-}
-
-
-/* =========================================================
+/* =====================================================
    STAFF
-========================================================= */
+===================================================== */
 
 async function loadStaff(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_staff")
-   .select("*")
-   .order("created_at",{ascending:false});
+  const table =
+    $("staffTable");
 
- if(error){
-  console.log("Staff:",error.message);
-  return;
- }
-
- staff=data||[];
-
- renderStaff();
-
-}
+  if(!table) return;
 
 
-function renderStaff(){
-
- const body=$("staffTable");
-
- if(!body)return;
-
- body.innerHTML=
-  staff.length
-  ? staff.map(s=>`
-
-   <tr>
-
-    <td>${esc(s.name)}</td>
-    <td>${esc(s.phone)}</td>
-    <td>${esc(s.email)}</td>
-    <td>${esc(s.role)}</td>
-
-    <td>
-     <span class="badge active">
-      ${esc(s.status)}
-     </span>
-    </td>
-
-   </tr>
-
-  `).join("")
-  :
-  `<tr>
-   <td colspan="5">
-    <div class="empty">No staff</div>
-   </td>
-  </tr>`;
-
-}
+  const {data,error} =
+    await supabaseClient
+      .from("isp_staff")
+      .select("*")
+      .order("created_at",{ascending:false});
 
 
-/* =========================================================
-   ISP DASHBOARD CALCULATIONS
-========================================================= */
+  if(error){
 
-function updateISPDashboard(){
+    console.log(error);
 
- const total=customers.length;
+    table.innerHTML =
+      `<tr>
+        <td colspan="4">
+          ${escapeHTML(error.message)}
+        </td>
+      </tr>`;
 
- const active=
-  customers.filter(c=>c.status==="active").length;
+    return;
 
- const expired=
-  customers.filter(c=>{
+  }
 
-   if(c.status==="expired")return true;
 
-   if(!c.expiry_date)return false;
+  if(!data?.length){
 
-   return new Date(c.expiry_date)
-    < new Date(new Date().toISOString().slice(0,10));
+    table.innerHTML =
+      `<tr>
+        <td colspan="4">
+          No staff.
+        </td>
+      </tr>`;
 
-  }).length;
+    return;
 
- const online=
-  onlineUsers.filter(
-   u=>u.status==="online"
-  ).length;
+  }
 
- const collected=
-  payments.reduce(
-   (sum,p)=>sum+Number(p.amount||0),
-   0
-  );
 
- const due=
-  customers.reduce(
-   (sum,c)=>sum+Number(c.due_amount||0),
-   0
-  );
+  table.innerHTML =
+    data.map(s=>`
 
- const cost=
-  expenses.reduce(
-   (sum,e)=>sum+Number(e.amount||0),
-   0
-  );
+      <tr>
 
- const profit=collected-cost;
+        <td>
+          ${escapeHTML(s.name || "-")}
+        </td>
 
- $("ispTotalCustomers").textContent=total;
- $("ispActiveCustomers").textContent=active;
- $("ispExpiredCustomers").textContent=expired;
- $("ispOnlineUsers").textContent=online;
+        <td>
+          ${escapeHTML(s.email || "-")}
+        </td>
 
- $("ispCollected").textContent=money(collected);
- $("ispDue").textContent=money(due);
- $("ispExpenses").textContent=money(cost);
- $("ispProfit").textContent=money(profit);
+        <td>
+          ${escapeHTML(s.role || "-")}
+        </td>
 
- $("homeRevenue").textContent=money(collected);
+        <td>
+          <span class="badge badge-success">
+            ${escapeHTML(s.status || "active")}
+          </span>
+        </td>
+
+      </tr>
+
+    `).join("");
 
 }
 
 
-/* =========================================================
+async function saveStaff(){
+
+  const name =
+    $("staffName").value.trim();
+
+  const email =
+    $("staffEmail").value.trim();
+
+  const role =
+    $("staffRole").value;
+
+
+  if(!name){
+
+    toast("Staff name দাও");
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+      .from("isp_staff")
+      .insert({
+
+        name,
+        email,
+        role,
+        status:"active"
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  closeModal("staffModal");
+
+  toast("Staff saved");
+
+  await loadStaff();
+
+}
+
+
+/* =====================================================
+   TICKET
+===================================================== */
+
+async function saveTicket(){
+
+  const customer =
+    $("ticketCustomer").value.trim();
+
+  const subject =
+    $("ticketSubject").value.trim();
+
+  const message =
+    $("ticketMessage").value.trim();
+
+
+  if(!subject){
+
+    toast("Subject দাও");
+    return;
+
+  }
+
+
+  const {error} =
+    await supabaseClient
+      .from("isp_tickets")
+      .insert({
+
+        customer_name:customer,
+        subject,
+        message,
+        status:"open"
+
+      });
+
+
+  if(error){
+
+    toast(error.message);
+    return;
+
+  }
+
+
+  closeModal("ticketModal");
+
+  toast("Ticket created");
+
+}
+
+
+/* =====================================================
    ISP SETTINGS
-========================================================= */
+===================================================== */
 
-async function loadISPSettings(){
+function saveISPSettings(){
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_settings")
-   .select("*")
-   .order("created_at",{ascending:true})
-   .limit(1)
-   .maybeSingle();
+  localStorage.setItem(
+    "isp_name",
+    $("ispName").value
+  );
 
- if(error){
-  console.log("Settings:",error.message);
-  return;
- }
+  localStorage.setItem(
+    "isp_phone",
+    $("ispPhone").value
+  );
 
- if(!data)return;
+  localStorage.setItem(
+    "isp_address",
+    $("ispAddress").value
+  );
 
- $("ispName").value=data.isp_name||"";
- $("ispOwner").value=data.owner_name||"";
- $("ispPhone").value=data.phone||"";
- $("ispEmail").value=data.email||"";
- $("ispAddress").value=data.address||"";
- $("ispSupportPhone").value=data.support_phone||"";
- $("ispBkash").value=data.bkash_number||"";
- $("ispNagad").value=data.nagad_number||"";
- $("ispRocket").value=data.rocket_number||"";
- $("ispWebsite").value=data.website||"";
+  toast("ISP settings saved");
 
 }
 
 
-async function saveISPSettings(){
+/* =====================================================
+   SEARCH
+===================================================== */
 
- const payload={
+async function globalSearch(){
 
-  isp_name:
-   $("ispName").value.trim(),
+  const q =
+    $("globalSearch").value.trim();
 
-  owner_name:
-   $("ispOwner").value.trim(),
 
-  phone:
-   $("ispPhone").value.trim(),
+  if(!q) return;
 
-  email:
-   $("ispEmail").value.trim(),
 
-  address:
-   $("ispAddress").value.trim(),
+  $("searchInput").value = q;
 
-  support_phone:
-   $("ispSupportPhone").value.trim(),
+  showView("search");
 
-  bkash_number:
-   $("ispBkash").value.trim(),
-
-  nagad_number:
-   $("ispNagad").value.trim(),
-
-  rocket_number:
-   $("ispRocket").value.trim(),
-
-  website:
-   $("ispWebsite").value.trim(),
-
-  updated_at:
-   new Date().toISOString()
-
- };
-
- const {data:existing} =
-  await supabaseClient
-   .from("isp_settings")
-   .select("id")
-   .limit(1)
-   .maybeSingle();
-
- let result;
-
- if(existing?.id){
-
-  result=
-   await supabaseClient
-    .from("isp_settings")
-    .update(payload)
-    .eq("id",existing.id);
-
- }else{
-
-  result=
-   await supabaseClient
-    .from("isp_settings")
-    .insert(payload);
-
- }
-
- if(result.error){
-  toast(result.error.message);
-  return;
- }
-
- toast("ISP settings saved");
+  await performSearch();
 
 }
 
 
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
+async function performSearch(){
 
-async function loadNotifications(){
+  const q =
+    $("searchInput").value.trim();
 
- const {data,error} =
-  await supabaseClient
-   .from("isp_notifications")
-   .select("*")
-   .order("created_at",{ascending:false})
-   .limit(50);
 
- if(error)return;
+  const container =
+    $("searchResults");
 
- const box=$("notificationsList");
 
- box.innerHTML=
-  data?.length
-  ? data.map(n=>`
+  if(!q){
 
-   <div class="card">
+    container.innerHTML =
+      "Search something.";
 
-    <strong>${esc(n.title||"Notification")}</strong>
+    return;
 
-    <p>${esc(n.message||"")}</p>
+  }
 
-    <small class="muted">
-     ${esc(n.created_at||"")}
-    </small>
 
-   </div>
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .ilike("name",`%${q}%`)
+      .limit(30);
 
-  `).join("")
-  :
-  '<div class="empty">No notifications</div>';
+
+  if(error){
+
+    container.innerHTML =
+      escapeHTML(error.message);
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    container.innerHTML =
+      "No users found.";
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    data.map(p=>`
+
+      <div
+        class="card"
+        style="margin-bottom:10px">
+
+        <div style="
+          display:flex;
+          align-items:center;
+          gap:12px">
+
+          <img
+            class="avatar"
+            src="${
+              escapeHTML(
+                p.profile_photo ||
+                "https://i.pravatar.cc/100"
+              )
+            }">
+
+          <div>
+
+            <strong>
+              ${escapeHTML(p.name || "User")}
+            </strong>
+
+            <div style="
+              color:var(--muted);
+              margin-top:4px">
+              ${escapeHTML(p.bio || "")}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join("");
 
 }
 
 
-/* =========================================================
-   INITIAL SESSION CHECK
-========================================================= */
+/* =====================================================
+   DARK MODE
+===================================================== */
 
-(async function(){
+function toggleDarkMode(){
 
- const {data} =
-  await supabaseClient.auth.getSession();
+  document.body.classList.toggle("dark");
 
- if(data?.session){
+  localStorage.setItem(
+    "darkMode",
+    document.body.classList.contains("dark")
+      ? "1"
+      : "0"
+  );
 
-  currentUser=data.session.user;
+}
 
-  await startApp();
 
- }
+if(localStorage.getItem("darkMode")==="1"){
 
-})();
+  document.body.classList.add("dark");
+
+}
+
+
+/* =====================================================
+   MODALS
+===================================================== */
+
+function openModal(id){
+
+  const modal = $(id);
+
+  if(modal){
+
+    modal.classList.add("show");
+
+  }
+
+}
+
+
+function closeModal(id){
+
+  const modal = $(id);
+
+  if(modal){
+
+    modal.classList.remove("show");
+
+  }
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function formatDate(value){
+
+  if(!value) return "-";
+
+  try{
+
+    return new Date(value)
+      .toLocaleString();
+
+  }catch(e){
+
+    return value;
+
+  }
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+checkSession();
 
 </script>
 
