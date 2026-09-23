@@ -1,1546 +1,3267 @@
--- ============================================================
--- MY SOCIAL APP + ISP PANEL
--- ISP SQL v2
--- SAFE / IDEMPOTENT VERSION
--- ============================================================
---
--- IMPORTANT:
--- 1. No Foreign Keys are created.
--- 2. Existing Social App tables are NOT deleted.
--- 3. Existing ISP tables are NOT deleted.
--- 4. Existing columns are preserved.
--- 5. Missing columns are added safely.
--- 6. Existing policies are dropped before recreation.
--- 7. This SQL can be executed more than once.
---
--- ============================================================
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>My Social App + ISP Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#f4f6fb;
+ --card:#fff;
+ --text:#111827;
+ --muted:#6b7280;
+ --primary:#2563eb;
+ --primary2:#7c3aed;
+ --border:#e5e7eb;
+ --danger:#dc2626;
+ --success:#16a34a;
+ --warning:#d97706;
+}
+body.dark{
+ --bg:#0b1020;
+ --card:#121a2d;
+ --text:#f8fafc;
+ --muted:#94a3b8;
+ --border:#263248;
+}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;
+}
+button,input,select,textarea{
+ font:inherit;
+}
+button{
+ border:0;
+ cursor:pointer;
+}
+.hidden{display:none!important}
+.app{
+ min-height:100vh;
+}
+.topbar{
+ height:64px;
+ position:sticky;
+ top:0;
+ z-index:50;
+ background:var(--card);
+ border-bottom:1px solid var(--border);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 16px;
+}
+.logo{
+ font-size:20px;
+ font-weight:800;
+ background:linear-gradient(90deg,#2563eb,#7c3aed);
+ -webkit-background-clip:text;
+ color:transparent;
+}
+.top-actions{
+ display:flex;
+ gap:8px;
+}
+.iconbtn{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ background:var(--bg);
+ color:var(--text);
+}
+.layout{
+ display:flex;
+ max-width:1500px;
+ margin:auto;
+}
+.sidebar{
+ width:250px;
+ min-height:calc(100vh - 64px);
+ padding:16px;
+ border-right:1px solid var(--border);
+ background:var(--card);
+ position:sticky;
+ top:64px;
+ align-self:flex-start;
+}
+.navbtn{
+ width:100%;
+ text-align:left;
+ padding:13px;
+ margin-bottom:6px;
+ border-radius:12px;
+ background:transparent;
+ color:var(--text);
+}
+.navbtn:hover,.navbtn.active{
+ background:rgba(37,99,235,.12);
+ color:var(--primary);
+}
+.main{
+ flex:1;
+ padding:20px;
+ min-width:0;
+}
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:18px;
+ margin-bottom:18px;
+ box-shadow:0 8px 30px rgba(0,0,0,.04);
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:14px;
+}
+.stat{
+ padding:18px;
+ border-radius:16px;
+ background:var(--card);
+ border:1px solid var(--border);
+}
+.stat .number{
+ font-size:28px;
+ font-weight:800;
+ margin-top:8px;
+}
+.muted{color:var(--muted)}
+h1,h2,h3{margin-top:0}
+.btn{
+ padding:11px 16px;
+ border-radius:10px;
+ background:var(--primary);
+ color:#fff;
+ font-weight:700;
+}
+.btn.secondary{
+ background:var(--bg);
+ color:var(--text);
+ border:1px solid var(--border);
+}
+.btn.danger{background:var(--danger)}
+.btn.success{background:var(--success)}
+.btn.warning{background:var(--warning)}
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
+}
+.field label{
+ display:block;
+ font-size:13px;
+ color:var(--muted);
+ margin-bottom:6px;
+}
+.field input,
+.field select,
+.field textarea{
+ width:100%;
+ padding:12px;
+ border:1px solid var(--border);
+ border-radius:10px;
+ background:var(--bg);
+ color:var(--text);
+ outline:none;
+}
+.field textarea{
+ min-height:90px;
+ resize:vertical;
+}
+.actions{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+}
+.table-wrap{
+ overflow:auto;
+}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:850px;
+}
+th,td{
+ padding:12px;
+ border-bottom:1px solid var(--border);
+ text-align:left;
+}
+th{
+ color:var(--muted);
+ font-size:13px;
+}
+.badge{
+ display:inline-block;
+ padding:5px 9px;
+ border-radius:999px;
+ font-size:12px;
+ font-weight:700;
+}
+.badge.active,.badge.paid,.badge.online{
+ background:#dcfce7;
+ color:#166534;
+}
+.badge.expired,.badge.unpaid,.badge.offline{
+ background:#fee2e2;
+ color:#991b1b;
+}
+.badge.pending{
+ background:#fef3c7;
+ color:#92400e;
+}
+.search{
+ width:100%;
+ padding:13px;
+ border:1px solid var(--border);
+ background:var(--bg);
+ color:var(--text);
+ border-radius:12px;
+ margin-bottom:14px;
+}
+.mobile-nav{
+ display:none;
+}
+.login{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
+.login-box{
+ width:100%;
+ max-width:420px;
+ background:var(--card);
+ padding:28px;
+ border-radius:22px;
+ border:1px solid var(--border);
+ box-shadow:0 20px 60px rgba(0,0,0,.1);
+}
+.login-box h1{
+ text-align:center;
+}
+.login-box .field{
+ margin-bottom:12px;
+}
+.error{
+ color:var(--danger);
+ font-size:14px;
+ margin:10px 0;
+}
+.success-text{
+ color:var(--success);
+ font-size:14px;
+ margin:10px 0;
+}
+.empty{
+ text-align:center;
+ padding:35px;
+ color:var(--muted);
+}
+.profile-card{
+ display:flex;
+ gap:16px;
+ align-items:center;
+}
+.avatar{
+ width:70px;
+ height:70px;
+ border-radius:50%;
+ object-fit:cover;
+ background:var(--bg);
+}
+.post{
+ border:1px solid var(--border);
+ border-radius:16px;
+ padding:16px;
+ margin-bottom:14px;
+}
+.post img,.post video{
+ width:100%;
+ max-height:500px;
+ object-fit:cover;
+ border-radius:12px;
+}
+.reel{
+ background:#000;
+ border-radius:18px;
+ overflow:hidden;
+}
+.reel video{
+ width:100%;
+ max-height:650px;
+}
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.6);
+ z-index:100;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+.modal-box{
+ width:100%;
+ max-width:650px;
+ max-height:90vh;
+ overflow:auto;
+ background:var(--card);
+ border-radius:20px;
+ padding:20px;
+}
+.modal-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:15px;
+}
+.toast{
+ position:fixed;
+ bottom:25px;
+ left:50%;
+ transform:translateX(-50%);
+ background:#111827;
+ color:#fff;
+ padding:12px 18px;
+ border-radius:12px;
+ z-index:200;
+ display:none;
+}
+@media(max-width:900px){
+ .sidebar{display:none}
+ .main{padding:12px;padding-bottom:80px}
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .mobile-nav{
+  display:flex;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:62px;
+  background:var(--card);
+  border-top:1px solid var(--border);
+  z-index:80;
+ }
+ .mobile-nav button{
+  flex:1;
+  background:transparent;
+  color:var(--muted);
+  font-size:11px;
+ }
+ .mobile-nav button.active{color:var(--primary)}
+}
+@media(max-width:600px){
+ .form-grid{grid-template-columns:1fr}
+ .grid{grid-template-columns:1fr 1fr}
+ .topbar{padding:0 10px}
+ .main{padding:10px;padding-bottom:80px}
+ .card{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="loginScreen" class="login">
+ <div class="login-box">
+  <h1>My Social App</h1>
+  <p class="muted" style="text-align:center">
+   Social App + ISP Management
+  </p>
+
+  <div class="field">
+   <label>Email</label>
+   <input id="loginEmail" type="email" placeholder="Email">
+  </div>
+
+  <div class="field">
+   <label>Password</label>
+   <input id="loginPassword" type="password" placeholder="Password">
+  </div>
+
+  <div id="loginError" class="error"></div>
+
+  <button class="btn" style="width:100%" onclick="login()">
+   Login
+  </button>
+
+  <button class="btn secondary" style="width:100%;margin-top:8px"
+   onclick="signup()">
+   Create Account
+  </button>
+ </div>
+</div>
 
 
--- ============================================================
--- 0. EXTENSIONS
--- ============================================================
+<!-- =====================================================
+     APP
+===================================================== -->
 
-create extension if not exists pgcrypto;
+<div id="app" class="app hidden">
+
+<header class="topbar">
+ <div class="logo">My Social App</div>
+
+ <div class="top-actions">
+  <button class="iconbtn" onclick="toggleDark()">🌙</button>
+  <button class="iconbtn" onclick="showPage('notifications')">🔔</button>
+  <button class="iconbtn" onclick="logout()">↪</button>
+ </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+ <button class="navbtn active" onclick="showPage('home',this)">
+  🏠 Home
+ </button>
+
+ <button class="navbtn" onclick="showPage('reels',this)">
+  🎬 Reels
+ </button>
+
+ <button class="navbtn" onclick="showPage('profile',this)">
+  👤 Profile
+ </button>
+
+ <hr style="border:0;border-top:1px solid var(--border)">
+
+ <button class="navbtn" onclick="showPage('isp',this)">
+  🌐 ISP Panel
+ </button>
+
+ <button class="navbtn" onclick="showPage('customers',this)">
+  👥 Customers
+ </button>
+
+ <button class="navbtn" onclick="showPage('packages',this)">
+  📦 Packages
+ </button>
+
+ <button class="navbtn" onclick="showPage('payments',this)">
+  💰 Payments
+ </button>
+
+ <button class="navbtn" onclick="showPage('invoices',this)">
+  🧾 Invoices
+ </button>
+
+ <button class="navbtn" onclick="showPage('expenses',this)">
+  💸 Expenses
+ </button>
+
+ <button class="navbtn" onclick="showPage('tickets',this)">
+  🎫 Tickets
+ </button>
+
+ <button class="navbtn" onclick="showPage('online',this)">
+  🟢 Online Users
+ </button>
+
+ <button class="navbtn" onclick="showPage('staff',this)">
+  👨‍💼 Staff
+ </button>
+
+ <button class="navbtn" onclick="showPage('ispSettings',this)">
+  ⚙️ ISP Settings
+ </button>
+
+ <hr style="border:0;border-top:1px solid var(--border)">
+
+ <button class="navbtn" onclick="showPage('settings',this)">
+  ⚙️ App Settings
+ </button>
+
+</aside>
 
 
--- ============================================================
--- 1. UPDATED_AT FUNCTION
--- ============================================================
+<main class="main">
 
-create or replace function public.isp_set_updated_at()
-returns trigger
-language plpgsql
-as $$
-begin
-    new.updated_at = now();
-    return new;
-end;
-$$;
+<!-- =====================================================
+     HOME
+===================================================== -->
+
+<section id="page-home" class="page">
+
+ <div class="card">
+  <h1>Welcome 👋</h1>
+  <p class="muted">
+   My Social App dashboard
+  </p>
+ </div>
+
+ <div class="grid">
+  <div class="stat">
+   <div class="muted">Posts</div>
+   <div id="homePosts" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Reels</div>
+   <div id="homeReels" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Customers</div>
+   <div id="homeCustomers" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Revenue</div>
+   <div id="homeRevenue" class="number">৳0</div>
+  </div>
+ </div>
+
+ <div class="card" style="margin-top:18px">
+  <h2>Recent Posts</h2>
+  <div id="homeFeed">
+   <div class="empty">Loading...</div>
+  </div>
+ </div>
+
+</section>
 
 
--- ============================================================
--- 2. ISP SETTINGS
--- ============================================================
+<!-- =====================================================
+     REELS
+===================================================== -->
 
-create table if not exists public.isp_settings (
-    id uuid primary key default gen_random_uuid(),
-    isp_name text,
-    owner_name text,
-    phone text,
-    email text,
-    address text,
-    support_phone text,
-    support_email text,
-    logo_url text,
-    currency text default 'BDT',
-    timezone text default 'Asia/Dhaka',
-    invoice_prefix text default 'INV',
-    customer_prefix text default 'CUS',
-    bkash_number text,
-    nagad_number text,
-    rocket_number text,
-    website text,
-    notes text,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
+<section id="page-reels" class="page hidden">
+
+ <div class="card">
+  <h2>🎬 Reels</h2>
+  <div id="reelsList">
+   <div class="empty">Loading reels...</div>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section id="page-profile" class="page hidden">
+
+ <div class="card">
+  <div class="profile-card">
+
+   <img id="profileAvatar"
+        class="avatar"
+        src=""
+        onerror="this.src='https://via.placeholder.com/100'">
+
+   <div>
+    <h2 id="profileName">User</h2>
+    <div id="profileEmail" class="muted"></div>
+    <div id="profileBio" class="muted"></div>
+   </div>
+
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Edit Profile</h2>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Name</label>
+    <input id="editName">
+   </div>
+
+   <div class="field">
+    <label>Profile Photo URL</label>
+    <input id="editAvatar">
+   </div>
+
+   <div class="field" style="grid-column:1/-1">
+    <label>Bio</label>
+    <textarea id="editBio"></textarea>
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="saveProfile()">
+   Save Profile
+  </button>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     ISP DASHBOARD
+===================================================== -->
+
+<section id="page-isp" class="page hidden">
+
+ <div class="card">
+  <h1>🌐 ISP Dashboard</h1>
+  <p class="muted">
+   Internet Service Provider Management
+  </p>
+ </div>
+
+ <div class="grid">
+
+  <div class="stat">
+   <div class="muted">Total Customers</div>
+   <div id="ispTotalCustomers" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Active</div>
+   <div id="ispActiveCustomers" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Expired</div>
+   <div id="ispExpiredCustomers" class="number">0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Online</div>
+   <div id="ispOnlineUsers" class="number">0</div>
+  </div>
+
+ </div>
+
+ <div class="grid" style="margin-top:14px">
+
+  <div class="stat">
+   <div class="muted">Collected</div>
+   <div id="ispCollected" class="number">৳0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Due</div>
+   <div id="ispDue" class="number">৳0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Expenses</div>
+   <div id="ispExpenses" class="number">৳0</div>
+  </div>
+
+  <div class="stat">
+   <div class="muted">Profit</div>
+   <div id="ispProfit" class="number">৳0</div>
+  </div>
+
+ </div>
+
+ <div class="card" style="margin-top:18px">
+  <div class="actions">
+   <button class="btn" onclick="openCustomerModal()">
+    + Add Customer
+   </button>
+
+   <button class="btn secondary" onclick="openPackageModal()">
+    + Add Package
+   </button>
+
+   <button class="btn success" onclick="openPaymentModal()">
+    + Payment
+   </button>
+
+   <button class="btn warning" onclick="openExpenseModal()">
+    + Expense
+   </button>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     CUSTOMERS
+===================================================== -->
+
+<section id="page-customers" class="page hidden">
+
+ <div class="card">
+
+  <div class="actions" style="justify-content:space-between">
+   <div>
+    <h2>👥 Customers</h2>
+   </div>
+
+   <button class="btn" onclick="openCustomerModal()">
+    + Add Customer
+   </button>
+  </div>
+
+  <input
+   id="customerSearch"
+   class="search"
+   placeholder="Search customer..."
+   oninput="renderCustomers()">
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Username</th>
+      <th>Package</th>
+      <th>Expiry</th>
+      <th>Fee</th>
+      <th>Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="customersTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     PACKAGES
+===================================================== -->
+
+<section id="page-packages" class="page hidden">
+
+ <div class="card">
+
+  <div class="actions" style="justify-content:space-between">
+   <h2>📦 Packages</h2>
+   <button class="btn" onclick="openPackageModal()">
+    + Add Package
+   </button>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Name</th>
+      <th>Speed</th>
+      <th>Download</th>
+      <th>Upload</th>
+      <th>Price</th>
+      <th>Validity</th>
+      <th>Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+
+    <tbody id="packagesTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     PAYMENTS
+===================================================== -->
+
+<section id="page-payments" class="page hidden">
+
+ <div class="card">
+
+  <div class="actions" style="justify-content:space-between">
+   <h2>💰 Payments</h2>
+
+   <button class="btn success" onclick="openPaymentModal()">
+    + Record Payment
+   </button>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Date</th>
+      <th>Customer</th>
+      <th>Amount</th>
+      <th>Method</th>
+      <th>Transaction</th>
+      <th>Status</th>
+     </tr>
+    </thead>
+    <tbody id="paymentsTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     INVOICES
+===================================================== -->
+
+<section id="page-invoices" class="page hidden">
+
+ <div class="card">
+
+  <h2>🧾 Invoices</h2>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Invoice</th>
+      <th>Customer</th>
+      <th>Month</th>
+      <th>Total</th>
+      <th>Paid</th>
+      <th>Due</th>
+      <th>Status</th>
+     </tr>
+    </thead>
+    <tbody id="invoicesTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     EXPENSES
+===================================================== -->
+
+<section id="page-expenses" class="page hidden">
+
+ <div class="card">
+
+  <div class="actions" style="justify-content:space-between">
+   <h2>💸 Expenses</h2>
+
+   <button class="btn warning" onclick="openExpenseModal()">
+    + Add Expense
+   </button>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Date</th>
+      <th>Title</th>
+      <th>Category</th>
+      <th>Amount</th>
+      <th>Method</th>
+     </tr>
+    </thead>
+    <tbody id="expensesTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     TICKETS
+===================================================== -->
+
+<section id="page-tickets" class="page hidden">
+
+ <div class="card">
+  <h2>🎫 Support Tickets</h2>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Customer</th>
+      <th>Subject</th>
+      <th>Category</th>
+      <th>Priority</th>
+      <th>Status</th>
+      <th>Date</th>
+     </tr>
+    </thead>
+
+    <tbody id="ticketsTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     ONLINE USERS
+===================================================== -->
+
+<section id="page-online" class="page hidden">
+
+ <div class="card">
+  <h2>🟢 Online Users</h2>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Username</th>
+      <th>IP</th>
+      <th>MAC</th>
+      <th>Router</th>
+      <th>Type</th>
+      <th>Download</th>
+      <th>Upload</th>
+      <th>Status</th>
+     </tr>
+    </thead>
+
+    <tbody id="onlineTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     STAFF
+===================================================== -->
+
+<section id="page-staff" class="page hidden">
+
+ <div class="card">
+  <h2>👨‍💼 Staff</h2>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Status</th>
+     </tr>
+    </thead>
+    <tbody id="staffTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     ISP SETTINGS
+===================================================== -->
+
+<section id="page-ispSettings" class="page hidden">
+
+ <div class="card">
+
+  <h2>⚙️ ISP Settings</h2>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>ISP Name</label>
+    <input id="ispName">
+   </div>
+
+   <div class="field">
+    <label>Owner Name</label>
+    <input id="ispOwner">
+   </div>
+
+   <div class="field">
+    <label>Phone</label>
+    <input id="ispPhone">
+   </div>
+
+   <div class="field">
+    <label>Email</label>
+    <input id="ispEmail">
+   </div>
+
+   <div class="field">
+    <label>Address</label>
+    <input id="ispAddress">
+   </div>
+
+   <div class="field">
+    <label>Support Phone</label>
+    <input id="ispSupportPhone">
+   </div>
+
+   <div class="field">
+    <label>bKash Number</label>
+    <input id="ispBkash">
+   </div>
+
+   <div class="field">
+    <label>Nagad Number</label>
+    <input id="ispNagad">
+   </div>
+
+   <div class="field">
+    <label>Rocket Number</label>
+    <input id="ispRocket">
+   </div>
+
+   <div class="field">
+    <label>Website</label>
+    <input id="ispWebsite">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="saveISPSettings()">
+   Save Settings
+  </button>
+
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     NOTIFICATIONS
+===================================================== -->
+
+<section id="page-notifications" class="page hidden">
+
+ <div class="card">
+  <h2>🔔 Notifications</h2>
+  <div id="notificationsList">
+   <div class="empty">No notifications</div>
+  </div>
+ </div>
+
+</section>
+
+
+<!-- =====================================================
+     APP SETTINGS
+===================================================== -->
+
+<section id="page-settings" class="page hidden">
+
+ <div class="card">
+  <h2>⚙️ Settings</h2>
+
+  <div class="actions">
+   <button class="btn secondary" onclick="toggleDark()">
+    Toggle Dark Mode
+   </button>
+
+   <button class="btn danger" onclick="logout()">
+    Logout
+   </button>
+  </div>
+ </div>
+
+</section>
+
+</main>
+</div>
+
+
+<!-- MOBILE NAV -->
+
+<nav class="mobile-nav">
+
+ <button onclick="showPage('home',this)">
+  🏠<br>Home
+ </button>
+
+ <button onclick="showPage('reels',this)">
+  🎬<br>Reels
+ </button>
+
+ <button onclick="showPage('isp',this)">
+  🌐<br>ISP
+ </button>
+
+ <button onclick="showPage('customers',this)">
+  👥<br>Customers
+ </button>
+
+ <button onclick="showPage('profile',this)">
+  👤<br>Profile
+ </button>
+
+</nav>
+
+</div>
+
+
+<!-- =====================================================
+     CUSTOMER MODAL
+===================================================== -->
+
+<div id="customerModal" class="modal hidden">
+
+ <div class="modal-box">
+
+  <div class="modal-head">
+   <h2 id="customerModalTitle">Add Customer</h2>
+   <button class="iconbtn" onclick="closeModal('customerModal')">✕</button>
+  </div>
+
+  <input type="hidden" id="customerId">
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Customer Code</label>
+    <input id="customerCode" placeholder="CUS001">
+   </div>
+
+   <div class="field">
+    <label>Name</label>
+    <input id="customerName" placeholder="Customer name">
+   </div>
+
+   <div class="field">
+    <label>Phone</label>
+    <input id="customerPhone">
+   </div>
+
+   <div class="field">
+    <label>Email</label>
+    <input id="customerEmail">
+   </div>
+
+   <div class="field">
+    <label>Address</label>
+    <input id="customerAddress">
+   </div>
+
+   <div class="field">
+    <label>Username</label>
+    <input id="customerUsername">
+   </div>
+
+   <div class="field">
+    <label>PPPoE Username</label>
+    <input id="customerPPPoEUsername">
+   </div>
+
+   <div class="field">
+    <label>PPPoE Password</label>
+    <input id="customerPPPoEPassword" type="password">
+   </div>
+
+   <div class="field">
+    <label>Package</label>
+    <select id="customerPackage"></select>
+   </div>
+
+   <div class="field">
+    <label>Connection Type</label>
+    <select id="customerConnectionType">
+     <option>PPPoE</option>
+     <option>Static IP</option>
+     <option>DHCP</option>
+     <option>Hotspot</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>IP Address</label>
+    <input id="customerIP">
+   </div>
+
+   <div class="field">
+    <label>MAC Address</label>
+    <input id="customerMAC">
+   </div>
+
+   <div class="field">
+    <label>Router</label>
+    <input id="customerRouter">
+   </div>
+
+   <div class="field">
+    <label>Router IP</label>
+    <input id="customerRouterIP">
+   </div>
+
+   <div class="field">
+    <label>Connection Date</label>
+    <input id="customerConnectionDate" type="date">
+   </div>
+
+   <div class="field">
+    <label>Expiry Date</label>
+    <input id="customerExpiry" type="date">
+   </div>
+
+   <div class="field">
+    <label>Monthly Fee</label>
+    <input id="customerFee" type="number">
+   </div>
+
+   <div class="field">
+    <label>Status</label>
+    <select id="customerStatus">
+     <option value="active">Active</option>
+     <option value="suspended">Suspended</option>
+     <option value="expired">Expired</option>
+     <option value="inactive">Inactive</option>
+    </select>
+   </div>
+
+   <div class="field" style="grid-column:1/-1">
+    <label>Notes</label>
+    <textarea id="customerNotes"></textarea>
+   </div>
+
+  </div>
+
+  <div id="customerError" class="error"></div>
+
+  <div class="actions">
+   <button class="btn" onclick="saveCustomer()">
+    Save Customer
+   </button>
+
+   <button class="btn secondary"
+           onclick="closeModal('customerModal')">
+    Cancel
+   </button>
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- PACKAGE MODAL -->
+
+<div id="packageModal" class="modal hidden">
+
+ <div class="modal-box">
+
+  <div class="modal-head">
+   <h2>Add Package</h2>
+   <button class="iconbtn" onclick="closeModal('packageModal')">✕</button>
+  </div>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Package Name</label>
+    <input id="packageName">
+   </div>
+
+   <div class="field">
+    <label>Speed</label>
+    <input id="packageSpeed" placeholder="10 Mbps">
+   </div>
+
+   <div class="field">
+    <label>Download Mbps</label>
+    <input id="packageDownload" type="number">
+   </div>
+
+   <div class="field">
+    <label>Upload Mbps</label>
+    <input id="packageUpload" type="number">
+   </div>
+
+   <div class="field">
+    <label>Monthly Price</label>
+    <input id="packagePrice" type="number">
+   </div>
+
+   <div class="field">
+    <label>Validity Days</label>
+    <input id="packageValidity" type="number" value="30">
+   </div>
+
+   <div class="field" style="grid-column:1/-1">
+    <label>Description</label>
+    <textarea id="packageDescription"></textarea>
+   </div>
+
+  </div>
+
+  <div id="packageError" class="error"></div>
+
+  <button class="btn" onclick="savePackage()">
+   Save Package
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- PAYMENT MODAL -->
+
+<div id="paymentModal" class="modal hidden">
+
+ <div class="modal-box">
+
+  <div class="modal-head">
+   <h2>Record Payment</h2>
+   <button class="iconbtn" onclick="closeModal('paymentModal')">✕</button>
+  </div>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Customer</label>
+    <select id="paymentCustomer"></select>
+   </div>
+
+   <div class="field">
+    <label>Amount</label>
+    <input id="paymentAmount" type="number">
+   </div>
+
+   <div class="field">
+    <label>Payment Method</label>
+    <select id="paymentMethod">
+     <option value="cash">Cash</option>
+     <option value="bkash">bKash</option>
+     <option value="nagad">Nagad</option>
+     <option value="rocket">Rocket</option>
+     <option value="bank">Bank</option>
+     <option value="online">Online</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Transaction ID</label>
+    <input id="paymentTransaction">
+   </div>
+
+   <div class="field">
+    <label>Month</label>
+    <input id="paymentMonth" placeholder="September">
+   </div>
+
+   <div class="field">
+    <label>Year</label>
+    <input id="paymentYear" type="number">
+   </div>
+
+  </div>
+
+  <div id="paymentError" class="error"></div>
+
+  <button class="btn success" onclick="savePayment()">
+   Save Payment
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- EXPENSE MODAL -->
+
+<div id="expenseModal" class="modal hidden">
+
+ <div class="modal-box">
+
+  <div class="modal-head">
+   <h2>Add Expense</h2>
+   <button class="iconbtn" onclick="closeModal('expenseModal')">✕</button>
+  </div>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Title</label>
+    <input id="expenseTitle">
+   </div>
+
+   <div class="field">
+    <label>Category</label>
+    <select id="expenseCategory">
+     <option>Internet</option>
+     <option>Server</option>
+     <option>Electricity</option>
+     <option>Staff</option>
+     <option>Office</option>
+     <option>Equipment</option>
+     <option>Other</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Amount</label>
+    <input id="expenseAmount" type="number">
+   </div>
+
+   <div class="field">
+    <label>Date</label>
+    <input id="expenseDate" type="date">
+   </div>
+
+   <div class="field">
+    <label>Payment Method</label>
+    <select id="expenseMethod">
+     <option>cash</option>
+     <option>bkash</option>
+     <option>nagad</option>
+     <option>bank</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Reference</label>
+    <input id="expenseReference">
+   </div>
+
+  </div>
+
+  <button class="btn warning" onclick="saveExpense()">
+   Save Expense
+  </button>
+
+ </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
+
+const SUPABASE_URL =
+ "https://skereuaizdczbvjplisi.supabase.co";
+
+const SUPABASE_KEY =
+ "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+
+const supabaseClient =
+ supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+ );
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let currentUser = null;
+
+let customers = [];
+let packages = [];
+let payments = [];
+let invoices = [];
+let expenses = [];
+let tickets = [];
+let onlineUsers = [];
+let staff = [];
+let posts = [];
+let reels = [];
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function $(id){
+ return document.getElementById(id);
+}
+
+function toast(message){
+ const t=$("toast");
+ t.textContent=message;
+ t.style.display="block";
+
+ setTimeout(()=>{
+  t.style.display="none";
+ },2500);
+}
+
+function money(value){
+ return "৳"+Number(value||0).toLocaleString("en-BD");
+}
+
+function esc(value){
+ return String(value ?? "")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+}
+
+function closeModal(id){
+ $(id).classList.add("hidden");
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function login(){
+
+ const email=$("loginEmail").value.trim();
+ const password=$("loginPassword").value;
+
+ $("loginError").textContent="";
+
+ if(!email || !password){
+  $("loginError").textContent="Email এবং password দিন।";
+  return;
+ }
+
+ const {data,error} =
+  await supabaseClient.auth.signInWithPassword({
+   email,
+   password
+  });
+
+ if(error){
+  $("loginError").textContent=error.message;
+  return;
+ }
+
+ currentUser=data.user;
+
+ await startApp();
+}
+
+
+async function signup(){
+
+ const email=$("loginEmail").value.trim();
+ const password=$("loginPassword").value;
+
+ $("loginError").textContent="";
+
+ if(!email || !password){
+  $("loginError").textContent="Email এবং password দিন।";
+  return;
+ }
+
+ if(password.length < 6){
+  $("loginError").textContent=
+   "Password কমপক্ষে 6 characters হতে হবে।";
+  return;
+ }
+
+ const {data,error} =
+  await supabaseClient.auth.signUp({
+   email,
+   password
+  });
+
+ if(error){
+  $("loginError").textContent=error.message;
+  return;
+ }
+
+ if(data.user){
+  toast("Account তৈরি হয়েছে।");
+ }
+
+}
+
+
+async function logout(){
+
+ await supabaseClient.auth.signOut();
+
+ currentUser=null;
+
+ $("app").classList.add("hidden");
+ $("loginScreen").classList.remove("hidden");
+}
+
+
+/* =========================================================
+   APP START
+========================================================= */
+
+async function startApp(){
+
+ $("loginScreen").classList.add("hidden");
+ $("app").classList.remove("hidden");
+
+ await loadProfile();
+ await loadAllISP();
+ await loadSocial();
+ await loadISPSettings();
+
+ showPage("home");
+
+}
+
+
+supabaseClient.auth.onAuthStateChange(
+ async(event,session)=>{
+
+  if(session && !currentUser){
+
+   currentUser=session.user;
+
+   setTimeout(()=>{
+    startApp();
+   },0);
+
+  }
+
+  if(!session){
+
+   currentUser=null;
+
+   $("app").classList.add("hidden");
+   $("loginScreen").classList.remove("hidden");
+
+  }
+
+ }
 );
 
-alter table public.isp_settings
-add column if not exists isp_name text;
 
-alter table public.isp_settings
-add column if not exists owner_name text;
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-alter table public.isp_settings
-add column if not exists phone text;
+function showPage(page,button){
 
-alter table public.isp_settings
-add column if not exists email text;
+ document.querySelectorAll(".page")
+ .forEach(x=>x.classList.add("hidden"));
 
-alter table public.isp_settings
-add column if not exists address text;
+ const target=$("page-"+page);
 
-alter table public.isp_settings
-add column if not exists support_phone text;
+ if(target){
+  target.classList.remove("hidden");
+ }
 
-alter table public.isp_settings
-add column if not exists support_email text;
+ document.querySelectorAll(".navbtn")
+ .forEach(x=>x.classList.remove("active"));
 
-alter table public.isp_settings
-add column if not exists logo_url text;
+ if(button){
+  button.classList.add("active");
+ }
 
-alter table public.isp_settings
-add column if not exists currency text default 'BDT';
+ if(page==="home") loadSocial();
+ if(page==="reels") loadReels();
+ if(page==="customers") loadCustomers();
+ if(page==="packages") loadPackages();
+ if(page==="payments") loadPayments();
+ if(page==="invoices") loadInvoices();
+ if(page==="expenses") loadExpenses();
+ if(page==="tickets") loadTickets();
+ if(page==="online") loadOnlineUsers();
+ if(page==="staff") loadStaff();
+ if(page==="isp") loadAllISP();
 
-alter table public.isp_settings
-add column if not exists timezone text default 'Asia/Dhaka';
+}
 
-alter table public.isp_settings
-add column if not exists invoice_prefix text default 'INV';
 
-alter table public.isp_settings
-add column if not exists customer_prefix text default 'CUS';
+/* =========================================================
+   DARK MODE
+========================================================= */
 
-alter table public.isp_settings
-add column if not exists bkash_number text;
+function toggleDark(){
 
-alter table public.isp_settings
-add column if not exists nagad_number text;
+ document.body.classList.toggle("dark");
 
-alter table public.isp_settings
-add column if not exists rocket_number text;
+ localStorage.setItem(
+  "darkMode",
+  document.body.classList.contains("dark")
+ );
 
-alter table public.isp_settings
-add column if not exists website text;
+}
 
-alter table public.isp_settings
-add column if not exists notes text;
-
-alter table public.isp_settings
-add column if not exists created_at timestamptz default now();
-
-alter table public.isp_settings
-add column if not exists updated_at timestamptz default now();
-
-
--- ============================================================
--- 3. ISP PACKAGES
--- ============================================================
-
-create table if not exists public.isp_packages (
-    id uuid primary key default gen_random_uuid(),
-    name text,
-    description text,
-    speed text,
-    download_mbps numeric default 0,
-    upload_mbps numeric default 0,
-    monthly_price numeric(12,2) default 0,
-    setup_fee numeric(12,2) default 0,
-    installation_fee numeric(12,2) default 0,
-    validity_days integer default 30,
-    data_limit_gb numeric default 0,
-    status text default 'active',
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+if(localStorage.getItem("darkMode")==="true"){
+ document.body.classList.add("dark");
+}
 
-alter table public.isp_packages
-add column if not exists name text;
 
-alter table public.isp_packages
-add column if not exists description text;
+/* =========================================================
+   PROFILE
+========================================================= */
 
-alter table public.isp_packages
-add column if not exists speed text;
+async function loadProfile(){
 
-alter table public.isp_packages
-add column if not exists download_mbps numeric default 0;
+ if(!currentUser)return;
 
-alter table public.isp_packages
-add column if not exists upload_mbps numeric default 0;
+ $("profileEmail").textContent=currentUser.email || "";
 
-alter table public.isp_packages
-add column if not exists monthly_price numeric(12,2) default 0;
+ const {data,error} =
+  await supabaseClient
+   .from("profiles")
+   .select("*")
+   .eq("id",currentUser.id)
+   .maybeSingle();
 
-alter table public.isp_packages
-add column if not exists setup_fee numeric(12,2) default 0;
+ if(error){
+  return;
+ }
 
-alter table public.isp_packages
-add column if not exists installation_fee numeric(12,2) default 0;
-
-alter table public.isp_packages
-add column if not exists validity_days integer default 30;
-
-alter table public.isp_packages
-add column if not exists data_limit_gb numeric default 0;
-
-alter table public.isp_packages
-add column if not exists status text default 'active';
-
-alter table public.isp_packages
-add column if not exists created_at timestamptz default now();
-
-alter table public.isp_packages
-add column if not exists updated_at timestamptz default now();
-
-
--- ============================================================
--- 4. ISP CUSTOMERS
--- ============================================================
+ if(data){
 
-create table if not exists public.isp_customers (
-    id uuid primary key default gen_random_uuid(),
-    customer_code text,
-    name text,
-    phone text,
-    email text,
-    address text,
-    username text,
-    password text,
-    pppoe_username text,
-    pppoe_password text,
-    package_id uuid,
-    package_name text,
-    connection_type text default 'PPPoE',
-    ip_address text,
-    mac_address text,
-    router_name text,
-    router_ip text,
-    nas_name text,
-    connection_date date,
-    expiry_date date,
-    monthly_fee numeric(12,2) default 0,
-    due_amount numeric(12,2) default 0,
-    paid_amount numeric(12,2) default 0,
-    status text default 'active',
-    connection_status text default 'connected',
-    service_status text default 'active',
-    notes text,
-    last_payment_date date,
-    last_payment_amount numeric(12,2) default 0,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+  $("profileName").textContent=
+   data.name || currentUser.email;
 
--- SAFE COLUMN MIGRATION
+  $("profileBio").textContent=
+   data.bio || "";
 
-alter table public.isp_customers
-add column if not exists customer_code text;
+  $("profileAvatar").src=
+   data.profile_photo ||
+   "https://via.placeholder.com/100";
 
-alter table public.isp_customers
-add column if not exists name text;
+  $("editName").value=data.name || "";
+  $("editBio").value=data.bio || "";
+  $("editAvatar").value=data.profile_photo || "";
 
-alter table public.isp_customers
-add column if not exists phone text;
+ }
 
-alter table public.isp_customers
-add column if not exists email text;
-
-alter table public.isp_customers
-add column if not exists address text;
-
-alter table public.isp_customers
-add column if not exists username text;
+}
 
-alter table public.isp_customers
-add column if not exists password text;
 
-alter table public.isp_customers
-add column if not exists pppoe_username text;
+async function saveProfile(){
 
-alter table public.isp_customers
-add column if not exists pppoe_password text;
+ if(!currentUser)return;
 
-alter table public.isp_customers
-add column if not exists package_id uuid;
+ const name=$("editName").value.trim();
+ const bio=$("editBio").value.trim();
+ const photo=$("editAvatar").value.trim();
 
-alter table public.isp_customers
-add column if not exists package_name text;
+ const {error} =
+  await supabaseClient
+   .from("profiles")
+   .upsert({
+    id:currentUser.id,
+    name:name,
+    bio:bio,
+    profile_photo:photo
+   });
 
-alter table public.isp_customers
-add column if not exists connection_type text default 'PPPoE';
+ if(error){
+  toast(error.message);
+  return;
+ }
 
-alter table public.isp_customers
-add column if not exists ip_address text;
+ toast("Profile saved");
+ await loadProfile();
 
-alter table public.isp_customers
-add column if not exists mac_address text;
+}
 
-alter table public.isp_customers
-add column if not exists router_name text;
 
-alter table public.isp_customers
-add column if not exists router_ip text;
+/* =========================================================
+   SOCIAL POSTS
+========================================================= */
 
-alter table public.isp_customers
-add column if not exists nas_name text;
+async function loadSocial(){
 
-alter table public.isp_customers
-add column if not exists connection_date date;
+ try{
 
-alter table public.isp_customers
-add column if not exists expiry_date date;
+  const result =
+   await supabaseClient
+    .from("posts")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(20);
 
-alter table public.isp_customers
-add column if not exists monthly_fee numeric(12,2) default 0;
+  if(result.error){
+   $("homeFeed").innerHTML=
+    '<div class="empty">Posts load হয়নি</div>';
+   return;
+  }
 
-alter table public.isp_customers
-add column if not exists due_amount numeric(12,2) default 0;
+  posts=result.data || [];
 
-alter table public.isp_customers
-add column if not exists paid_amount numeric(12,2) default 0;
+  $("homePosts").textContent=posts.length;
 
-alter table public.isp_customers
-add column if not exists status text default 'active';
+  $("homeFeed").innerHTML=
+   posts.length
+   ? posts.map(renderPost).join("")
+   : '<div class="empty">No posts yet</div>';
 
-alter table public.isp_customers
-add column if not exists connection_status text default 'connected';
+  const r =
+   await supabaseClient
+    .from("reels")
+    .select("id")
+    .limit(100);
 
-alter table public.isp_customers
-add column if not exists service_status text default 'active';
+  $("homeReels").textContent=
+   (r.data||[]).length;
 
-alter table public.isp_customers
-add column if not exists notes text;
+ }catch(e){
 
-alter table public.isp_customers
-add column if not exists last_payment_date date;
+  console.log(e);
 
-alter table public.isp_customers
-add column if not exists last_payment_amount numeric(12,2) default 0;
-
-alter table public.isp_customers
-add column if not exists created_at timestamptz default now();
-
-alter table public.isp_customers
-add column if not exists updated_at timestamptz default now();
-
-
--- ============================================================
--- 5. ISP PAYMENTS
--- ============================================================
-
-create table if not exists public.isp_payments (
-    id uuid primary key default gen_random_uuid(),
-    customer_id uuid,
-    customer_code text,
-    customer_name text,
-    amount numeric(12,2) default 0,
-    payment_method text default 'cash',
-    transaction_id text,
-    payment_month text,
-    payment_year integer,
-    invoice_id uuid,
-    received_by text,
-    status text default 'paid',
-    note text,
-    paid_at timestamptz default now(),
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+ }
 
-alter table public.isp_payments
-add column if not exists customer_id uuid;
+}
 
-alter table public.isp_payments
-add column if not exists customer_code text;
 
-alter table public.isp_payments
-add column if not exists customer_name text;
+function renderPost(post){
 
-alter table public.isp_payments
-add column if not exists amount numeric(12,2) default 0;
+ let media="";
 
-alter table public.isp_payments
-add column if not exists payment_method text default 'cash';
+ if(post.image_url){
+  media=
+   `<img src="${esc(post.image_url)}"
+         onerror="this.style.display='none'">`;
+ }
 
-alter table public.isp_payments
-add column if not exists transaction_id text;
+ return `
+ <div class="post">
+  <div style="font-weight:700">
+   Social Post
+  </div>
 
-alter table public.isp_payments
-add column if not exists payment_month text;
+  <p>${esc(post.text || "")}</p>
 
-alter table public.isp_payments
-add column if not exists payment_year integer;
+  ${media}
 
-alter table public.isp_payments
-add column if not exists invoice_id uuid;
+  <div class="muted" style="margin-top:8px">
+   ${esc(post.created_at || "")}
+  </div>
+ </div>
+ `;
 
-alter table public.isp_payments
-add column if not exists received_by text;
+}
 
-alter table public.isp_payments
-add column if not exists status text default 'paid';
 
-alter table public.isp_payments
-add column if not exists note text;
+/* =========================================================
+   REELS
+========================================================= */
 
-alter table public.isp_payments
-add column if not exists paid_at timestamptz default now();
+async function loadReels(){
 
-alter table public.isp_payments
-add column if not exists created_at timestamptz default now();
+ const {data,error} =
+  await supabaseClient
+   .from("reels")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(30);
 
-alter table public.isp_payments
-add column if not exists updated_at timestamptz default now();
+ if(error){
+  $("reelsList").innerHTML=
+   `<div class="empty">${esc(error.message)}</div>`;
+  return;
+ }
 
+ reels=data||[];
 
--- ============================================================
--- 6. ISP INVOICES
--- ============================================================
+ $("reelsList").innerHTML=
+  reels.length
+  ? reels.map(r=>`
+    <div class="card">
+     <div class="reel">
+      <video
+       src="${esc(r.video_url)}"
+       controls
+       playsinline
+       loop>
+      </video>
+     </div>
 
-create table if not exists public.isp_invoices (
-    id uuid primary key default gen_random_uuid(),
-    invoice_number text,
-    customer_id uuid,
-    customer_code text,
-    customer_name text,
-    package_name text,
-    billing_month text,
-    billing_year integer,
-    issue_date date default current_date,
-    due_date date,
-    subtotal numeric(12,2) default 0,
-    discount numeric(12,2) default 0,
-    tax numeric(12,2) default 0,
-    total_amount numeric(12,2) default 0,
-    paid_amount numeric(12,2) default 0,
-    due_amount numeric(12,2) default 0,
-    status text default 'unpaid',
-    notes text,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+     <h3 style="margin-top:12px">
+      ${esc(r.caption || "")}
+     </h3>
 
-alter table public.isp_invoices
-add column if not exists invoice_number text;
+     <div class="muted">
+      👁 ${Number(r.views||0)} views
+     </div>
+    </div>
+   `).join("")
+  : '<div class="empty">No reels</div>';
 
-alter table public.isp_invoices
-add column if not exists customer_id uuid;
+}
 
-alter table public.isp_invoices
-add column if not exists customer_code text;
 
-alter table public.isp_invoices
-add column if not exists customer_name text;
+/* =========================================================
+   ISP LOAD ALL
+========================================================= */
 
-alter table public.isp_invoices
-add column if not exists package_name text;
+async function loadAllISP(){
 
-alter table public.isp_invoices
-add column if not exists billing_month text;
+ await Promise.all([
+  loadCustomers(),
+  loadPackages(),
+  loadPayments(),
+  loadInvoices(),
+  loadExpenses(),
+  loadTickets(),
+  loadOnlineUsers(),
+  loadStaff()
+ ]);
 
-alter table public.isp_invoices
-add column if not exists billing_year integer;
+ updateISPDashboard();
 
-alter table public.isp_invoices
-add column if not exists issue_date date default current_date;
+}
 
-alter table public.isp_invoices
-add column if not exists due_date date;
 
-alter table public.isp_invoices
-add column if not exists subtotal numeric(12,2) default 0;
+/* =========================================================
+   CUSTOMERS
+========================================================= */
 
-alter table public.isp_invoices
-add column if not exists discount numeric(12,2) default 0;
+async function loadCustomers(){
 
-alter table public.isp_invoices
-add column if not exists tax numeric(12,2) default 0;
+ const {data,error} =
+  await supabaseClient
+   .from("isp_customers")
+   .select("*")
+   .order("created_at",{ascending:false});
 
-alter table public.isp_invoices
-add column if not exists total_amount numeric(12,2) default 0;
+ if(error){
+  console.log("Customers:",error.message);
+  return;
+ }
 
-alter table public.isp_invoices
-add column if not exists paid_amount numeric(12,2) default 0;
+ customers=data||[];
 
-alter table public.isp_invoices
-add column if not exists due_amount numeric(12,2) default 0;
+ $("homeCustomers").textContent=customers.length;
 
-alter table public.isp_invoices
-add column if not exists status text default 'unpaid';
+ renderCustomers();
 
-alter table public.isp_invoices
-add column if not exists notes text;
+ updateISPDashboard();
 
-alter table public.isp_invoices
-add column if not exists created_at timestamptz default now();
+}
 
-alter table public.isp_invoices
-add column if not exists updated_at timestamptz default now();
 
+function renderCustomers(){
 
--- ============================================================
--- 7. ISP EXPENSES
--- ============================================================
+ const body=$("customersTable");
 
-create table if not exists public.isp_expenses (
-    id uuid primary key default gen_random_uuid(),
-    title text,
-    category text,
-    amount numeric(12,2) default 0,
-    expense_date date default current_date,
-    payment_method text default 'cash',
-    reference text,
-    description text,
-    created_by text,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+ if(!body)return;
 
-alter table public.isp_expenses
-add column if not exists title text;
+ const q=
+  ($("customerSearch")?.value||"")
+  .toLowerCase();
 
-alter table public.isp_expenses
-add column if not exists category text;
+ const list=
+  customers.filter(c=>{
 
-alter table public.isp_expenses
-add column if not exists amount numeric(12,2) default 0;
+   const s=[
+    c.customer_code,
+    c.name,
+    c.phone,
+    c.username,
+    c.pppoe_username,
+    c.ip_address
+   ].join(" ").toLowerCase();
 
-alter table public.isp_expenses
-add column if not exists expense_date date default current_date;
+   return s.includes(q);
 
-alter table public.isp_expenses
-add column if not exists payment_method text default 'cash';
+  });
 
-alter table public.isp_expenses
-add column if not exists reference text;
+ body.innerHTML=
+  list.length
+  ? list.map(c=>`
 
-alter table public.isp_expenses
-add column if not exists description text;
+   <tr>
 
-alter table public.isp_expenses
-add column if not exists created_by text;
+    <td>${esc(c.customer_code)}</td>
 
-alter table public.isp_expenses
-add column if not exists created_at timestamptz default now();
+    <td>${esc(c.name)}</td>
 
-alter table public.isp_expenses
-add column if not exists updated_at timestamptz default now();
+    <td>${esc(c.phone)}</td>
 
+    <td>${esc(c.username || c.pppoe_username)}</td>
 
--- ============================================================
--- 8. ISP TICKETS
--- ============================================================
+    <td>${esc(c.package_name || "")}</td>
 
-create table if not exists public.isp_tickets (
-    id uuid primary key default gen_random_uuid(),
-    customer_id uuid,
-    customer_code text,
-    customer_name text,
-    subject text,
-    description text,
-    priority text default 'normal',
-    category text default 'support',
-    status text default 'open',
-    assigned_to text,
-    reply text,
-    closed_at timestamptz,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+    <td>${esc(c.expiry_date || "-")}</td>
 
-alter table public.isp_tickets
-add column if not exists customer_id uuid;
+    <td>${money(c.monthly_fee)}</td>
 
-alter table public.isp_tickets
-add column if not exists customer_code text;
+    <td>
+     <span class="badge ${esc(c.status||"")}">
+      ${esc(c.status||"unknown")}
+     </span>
+    </td>
 
-alter table public.isp_tickets
-add column if not exists customer_name text;
+    <td>
+     <div class="actions">
 
-alter table public.isp_tickets
-add column if not exists subject text;
+      <button
+       class="btn secondary"
+       onclick="editCustomer('${c.id}')">
+       Edit
+      </button>
 
-alter table public.isp_tickets
-add column if not exists description text;
+      <button
+       class="btn danger"
+       onclick="deleteCustomer('${c.id}')">
+       Delete
+      </button>
 
-alter table public.isp_tickets
-add column if not exists priority text default 'normal';
+     </div>
+    </td>
 
-alter table public.isp_tickets
-add column if not exists category text default 'support';
+   </tr>
 
-alter table public.isp_tickets
-add column if not exists status text default 'open';
+  `).join("")
+  :
+  `<tr>
+    <td colspan="9">
+     <div class="empty">No customers found</div>
+    </td>
+   </tr>`;
 
-alter table public.isp_tickets
-add column if not exists assigned_to text;
+}
 
-alter table public.isp_tickets
-add column if not exists reply text;
 
-alter table public.isp_tickets
-add column if not exists closed_at timestamptz;
+/* =========================================================
+   CUSTOMER MODAL
+========================================================= */
 
-alter table public.isp_tickets
-add column if not exists created_at timestamptz default now();
+async function openCustomerModal(){
 
-alter table public.isp_tickets
-add column if not exists updated_at timestamptz default now();
+ $("customerModalTitle").textContent="Add Customer";
+ $("customerId").value="";
 
+ [
+  "customerCode",
+  "customerName",
+  "customerPhone",
+  "customerEmail",
+  "customerAddress",
+  "customerUsername",
+  "customerPPPoEUsername",
+  "customerPPPoEPassword",
+  "customerIP",
+  "customerMAC",
+  "customerRouter",
+  "customerRouterIP",
+  "customerConnectionDate",
+  "customerExpiry",
+  "customerFee",
+  "customerNotes"
+ ].forEach(id=>$(id).value="");
 
--- ============================================================
--- 9. ISP ONLINE USERS
--- ============================================================
+ $("customerStatus").value="active";
+ $("customerConnectionType").value="PPPoE";
 
-create table if not exists public.isp_online_users (
-    id uuid primary key default gen_random_uuid(),
-    customer_id uuid,
-    customer_code text,
-    username text,
-    ip_address text,
-    mac_address text,
-    router_name text,
-    nas_name text,
-    session_id text,
-    connection_type text default 'PPPoE',
-    download_mbps numeric default 0,
-    upload_mbps numeric default 0,
-    rx_bytes bigint default 0,
-    tx_bytes bigint default 0,
-    connected_at timestamptz,
-    last_seen timestamptz default now(),
-    status text default 'online',
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+ await fillPackageSelect();
 
-alter table public.isp_online_users
-add column if not exists customer_id uuid;
+ $("customerModal").classList.remove("hidden");
 
-alter table public.isp_online_users
-add column if not exists customer_code text;
+}
 
-alter table public.isp_online_users
-add column if not exists username text;
 
-alter table public.isp_online_users
-add column if not exists ip_address text;
+async function fillPackageSelect(){
 
-alter table public.isp_online_users
-add column if not exists mac_address text;
+ const select=$("customerPackage");
 
-alter table public.isp_online_users
-add column if not exists router_name text;
+ select.innerHTML=
+  '<option value="">Select Package</option>';
 
-alter table public.isp_online_users
-add column if not exists nas_name text;
+ packages.forEach(p=>{
 
-alter table public.isp_online_users
-add column if not exists session_id text;
+  const option=document.createElement("option");
 
-alter table public.isp_online_users
-add column if not exists connection_type text default 'PPPoE';
+  option.value=p.id;
+  option.textContent=
+   `${p.name||"Package"} - ${money(p.monthly_price)}`;
 
-alter table public.isp_online_users
-add column if not exists download_mbps numeric default 0;
+  select.appendChild(option);
 
-alter table public.isp_online_users
-add column if not exists upload_mbps numeric default 0;
+ });
 
-alter table public.isp_online_users
-add column if not exists rx_bytes bigint default 0;
+}
 
-alter table public.isp_online_users
-add column if not exists tx_bytes bigint default 0;
 
-alter table public.isp_online_users
-add column if not exists connected_at timestamptz;
+async function editCustomer(id){
 
-alter table public.isp_online_users
-add column if not exists last_seen timestamptz default now();
+ const c=customers.find(x=>x.id===id);
 
-alter table public.isp_online_users
-add column if not exists status text default 'online';
+ if(!c)return;
 
-alter table public.isp_online_users
-add column if not exists created_at timestamptz default now();
+ await fillPackageSelect();
 
-alter table public.isp_online_users
-add column if not exists updated_at timestamptz default now();
+ $("customerModalTitle").textContent="Edit Customer";
+ $("customerId").value=c.id||"";
+ $("customerCode").value=c.customer_code||"";
+ $("customerName").value=c.name||"";
+ $("customerPhone").value=c.phone||"";
+ $("customerEmail").value=c.email||"";
+ $("customerAddress").value=c.address||"";
+ $("customerUsername").value=c.username||"";
+ $("customerPPPoEUsername").value=c.pppoe_username||"";
+ $("customerPPPoEPassword").value="";
+ $("customerPackage").value=c.package_id||"";
+ $("customerConnectionType").value=c.connection_type||"PPPoE";
+ $("customerIP").value=c.ip_address||"";
+ $("customerMAC").value=c.mac_address||"";
+ $("customerRouter").value=c.router_name||"";
+ $("customerRouterIP").value=c.router_ip||"";
+ $("customerConnectionDate").value=c.connection_date||"";
+ $("customerExpiry").value=c.expiry_date||"";
+ $("customerFee").value=c.monthly_fee||"";
+ $("customerStatus").value=c.status||"active";
+ $("customerNotes").value=c.notes||"";
 
+ $("customerModal").classList.remove("hidden");
 
--- ============================================================
--- 10. ISP STAFF
--- ============================================================
+}
 
-create table if not exists public.isp_staff (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid,
-    name text,
-    phone text,
-    email text,
-    role text default 'staff',
-    permissions jsonb default '{}'::jsonb,
-    status text default 'active',
-    last_login timestamptz,
-    notes text,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
 
-alter table public.isp_staff
-add column if not exists user_id uuid;
+async function saveCustomer(){
 
-alter table public.isp_staff
-add column if not exists name text;
+ const id=$("customerId").value;
 
-alter table public.isp_staff
-add column if not exists phone text;
+ const packageId=$("customerPackage").value;
 
-alter table public.isp_staff
-add column if not exists email text;
+ const selectedPackage=
+  packages.find(p=>p.id===packageId);
 
-alter table public.isp_staff
-add column if not exists role text default 'staff';
+ const payload={
 
-alter table public.isp_staff
-add column if not exists permissions jsonb default '{}'::jsonb;
+  customer_code:$("customerCode").value.trim(),
+  name:$("customerName").value.trim(),
+  phone:$("customerPhone").value.trim(),
+  email:$("customerEmail").value.trim(),
+  address:$("customerAddress").value.trim(),
 
-alter table public.isp_staff
-add column if not exists status text default 'active';
+  username:$("customerUsername").value.trim(),
 
-alter table public.isp_staff
-add column if not exists last_login timestamptz;
+  pppoe_username:
+   $("customerPPPoEUsername").value.trim(),
 
-alter table public.isp_staff
-add column if not exists notes text;
+  package_id:
+   packageId || null,
 
-alter table public.isp_staff
-add column if not exists created_at timestamptz default now();
+  package_name:
+   selectedPackage?.name || "",
 
-alter table public.isp_staff
-add column if not exists updated_at timestamptz default now();
+  connection_type:
+   $("customerConnectionType").value,
 
+  ip_address:
+   $("customerIP").value.trim(),
 
--- ============================================================
--- 11. ISP NOTIFICATIONS
--- ============================================================
+  mac_address:
+   $("customerMAC").value.trim(),
 
-create table if not exists public.isp_notifications (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid,
-    customer_id uuid,
-    title text,
-    message text,
-    type text default 'info',
-    is_read boolean default false,
-    read_at timestamptz,
-    created_at timestamptz default now()
-);
+  router_name:
+   $("customerRouter").value.trim(),
 
-alter table public.isp_notifications
-add column if not exists user_id uuid;
+  router_ip:
+   $("customerRouterIP").value.trim(),
 
-alter table public.isp_notifications
-add column if not exists customer_id uuid;
+  connection_date:
+   $("customerConnectionDate").value || null,
 
-alter table public.isp_notifications
-add column if not exists title text;
+  expiry_date:
+   $("customerExpiry").value || null,
 
-alter table public.isp_notifications
-add column if not exists message text;
+  monthly_fee:
+   Number($("customerFee").value||0),
 
-alter table public.isp_notifications
-add column if not exists type text default 'info';
+  status:
+   $("customerStatus").value,
 
-alter table public.isp_notifications
-add column if not exists is_read boolean default false;
+  service_status:
+   $("customerStatus").value,
 
-alter table public.isp_notifications
-add column if not exists read_at timestamptz;
+  notes:
+   $("customerNotes").value.trim(),
 
-alter table public.isp_notifications
-add column if not exists created_at timestamptz default now();
+  updated_at:new Date().toISOString()
 
+ };
 
--- ============================================================
--- 12. ISP BILLS
--- ============================================================
+ const pppoePassword=
+  $("customerPPPoEPassword").value;
 
-create table if not exists public.isp_bills (
-    id uuid primary key default gen_random_uuid(),
-    customer_id uuid,
-    customer_code text,
-    customer_name text,
-    amount numeric(12,2) default 0,
-    bill_month text,
-    bill_year integer,
-    due_date date,
-    paid_amount numeric(12,2) default 0,
-    due_amount numeric(12,2) default 0,
-    status text default 'unpaid',
-    payment_method text,
-    transaction_id text,
-    note text,
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-);
+ if(pppoePassword){
+  payload.pppoe_password=pppoePassword;
+ }
 
-alter table public.isp_bills
-add column if not exists customer_id uuid;
+ let result;
 
-alter table public.isp_bills
-add column if not exists customer_code text;
+ if(id){
 
-alter table public.isp_bills
-add column if not exists customer_name text;
+  result=
+   await supabaseClient
+    .from("isp_customers")
+    .update(payload)
+    .eq("id",id);
 
-alter table public.isp_bills
-add column if not exists amount numeric(12,2) default 0;
+ }else{
 
-alter table public.isp_bills
-add column if not exists bill_month text;
+  payload.created_at=
+   new Date().toISOString();
 
-alter table public.isp_bills
-add column if not exists bill_year integer;
+  result=
+   await supabaseClient
+    .from("isp_customers")
+    .insert(payload);
 
-alter table public.isp_bills
-add column if not exists due_date date;
+ }
 
-alter table public.isp_bills
-add column if not exists paid_amount numeric(12,2) default 0;
+ if(result.error){
 
-alter table public.isp_bills
-add column if not exists due_amount numeric(12,2) default 0;
+  $("customerError").textContent=
+   result.error.message;
 
-alter table public.isp_bills
-add column if not exists status text default 'unpaid';
+  return;
 
-alter table public.isp_bills
-add column if not exists payment_method text;
+ }
 
-alter table public.isp_bills
-add column if not exists transaction_id text;
+ closeModal("customerModal");
 
-alter table public.isp_bills
-add column if not exists note text;
+ toast(
+  id
+  ? "Customer updated"
+  : "Customer added"
+ );
 
-alter table public.isp_bills
-add column if not exists created_at timestamptz default now();
+ await loadCustomers();
 
-alter table public.isp_bills
-add column if not exists updated_at timestamptz default now();
+}
 
 
--- ============================================================
--- 13. INDEXES
--- ============================================================
+async function deleteCustomer(id){
 
-create index if not exists idx_isp_customers_code
-on public.isp_customers(customer_code);
+ if(!confirm("এই customer delete করবেন?"))return;
 
-create index if not exists idx_isp_customers_phone
-on public.isp_customers(phone);
+ const {error} =
+  await supabaseClient
+   .from("isp_customers")
+   .delete()
+   .eq("id",id);
 
-create index if not exists idx_isp_customers_username
-on public.isp_customers(username);
+ if(error){
+  toast(error.message);
+  return;
+ }
 
-create index if not exists idx_isp_customers_expiry
-on public.isp_customers(expiry_date);
+ toast("Customer deleted");
 
-create index if not exists idx_isp_customers_status
-on public.isp_customers(status);
+ await loadCustomers();
 
-create index if not exists idx_isp_customers_package
-on public.isp_customers(package_id);
+}
 
-create index if not exists idx_isp_packages_status
-on public.isp_packages(status);
 
-create index if not exists idx_isp_payments_customer
-on public.isp_payments(customer_id);
+/* =========================================================
+   PACKAGES
+========================================================= */
 
-create index if not exists idx_isp_payments_paid_at
-on public.isp_payments(paid_at);
+async function loadPackages(){
 
-create index if not exists idx_isp_payments_transaction
-on public.isp_payments(transaction_id);
+ const {data,error} =
+  await supabaseClient
+   .from("isp_packages")
+   .select("*")
+   .order("created_at",{ascending:false});
 
-create index if not exists idx_isp_invoices_customer
-on public.isp_invoices(customer_id);
+ if(error){
+  console.log("Packages:",error.message);
+  return;
+ }
 
-create index if not exists idx_isp_invoices_due_date
-on public.isp_invoices(due_date);
+ packages=data||[];
 
-create index if not exists idx_isp_invoices_status
-on public.isp_invoices(status);
+ renderPackages();
 
-create index if not exists idx_isp_expenses_date
-on public.isp_expenses(expense_date);
+}
 
-create index if not exists idx_isp_tickets_customer
-on public.isp_tickets(customer_id);
 
-create index if not exists idx_isp_tickets_status
-on public.isp_tickets(status);
+function renderPackages(){
 
-create index if not exists idx_isp_online_users_username
-on public.isp_online_users(username);
+ const body=$("packagesTable");
 
-create index if not exists idx_isp_online_users_status
-on public.isp_online_users(status);
+ if(!body)return;
 
-create index if not exists idx_isp_staff_user
-on public.isp_staff(user_id);
+ body.innerHTML=
+  packages.length
+  ? packages.map(p=>`
 
-create index if not exists idx_isp_notifications_user
-on public.isp_notifications(user_id);
+   <tr>
 
-create index if not exists idx_isp_notifications_read
-on public.isp_notifications(is_read);
+    <td>${esc(p.name)}</td>
+    <td>${esc(p.speed)}</td>
+    <td>${esc(p.download_mbps)} Mbps</td>
+    <td>${esc(p.upload_mbps)} Mbps</td>
+    <td>${money(p.monthly_price)}</td>
+    <td>${esc(p.validity_days)} days</td>
 
-create index if not exists idx_isp_bills_customer
-on public.isp_bills(customer_id);
+    <td>
+     <span class="badge active">
+      ${esc(p.status||"active")}
+     </span>
+    </td>
 
-create index if not exists idx_isp_bills_status
-on public.isp_bills(status);
+    <td>
+     <button
+      class="btn danger"
+      onclick="deletePackage('${p.id}')">
+      Delete
+     </button>
+    </td>
 
-create index if not exists idx_isp_bills_due_date
-on public.isp_bills(due_date);
+   </tr>
 
+  `).join("")
+  :
+  `<tr>
+   <td colspan="8">
+    <div class="empty">No packages</div>
+   </td>
+  </tr>`;
 
--- ============================================================
--- 14. UPDATED_AT TRIGGERS
--- ============================================================
+}
 
-drop trigger if exists trg_isp_settings_updated
-on public.isp_settings;
 
-create trigger trg_isp_settings_updated
-before update on public.isp_settings
-for each row
-execute function public.isp_set_updated_at();
+function openPackageModal(){
 
+ [
+  "packageName",
+  "packageSpeed",
+  "packageDownload",
+  "packageUpload",
+  "packagePrice",
+  "packageDescription"
+ ].forEach(id=>$(id).value="");
 
-drop trigger if exists trg_isp_packages_updated
-on public.isp_packages;
+ $("packageValidity").value=30;
 
-create trigger trg_isp_packages_updated
-before update on public.isp_packages
-for each row
-execute function public.isp_set_updated_at();
+ $("packageModal").classList.remove("hidden");
 
+}
 
-drop trigger if exists trg_isp_customers_updated
-on public.isp_customers;
 
-create trigger trg_isp_customers_updated
-before update on public.isp_customers
-for each row
-execute function public.isp_set_updated_at();
+async function savePackage(){
 
+ const payload={
 
-drop trigger if exists trg_isp_payments_updated
-on public.isp_payments;
+  name:$("packageName").value.trim(),
 
-create trigger trg_isp_payments_updated
-before update on public.isp_payments
-for each row
-execute function public.isp_set_updated_at();
+  speed:$("packageSpeed").value.trim(),
 
+  download_mbps:
+   Number($("packageDownload").value||0),
 
-drop trigger if exists trg_isp_invoices_updated
-on public.isp_invoices;
+  upload_mbps:
+   Number($("packageUpload").value||0),
 
-create trigger trg_isp_invoices_updated
-before update on public.isp_invoices
-for each row
-execute function public.isp_set_updated_at();
+  monthly_price:
+   Number($("packagePrice").value||0),
 
+  validity_days:
+   Number($("packageValidity").value||30),
 
-drop trigger if exists trg_isp_expenses_updated
-on public.isp_expenses;
+  description:
+   $("packageDescription").value.trim(),
 
-create trigger trg_isp_expenses_updated
-before update on public.isp_expenses
-for each row
-execute function public.isp_set_updated_at();
+  status:"active"
 
+ };
 
-drop trigger if exists trg_isp_tickets_updated
-on public.isp_tickets;
+ if(!payload.name){
+  $("packageError").textContent=
+   "Package name দিন।";
+  return;
+ }
 
-create trigger trg_isp_tickets_updated
-before update on public.isp_tickets
-for each row
-execute function public.isp_set_updated_at();
+ const {error} =
+  await supabaseClient
+   .from("isp_packages")
+   .insert(payload);
 
+ if(error){
+  $("packageError").textContent=error.message;
+  return;
+ }
 
-drop trigger if exists trg_isp_online_users_updated
-on public.isp_online_users;
+ closeModal("packageModal");
 
-create trigger trg_isp_online_users_updated
-before update on public.isp_online_users
-for each row
-execute function public.isp_set_updated_at();
+ toast("Package added");
 
+ await loadPackages();
 
-drop trigger if exists trg_isp_staff_updated
-on public.isp_staff;
+}
 
-create trigger trg_isp_staff_updated
-before update on public.isp_staff
-for each row
-execute function public.isp_set_updated_at();
 
+async function deletePackage(id){
 
-drop trigger if exists trg_isp_bills_updated
-on public.isp_bills;
+ if(!confirm("Package delete করবেন?"))return;
 
-create trigger trg_isp_bills_updated
-before update on public.isp_bills
-for each row
-execute function public.isp_set_updated_at();
+ const {error} =
+  await supabaseClient
+   .from("isp_packages")
+   .delete()
+   .eq("id",id);
 
+ if(error){
+  toast(error.message);
+  return;
+ }
 
--- ============================================================
--- 15. RLS
--- ============================================================
---
--- No Foreign Keys.
--- Policies are recreated safely.
---
--- Authenticated users can use ISP panel.
--- This avoids policy duplication errors.
---
--- ============================================================
+ toast("Package deleted");
 
+ await loadPackages();
 
--- SETTINGS
+}
 
-alter table public.isp_settings enable row level security;
 
-drop policy if exists "isp_settings_select" on public.isp_settings;
-drop policy if exists "isp_settings_insert" on public.isp_settings;
-drop policy if exists "isp_settings_update" on public.isp_settings;
-drop policy if exists "isp_settings_delete" on public.isp_settings;
+/* =========================================================
+   PAYMENTS
+========================================================= */
 
-create policy "isp_settings_select"
-on public.isp_settings
-for select
-to authenticated
-using (true);
+async function loadPayments(){
 
-create policy "isp_settings_insert"
-on public.isp_settings
-for insert
-to authenticated
-with check (true);
+ const {data,error} =
+  await supabaseClient
+   .from("isp_payments")
+   .select("*")
+   .order("paid_at",{ascending:false})
+   .limit(200);
 
-create policy "isp_settings_update"
-on public.isp_settings
-for update
-to authenticated
-using (true)
-with check (true);
+ if(error){
+  console.log("Payments:",error.message);
+  return;
+ }
 
-create policy "isp_settings_delete"
-on public.isp_settings
-for delete
-to authenticated
-using (true);
+ payments=data||[];
 
+ renderPayments();
 
--- PACKAGES
+ updateISPDashboard();
 
-alter table public.isp_packages enable row level security;
+}
 
-drop policy if exists "isp_packages_select" on public.isp_packages;
-drop policy if exists "isp_packages_insert" on public.isp_packages;
-drop policy if exists "isp_packages_update" on public.isp_packages;
-drop policy if exists "isp_packages_delete" on public.isp_packages;
 
-create policy "isp_packages_select"
-on public.isp_packages
-for select
-to authenticated
-using (true);
+function renderPayments(){
 
-create policy "isp_packages_insert"
-on public.isp_packages
-for insert
-to authenticated
-with check (true);
+ const body=$("paymentsTable");
 
-create policy "isp_packages_update"
-on public.isp_packages
-for update
-to authenticated
-using (true)
-with check (true);
+ if(!body)return;
 
-create policy "isp_packages_delete"
-on public.isp_packages
-for delete
-to authenticated
-using (true);
+ body.innerHTML=
+  payments.length
+  ? payments.map(p=>`
 
+   <tr>
 
--- CUSTOMERS
+    <td>${esc(p.paid_at||"")}</td>
 
-alter table public.isp_customers enable row level security;
+    <td>
+     ${esc(p.customer_name || p.customer_code || "")}
+    </td>
 
-drop policy if exists "isp_customers_select" on public.isp_customers;
-drop policy if exists "isp_customers_insert" on public.isp_customers;
-drop policy if exists "isp_customers_update" on public.isp_customers;
-drop policy if exists "isp_customers_delete" on public.isp_customers;
+    <td>${money(p.amount)}</td>
 
-create policy "isp_customers_select"
-on public.isp_customers
-for select
-to authenticated
-using (true);
+    <td>${esc(p.payment_method)}</td>
 
-create policy "isp_customers_insert"
-on public.isp_customers
-for insert
-to authenticated
-with check (true);
+    <td>${esc(p.transaction_id||"-")}</td>
 
-create policy "isp_customers_update"
-on public.isp_customers
-for update
-to authenticated
-using (true)
-with check (true);
+    <td>
+     <span class="badge paid">
+      ${esc(p.status||"paid")}
+     </span>
+    </td>
 
-create policy "isp_customers_delete"
-on public.isp_customers
-for delete
-to authenticated
-using (true);
+   </tr>
 
+  `).join("")
+  :
+  `<tr>
+   <td colspan="6">
+    <div class="empty">No payments</div>
+   </td>
+  </tr>`;
 
--- PAYMENTS
+}
 
-alter table public.isp_payments enable row level security;
 
-drop policy if exists "isp_payments_select" on public.isp_payments;
-drop policy if exists "isp_payments_insert" on public.isp_payments;
-drop policy if exists "isp_payments_update" on public.isp_payments;
-drop policy if exists "isp_payments_delete" on public.isp_payments;
+async function openPaymentModal(){
 
-create policy "isp_payments_select"
-on public.isp_payments
-for select
-to authenticated
-using (true);
+ const select=$("paymentCustomer");
 
-create policy "isp_payments_insert"
-on public.isp_payments
-for insert
-to authenticated
-with check (true);
+ select.innerHTML=
+  '<option value="">Select Customer</option>';
 
-create policy "isp_payments_update"
-on public.isp_payments
-for update
-to authenticated
-using (true)
-with check (true);
+ customers.forEach(c=>{
 
-create policy "isp_payments_delete"
-on public.isp_payments
-for delete
-to authenticated
-using (true);
+  const o=document.createElement("option");
 
+  o.value=c.id;
 
--- INVOICES
+  o.textContent=
+   `${c.customer_code||""} - ${c.name||""}`;
 
-alter table public.isp_invoices enable row level security;
+  select.appendChild(o);
 
-drop policy if exists "isp_invoices_select" on public.isp_invoices;
-drop policy if exists "isp_invoices_insert" on public.isp_invoices;
-drop policy if exists "isp_invoices_update" on public.isp_invoices;
-drop policy if exists "isp_invoices_delete" on public.isp_invoices;
+ });
 
-create policy "isp_invoices_select"
-on public.isp_invoices
-for select
-to authenticated
-using (true);
+ $("paymentAmount").value="";
+ $("paymentTransaction").value="";
+ $("paymentMonth").value=
+  new Date().toLocaleString("en-US",{month:"long"});
+ $("paymentYear").value=
+  new Date().getFullYear();
 
-create policy "isp_invoices_insert"
-on public.isp_invoices
-for insert
-to authenticated
-with check (true);
+ $("paymentModal").classList.remove("hidden");
 
-create policy "isp_invoices_update"
-on public.isp_invoices
-for update
-to authenticated
-using (true)
-with check (true);
+}
 
-create policy "isp_invoices_delete"
-on public.isp_invoices
-for delete
-to authenticated
-using (true);
 
+async function savePayment(){
 
--- EXPENSES
+ const customerId=
+  $("paymentCustomer").value;
 
-alter table public.isp_expenses enable row level security;
+ const customer=
+  customers.find(c=>c.id===customerId);
 
-drop policy if exists "isp_expenses_select" on public.isp_expenses;
-drop policy if exists "isp_expenses_insert" on public.isp_expenses;
-drop policy if exists "isp_expenses_update" on public.isp_expenses;
-drop policy if exists "isp_expenses_delete" on public.isp_expenses;
+ const amount=
+  Number($("paymentAmount").value||0);
 
-create policy "isp_expenses_select"
-on public.isp_expenses
-for select
-to authenticated
-using (true);
+ if(!customer){
+  $("paymentError").textContent=
+   "Customer select করুন।";
+  return;
+ }
 
-create policy "isp_expenses_insert"
-on public.isp_expenses
-for insert
-to authenticated
-with check (true);
+ if(amount<=0){
+  $("paymentError").textContent=
+   "Payment amount দিন।";
+  return;
+ }
 
-create policy "isp_expenses_update"
-on public.isp_expenses
-for update
-to authenticated
-using (true)
-with check (true);
+ const payload={
 
-create policy "isp_expenses_delete"
-on public.isp_expenses
-for delete
-to authenticated
-using (true);
+  customer_id:customer.id,
 
+  customer_code:
+   customer.customer_code,
 
--- TICKETS
+  customer_name:
+   customer.name,
 
-alter table public.isp_tickets enable row level security;
+  amount,
 
-drop policy if exists "isp_tickets_select" on public.isp_tickets;
-drop policy if exists "isp_tickets_insert" on public.isp_tickets;
-drop policy if exists "isp_tickets_update" on public.isp_tickets;
-drop policy if exists "isp_tickets_delete" on public.isp_tickets;
+  payment_method:
+   $("paymentMethod").value,
 
-create policy "isp_tickets_select"
-on public.isp_tickets
-for select
-to authenticated
-using (true);
+  transaction_id:
+   $("paymentTransaction").value.trim(),
 
-create policy "isp_tickets_insert"
-on public.isp_tickets
-for insert
-to authenticated
-with check (true);
+  payment_month:
+   $("paymentMonth").value,
 
-create policy "isp_tickets_update"
-on public.isp_tickets
-for update
-to authenticated
-using (true)
-with check (true);
+  payment_year:
+   Number($("paymentYear").value),
 
-create policy "isp_tickets_delete"
-on public.isp_tickets
-for delete
-to authenticated
-using (true);
+  status:"paid",
 
+  paid_at:
+   new Date().toISOString()
 
--- ONLINE USERS
+ };
 
-alter table public.isp_online_users enable row level security;
+ const {error} =
+  await supabaseClient
+   .from("isp_payments")
+   .insert(payload);
 
-drop policy if exists "isp_online_users_select" on public.isp_online_users;
-drop policy if exists "isp_online_users_insert" on public.isp_online_users;
-drop policy if exists "isp_online_users_update" on public.isp_online_users;
-drop policy if exists "isp_online_users_delete" on public.isp_online_users;
+ if(error){
+  $("paymentError").textContent=
+   error.message;
+  return;
+ }
 
-create policy "isp_online_users_select"
-on public.isp_online_users
-for select
-to authenticated
-using (true);
+ /* update customer payment info */
 
-create policy "isp_online_users_insert"
-on public.isp_online_users
-for insert
-to authenticated
-with check (true);
+ await supabaseClient
+  .from("isp_customers")
+  .update({
+   paid_amount:
+    Number(customer.paid_amount||0)+amount,
 
-create policy "isp_online_users_update"
-on public.isp_online_users
-for update
-to authenticated
-using (true)
-with check (true);
+   due_amount:
+    Math.max(
+     0,
+     Number(customer.due_amount||0)-amount
+    ),
 
-create policy "isp_online_users_delete"
-on public.isp_online_users
-for delete
-to authenticated
-using (true);
+   last_payment_date:
+    new Date().toISOString().slice(0,10),
 
+   last_payment_amount:
+    amount,
 
--- STAFF
+   updated_at:
+    new Date().toISOString()
+  })
+  .eq("id",customer.id);
 
-alter table public.isp_staff enable row level security;
+ closeModal("paymentModal");
 
-drop policy if exists "isp_staff_select" on public.isp_staff;
-drop policy if exists "isp_staff_insert" on public.isp_staff;
-drop policy if exists "isp_staff_update" on public.isp_staff;
-drop policy if exists "isp_staff_delete" on public.isp_staff;
+ toast("Payment saved");
 
-create policy "isp_staff_select"
-on public.isp_staff
-for select
-to authenticated
-using (true);
+ await loadCustomers();
+ await loadPayments();
 
-create policy "isp_staff_insert"
-on public.isp_staff
-for insert
-to authenticated
-with check (true);
+}
 
-create policy "isp_staff_update"
-on public.isp_staff
-for update
-to authenticated
-using (true)
-with check (true);
 
-create policy "isp_staff_delete"
-on public.isp_staff
-for delete
-to authenticated
-using (true);
+/* =========================================================
+   INVOICES
+========================================================= */
 
+async function loadInvoices(){
 
--- NOTIFICATIONS
+ const {data,error} =
+  await supabaseClient
+   .from("isp_invoices")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(200);
 
-alter table public.isp_notifications enable row level security;
+ if(error){
+  console.log("Invoices:",error.message);
+  return;
+ }
 
-drop policy if exists "isp_notifications_select" on public.isp_notifications;
-drop policy if exists "isp_notifications_insert" on public.isp_notifications;
-drop policy if exists "isp_notifications_update" on public.isp_notifications;
-drop policy if exists "isp_notifications_delete" on public.isp_notifications;
+ invoices=data||[];
 
-create policy "isp_notifications_select"
-on public.isp_notifications
-for select
-to authenticated
-using (true);
+ renderInvoices();
 
-create policy "isp_notifications_insert"
-on public.isp_notifications
-for insert
-to authenticated
-with check (true);
+}
 
-create policy "isp_notifications_update"
-on public.isp_notifications
-for update
-to authenticated
-using (true)
-with check (true);
 
-create policy "isp_notifications_delete"
-on public.isp_notifications
-for delete
-to authenticated
-using (true);
+function renderInvoices(){
 
+ const body=$("invoicesTable");
 
--- BILLS
+ if(!body)return;
 
-alter table public.isp_bills enable row level security;
+ body.innerHTML=
+  invoices.length
+  ? invoices.map(i=>`
 
-drop policy if exists "isp_bills_select" on public.isp_bills;
-drop policy if exists "isp_bills_insert" on public.isp_bills;
-drop policy if exists "isp_bills_update" on public.isp_bills;
-drop policy if exists "isp_bills_delete" on public.isp_bills;
+   <tr>
 
-create policy "isp_bills_select"
-on public.isp_bills
-for select
-to authenticated
-using (true);
+    <td>${esc(i.invoice_number||"-")}</td>
 
-create policy "isp_bills_insert"
-on public.isp_bills
-for insert
-to authenticated
-with check (true);
+    <td>
+     ${esc(i.customer_name||i.customer_code||"")}
+    </td>
 
-create policy "isp_bills_update"
-on public.isp_bills
-for update
-to authenticated
-using (true)
-with check (true);
+    <td>
+     ${esc(i.billing_month||"")}
+     ${esc(i.billing_year||"")}
+    </td>
 
-create policy "isp_bills_delete"
-on public.isp_bills
-for delete
-to authenticated
-using (true);
+    <td>${money(i.total_amount)}</td>
 
+    <td>${money(i.paid_amount)}</td>
 
--- ============================================================
--- 16. GRANTS
--- ============================================================
---
--- These are safe to execute repeatedly.
--- ============================================================
+    <td>${money(i.due_amount)}</td>
 
-grant usage on schema public
-to anon, authenticated;
+    <td>
+     <span class="badge ${i.status==="paid"?"paid":"unpaid"}">
+      ${esc(i.status||"unpaid")}
+     </span>
+    </td>
 
-grant select, insert, update, delete
-on public.isp_settings
-to authenticated;
+   </tr>
 
-grant select, insert, update, delete
-on public.isp_packages
-to authenticated;
+  `).join("")
+  :
+  `<tr>
+   <td colspan="7">
+    <div class="empty">No invoices</div>
+   </td>
+  </tr>`;
 
-grant select, insert, update, delete
-on public.isp_customers
-to authenticated;
+}
 
-grant select, insert, update, delete
-on public.isp_payments
-to authenticated;
 
-grant select, insert, update, delete
-on public.isp_invoices
-to authenticated;
+/* =========================================================
+   EXPENSES
+========================================================= */
 
-grant select, insert, update, delete
-on public.isp_expenses
-to authenticated;
+async function loadExpenses(){
 
-grant select, insert, update, delete
-on public.isp_tickets
-to authenticated;
+ const {data,error} =
+  await supabaseClient
+   .from("isp_expenses")
+   .select("*")
+   .order("expense_date",{ascending:false})
+   .limit(200);
 
-grant select, insert, update, delete
-on public.isp_online_users
-to authenticated;
+ if(error){
+  console.log("Expenses:",error.message);
+  return;
+ }
 
-grant select, insert, update, delete
-on public.isp_staff
-to authenticated;
+ expenses=data||[];
 
-grant select, insert, update, delete
-on public.isp_notifications
-to authenticated;
+ renderExpenses();
 
-grant select, insert, update, delete
-on public.isp_bills
-to authenticated;
+ updateISPDashboard();
 
+}
 
--- ============================================================
--- 17. DEFAULT ISP SETTINGS
--- ============================================================
 
-insert into public.isp_settings (
-    isp_name,
-    currency,
-    timezone,
-    invoice_prefix,
-    customer_prefix
-)
-select
-    'My ISP',
-    'BDT',
-    'Asia/Dhaka',
-    'INV',
-    'CUS'
-where not exists (
-    select 1
-    from public.isp_settings
-);
+function renderExpenses(){
 
+ const body=$("expensesTable");
 
--- ============================================================
--- 18. SAMPLE PACKAGES
--- ============================================================
---
--- Only inserts if there are no packages.
--- Existing packages will NOT be duplicated.
--- ============================================================
+ if(!body)return;
 
-insert into public.isp_packages (
-    name,
-    description,
-    speed,
-    download_mbps,
-    upload_mbps,
-    monthly_price,
-    validity_days,
-    status
-)
-select
-    'Basic 10 Mbps',
-    'Basic Internet Package',
-    '10 Mbps',
-    10,
-    5,
-    500,
-    30,
-    'active'
-where not exists (
-    select 1
-    from public.isp_packages
-);
+ body.innerHTML=
+  expenses.length
+  ? expenses.map(e=>`
 
+   <tr>
+    <td>${esc(e.expense_date)}</td>
+    <td>${esc(e.title)}</td>
+    <td>${esc(e.category)}</td>
+    <td>${money(e.amount)}</td>
+    <td>${esc(e.payment_method)}</td>
+   </tr>
 
--- ============================================================
--- 19. EXPIRY STATUS HELPER FUNCTION
--- ============================================================
+  `).join("")
+  :
+  `<tr>
+   <td colspan="5">
+    <div class="empty">No expenses</div>
+   </td>
+  </tr>`;
 
-create or replace function public.isp_refresh_customer_status()
-returns integer
-language plpgsql
-security invoker
-as $$
-declare
-    affected integer;
-begin
+}
 
-    update public.isp_customers
-    set
-        status = 'expired',
-        service_status = 'expired',
-        updated_at = now()
-    where expiry_date is not null
-      and expiry_date < current_date
-      and coalesce(status, '') = 'active';
 
-    get diagnostics affected = row_count;
+function openExpenseModal(){
 
-    return affected;
-end;
-$$;
+ $("expenseTitle").value="";
+ $("expenseAmount").value="";
+ $("expenseReference").value="";
+ $("expenseDate").value=
+  new Date().toISOString().slice(0,10);
 
+ $("expenseModal").classList.remove("hidden");
 
--- ============================================================
--- 20. FINAL SUCCESS CHECK
--- ============================================================
+}
 
-select
-    'ISP SQL v2 completed successfully' as result,
-    now() as completed_at;
 
+async function saveExpense(){
 
--- ============================================================
--- END OF ISP SQL v2
--- ============================================================
+ const amount=
+  Number($("expenseAmount").value||0);
+
+ if(amount<=0){
+  toast("Amount দিন");
+  return;
+ }
+
+ const payload={
+
+  title:
+   $("expenseTitle").value.trim(),
+
+  category:
+   $("expenseCategory").value,
+
+  amount,
+
+  expense_date:
+   $("expenseDate").value,
+
+  payment_method:
+   $("expenseMethod").value,
+
+  reference:
+   $("expenseReference").value.trim(),
+
+  created_by:
+   currentUser?.id || null
+
+ };
+
+ const {error} =
+  await supabaseClient
+   .from("isp_expenses")
+   .insert(payload);
+
+ if(error){
+  toast(error.message);
+  return;
+ }
+
+ closeModal("expenseModal");
+
+ toast("Expense saved");
+
+ await loadExpenses();
+
+}
+
+
+/* =========================================================
+   TICKETS
+========================================================= */
+
+async function loadTickets(){
+
+ const {data,error} =
+  await supabaseClient
+   .from("isp_tickets")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(200);
+
+ if(error){
+  console.log("Tickets:",error.message);
+  return;
+ }
+
+ tickets=data||[];
+
+ renderTickets();
+
+}
+
+
+function renderTickets(){
+
+ const body=$("ticketsTable");
+
+ if(!body)return;
+
+ body.innerHTML=
+  tickets.length
+  ? tickets.map(t=>`
+
+   <tr>
+
+    <td>
+     ${esc(t.customer_name||t.customer_code||"")}
+    </td>
+
+    <td>${esc(t.subject)}</td>
+
+    <td>${esc(t.category)}</td>
+
+    <td>
+     <span class="badge pending">
+      ${esc(t.priority)}
+     </span>
+    </td>
+
+    <td>${esc(t.status)}</td>
+
+    <td>${esc(t.created_at)}</td>
+
+   </tr>
+
+  `).join("")
+  :
+  `<tr>
+   <td colspan="6">
+    <div class="empty">No tickets</div>
+   </td>
+  </tr>`;
+
+}
+
+
+/* =========================================================
+   ONLINE USERS
+========================================================= */
+
+async function loadOnlineUsers(){
+
+ const {data,error} =
+  await supabaseClient
+   .from("isp_online_users")
+   .select("*")
+   .order("last_seen",{ascending:false})
+   .limit(300);
+
+ if(error){
+  console.log("Online:",error.message);
+  return;
+ }
+
+ onlineUsers=data||[];
+
+ renderOnlineUsers();
+
+ updateISPDashboard();
+
+}
+
+
+function renderOnlineUsers(){
+
+ const body=$("onlineTable");
+
+ if(!body)return;
+
+ body.innerHTML=
+  onlineUsers.length
+  ? onlineUsers.map(u=>`
+
+   <tr>
+
+    <td>${esc(u.username)}</td>
+
+    <td>${esc(u.ip_address)}</td>
+
+    <td>${esc(u.mac_address)}</td>
+
+    <td>${esc(u.router_name)}</td>
+
+    <td>${esc(u.connection_type)}</td>
+
+    <td>${esc(u.download_mbps)} Mbps</td>
+
+    <td>${esc(u.upload_mbps)} Mbps</td>
+
+    <td>
+     <span class="badge online">
+      ${esc(u.status)}
+     </span>
+    </td>
+
+   </tr>
+
+  `).join("")
+  :
+  `<tr>
+   <td colspan="8">
+    <div class="empty">
+     No online users / router API not connected
+    </div>
+   </td>
+  </tr>`;
+
+}
+
+
+/* =========================================================
+   STAFF
+========================================================= */
+
+async function loadStaff(){
+
+ const {data,error} =
+  await supabaseClient
+   .from("isp_staff")
+   .select("*")
+   .order("created_at",{ascending:false});
+
+ if(error){
+  console.log("Staff:",error.message);
+  return;
+ }
+
+ staff=data||[];
+
+ renderStaff();
+
+}
+
+
+function renderStaff(){
+
+ const body=$("staffTable");
+
+ if(!body)return;
+
+ body.innerHTML=
+  staff.length
+  ? staff.map(s=>`
+
+   <tr>
+
+    <td>${esc(s.name)}</td>
+    <td>${esc(s.phone)}</td>
+    <td>${esc(s.email)}</td>
+    <td>${esc(s.role)}</td>
+
+    <td>
+     <span class="badge active">
+      ${esc(s.status)}
+     </span>
+    </td>
+
+   </tr>
+
+  `).join("")
+  :
+  `<tr>
+   <td colspan="5">
+    <div class="empty">No staff</div>
+   </td>
+  </tr>`;
+
+}
+
+
+/* =========================================================
+   ISP DASHBOARD CALCULATIONS
+========================================================= */
+
+function updateISPDashboard(){
+
+ const total=customers.length;
+
+ const active=
+  customers.filter(c=>c.status==="active").length;
+
+ const expired=
+  customers.filter(c=>{
+
+   if(c.status==="expired")return true;
+
+   if(!c.expiry_date)return false;
+
+   return new Date(c.expiry_date)
+    < new Date(new Date().toISOString().slice(0,10));
+
+  }).length;
+
+ const online=
+  onlineUsers.filter(
+   u=>u.status==="online"
+  ).length;
+
+ const collected=
+  payments.reduce(
+   (sum,p)=>sum+Number(p.amount||0),
+   0
+  );
+
+ const due=
+  customers.reduce(
+   (sum,c)=>sum+Number(c.due_amount||0),
+   0
+  );
+
+ const cost=
+  expenses.reduce(
+   (sum,e)=>sum+Number(e.amount||0),
+   0
+  );
+
+ const profit=collected-cost;
+
+ $("ispTotalCustomers").textContent=total;
+ $("ispActiveCustomers").textContent=active;
+ $("ispExpiredCustomers").textContent=expired;
+ $("ispOnlineUsers").textContent=online;
+
+ $("ispCollected").textContent=money(collected);
+ $("ispDue").textContent=money(due);
+ $("ispExpenses").textContent=money(cost);
+ $("ispProfit").textContent=money(profit);
+
+ $("homeRevenue").textContent=money(collected);
+
+}
+
+
+/* =========================================================
+   ISP SETTINGS
+========================================================= */
+
+async function loadISPSettings(){
+
+ const {data,error} =
+  await supabaseClient
+   .from("isp_settings")
+   .select("*")
+   .order("created_at",{ascending:true})
+   .limit(1)
+   .maybeSingle();
+
+ if(error){
+  console.log("Settings:",error.message);
+  return;
+ }
+
+ if(!data)return;
+
+ $("ispName").value=data.isp_name||"";
+ $("ispOwner").value=data.owner_name||"";
+ $("ispPhone").value=data.phone||"";
+ $("ispEmail").value=data.email||"";
+ $("ispAddress").value=data.address||"";
+ $("ispSupportPhone").value=data.support_phone||"";
+ $("ispBkash").value=data.bkash_number||"";
+ $("ispNagad").value=data.nagad_number||"";
+ $("ispRocket").value=data.rocket_number||"";
+ $("ispWebsite").value=data.website||"";
+
+}
+
+
+async function saveISPSettings(){
+
+ const payload={
+
+  isp_name:
+   $("ispName").value.trim(),
+
+  owner_name:
+   $("ispOwner").value.trim(),
+
+  phone:
+   $("ispPhone").value.trim(),
+
+  email:
+   $("ispEmail").value.trim(),
+
+  address:
+   $("ispAddress").value.trim(),
+
+  support_phone:
+   $("ispSupportPhone").value.trim(),
+
+  bkash_number:
+   $("ispBkash").value.trim(),
+
+  nagad_number:
+   $("ispNagad").value.trim(),
+
+  rocket_number:
+   $("ispRocket").value.trim(),
+
+  website:
+   $("ispWebsite").value.trim(),
+
+  updated_at:
+   new Date().toISOString()
+
+ };
+
+ const {data:existing} =
+  await supabaseClient
+   .from("isp_settings")
+   .select("id")
+   .limit(1)
+   .maybeSingle();
+
+ let result;
+
+ if(existing?.id){
+
+  result=
+   await supabaseClient
+    .from("isp_settings")
+    .update(payload)
+    .eq("id",existing.id);
+
+ }else{
+
+  result=
+   await supabaseClient
+    .from("isp_settings")
+    .insert(payload);
+
+ }
+
+ if(result.error){
+  toast(result.error.message);
+  return;
+ }
+
+ toast("ISP settings saved");
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function loadNotifications(){
+
+ const {data,error} =
+  await supabaseClient
+   .from("isp_notifications")
+   .select("*")
+   .order("created_at",{ascending:false})
+   .limit(50);
+
+ if(error)return;
+
+ const box=$("notificationsList");
+
+ box.innerHTML=
+  data?.length
+  ? data.map(n=>`
+
+   <div class="card">
+
+    <strong>${esc(n.title||"Notification")}</strong>
+
+    <p>${esc(n.message||"")}</p>
+
+    <small class="muted">
+     ${esc(n.created_at||"")}
+    </small>
+
+   </div>
+
+  `).join("")
+  :
+  '<div class="empty">No notifications</div>';
+
+}
+
+
+/* =========================================================
+   INITIAL SESSION CHECK
+========================================================= */
+
+(async function(){
+
+ const {data} =
+  await supabaseClient.auth.getSession();
+
+ if(data?.session){
+
+  currentUser=data.session.user;
+
+  await startApp();
+
+ }
+
+})();
+
+</script>
+
+</body>
+</html>
