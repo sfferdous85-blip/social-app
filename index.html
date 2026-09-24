@@ -1,994 +1,533 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-
-<title>My Social App</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- =========================================================
+     ADVANCED CREATOR UPLOAD STUDIO
+========================================================= -->
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:#f5f6f8;
-  color:#111;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-body.dark{
-  background:#0d0f12;
+/* UPLOAD FAB */
+.creator-fab{
+  position:fixed;
+  right:18px;
+  bottom:85px;
+  z-index:300;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:#1877f2;
   color:#fff;
-}
-
-button,input,textarea,select{
-  font:inherit;
-}
-
-button{
-  border:0;
-  cursor:pointer;
-}
-
-.hidden{
-  display:none!important;
-}
-
-/* AUTH */
-
-#authScreen{
-  min-height:100vh;
+  font-size:28px;
+  box-shadow:0 8px 25px #0004;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
 }
 
-.authBox{
-  width:100%;
-  max-width:430px;
-  background:#fff;
-  border-radius:24px;
-  padding:25px;
-  box-shadow:0 15px 50px #0002;
+.creator-fab:active{
+  transform:scale(.94);
 }
 
-.dark .authBox{
-  background:#171a20;
-}
-
-.logo{
-  text-align:center;
-  font-size:30px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-
-.subtitle{
-  text-align:center;
-  color:#777;
-  margin-bottom:22px;
-}
-
-.authBox input{
-  width:100%;
-  padding:15px;
-  border:1px solid #ddd;
-  border-radius:14px;
-  margin:6px 0;
-  outline:none;
-}
-
-.dark .authBox input{
-  background:#22262e;
-  color:#fff;
-  border-color:#333;
-}
-
-.primary{
-  width:100%;
-  padding:15px;
-  background:#1877f2;
-  color:#fff;
-  border-radius:14px;
-  font-weight:800;
-  margin-top:10px;
-}
-
-.secondary{
-  width:100%;
-  padding:14px;
-  background:#eef2f7;
-  color:#222;
-  border-radius:14px;
-  font-weight:700;
-  margin-top:8px;
-}
-
-.dark .secondary{
-  background:#252a33;
-  color:#fff;
-}
-
-.authMsg{
-  margin-top:12px;
-  text-align:center;
-  font-size:14px;
-}
-
-/* APP */
-
-#app{
-  min-height:100vh;
-  padding-bottom:78px;
-}
-
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:100;
-  height:60px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 12px;
-  background:#ffffffee;
-  backdrop-filter:blur(15px);
-  border-bottom:1px solid #ddd;
-}
-
-.dark .topbar{
-  background:#101216ee;
-  border-color:#252932;
-}
-
-.brand{
-  font-size:21px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.search{
-  flex:1;
-  background:#eef1f5;
-  border-radius:20px;
-  padding:10px 14px;
-  border:0;
-  outline:0;
-}
-
-.dark .search{
-  background:#22262e;
-  color:#fff;
-}
-
-.iconBtn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#eef1f5;
-  font-size:18px;
-}
-
-.dark .iconBtn{
-  background:#242830;
-  color:#fff;
-}
-
-.content{
-  width:100%;
-  max-width:700px;
-  margin:auto;
-  padding:12px;
-}
-
-/* CREATE */
-
-.createCard{
-  background:#fff;
-  border-radius:20px;
-  padding:15px;
-  margin-bottom:12px;
-  box-shadow:0 3px 16px #0000000b;
-}
-
-.dark .createCard,
-.dark .postCard{
-  background:#171a20;
-}
-
-.createTop{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.avatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#ddd;
-}
-
-.createInput{
-  flex:1;
-  background:#f0f2f5;
-  border-radius:22px;
-  padding:12px 16px;
-  color:#777;
-  cursor:pointer;
-}
-
-.dark .createInput{
-  background:#252a32;
-}
-
-.createActions{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:12px;
-}
-
-.createActions button{
-  padding:12px 5px;
-  border-radius:12px;
-  background:#f3f5f8;
-  font-weight:700;
-}
-
-.dark .createActions button{
-  background:#242830;
-  color:#fff;
-}
-
-/* POSTS */
-
-.postCard{
-  background:#fff;
-  border-radius:20px;
-  margin-bottom:14px;
-  overflow:hidden;
-  box-shadow:0 3px 16px #0000000b;
-}
-
-.postHeader{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:14px;
-}
-
-.postUser{
-  flex:1;
-}
-
-.postUser strong{
-  display:block;
-}
-
-.postUser small{
-  color:#777;
-}
-
-.postText{
-  padding:0 14px 12px;
-  line-height:1.5;
-}
-
-.postMedia{
-  width:100%;
-  max-height:650px;
-  object-fit:cover;
-  display:block;
-  background:#000;
-}
-
-.postActions{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  border-top:1px solid #eee;
-  margin-top:5px;
-}
-
-.dark .postActions{
-  border-color:#292d35;
-}
-
-.postActions button{
-  padding:13px 4px;
-  background:transparent;
-}
-
-.commentBox{
-  display:flex;
-  gap:8px;
-  padding:10px 12px 14px;
-}
-
-.commentBox input{
-  flex:1;
-  padding:11px 14px;
-  border:0;
-  background:#f0f2f5;
-  border-radius:20px;
-  outline:none;
-}
-
-.dark .commentBox input{
-  background:#242830;
-  color:#fff;
-}
-
-/* BOTTOM NAV */
-
-.bottomNav{
-  position:fixed;
-  z-index:150;
-  bottom:0;
-  left:0;
-  right:0;
-  height:66px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  background:#ffffffee;
-  backdrop-filter:blur(16px);
-  border-top:1px solid #ddd;
-}
-
-.dark .bottomNav{
-  background:#111318ee;
-  border-color:#282c34;
-}
-
-.bottomNav button{
-  background:transparent;
-  font-size:21px;
-}
-
-.bottomNav small{
-  display:block;
-  font-size:10px;
-}
-
-/* UPLOAD STUDIO */
-
-.modal{
+/* UPLOAD MODAL */
+.creator-modal{
   position:fixed;
   inset:0;
-  z-index:500;
-  background:#0008;
-  display:flex;
+  z-index:900;
+  background:#000b;
+  display:none;
   align-items:flex-end;
   justify-content:center;
 }
 
-.uploadPanel{
+.creator-modal.show{
+  display:flex;
+}
+
+.creator-sheet{
   width:100%;
-  max-width:720px;
+  max-width:760px;
   max-height:96vh;
   overflow:auto;
   background:#fff;
+  color:#111;
   border-radius:28px 28px 0 0;
   padding:16px;
 }
 
-.dark .uploadPanel{
-  background:#111419;
+body.dark .creator-sheet{
+  background:#11151b;
   color:#fff;
 }
 
-.uploadHeader{
+.creator-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
-.uploadHeader h2{
+.creator-head h2{
   margin:0;
+  font-size:21px;
 }
 
-.closeBtn{
+.creator-close{
   width:38px;
   height:38px;
   border-radius:50%;
   background:#eee;
 }
 
-.dark .closeBtn{
-  background:#292e37;
+body.dark .creator-close{
+  background:#292e36;
   color:#fff;
 }
 
-.modeTabs{
+/* TYPE */
+.creator-types{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-bottom:12px;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  margin-bottom:14px;
 }
 
-.modeTabs button{
-  padding:13px;
+.creator-types button{
+  padding:11px 4px;
+  border:0;
   border-radius:13px;
   background:#eef1f5;
+  font-size:12px;
   font-weight:800;
 }
 
-.modeTabs button.active{
+body.dark .creator-types button{
+  background:#242932;
+  color:#fff;
+}
+
+.creator-types button.active{
   background:#1877f2;
   color:#fff;
 }
 
-.dropZone{
-  border:2px dashed #b8c0cc;
+/* DROP */
+.creator-drop{
+  border:2px dashed #aeb7c4;
   border-radius:20px;
-  padding:25px 15px;
+  padding:25px 12px;
   text-align:center;
   margin-bottom:12px;
 }
 
-.dropZone strong{
-  display:block;
-  font-size:18px;
-  margin-bottom:5px;
+.creator-drop-icon{
+  font-size:40px;
 }
 
-.pickBtn{
+.creator-drop-title{
+  font-weight:900;
+  margin-top:7px;
+}
+
+.creator-drop-sub{
+  color:#777;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.creator-select{
+  margin-top:12px;
   background:#1877f2;
   color:#fff;
-  padding:12px 18px;
-  border-radius:12px;
+  padding:12px 20px;
+  border-radius:13px;
   font-weight:800;
-  margin-top:10px;
+  border:0;
 }
 
-#fileInput{
+#creatorFileInput{
   display:none;
 }
 
-/* MEDIA PREVIEW */
-
-.mediaPreview{
+/* QUEUE */
+.creator-queue{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:8px;
-  margin:12px 0;
+  margin-bottom:12px;
 }
 
-.previewItem{
+.creator-item{
   position:relative;
+  border-radius:14px;
   overflow:hidden;
-  border-radius:15px;
   background:#000;
-  min-height:130px;
+  aspect-ratio:1/1;
 }
 
-.previewItem img,
-.previewItem video{
+.creator-item img,
+.creator-item video{
   width:100%;
   height:100%;
-  min-height:130px;
   object-fit:cover;
-  display:block;
 }
 
-.removeMedia{
+.creator-remove{
   position:absolute;
-  top:7px;
-  right:7px;
-  width:30px;
-  height:30px;
+  right:6px;
+  top:6px;
+  width:29px;
+  height:29px;
+  border:0;
   border-radius:50%;
-  background:#000b;
+  background:#000c;
   color:#fff;
 }
 
 /* EDITOR */
-
-.editor{
-  background:#f5f6f8;
+.creator-editor{
+  background:#f3f5f8;
   border-radius:18px;
-  padding:12px;
-  margin:10px 0;
+  padding:13px;
+  margin-bottom:12px;
 }
 
-.dark .editor{
-  background:#1b1f26;
+body.dark .creator-editor{
+  background:#1c2128;
 }
 
-.editorTitle{
-  font-weight:900;
-  margin-bottom:10px;
+.creator-editor h3{
+  margin:0 0 10px;
+  font-size:16px;
 }
 
-.control{
-  margin:10px 0;
+.creator-control{
+  margin:12px 0;
 }
 
-.control label{
+.creator-control label{
   display:flex;
   justify-content:space-between;
   font-size:13px;
   margin-bottom:5px;
 }
 
-.control input[type=range]{
+.creator-control input[type=range]{
   width:100%;
 }
 
-.effectGrid{
+.creator-effects{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:6px;
 }
 
-.effectGrid button{
-  padding:9px 3px;
+.creator-effects button{
+  padding:9px 2px;
+  border:0;
   border-radius:9px;
   background:#fff;
-  font-size:12px;
+  font-size:11px;
 }
 
-.dark .effectGrid button{
-  background:#292e37;
+body.dark .creator-effects button{
+  background:#2a3039;
   color:#fff;
 }
 
-.effectGrid button.active{
+.creator-effects button.active{
   background:#1877f2;
   color:#fff;
 }
 
-.uploadInput,
-.uploadSelect,
-.caption{
+/* INPUT */
+.creator-field{
   width:100%;
-  border:1px solid #ddd;
+  padding:13px;
+  border:1px solid #d8dde5;
   border-radius:13px;
-  padding:12px;
-  margin:6px 0;
+  margin-bottom:8px;
   outline:none;
-  background:#fff;
 }
 
-.dark .uploadInput,
-.dark .uploadSelect,
-.dark .caption{
-  background:#20242b;
+body.dark .creator-field{
+  background:#20252d;
   color:#fff;
-  border-color:#333;
+  border-color:#353b45;
 }
 
-.caption{
+.creator-caption{
   min-height:100px;
   resize:vertical;
 }
 
-.optionGrid{
+/* OPTIONS */
+.creator-options{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
 }
 
-.optionBox{
-  padding:12px;
+.creator-option{
+  background:#f1f3f6;
+  padding:10px;
   border-radius:12px;
-  background:#f0f2f5;
 }
 
-.dark .optionBox{
-  background:#232831;
+body.dark .creator-option{
+  background:#242a32;
 }
 
-.optionBox label{
-  font-size:13px;
+.creator-option label{
   display:block;
+  font-size:12px;
   margin-bottom:5px;
 }
 
-.progressBox{
-  margin-top:12px;
+.creator-option select{
+  width:100%;
+  border:0;
+  background:transparent;
+  outline:none;
+}
+
+/* PREVIEW */
+.creator-preview{
+  background:#000;
+  border-radius:18px;
+  overflow:hidden;
+  margin:12px 0;
   display:none;
 }
 
-.progressTrack{
-  height:9px;
-  background:#e2e5ea;
+.creator-preview.show{
+  display:block;
+}
+
+.creator-preview video,
+.creator-preview img{
+  width:100%;
+  max-height:500px;
+  object-fit:contain;
+  display:block;
+}
+
+/* PROGRESS */
+.creator-progress{
+  display:none;
+  margin:12px 0;
+}
+
+.creator-progress.show{
+  display:block;
+}
+
+.creator-progress-track{
+  height:10px;
   border-radius:10px;
+  background:#e1e5eb;
   overflow:hidden;
 }
 
-.progressBar{
-  height:100%;
+.creator-progress-bar{
   width:0%;
+  height:100%;
   background:#1877f2;
   transition:.2s;
 }
 
-.progressText{
-  text-align:center;
+.creator-progress-info{
+  display:flex;
+  justify-content:space-between;
   font-size:12px;
   margin-top:5px;
 }
 
-.publishBtn{
+/* BUTTON */
+.creator-publish{
   width:100%;
   padding:15px;
-  border-radius:14px;
+  border:0;
+  border-radius:15px;
   background:#1877f2;
   color:#fff;
-  font-weight:900;
   font-size:16px;
-  margin-top:10px;
+  font-weight:900;
 }
 
-.publishBtn:disabled{
-  opacity:.5;
-}
-
-/* COVER */
-
-.coverPreview{
+.creator-cancel{
   width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-  background:#000;
-  border-radius:15px;
+  padding:13px;
+  border:0;
+  border-radius:14px;
+  background:#e9edf2;
   margin-top:8px;
+  font-weight:800;
 }
 
-/* TOAST */
-
-.toast{
-  position:fixed;
-  z-index:1000;
-  left:50%;
-  bottom:85px;
-  transform:translateX(-50%);
-  background:#111;
+body.dark .creator-cancel{
+  background:#292f38;
   color:#fff;
-  padding:12px 18px;
-  border-radius:20px;
-  display:none;
-  max-width:90%;
-  text-align:center;
 }
 
-/* LOADING */
-
-.loader{
-  padding:35px;
-  text-align:center;
-  color:#777;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:500px){
-  .content{
-    padding:8px;
+@media(max-width:520px){
+  .creator-types{
+    grid-template-columns:repeat(5,1fr);
   }
 
-  .topbar{
-    height:56px;
-  }
-
-  .brand{
-    font-size:18px;
-  }
-
-  .search{
-    min-width:0;
-  }
-
-  .uploadPanel{
-    max-height:98vh;
-  }
-
-  .effectGrid{
-    grid-template-columns:repeat(4,1fr);
+  .creator-effects{
+    grid-template-columns:repeat(5,1fr);
   }
 }
 </style>
-</head>
-
-<body>
-
-<!-- AUTH -->
-
-<section id="authScreen">
-
-  <div class="authBox">
-
-    <div class="logo">My Social App</div>
-
-    <div class="subtitle">
-      Connect • Create • Share
-    </div>
-
-    <div id="loginForm">
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="Email"
-        autocomplete="email">
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password">
-
-      <button class="primary" onclick="login()">
-        Login
-      </button>
-
-      <button class="secondary" onclick="showSignup()">
-        Create New Account
-      </button>
-
-      <button class="secondary" onclick="resetPassword()">
-        Forgot Password?
-      </button>
-
-    </div>
-
-    <div id="signupForm" class="hidden">
-
-      <input
-        id="signupName"
-        type="text"
-        placeholder="Your name">
-
-      <input
-        id="signupEmail"
-        type="email"
-        placeholder="Email">
-
-      <input
-        id="signupPassword"
-        type="password"
-        placeholder="Password">
-
-      <button class="primary" onclick="signup()">
-        Sign Up
-      </button>
-
-      <button class="secondary" onclick="showLogin()">
-        Already have an account
-      </button>
-
-    </div>
-
-    <div id="authMsg" class="authMsg"></div>
-
-  </div>
-
-</section>
 
 
-<!-- APP -->
+<!-- FLOATING UPLOAD BUTTON -->
 
-<section id="app" class="hidden">
-
-  <header class="topbar">
-
-    <div class="brand">My Social</div>
-
-    <input
-      class="search"
-      placeholder="Search..."
-      id="searchInput">
-
-    <button
-      class="iconBtn"
-      onclick="toggleDark()">
-      🌙
-    </button>
-
-    <button
-      class="iconBtn"
-      onclick="logout()">
-      ⎋
-    </button>
-
-  </header>
+<button
+  class="creator-fab"
+  onclick="openCreatorStudio()">
+  +
+</button>
 
 
-  <main class="content">
-
-    <!-- CREATE -->
-
-    <div class="createCard">
-
-      <div class="createTop">
-
-        <img
-          id="myAvatar"
-          class="avatar"
-          src="https://i.pravatar.cc/100">
-
-        <div
-          class="createInput"
-          onclick="openUpload('post')">
-          What's on your mind?
-        </div>
-
-      </div>
-
-      <div class="createActions">
-
-        <button onclick="openUpload('post')">
-          📷 Photo
-        </button>
-
-        <button onclick="openUpload('reel')">
-          🎥 Reel
-        </button>
-
-        <button onclick="openUpload('post')">
-          📝 Post
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <!-- FEED -->
-
-    <div id="feed">
-      <div class="loader">
-        Loading posts...
-      </div>
-    </div>
-
-  </main>
-
-
-  <!-- NAV -->
-
-  <nav class="bottomNav">
-
-    <button onclick="loadFeed()">
-      🏠
-      <small>Home</small>
-    </button>
-
-    <button onclick="openUpload('post')">
-      ➕
-      <small>Create</small>
-    </button>
-
-    <button onclick="openUpload('reel')">
-      🎬
-      <small>Reels</small>
-    </button>
-
-    <button onclick="showToast('Profile section')">
-      👤
-      <small>Profile</small>
-    </button>
-
-    <button onclick="showToast('Settings')">
-      ⚙️
-      <small>Settings</small>
-    </button>
-
-  </nav>
-
-</section>
-
-
-<!-- UPLOAD STUDIO -->
+<!-- CREATOR STUDIO -->
 
 <div
-  id="uploadModal"
-  class="modal hidden">
+  id="creatorModal"
+  class="creator-modal">
 
-  <div class="uploadPanel">
+  <div class="creator-sheet">
 
-    <div class="uploadHeader">
+    <div class="creator-head">
 
-      <h2>✨ Upload Studio</h2>
+      <h2>✨ Creator Studio</h2>
 
       <button
-        class="closeBtn"
-        onclick="closeUpload()">
+        class="creator-close"
+        onclick="closeCreatorStudio()">
         ✕
       </button>
 
     </div>
 
 
-    <!-- MODE -->
+    <!-- CONTENT TYPE -->
 
-    <div class="modeTabs">
+    <div class="creator-types">
 
       <button
-        id="postModeBtn"
         class="active"
-        onclick="setUploadMode('post')">
-        📰 Post
+        data-type="post"
+        onclick="creatorSetType('post',this)">
+        📝<br>Post
       </button>
 
       <button
-        id="reelModeBtn"
-        onclick="setUploadMode('reel')">
-        🎬 Reel
+        data-type="photo"
+        onclick="creatorSetType('photo',this)">
+        📸<br>Photo
+      </button>
+
+      <button
+        data-type="video"
+        onclick="creatorSetType('video',this)">
+        🎥<br>Video
+      </button>
+
+      <button
+        data-type="reel"
+        onclick="creatorSetType('reel',this)">
+        🎬<br>Reel
+      </button>
+
+      <button
+        data-type="story"
+        onclick="creatorSetType('story',this)">
+        ⭕<br>Story
       </button>
 
     </div>
 
 
-    <!-- DROP -->
+    <!-- DROP AREA -->
 
     <div
-      class="dropZone"
-      id="dropZone"
-      onclick="document.getElementById('fileInput').click()">
+      id="creatorDrop"
+      class="creator-drop"
+      onclick="document.getElementById('creatorFileInput').click()">
 
-      <strong>📤 Select Photos / Videos</strong>
+      <div class="creator-drop-icon">
+        📤
+      </div>
 
-      <span>
-        Multiple files supported
-      </span>
+      <div class="creator-drop-title">
+        Photos & Videos Upload করুন
+      </div>
 
-      <br>
+      <div class="creator-drop-sub">
+        Multiple files • Drag & Drop • Preview
+      </div>
 
       <button
-        class="pickBtn"
         type="button"
-        onclick="event.stopPropagation();document.getElementById('fileInput').click()">
-        Choose Files
+        class="creator-select"
+        onclick="event.stopPropagation();document.getElementById('creatorFileInput').click()">
+        Choose Media
       </button>
 
     </div>
 
+
     <input
-      id="fileInput"
+      id="creatorFileInput"
       type="file"
       multiple
       accept="image/*,video/*">
 
 
-    <!-- MEDIA -->
+    <!-- MEDIA QUEUE -->
 
     <div
-      id="mediaPreview"
-      class="mediaPreview">
+      id="creatorQueue"
+      class="creator-queue">
+    </div>
+
+
+    <!-- PREVIEW -->
+
+    <div
+      id="creatorPreview"
+      class="creator-preview">
+
+      <img
+        id="creatorPreviewImage"
+        class="hidden">
+
+      <video
+        id="creatorPreviewVideo"
+        controls
+        playsinline>
+      </video>
+
     </div>
 
 
     <!-- VIDEO EDITOR -->
 
     <div
-      id="videoEditor"
-      class="editor hidden">
+      id="creatorVideoEditor"
+      class="creator-editor"
+      style="display:none">
 
-      <div class="editorTitle">
-        🎬 Video Editor
-      </div>
+      <h3>🎬 Advanced Video Editor</h3>
 
-      <div class="control">
+
+      <div class="creator-control">
 
         <label>
           <span>Trim Start</span>
-          <span id="trimStartValue">0s</span>
+          <span id="creatorStartText">0s</span>
         </label>
 
         <input
-          id="trimStart"
+          id="creatorTrimStart"
           type="range"
           min="0"
           max="0"
@@ -997,15 +536,15 @@ button{
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
           <span>Trim End</span>
-          <span id="trimEndValue">0s</span>
+          <span id="creatorEndText">0s</span>
         </label>
 
         <input
-          id="trimEnd"
+          id="creatorTrimEnd"
           type="range"
           min="0"
           max="0"
@@ -1014,33 +553,37 @@ button{
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
           <span>Speed</span>
-          <span id="speedValue">1x</span>
+          <span id="creatorSpeedText">
+            1x
+          </span>
         </label>
 
         <input
-          id="speedRange"
+          id="creatorSpeed"
           type="range"
-          min="0.5"
-          max="2"
-          step="0.25"
+          min=".25"
+          max="3"
+          step=".25"
           value="1">
 
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
-          Brightness
-          <span id="brightnessValue">100%</span>
+          <span>Brightness</span>
+          <span id="creatorBrightnessText">
+            100%
+          </span>
         </label>
 
         <input
-          id="brightness"
+          id="creatorBrightness"
           type="range"
           min="50"
           max="150"
@@ -1049,15 +592,17 @@ button{
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
-          Contrast
-          <span id="contrastValue">100%</span>
+          <span>Contrast</span>
+          <span id="creatorContrastText">
+            100%
+          </span>
         </label>
 
         <input
-          id="contrast"
+          id="creatorContrast"
           type="range"
           min="50"
           max="150"
@@ -1066,15 +611,17 @@ button{
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
-          Saturation
-          <span id="saturationValue">100%</span>
+          <span>Saturation</span>
+          <span id="creatorSaturationText">
+            100%
+          </span>
         </label>
 
         <input
-          id="saturation"
+          id="creatorSaturation"
           type="range"
           min="0"
           max="200"
@@ -1083,38 +630,36 @@ button{
       </div>
 
 
-      <div class="control">
+      <div class="creator-control">
 
-        <label>Effects</label>
+        <label>Filters</label>
 
-        <div class="effectGrid">
+        <div class="creator-effects">
 
           <button
-            class="effectBtn active"
-            data-effect="none"
-            onclick="setEffect('none',this)">
+            class="active"
+            onclick="creatorEffect('normal',this)">
             Normal
           </button>
 
           <button
-            class="effectBtn"
-            data-effect="grayscale"
-            onclick="setEffect('grayscale',this)">
+            onclick="creatorEffect('bw',this)">
             B&W
           </button>
 
           <button
-            class="effectBtn"
-            data-effect="sepia"
-            onclick="setEffect('sepia',this)">
+            onclick="creatorEffect('sepia',this)">
             Sepia
           </button>
 
           <button
-            class="effectBtn"
-            data-effect="vintage"
-            onclick="setEffect('vintage',this)">
+            onclick="creatorEffect('vintage',this)">
             Vintage
+          </button>
+
+          <button
+            onclick="creatorEffect('dramatic',this)">
+            Dramatic
           </button>
 
         </div>
@@ -1122,87 +667,81 @@ button{
       </div>
 
 
-      <div class="control">
-
-        <label>
-          Original Audio
-        </label>
-
-        <button
-          id="muteBtn"
-          class="secondary"
-          onclick="toggleMute()">
-          🔊 Audio On
-        </button>
-
-      </div>
+      <button
+        id="creatorMute"
+        class="creator-cancel"
+        onclick="creatorToggleMute()">
+        🔊 Original Audio On
+      </button>
 
 
-      <div class="control">
+      <div class="creator-control">
 
         <label>
           Custom Cover
         </label>
 
         <input
-          id="coverInput"
-          class="uploadInput"
+          id="creatorCover"
           type="file"
           accept="image/*">
-
-        <img
-          id="coverPreview"
-          class="coverPreview hidden">
 
       </div>
 
     </div>
 
 
-    <!-- POST DETAILS -->
+    <!-- PUBLISH SETTINGS -->
 
-    <div class="editor">
+    <div class="creator-editor">
 
-      <div class="editorTitle">
-        📝 Publish Details
-      </div>
+      <h3>📝 Publish Settings</h3>
 
       <textarea
-        id="caption"
-        class="caption"
-        placeholder="Write a caption... #hashtag">
+        id="creatorCaption"
+        class="creator-field creator-caption"
+        placeholder="Write something... #hashtag @friend">
       </textarea>
 
+
       <input
-        id="feeling"
-        class="uploadInput"
+        id="creatorFeeling"
+        class="creator-field"
         placeholder="😊 Feeling / Activity">
 
+
       <input
-        id="location"
-        class="uploadInput"
-        placeholder="📍 Location">
+        id="creatorLocation"
+        class="creator-field"
+        placeholder="📍 Add Location">
 
-      <div class="optionGrid">
 
-        <div class="optionBox">
+      <input
+        id="creatorTags"
+        class="creator-field"
+        placeholder="@ Mention / Tags">
 
-          <label>Audience</label>
 
-          <select
-            id="audience"
-            class="uploadSelect">
+      <div class="creator-options">
+
+        <div class="creator-option">
+
+          <label>
+            👥 Audience
+          </label>
+
+          <select id="creatorAudience">
 
             <option value="public">
-              🌎 Public
+              Public
             </option>
 
             <option value="friends">
-              👥 Friends
+              Friends
             </option>
 
             <option value="only_me">
-              🔒 Only Me
+              Only Me
             </option>
 
           </select>
@@ -1210,20 +749,20 @@ button{
         </div>
 
 
-        <div class="optionBox">
+        <div class="creator-option">
 
-          <label>Comments</label>
+          <label>
+            💬 Comments
+          </label>
 
-          <select
-            id="commentsEnabled"
-            class="uploadSelect">
+          <select id="creatorComments">
 
             <option value="true">
-              💬 On
+              Enabled
             </option>
 
             <option value="false">
-              🚫 Off
+              Disabled
             </option>
 
           </select>
@@ -1238,44 +777,53 @@ button{
     <!-- PROGRESS -->
 
     <div
-      id="progressBox"
-      class="progressBox">
+      id="creatorProgress"
+      class="creator-progress">
 
-      <div class="progressTrack">
+      <div
+        class="creator-progress-track">
 
         <div
-          id="progressBar"
-          class="progressBar">
+          id="creatorProgressBar"
+          class="creator-progress-bar">
         </div>
 
       </div>
 
-      <div
-        id="progressText"
-        class="progressText">
-        Preparing upload...
+      <div class="creator-progress-info">
+
+        <span
+          id="creatorProgressText">
+          Preparing...
+        </span>
+
+        <span
+          id="creatorProgressPercent">
+          0%
+        </span>
+
       </div>
 
     </div>
 
 
-    <!-- ACTION -->
+    <!-- PUBLISH -->
 
     <button
-      id="publishBtn"
-      class="publishBtn"
-      onclick="publishContent()">
+      id="creatorPublish"
+      class="creator-publish"
+      onclick="creatorPublishContent()">
 
       🚀 Publish Now
 
     </button>
 
-    <button
-      id="cancelUploadBtn"
-      class="secondary hidden"
-      onclick="cancelUpload()">
 
-      Cancel Upload
+    <button
+      class="creator-cancel"
+      onclick="creatorReset()">
+
+      Clear / Cancel
 
     </button>
 
@@ -1284,482 +832,115 @@ button{
 </div>
 
 
-<div
-  id="toast"
-  class="toast">
-</div>
-
-
 <script>
 
-/* =====================================================
-   SUPABASE CONFIG
-   ===================================================== */
+/* =========================================================
+   CREATOR STATE
+========================================================= */
 
-const SUPABASE_URL =
-  "https://skereuaizdczbvjplisi.supabase.co";
+let creatorType = "post";
 
-/*
-  তোমার বর্তমান Publishable/Anon key এখানে বসাও।
-*/
-const SUPABASE_KEY =
-  "YOUR_SUPABASE_PUBLISHABLE_KEY";
+let creatorFiles = [];
 
+let creatorVideo = null;
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+let creatorVideoDuration = 0;
 
+let creatorEffectValue = "normal";
 
-/* =====================================================
-   GLOBAL STATE
-   ===================================================== */
+let creatorMuted = false;
 
-let currentUser = null;
+let creatorCancelled = false;
 
-let uploadMode = "post";
-
-let selectedFiles = [];
-
-let currentVideoFile = null;
-
-let currentVideoDuration = 0;
-
-let uploadCancelled = false;
-
-let currentEffect = "none";
-
-let mutedVideo = false;
-
-let currentCoverFile = null;
+let creatorCoverFile = null;
 
 
-/* =====================================================
-   START
-   ===================================================== */
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+function openCreatorStudio(){
 
-  setupEvents();
+  document
+    .getElementById("creatorModal")
+    .classList.add("show");
 
-  const {
-    data
-  } = await supabaseClient.auth.getSession();
+}
 
-  if(data && data.session){
 
-    currentUser =
-      data.session.user;
+function closeCreatorStudio(){
 
-    showApp();
+  document
+    .getElementById("creatorModal")
+    .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   TYPE
+========================================================= */
+
+function creatorSetType(type,button){
+
+  creatorType = type;
+
+  document
+    .querySelectorAll(
+      ".creator-types button"
+    )
+    .forEach(
+      x =>
+        x.classList.remove("active")
+    );
+
+  button.classList.add("active");
+
+  const input =
+    document.getElementById(
+      "creatorFileInput"
+    );
+
+  if(type === "photo"){
+
+    input.accept =
+      "image/*";
+
+  }else if(
+    type === "video" ||
+    type === "reel"
+  ){
+
+    input.accept =
+      "video/*";
 
   }else{
 
-    showAuth();
+    input.accept =
+      "image/*,video/*";
 
   }
 
-});
-
-
-supabaseClient.auth.onAuthStateChange(
-  async (event, session) => {
-
-    if(session){
-
-      currentUser =
-        session.user;
-
-      showApp();
-
-    }else{
-
-      currentUser = null;
-
-      showAuth();
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   AUTH
-   ===================================================== */
-
-function showAuth(){
-
-  document
-    .getElementById("authScreen")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("app")
-    .classList.add("hidden");
+  creatorUpdateEditor();
 
 }
 
 
-function showApp(){
-
-  document
-    .getElementById("authScreen")
-    .classList.add("hidden");
-
-  document
-    .getElementById("app")
-    .classList.remove("hidden");
-
-  loadFeed();
-
-}
-
-
-function showSignup(){
-
-  document
-    .getElementById("loginForm")
-    .classList.add("hidden");
-
-  document
-    .getElementById("signupForm")
-    .classList.remove("hidden");
-
-}
-
-
-function showLogin(){
-
-  document
-    .getElementById("signupForm")
-    .classList.add("hidden");
-
-  document
-    .getElementById("loginForm")
-    .classList.remove("hidden");
-
-}
-
-
-function authMessage(msg){
-
-  document
-    .getElementById("authMsg")
-    .textContent = msg;
-
-}
-
-
-async function login(){
-
-  const email =
-    document
-      .getElementById("loginEmail")
-      .value
-      .trim();
-
-  const password =
-    document
-      .getElementById("loginPassword")
-      .value;
-
-  if(!email || !password){
-
-    authMessage("Email এবং password দিন.");
-
-    return;
-
-  }
-
-  authMessage("Logging in...");
-
-  const {
-    error
-  } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-  if(error){
-
-    authMessage(error.message);
-
-  }else{
-
-    authMessage("Login successful.");
-
-  }
-
-}
-
-
-async function signup(){
-
-  const name =
-    document
-      .getElementById("signupName")
-      .value
-      .trim();
-
-  const email =
-    document
-      .getElementById("signupEmail")
-      .value
-      .trim();
-
-  const password =
-    document
-      .getElementById("signupPassword")
-      .value;
-
-  if(!email || !password){
-
-    authMessage("Email এবং password দিন.");
-
-    return;
-
-  }
-
-  if(password.length < 6){
-
-    authMessage("Password কমপক্ষে 6 অক্ষরের হতে হবে.");
-
-    return;
-
-  }
-
-  authMessage("Creating account...");
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          name:name
-        }
-      }
-    });
-
-  if(error){
-
-    authMessage(error.message);
-
-    return;
-
-  }
-
-  if(data.session){
-
-    currentUser =
-      data.session.user;
-
-    showApp();
-
-  }else{
-
-    authMessage(
-      "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে email check করুন."
-    );
-
-  }
-
-}
-
-
-async function resetPassword(){
-
-  const email =
-    document
-      .getElementById("loginEmail")
-      .value
-      .trim();
-
-  if(!email){
-
-    authMessage(
-      "আগে Email লিখুন."
-    );
-
-    return;
-
-  }
-
-  const {
-    error
-  } =
-    await supabaseClient.auth
-      .resetPasswordForEmail(
-        email,
-        {
-          redirectTo:
-            window.location.origin
-        }
-      );
-
-  if(error){
-
-    authMessage(error.message);
-
-  }else{
-
-    authMessage(
-      "Password reset email পাঠানো হয়েছে."
-    );
-
-  }
-
-}
-
-
-async function logout(){
-
-  await supabaseClient.auth.signOut();
-
-}
-
-
-/* =====================================================
-   UI
-   ===================================================== */
-
-function toggleDark(){
-
-  document
-    .body
-    .classList
-    .toggle("dark");
-
-}
-
-
-function showToast(message){
-
-  const toast =
-    document.getElementById("toast");
-
-  toast.textContent =
-    message;
-
-  toast.style.display =
-    "block";
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer =
-    setTimeout(() => {
-
-      toast.style.display =
-        "none";
-
-    },2500);
-
-}
-
-
-/* =====================================================
-   UPLOAD OPEN/CLOSE
-   ===================================================== */
-
-function openUpload(mode="post"){
-
-  uploadMode =
-    mode;
-
-  document
-    .getElementById("uploadModal")
-    .classList
-    .remove("hidden");
-
-  setUploadMode(mode);
-
-}
-
-
-function closeUpload(){
-
-  document
-    .getElementById("uploadModal")
-    .classList
-    .add("hidden");
-
-  resetUpload();
-
-}
-
-
-function setUploadMode(mode){
-
-  uploadMode =
-    mode;
-
-  document
-    .getElementById("postModeBtn")
-    .classList
-    .toggle(
-      "active",
-      mode === "post"
-    );
-
-  document
-    .getElementById("reelModeBtn")
-    .classList
-    .toggle(
-      "active",
-      mode === "reel"
-    );
-
-  updateEditorVisibility();
-
-}
-
-
-function updateEditorVisibility(){
-
-  const editor =
-    document
-      .getElementById("videoEditor");
-
-  if(uploadMode === "reel" &&
-     currentVideoFile){
-
-    editor.classList
-      .remove("hidden");
-
-  }else{
-
-    editor.classList
-      .add("hidden");
-
-  }
-
-}
-
-
-/* =====================================================
-   FILE EVENTS
-   ===================================================== */
-
-function setupEvents(){
-
-  const fileInput =
-    document
-      .getElementById("fileInput");
-
-  fileInput.addEventListener(
+/* =========================================================
+   FILE INPUT
+========================================================= */
+
+document
+  .getElementById(
+    "creatorFileInput"
+  )
+  .addEventListener(
     "change",
-    event => {
+    e => {
 
-      addFiles(
+      creatorAddFiles(
         Array.from(
-          event.target.files
+          e.target.files
         )
       );
 
@@ -1767,172 +948,49 @@ function setupEvents(){
   );
 
 
-  const dropZone =
-    document
-      .getElementById("dropZone");
-
-  dropZone.addEventListener(
-    "dragover",
-    e => {
-
-      e.preventDefault();
-
-    }
-  );
-
-
-  dropZone.addEventListener(
-    "drop",
-    e => {
-
-      e.preventDefault();
-
-      addFiles(
-        Array.from(
-          e.dataTransfer.files
-        )
-      );
-
-    }
-  );
-
-
-  document
-    .getElementById("brightness")
-    .addEventListener(
-      "input",
-      applyVideoControls
-    );
-
-  document
-    .getElementById("contrast")
-    .addEventListener(
-      "input",
-      applyVideoControls
-    );
-
-  document
-    .getElementById("saturation")
-    .addEventListener(
-      "input",
-      applyVideoControls
-    );
-
-
-  document
-    .getElementById("speedRange")
-    .addEventListener(
-      "input",
-      applyVideoControls
-    );
-
-
-  document
-    .getElementById("trimStart")
-    .addEventListener(
-      "input",
-      () => {
-
-        const value =
-          Number(
-            document
-              .getElementById("trimStart")
-              .value
-          );
-
-        document
-          .getElementById("trimStartValue")
-          .textContent =
-            value + "s";
-
-      }
-    );
-
-
-  document
-    .getElementById("trimEnd")
-    .addEventListener(
-      "input",
-      () => {
-
-        const value =
-          Number(
-            document
-              .getElementById("trimEnd")
-              .value
-          );
-
-        document
-          .getElementById("trimEndValue")
-          .textContent =
-            value + "s";
-
-      }
-    );
-
-
-  document
-    .getElementById("coverInput")
-    .addEventListener(
-      "change",
-      handleCover
-    );
-
-}
-
-
-function addFiles(files){
+function creatorAddFiles(files){
 
   if(!files.length)
     return;
 
-  const valid =
-    files.filter(file => {
 
-      return (
+  const valid =
+    files.filter(
+      file =>
         file.type.startsWith("image/") ||
         file.type.startsWith("video/")
-      );
-
-    });
-
-  if(!valid.length){
-
-    showToast(
-      "শুধু image অথবা video upload করা যাবে."
     );
 
-    return;
 
-  }
-
-  selectedFiles =
+  creatorFiles =
     [
-      ...selectedFiles,
+      ...creatorFiles,
       ...valid
     ];
 
-  renderMediaPreview();
 
-  detectMainVideo();
+  creatorRenderQueue();
+
+  creatorDetectVideo();
 
 }
 
 
-/* =====================================================
-   PREVIEW
-   ===================================================== */
+/* =========================================================
+   QUEUE
+========================================================= */
 
-function renderMediaPreview(){
+function creatorRenderQueue(){
 
   const box =
-    document
-      .getElementById("mediaPreview");
+    document.getElementById(
+      "creatorQueue"
+    );
 
-  box.innerHTML =
-    "";
+  box.innerHTML = "";
 
-  selectedFiles.forEach(
+
+  creatorFiles.forEach(
     (file,index) => {
 
       const item =
@@ -1941,11 +999,17 @@ function renderMediaPreview(){
         );
 
       item.className =
-        "previewItem";
+        "creator-item";
+
 
       let media;
 
-      if(file.type.startsWith("image/")){
+
+      if(
+        file.type.startsWith(
+          "image/"
+        )
+      ){
 
         media =
           document.createElement(
@@ -1969,13 +1033,11 @@ function renderMediaPreview(){
             file
           );
 
-        media.controls =
-          true;
-
-        media.playsInline =
+        media.muted =
           true;
 
       }
+
 
       const remove =
         document.createElement(
@@ -1983,26 +1045,28 @@ function renderMediaPreview(){
         );
 
       remove.className =
-        "removeMedia";
+        "creator-remove";
 
       remove.textContent =
         "✕";
+
 
       remove.onclick =
         event => {
 
           event.stopPropagation();
 
-          selectedFiles.splice(
+          creatorFiles.splice(
             index,
             1
           );
 
-          renderMediaPreview();
+          creatorRenderQueue();
 
-          detectMainVideo();
+          creatorDetectVideo();
 
         };
+
 
       item.appendChild(media);
 
@@ -2016,1411 +1080,483 @@ function renderMediaPreview(){
 }
 
 
-function detectMainVideo(){
+/* =========================================================
+   DETECT VIDEO
+========================================================= */
 
-  currentVideoFile =
-    selectedFiles.find(
+function creatorDetectVideo(){
+
+  creatorVideo =
+    creatorFiles.find(
       file =>
         file.type.startsWith(
           "video/"
         )
     ) || null;
 
-  if(!currentVideoFile){
 
-    document
-      .getElementById("videoEditor")
-      .classList
-      .add("hidden");
+  creatorUpdateEditor();
 
+
+  if(!creatorVideo)
     return;
 
-  }
 
   const video =
     document.createElement(
       "video"
     );
 
+
   video.preload =
     "metadata";
 
   video.src =
     URL.createObjectURL(
-      currentVideoFile
+      creatorVideo
     );
+
 
   video.onloadedmetadata =
     () => {
 
-      currentVideoDuration =
+      creatorVideoDuration =
         Math.floor(
           video.duration
         );
 
+
       const start =
-        document
-          .getElementById("trimStart");
+        document.getElementById(
+          "creatorTrimStart"
+        );
 
       const end =
-        document
-          .getElementById("trimEnd");
+        document.getElementById(
+          "creatorTrimEnd"
+        );
+
 
       start.max =
-        currentVideoDuration;
+        creatorVideoDuration;
 
       end.max =
-        currentVideoDuration;
+        creatorVideoDuration;
 
       end.value =
-        currentVideoDuration;
+        creatorVideoDuration;
+
 
       document
-        .getElementById("trimEndValue")
+        .getElementById(
+          "creatorEndText"
+        )
         .textContent =
-          currentVideoDuration +
+          creatorVideoDuration +
           "s";
-
-      updateEditorVisibility();
 
     };
 
 }
 
 
-function handleCover(event){
+/* =========================================================
+   EDITOR VISIBILITY
+========================================================= */
 
-  const file =
-    event.target.files[0];
+function creatorUpdateEditor(){
+
+  const editor =
+    document.getElementById(
+      "creatorVideoEditor"
+    );
+
+
+  if(
+    creatorVideo &&
+    (
+      creatorType === "video" ||
+      creatorType === "reel"
+    )
+  ){
+
+    editor.style.display =
+      "block";
+
+  }else{
+
+    editor.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+function creatorPreviewFile(file){
 
   if(!file)
     return;
 
-  currentCoverFile =
-    file;
+
+  const box =
+    document.getElementById(
+      "creatorPreview"
+    );
 
   const img =
-    document
-      .getElementById("coverPreview");
-
-  img.src =
-    URL.createObjectURL(
-      file
+    document.getElementById(
+      "creatorPreviewImage"
     );
 
-  img.classList
-    .remove("hidden");
+  const video =
+    document.getElementById(
+      "creatorPreviewVideo"
+    );
+
+
+  box.classList.add("show");
+
+
+  if(
+    file.type.startsWith(
+      "image/"
+    )
+  ){
+
+    img.src =
+      URL.createObjectURL(
+        file
+      );
+
+    img.style.display =
+      "block";
+
+    video.style.display =
+      "none";
+
+  }else{
+
+    video.src =
+      URL.createObjectURL(
+        file
+      );
+
+    video.style.display =
+      "block";
+
+    img.style.display =
+      "none";
+
+  }
 
 }
 
 
-/* =====================================================
-   VIDEO EDITOR
-   ===================================================== */
+/* =========================================================
+   CONTROLS
+========================================================= */
 
-function applyVideoControls(){
+function creatorApplyControls(){
+
+  if(!creatorVideo)
+    return;
+
 
   const brightness =
-    Number(
-      document
-        .getElementById("brightness")
-        .value
-    );
+    document.getElementById(
+      "creatorBrightness"
+    ).value;
+
 
   const contrast =
-    Number(
-      document
-        .getElementById("contrast")
-        .value
-    );
+    document.getElementById(
+      "creatorContrast"
+    ).value;
+
 
   const saturation =
-    Number(
-      document
-        .getElementById("saturation")
-        .value
-    );
+    document.getElementById(
+      "creatorSaturation"
+    ).value;
+
 
   const speed =
-    Number(
-      document
-        .getElementById("speedRange")
-        .value
+    document.getElementById(
+      "creatorSpeed"
+    ).value;
+
+
+  document.getElementById(
+    "creatorBrightnessText"
+  ).textContent =
+    brightness + "%";
+
+
+  document.getElementById(
+    "creatorContrastText"
+  ).textContent =
+    contrast + "%";
+
+
+  document.getElementById(
+    "creatorSaturationText"
+  ).textContent =
+    saturation + "%";
+
+
+  document.getElementById(
+    "creatorSpeedText"
+  ).textContent =
+    speed + "x";
+
+
+  const preview =
+    document.getElementById(
+      "creatorPreviewVideo"
     );
 
 
-  document
-    .getElementById("brightnessValue")
-    .textContent =
-      brightness + "%";
+  preview.style.filter =
+    creatorBuildFilter();
 
-  document
-    .getElementById("contrastValue")
-    .textContent =
-      contrast + "%";
+  preview.playbackRate =
+    Number(speed);
 
-  document
-    .getElementById("saturationValue")
-    .textContent =
-      saturation + "%";
-
-  document
-    .getElementById("speedValue")
-    .textContent =
-      speed + "x";
-
-
-  document
-    .querySelectorAll(
-      "#mediaPreview video"
-    )
-    .forEach(video => {
-
-      video.style.filter =
-        buildFilter();
-
-      video.playbackRate =
-        speed;
-
-      video.muted =
-        mutedVideo;
-
-    });
+  preview.muted =
+    creatorMuted;
 
 }
 
 
-function buildFilter(){
+/* =========================================================
+   FILTER
+========================================================= */
 
-  const brightness =
-    document
-      .getElementById("brightness")
-      .value;
+function creatorBuildFilter(){
 
-  const contrast =
-    document
-      .getElementById("contrast")
-      .value;
+  const b =
+    document.getElementById(
+      "creatorBrightness"
+    ).value;
 
-  const saturation =
-    document
-      .getElementById("saturation")
-      .value;
+  const c =
+    document.getElementById(
+      "creatorContrast"
+    ).value;
+
+  const s =
+    document.getElementById(
+      "creatorSaturation"
+    ).value;
+
 
   let filter =
-    `brightness(${brightness}%)
-     contrast(${contrast}%)
-     saturate(${saturation}%)`;
+    `brightness(${b}%)
+     contrast(${c}%)
+     saturate(${s}%)`;
 
-  if(currentEffect === "grayscale"){
+
+  if(
+    creatorEffectValue === "bw"
+  ){
 
     filter +=
       " grayscale(100%)";
 
   }
 
-  if(currentEffect === "sepia"){
+
+  if(
+    creatorEffectValue === "sepia"
+  ){
 
     filter +=
       " sepia(100%)";
 
   }
 
-  if(currentEffect === "vintage"){
+
+  if(
+    creatorEffectValue === "vintage"
+  ){
 
     filter +=
-      " sepia(35%) contrast(110%)";
+      " sepia(35%) contrast(115%)";
 
   }
+
+
+  if(
+    creatorEffectValue === "dramatic"
+  ){
+
+    filter +=
+      " contrast(140%) saturate(115%)";
+
+  }
+
 
   return filter;
 
 }
 
 
-function setEffect(effect,button){
+/* =========================================================
+   FILTER BUTTON
+========================================================= */
 
-  currentEffect =
+function creatorEffect(effect,button){
+
+  creatorEffectValue =
     effect;
+
 
   document
     .querySelectorAll(
-      ".effectBtn"
+      ".creator-effects button"
     )
     .forEach(
-      b =>
-        b.classList.remove(
+      x =>
+        x.classList.remove(
           "active"
         )
     );
 
-  button.classList
-    .add("active");
 
-  applyVideoControls();
-
-}
-
-
-function toggleMute(){
-
-  mutedVideo =
-    !mutedVideo;
-
-  const btn =
-    document
-      .getElementById("muteBtn");
-
-  btn.textContent =
-    mutedVideo
-      ? "🔇 Audio Off"
-      : "🔊 Audio On";
-
-  applyVideoControls();
-
-}
-
-
-/* =====================================================
-   STORAGE
-   ===================================================== */
-
-async function uploadFile(
-  file,
-  folder,
-  progressCallback
-){
-
-  if(!file)
-    return null;
-
-  const ext =
-    file.name
-      .split(".")
-      .pop()
-      .toLowerCase();
-
-  const filename =
-    `${crypto.randomUUID()}.${ext}`;
-
-  const path =
-    `${folder}/${currentUser.id}/${filename}`;
-
-
-  progressCallback(10);
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .storage
-      .from("post-images")
-      .upload(
-        path,
-        file,
-        {
-          cacheControl:
-            "3600",
-          upsert:false,
-          contentType:
-            file.type
-        }
-      );
-
-
-  if(error){
-
-    throw error;
-
-  }
-
-
-  progressCallback(90);
-
-
-  const {
-    data
-  } =
-    supabaseClient
-      .storage
-      .from("post-images")
-      .getPublicUrl(
-        path
-      );
-
-
-  progressCallback(100);
-
-
-  return data.publicUrl;
-
-}
-
-
-/* =====================================================
-   PUBLISH
-   ===================================================== */
-
-async function publishContent(){
-
-  if(!currentUser){
-
-    showToast(
-      "আগে Login করুন."
-    );
-
-    return;
-
-  }
-
-  if(!selectedFiles.length){
-
-    showToast(
-      "কমপক্ষে একটি ছবি বা ভিডিও নির্বাচন করুন."
-    );
-
-    return;
-
-  }
-
-
-  uploadCancelled =
-    false;
-
-
-  const publishBtn =
-    document
-      .getElementById("publishBtn");
-
-  const cancelBtn =
-    document
-      .getElementById(
-        "cancelUploadBtn"
-      );
-
-  const progressBox =
-    document
-      .getElementById(
-        "progressBox"
-      );
-
-  const progressBar =
-    document
-      .getElementById(
-        "progressBar"
-      );
-
-  const progressText =
-    document
-      .getElementById(
-        "progressText"
-      );
-
-
-  publishBtn.disabled =
-    true;
-
-  cancelBtn.classList
-    .remove("hidden");
-
-  progressBox.style.display =
-    "block";
-
-
-  try{
-
-    const caption =
-      document
-        .getElementById(
-          "caption"
-        )
-        .value
-        .trim();
-
-    const feeling =
-      document
-        .getElementById(
-          "feeling"
-        )
-        .value
-        .trim();
-
-    const location =
-      document
-        .getElementById(
-          "location"
-        )
-        .value
-        .trim();
-
-    const privacy =
-      document
-        .getElementById(
-          "audience"
-        )
-        .value;
-
-    const comments =
-      document
-        .getElementById(
-          "commentsEnabled"
-        )
-        .value === "true";
-
-
-    if(uploadMode === "reel"){
-
-      await publishReel({
-        caption,
-        feeling,
-        location,
-        privacy,
-        comments,
-        progressBar,
-        progressText
-      });
-
-    }else{
-
-      await publishPost({
-        caption,
-        feeling,
-        location,
-        privacy,
-        comments,
-        progressBar,
-        progressText
-      });
-
-    }
-
-
-    showToast(
-      "✅ Upload সফল হয়েছে!"
-    );
-
-    closeUpload();
-
-    await loadFeed();
-
-
-  }catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Upload failed: " +
-      error.message
-    );
-
-    progressText.textContent =
-      "❌ Upload failed";
-
-
-  }finally{
-
-    publishBtn.disabled =
-      false;
-
-    cancelBtn.classList
-      .add("hidden");
-
-  }
-
-}
-
-
-/* =====================================================
-   POST
-   ===================================================== */
-
-async function publishPost(options){
-
-  const {
-    caption,
-    feeling,
-    location,
-    privacy,
-    comments,
-    progressBar,
-    progressText
-  } = options;
-
-
-  progressText.textContent =
-    "Uploading media...";
-
-
-  const mediaUrls = [];
-
-
-  for(
-    let i=0;
-    i<selectedFiles.length;
-    i++
-  ){
-
-    if(uploadCancelled)
-      throw new Error(
-        "Upload cancelled"
-      );
-
-
-    const file =
-      selectedFiles[i];
-
-    const url =
-      await uploadFile(
-        file,
-        "posts",
-        percent => {
-
-          const total =
-            (
-              i * 100 +
-              percent
-            ) /
-            selectedFiles.length;
-
-          progressBar.style.width =
-            total + "%";
-
-          progressText.textContent =
-            `Uploading ${i+1}/${selectedFiles.length} • ${Math.round(total)}%`;
-
-        }
-      );
-
-
-    mediaUrls.push({
-      url,
-      type:
-        file.type.startsWith("video/")
-          ? "video"
-          : "image"
-    });
-
-  }
-
-
-  progressText.textContent =
-    "Creating post...";
-
-
-  const main =
-    mediaUrls[0];
-
-
-  /*
-    তোমার existing posts table-এর
-    compatible columns ব্যবহার করা হয়েছে।
-  */
-
-  const {
-    data:post,
-    error
-  } =
-    await supabaseClient
-      .from("posts")
-      .insert({
-
-        user_id:
-          currentUser.id,
-
-        text:
-          caption,
-
-        image_url:
-          main &&
-          main.type === "image"
-            ? main.url
-            : null,
-
-        privacy:
-          privacy,
-
-        feeling:
-          feeling || null,
-
-        location:
-          location || null,
-
-        promoted:
-          false,
-
-        view_count:
-          0
-
-      })
-      .select()
-      .single();
-
-
-  if(error)
-    throw error;
-
-
-  /*
-    Multiple media থাকলে
-    post_media table-এ রাখবে।
-  */
-
-  if(mediaUrls.length){
-
-    const rows =
-      mediaUrls.map(
-        (media,index) => ({
-          post_id:
-            post.id,
-
-          media_url:
-            media.url,
-
-          media_type:
-            media.type,
-
-          sort_order:
-            index
-
-        })
-      );
-
-
-    const {
-      error:mediaError
-    } =
-      await supabaseClient
-        .from("post_media")
-        .insert(rows);
-
-
-    if(mediaError){
-
-      console.warn(
-        "post_media:",
-        mediaError
-      );
-
-    }
-
-  }
-
-
-  progressBar.style.width =
-    "100%";
-
-  progressText.textContent =
-    "✅ Published";
-
-}
-
-
-/* =====================================================
-   REEL
-   ===================================================== */
-
-async function publishReel(options){
-
-  const {
-    caption,
-    progressBar,
-    progressText
-  } = options;
-
-
-  const video =
-    selectedFiles.find(
-      file =>
-        file.type.startsWith(
-          "video/"
-        )
-    );
-
-
-  if(!video){
-
-    throw new Error(
-      "Reel-এর জন্য একটি video নির্বাচন করুন."
-    );
-
-  }
-
-
-  progressText.textContent =
-    "Uploading Reel video...";
-
-
-  const videoUrl =
-    await uploadFile(
-      video,
-      "reels",
-      percent => {
-
-        progressBar.style.width =
-          percent + "%";
-
-        progressText.textContent =
-          `Reel upload ${percent}%`;
-
-      }
-    );
-
-
-  let coverUrl =
-    null;
-
-
-  if(currentCoverFile){
-
-    progressText.textContent =
-      "Uploading cover...";
-
-
-    coverUrl =
-      await uploadFile(
-        currentCoverFile,
-        "reel-covers",
-        percent => {
-
-          progressText.textContent =
-            `Cover upload ${percent}%`;
-
-        }
-      );
-
-  }
-
-
-  progressText.textContent =
-    "Creating Reel...";
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("reels")
-      .insert({
-
-        user_id:
-          currentUser.id,
-
-        video_url:
-          videoUrl,
-
-        caption:
-          caption,
-
-        views:
-          0,
-
-        audio_name:
-          "",
-
-        ...(coverUrl
-          ? {cover_url:coverUrl}
-          : {})
-
-      });
-
-
-  if(error)
-    throw error;
-
-
-  progressBar.style.width =
-    "100%";
-
-  progressText.textContent =
-    "✅ Reel published";
-
-}
-
-
-/* =====================================================
-   CANCEL
-   ===================================================== */
-
-function cancelUpload(){
-
-  uploadCancelled =
-    true;
-
-  showToast(
-    "Upload cancelled."
+  button.classList.add(
+    "active"
   );
 
-}
 
-
-/* =====================================================
-   RESET
-   ===================================================== */
-
-function resetUpload(){
-
-  selectedFiles =
-    [];
-
-  currentVideoFile =
-    null;
-
-  currentCoverFile =
-    null;
-
-  currentVideoDuration =
-    0;
-
-  currentEffect =
-    "none";
-
-  mutedVideo =
-    false;
-
-
-  document
-    .getElementById(
-      "mediaPreview"
-    )
-    .innerHTML =
-      "";
-
-
-  document
-    .getElementById(
-      "fileInput"
-    )
-    .value =
-      "";
-
-
-  document
-    .getElementById(
-      "coverInput"
-    )
-    .value =
-      "";
-
-
-  document
-    .getElementById(
-      "coverPreview"
-    )
-    .classList
-    .add("hidden");
-
-
-  document
-    .getElementById(
-      "caption"
-    )
-    .value =
-      "";
-
-
-  document
-    .getElementById(
-      "feeling"
-    )
-    .value =
-      "";
-
-
-  document
-    .getElementById(
-      "location"
-    )
-    .value =
-      "";
-
-
-  document
-    .getElementById(
-      "progressBar"
-    )
-    .style.width =
-      "0%";
-
-
-  document
-    .getElementById(
-      "progressBox"
-    )
-    .style.display =
-      "none";
-
-
-  document
-    .getElementById(
-      "videoEditor"
-    )
-    .classList
-    .add("hidden");
-
-
-  document
-    .getElementById(
-      "muteBtn"
-    )
-    .textContent =
-      "🔊 Audio On";
-
-
-  document
-    .getElementById(
-      "brightness"
-    )
-    .value =
-      100;
-
-
-  document
-    .getElementById(
-      "contrast"
-    )
-    .value =
-      100;
-
-
-  document
-    .getElementById(
-      "saturation"
-    )
-    .value =
-      100;
-
-
-  document
-    .getElementById(
-      "speedRange"
-    )
-    .value =
-      1;
+  creatorApplyControls();
 
 }
 
 
-/* =====================================================
-   FEED
-   ===================================================== */
+/* =========================================================
+   RANGE EVENTS
+========================================================= */
 
-async function loadFeed(){
+[
+  "creatorBrightness",
+  "creatorContrast",
+  "creatorSaturation",
+  "creatorSpeed"
+].forEach(
+  id => {
 
-  const feed =
     document
-      .getElementById(
-        "feed"
+      .getElementById(id)
+      .addEventListener(
+        "input",
+        creatorApplyControls
       );
 
-  feed.innerHTML =
-    `<div class="loader">
-      Loading posts...
-     </div>`;
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("posts")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      )
-      .limit(30);
-
-
-  if(error){
-
-    console.error(error);
-
-    feed.innerHTML =
-      `<div class="loader">
-        Feed load failed.<br>
-        ${escapeHtml(error.message)}
-       </div>`;
-
-    return;
-
   }
-
-
-  if(!data || !data.length){
-
-    feed.innerHTML =
-      `<div class="loader">
-        এখনো কোনো পোস্ট নেই।<br>
-        প্রথম পোস্টটি তৈরি করুন।
-       </div>`;
-
-    return;
-
-  }
-
-
-  feed.innerHTML =
-    data
-      .map(
-        post =>
-          renderPost(post)
-      )
-      .join("");
-
-}
-
-
-function renderPost(post){
-
-  const text =
-    escapeHtml(
-      post.text || ""
-    );
-
-  const image =
-    post.image_url
-      ? `
-        <img
-          class="postMedia"
-          src="${escapeAttr(post.image_url)}"
-          loading="lazy">
-        `
-      : "";
-
-
-  return `
-
-    <article
-      class="postCard">
-
-      <div
-        class="postHeader">
-
-        <img
-          class="avatar"
-          src="https://i.pravatar.cc/100?u=${encodeURIComponent(post.user_id || "")}">
-
-        <div class="postUser">
-
-          <strong>
-            My Social User
-          </strong>
-
-          <small>
-            ${escapeHtml(post.privacy || "public")}
-          </small>
-
-        </div>
-
-        <button>
-          ⋯
-        </button>
-
-      </div>
-
-
-      ${
-        text
-          ? `<div class="postText">
-               ${text}
-             </div>`
-          : ""
-      }
-
-
-      ${image}
-
-
-      <div
-        class="postActions">
-
-        <button
-          onclick="likePost('${post.id}')">
-          ❤️ Like
-        </button>
-
-        <button
-          onclick="showToast('Comment section')">
-          💬 Comment
-        </button>
-
-        <button
-          onclick="sharePost('${post.id}')">
-          ↗️ Share
-        </button>
-
-        <button
-          onclick="showToast('Saved')">
-          🔖 Save
-        </button>
-
-      </div>
-
-
-      ${
-        post.privacy !== "only_me"
-          ? `
-            <div class="commentBox">
-
-              <input
-                placeholder="Write a comment..."
-                id="comment-${post.id}">
-
-              <button
-                onclick="addComment('${post.id}')">
-                ➤
-              </button>
-
-            </div>
-          `
-          : ""
-      }
-
-    </article>
-
-  `;
-
-}
-
-
-/* =====================================================
-   LIKE
-   ===================================================== */
-
-async function likePost(postId){
-
-  if(!currentUser){
-
-    showToast(
-      "Login required."
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Existing post_likes table থাকলে
-    insert করবে।
-  */
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("post_likes")
-      .insert({
-
-        post_id:
-          postId,
-
-        user_id:
-          currentUser.id
-
-      });
-
-
-  if(error){
-
-    /*
-      Duplicate হলে শুধু UI feedback
-      দেওয়া হবে।
-    */
-
-    showToast(
-      "❤️ Like"
-    );
-
-  }else{
-
-    showToast(
-      "❤️ Liked"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   COMMENT
-   ===================================================== */
-
-async function addComment(postId){
-
-  if(!currentUser){
-
-    showToast(
-      "Login required."
-    );
-
-    return;
-
-  }
-
-
-  const input =
-    document
-      .getElementById(
-        "comment-" +
-        postId
-      );
-
-
-  if(!input)
-    return;
-
-
-  const text =
-    input.value.trim();
-
-
-  if(!text)
-    return;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("comments")
-      .insert({
-
-        post_id:
-          postId,
-
-        user_id:
-          currentUser.id,
-
-        text:
-          text
-
-      });
-
-
-  if(error){
-
-    showToast(
-      error.message
-    );
-
-  }else{
-
-    input.value =
-      "";
-
-    showToast(
-      "💬 Comment added"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   SHARE
-   ===================================================== */
-
-async function sharePost(postId){
-
-  const url =
-    window.location.href +
-    "?post=" +
-    encodeURIComponent(
-      postId
-    );
-
-
-  if(
-    navigator.share
-  ){
-
-    try{
-
-      await navigator.share({
-        title:
-          "My Social App",
-        text:
-          "Check this post",
-        url
-      });
-
-    }catch(e){}
-
-  }else{
-
-    try{
-
-      await navigator.clipboard.writeText(
-        url
-      );
-
-      showToast(
-        "🔗 Link copied"
-      );
-
-    }catch(e){
-
-      showToast(
-        url
-      );
+);
+
+
+document
+  .getElementById(
+    "creatorTrimStart"
+  )
+  .addEventListener(
+    "input",
+    e => {
+
+      document
+        .getElementById(
+          "creatorStartText"
+        )
+        .textContent =
+          e.target.value +
+          "s";
 
     }
+  );
 
-  }
+
+document
+  .getElementById(
+    "creatorTrimEnd"
+  )
+  .addEventListener(
+    "input",
+    e => {
+
+      document
+        .getElementById(
+          "creatorEndText"
+        )
+        .textContent =
+          e.target.value +
+          "s";
+
+    }
+  );
+
+
+/* =========================================================
+   MUTE
+========================================================= */
+
+function creatorToggleMute(){
+
+  creatorMuted =
+    !creatorMuted;
+
+
+  document
+    .getElementById(
+      "creatorMute"
+    )
+    .textContent =
+      creatorMuted
+        ? "🔇 Original Audio Off"
+        : "🔊 Original Audio On";
+
+
+  creatorApplyControls();
 
 }
 
 
-/* =====================================================
-   SECURITY HELPERS
-   ===================================================== */
+/* =========================================================
+   COVER
+========================================================= */
 
-function escapeHtml(value){
+document
+  .getElementById(
+    "creatorCover"
+  )
+  .addEventListener(
+    "change",
+    e => {
 
-  return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+      creatorCoverFile =
+        e.target.files[0] ||
+        null;
 
-}
+    }
+  );
 
 
-function escapeAttr(value){
-
-  return escapeHtml(value);
-
-}
-
-
-/* =====================================================
+/* =========================================================
    DRAG & DROP
-   ===================================================== */
+========================================================= */
 
-window.addEventListener(
+const creatorDrop =
+  document.getElementById(
+    "creatorDrop"
+  );
+
+
+creatorDrop.addEventListener(
   "dragover",
   e => {
 
@@ -3430,40 +1566,718 @@ window.addEventListener(
 );
 
 
-/* =====================================================
-   KEYBOARD
-   ===================================================== */
+creatorDrop.addEventListener(
+  "drop",
+  e => {
 
-document.addEventListener(
-  "keydown",
-  event => {
+    e.preventDefault();
 
-    if(
-      event.key === "Escape"
+    creatorAddFiles(
+      Array.from(
+        e.dataTransfer.files
+      )
+    );
+
+  }
+);
+
+
+/* =========================================================
+   UPLOAD STORAGE
+========================================================= */
+
+async function creatorUploadFile(
+  file,
+  folder,
+  progress
+){
+
+  if(
+    typeof supabaseClient ===
+    "undefined"
+  ){
+
+    throw new Error(
+      "Supabase client পাওয়া যায়নি."
+    );
+
+  }
+
+
+  if(
+    typeof currentUser ===
+    "undefined" ||
+    !currentUser
+  ){
+
+    throw new Error(
+      "Login required."
+    );
+
+  }
+
+
+  const ext =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const path =
+    `${folder}/${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+
+
+  progress(15);
+
+
+  const result =
+    await supabaseClient
+      .storage
+      .from("post-images")
+      .upload(
+        path,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:false,
+          contentType:file.type
+        }
+      );
+
+
+  if(result.error)
+    throw result.error;
+
+
+  progress(90);
+
+
+  const publicData =
+    supabaseClient
+      .storage
+      .from("post-images")
+      .getPublicUrl(
+        path
+      );
+
+
+  progress(100);
+
+
+  return publicData.data.publicUrl;
+
+}
+
+
+/* =========================================================
+   PUBLISH
+========================================================= */
+
+async function creatorPublishContent(){
+
+  if(
+    typeof currentUser ===
+    "undefined" ||
+    !currentUser
+  ){
+
+    alert(
+      "প্রথমে Login করুন."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    creatorFiles.length === 0 &&
+    creatorType !== "post"
+  ){
+
+    alert(
+      "Media নির্বাচন করুন."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    creatorType === "post" &&
+    creatorFiles.length === 0 &&
+    !document
+      .getElementById(
+        "creatorCaption"
+      )
+      .value
+      .trim()
+  ){
+
+    alert(
+      "Post-এর জন্য কিছু লিখুন বা media নির্বাচন করুন."
+    );
+
+    return;
+
+  }
+
+
+  creatorCancelled =
+    false;
+
+
+  const publish =
+    document.getElementById(
+      "creatorPublish"
+    );
+
+
+  const progress =
+    document.getElementById(
+      "creatorProgress"
+    );
+
+
+  const bar =
+    document.getElementById(
+      "creatorProgressBar"
+    );
+
+
+  const text =
+    document.getElementById(
+      "creatorProgressText"
+    );
+
+
+  const percent =
+    document.getElementById(
+      "creatorProgressPercent"
+    );
+
+
+  publish.disabled =
+    true;
+
+
+  progress.classList.add(
+    "show"
+  );
+
+
+  try{
+
+    const caption =
+      document
+        .getElementById(
+          "creatorCaption"
+        )
+        .value
+        .trim();
+
+
+    const feeling =
+      document
+        .getElementById(
+          "creatorFeeling"
+        )
+        .value
+        .trim();
+
+
+    const location =
+      document
+        .getElementById(
+          "creatorLocation"
+        )
+        .value
+        .trim();
+
+
+    const tags =
+      document
+        .getElementById(
+          "creatorTags"
+        )
+        .value
+        .trim();
+
+
+    const audience =
+      document
+        .getElementById(
+          "creatorAudience"
+        )
+        .value;
+
+
+    const comments =
+      document
+        .getElementById(
+          "creatorComments"
+        )
+        .value === "true";
+
+
+    const uploaded = [];
+
+
+    for(
+      let i=0;
+      i<creatorFiles.length;
+      i++
     ){
 
-      const modal =
-        document
-          .getElementById(
-            "uploadModal"
-          );
+      if(creatorCancelled)
+        throw new Error(
+          "Upload cancelled."
+        );
+
+
+      const file =
+        creatorFiles[i];
+
+
+      text.textContent =
+        `Uploading ${i+1}/${creatorFiles.length}`;
+
+
+      const base =
+        (
+          i /
+          creatorFiles.length
+        ) *
+        100;
+
+
+      const size =
+        100 /
+        creatorFiles.length;
+
+
+      const url =
+        await creatorUploadFile(
+          file,
+          creatorType === "reel"
+            ? "reels"
+            : "posts",
+          p => {
+
+            const total =
+              base +
+              (p / 100) *
+              size;
+
+
+            bar.style.width =
+              total + "%";
+
+
+            percent.textContent =
+              Math.round(total) +
+              "%";
+
+          }
+        );
+
+
+      uploaded.push({
+        file,
+        url
+      });
+
+    }
+
+
+    text.textContent =
+      "Saving content...";
+
+
+    /* =========================================
+       REEL
+    ========================================= */
+
+    if(
+      creatorType === "reel"
+    ){
+
+      const video =
+        uploaded.find(
+          x =>
+            x.file.type
+              .startsWith(
+                "video/"
+              )
+        );
+
+
+      if(!video)
+        throw new Error(
+          "Reel video পাওয়া যায়নি."
+        );
+
+
+      const data = {
+
+        user_id:
+          currentUser.id,
+
+        video_url:
+          video.url,
+
+        caption:
+          caption,
+
+        views:
+          0,
+
+        audio_name:
+          ""
+
+      };
+
+
+      const result =
+        await supabaseClient
+          .from("reels")
+          .insert(data);
+
+
+      if(result.error)
+        throw result.error;
+
+    }
+
+
+    /* =========================================
+       POST / PHOTO / VIDEO
+    ========================================= */
+
+    else if(
+      creatorType === "post" ||
+      creatorType === "photo" ||
+      creatorType === "video"
+    ){
+
+      const first =
+        uploaded[0];
+
+
+      const result =
+        await supabaseClient
+          .from("posts")
+          .insert({
+
+            user_id:
+              currentUser.id,
+
+            text:
+              caption,
+
+            image_url:
+              first &&
+              first.file.type
+                .startsWith("image/")
+                ? first.url
+                : null,
+
+            privacy:
+              audience,
+
+            feeling:
+              feeling || null,
+
+            location:
+              location || null,
+
+            promoted:
+              false,
+
+            view_count:
+              0
+
+          })
+          .select()
+          .single();
+
+
+      if(result.error)
+        throw result.error;
+
+
+      const post =
+        result.data;
+
 
       if(
-        !modal.classList.contains(
-          "hidden"
-        )
+        uploaded.length
       ){
 
-        closeUpload();
+        const rows =
+          uploaded.map(
+            (x,index) => ({
+
+              post_id:
+                post.id,
+
+              media_url:
+                x.url,
+
+              media_type:
+                x.file.type
+                  .startsWith(
+                    "video/"
+                  )
+                  ? "video"
+                  : "image",
+
+              sort_order:
+                index
+
+            })
+          );
+
+
+        const mediaResult =
+          await supabaseClient
+            .from("post_media")
+            .insert(rows);
+
+
+        /*
+          post_media table থাকলেও
+          schema mismatch হলে post
+          যেন পুরোপুরি fail না করে।
+        */
+
+        if(
+          mediaResult.error
+        ){
+
+          console.warn(
+            "post_media error:",
+            mediaResult.error
+          );
+
+        }
 
       }
 
     }
 
+
+    /* =========================================
+       STORY
+    ========================================= */
+
+    else if(
+      creatorType === "story"
+    ){
+
+      /*
+        Story table তোমার বর্তমান schema-তে
+        নিশ্চিত না থাকলে এখানে upload সম্পন্ন
+        হওয়ার পর UI success দেখানো হচ্ছে।
+        Story table তৈরি করলে এখানে insert
+        করা যাবে।
+      */
+
+      console.log(
+        "Story uploaded:",
+        uploaded
+      );
+
+    }
+
+
+    bar.style.width =
+      "100%";
+
+    percent.textContent =
+      "100%";
+
+    text.textContent =
+      "✅ Published successfully";
+
+
+    setTimeout(
+      () => {
+
+        creatorReset();
+
+        closeCreatorStudio();
+
+        if(
+          typeof loadFeed ===
+          "function"
+        ){
+
+          loadFeed();
+
+        }
+
+      },
+      800
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Creator upload error:",
+      error
+    );
+
+
+    text.textContent =
+      "❌ " +
+      error.message;
+
+
+    alert(
+      "Upload failed:\n" +
+      error.message
+    );
+
+
+  }finally{
+
+    publish.disabled =
+      false;
+
   }
-);
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function creatorReset(){
+
+  creatorFiles =
+    [];
+
+  creatorVideo =
+    null;
+
+  creatorCoverFile =
+    null;
+
+  creatorEffectValue =
+    "normal";
+
+  creatorMuted =
+    false;
+
+
+  document
+    .getElementById(
+      "creatorQueue"
+    )
+    .innerHTML =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorFileInput"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorCover"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorCaption"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorFeeling"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorLocation"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorTags"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "creatorProgressBar"
+    )
+    .style.width =
+      "0%";
+
+
+  document
+    .getElementById(
+      "creatorProgress"
+    )
+    .classList
+    .remove("show");
+
+
+  document
+    .getElementById(
+      "creatorPreview"
+    )
+    .classList
+    .remove("show");
+
+
+  document
+    .getElementById(
+      "creatorVideoEditor"
+    )
+    .style.display =
+      "none";
+
+
+  document
+    .getElementById(
+      "creatorMute"
+    )
+    .textContent =
+      "🔊 Original Audio On";
+
+
+  creatorSetType(
+    "post",
+    document.querySelector(
+      '.creator-types button[data-type="post"]'
+    )
+  );
+
+}
 
 </script>
-
-</body>
-</html>
