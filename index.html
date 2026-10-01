@@ -69,7 +69,7 @@ main{padding:16px 14px calc(var(--nav) + 25px)}.page{display:none}.page.active{d
 
 <script>
 const URL="https://skereuaizdczbvjplisi.supabase.co",KEY="sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x",BUCKET="post-images";
-const {createClient}=supabase,db=createClient(URL,KEY);let me=null,profile=null,chatUser=null;
+let db=null,me=null,profile=null,chatUser=null;
 const $=x=>document.getElementById(x),esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2500)}
 function openM(x){$(x).classList.add("open")}function closeM(x){$(x).classList.remove("open")}
@@ -80,9 +80,9 @@ function authmsg(t,c){$("authmsg").innerHTML=t?'<div class="notice '+c+'">'+esc(
 async function loadProfile(){let r=await db.from("profiles").select("*").eq("id",me.id).maybeSingle();if(r.error)throw r.error;if(!r.data){let n=me.user_metadata?.name||me.email.split("@")[0],u=(me.user_metadata?.username||n).toLowerCase().replace(/[^a-z0-9_]/g,"").slice(0,24)||"user";r=await db.from("profiles").insert({id:me.id,name:n,username:u,bio:"",role:"user",followers_count:0,following_count:0,friends_count:0,verified:false,creator_mode:false,is_deactivated:false,online_status:true}).select().single();if(r.error)throw r.error}profile=r.data;ui()}
 function ui(){let a=avatar(profile);["topAv","compAv","sideAv","pav"].forEach(x=>$(x).src=a);$("cover").src=cover(profile);$("sideName").textContent=profile.name||"User";$("sideUser").textContent="@"+(profile.username||"user");$("pname").textContent=profile.name||"User";$("pbio").textContent=profile.bio||"Welcome to my profile.";$("followers").textContent=profile.followers_count||0;$("following").textContent=profile.following_count||0;$("cmode").textContent=profile.creator_mode?"ON":"OFF";$("cs").classList.toggle("on",!!profile.creator_mode)}
 async function enter(u){me=u;$("auth").classList.add("hidden");$("app").classList.remove("hidden");try{await loadProfile();await Promise.all([feed(),stories(),reels(),notifs(),money(),withdrawals(),stats()])}catch(e){toast(e.message)}}
-async function login(){let e=$("le").value.trim(),p=$("lp").value;if(!e||!p)return authmsg("Email এবং password দিন","error");let r=await db.auth.signInWithPassword({email:e,password:p});if(r.error)return authmsg(r.error.message,"error")}
-async function signup(){let n=$("sn").value.trim(),u=$("su").value.trim().toLowerCase(),e=$("se").value.trim(),p=$("sp").value;if(!n||!u||!e||p.length<6)return authmsg("সব তথ্য দিন এবং password 6+ characters করুন","error");let r=await db.auth.signUp({email:e,password:p,options:{data:{name:n,username:u}}});if(r.error)return authmsg(r.error.message,"error");authmsg(r.data.session?"Account created":"Account created. Email confirmation check করুন.","good")}
-async function forgot(){let e=$("le").value.trim();if(!e)return authmsg("Email দিন","error");let r=await db.auth.resetPasswordForEmail(e,{redirectTo:location.href});authmsg(r.error?r.error.message:"Reset email পাঠানো হয়েছে",r.error?"error":"good")}
+async function login(){if(!db)return authmsg("Supabase connection এখনো প্রস্তুত নয়. Refresh দিন.","error");let e=$("le").value.trim(),p=$("lp").value;if(!e||!p)return authmsg("Email এবং password দিন","error");let r=await db.auth.signInWithPassword({email:e,password:p});if(r.error)return authmsg(r.error.message,"error")}
+async function signup(){if(!db)return authmsg("Supabase connection এখনো প্রস্তুত নয়. Refresh দিন.","error");let n=$("sn").value.trim(),u=$("su").value.trim().toLowerCase(),e=$("se").value.trim(),p=$("sp").value;if(!n||!u||!e||p.length<6)return authmsg("সব তথ্য দিন এবং password 6+ characters করুন","error");let r=await db.auth.signUp({email:e,password:p,options:{data:{name:n,username:u}}});if(r.error)return authmsg(r.error.message,"error");authmsg(r.data.session?"Account created":"Account created. Email confirmation check করুন.","good")}
+async function forgot(){if(!db)return authmsg("Supabase connection এখনো প্রস্তুত নয়. Refresh দিন.","error");let e=$("le").value.trim();if(!e)return authmsg("Email দিন","error");let r=await db.auth.resetPasswordForEmail(e,{redirectTo:location.href});authmsg(r.error?r.error.message:"Reset email পাঠানো হয়েছে",r.error?"error":"good")}
 async function feed(target="feed"){let box=$(target),r=await db.from("posts").select("*").order("created_at",{ascending:false}).limit(30);if(r.error)return box.innerHTML='<div class="card empty">'+esc(r.error.message)+'</div>';if(!r.data?.length)return box.innerHTML='<div class="card empty">No posts yet. Create the first post ✨</div>';let ids=[...new Set(r.data.map(x=>x.user_id))],ps=await db.from("profiles").select("id,name,username,profile_photo").in("id",ids),m=Object.fromEntries((ps.data||[]).map(x=>[x.id,x]));box.innerHTML=r.data.map(p=>post(p,m[p.user_id]||{})).join("");for(let p of r.data){let q=await db.from("post_likes").select("post_id").eq("post_id",p.id).eq("user_id",me.id).maybeSingle();if(q.data)document.querySelector('[data-like="'+p.id+'"]')?.classList.add("active")}}
 function post(p,u){let media=p.video_url?'<video class="media" controls playsinline src="'+esc(p.video_url)+'"></video>':p.image_url?'<img class="media" src="'+esc(p.image_url)+'">':"";return '<article class="card post"><div class="phead"><img class="av" src="'+avatar(u)+'"><div class="pmeta"><b>'+esc(u.name||"User")+'</b><small>@'+esc(u.username||"user")+' · '+new Date(p.created_at).toLocaleString()+'</small></div></div>'+(p.text?'<div class="ptext">'+esc(p.text)+'</div>':"")+media+'<div class="actions"><button class="act" data-like="'+p.id+'" onclick="likePost('+p.id+',this)">♡ Like</button><button class="act" onclick="focusComment('+p.id+')">💬 Comment</button><button class="act" onclick="sharePost('+p.id+')">↗ Share</button></div><div id="comments'+p.id+'" class="comments"></div><div class="commentbox"><input id="ci'+p.id+'" placeholder="Write a comment…" onkeydown="if(event.key===\'Enter\')comment('+p.id+')"><button class="send" onclick="comment('+p.id+')">Send</button></div></article>'}
 async function likePost(id,b){let q=await db.from("post_likes").select("*").eq("post_id",id).eq("user_id",me.id).maybeSingle();if(q.data){await db.from("post_likes").delete().eq("post_id",id).eq("user_id",me.id);b.classList.remove("active")}else{await db.from("post_likes").insert({post_id:id,user_id:me.id});b.classList.add("active")}}
@@ -113,13 +113,50 @@ async function creator(){let v=!profile.creator_mode,r=await db.from("profiles")
 function show(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(p).classList.add("active");document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.page===p));if(p==="chat")chatPeople();if(p==="profile")myPosts();if(p==="notifications")notifs();if(p==="money"){money();withdrawals()}}
 async function myPosts(){let r=await db.from("posts").select("*").eq("user_id",me.id).order("created_at",{ascending:false});$("myPosts").innerHTML=r.data?.length?r.data.map(x=>post(x,profile)).join(""):'<div class="card empty">No posts yet.</div>'}
 
-$("login").onclick=login;$("signup").onclick=signup;$("forgot").onclick=forgot;$("toSignup").onclick=()=>{$("loginBox").classList.add("hidden");$("signupBox").classList.remove("hidden")};$("toLogin").onclick=()=>{$("signupBox").classList.add("hidden");$("loginBox").classList.remove("hidden")};
+async function boot(){
+  authmsg("Connecting…","good");
+  let sdk=window.supabase;
+  if(!sdk?.createClient){
+    await new Promise((resolve)=>{
+      const urls=["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2","https://unpkg.com/@supabase/supabase-js@2"];
+      let i=0;
+      const next=()=>{
+        if(window.supabase?.createClient)return resolve(true);
+        if(i>=urls.length)return resolve(false);
+        const sc=document.createElement("script");
+        sc.src=urls[i++];sc.async=true;
+        sc.onload=()=>window.supabase?.createClient?resolve(true):next();
+        sc.onerror=next;document.head.appendChild(sc);
+      };
+      next();
+    });
+  }
+  if(!window.supabase?.createClient){
+    authmsg("Supabase SDK load হয়নি। Internet connection check করে Refresh দিন.","error");
+    return;
+  }
+  try{
+    db=window.supabase.createClient(URL,KEY);
+    const r=await db.auth.getSession();
+    if(r.error)throw r.error;
+    if(r.data?.session)await enter(r.data.session.user);
+    db.auth.onAuthStateChange((e,s)=>{
+      if(s&&!me)enter(s.user);
+      if(!s){me=null;$("app").classList.add("hidden");$("auth").classList.remove("hidden");}
+    });
+  }catch(e){
+    console.error("Supabase boot error",e);
+    authmsg(e.message||"Supabase connection failed","error");
+  }
+
+  $("login").onclick=login;$("signup").onclick=signup;$("forgot").onclick=forgot;$("toSignup").onclick=()=>{$("loginBox").classList.add("hidden");$("signupBox").classList.remove("hidden")};$("toLogin").onclick=()=>{$("signupBox").classList.add("hidden");$("loginBox").classList.remove("hidden")};
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>show(b.dataset.page));$("settingsTop").onclick=()=>show("settings");$("notifTop").onclick=()=>show("notifications");$("searchTop").onfocus=()=>show("searchPage");$("people").oninput=search;
 $("openPost").onclick=()=>openM("postModal");$("addStory").onclick=()=>openM("storyModal");$("newReel").onclick=()=>openM("reelModal");$("photoQuick").onclick=()=>show("create");$("videoQuick").onclick=()=>show("create");$("feelingQuick").onclick=()=>openM("postModal");
 $("publish").onclick=()=>publish($("postText").value.trim(),$("postFile").files[0],$("postFeel").value.trim());$("mpublish").onclick=()=>publish($("mtext").value.trim(),$("mfile").files[0],$("mfeel").value.trim());$("spublish").onclick=publishStory;$("rpublish").onclick=publishReel;
 $("edit").onclick=editProfile;$("save").onclick=saveProfile;$("logout").onclick=()=>db.auth.signOut();$("send").onclick=send;$("chatInput").onkeydown=e=>{if(e.key==="Enter")send()};$("withdraw").onclick=doWithdraw;$("cs").onclick=creator;$("readAll").onclick=async()=>{await db.from("notifications").update({read:true}).eq("receiver_id",me.id);notifs()};$("deactivate").onclick=async()=>{if(confirm("Deactivate account?")){await db.from("account_status").upsert({user_id:me.id,deactivated:true,deactivated_at:new Date().toISOString()});db.auth.signOut()}};
 
-db.auth.getSession().then(r=>{if(r.data.session)enter(r.data.session.user)});db.auth.onAuthStateChange((e,s)=>{if(s&&!me)enter(s.user);if(!s){me=null;$("app").classList.add("hidden");$("auth").classList.remove("hidden")}});
+}
+boot();
 </script>
 </body>
 </html>
