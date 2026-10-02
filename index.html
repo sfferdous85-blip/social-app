@@ -1,989 +1,884 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0f">
-<meta name="description" content="My Social App">
-<title>My Social App</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{
-  --bg:#0b0b0f;--card:#15151b;--card2:#1b1b23;--text:#f5f5f7;--muted:#a5a5b0;
-  --line:#292932;--accent:#ff2d75;--accent2:#7c4dff;--good:#27d17f;--danger:#ff4d67;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-body{min-height:100vh}
-button,input,textarea,select{font:inherit}
-button{border:0;color:inherit;cursor:pointer}
-.hidden{display:none!important}
-.app{min-height:100vh;max-width:760px;margin:auto;padding-bottom:78px}
-.topbar{
-  position:sticky;top:0;z-index:20;height:62px;padding:8px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(11,11,15,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)
-}
-.brand{font-size:22px;font-weight:800;letter-spacing:-.7px}
-.brand span{background:linear-gradient(90deg,#ff2d75,#9b6cff);-webkit-background-clip:text;color:transparent}
-.top-actions{display:flex;gap:7px}
-.iconbtn{width:40px;height:40px;border-radius:50%;background:#191920;font-size:20px}
-.page{padding:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px}
-.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
-.auth{width:min(440px,100%);padding:25px;border-radius:26px;background:linear-gradient(145deg,#171720,#101015);border:1px solid #30303b;box-shadow:0 20px 70px rgba(0,0,0,.45)}
-.logo{font-size:34px;font-weight:900;margin-bottom:5px}
-.subtitle{color:var(--muted);margin-bottom:24px}
-.field{margin:10px 0}
-.field label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px 4px}
-.input,.textarea,.select{
-  width:100%;padding:13px 14px;border-radius:13px;background:#0d0d12;border:1px solid #30303a;color:#fff;outline:none
-}
-.input:focus,.textarea:focus{border-color:#7557ff}
-.primary{
-  width:100%;padding:13px 16px;border-radius:13px;font-weight:800;
-  background:linear-gradient(100deg,#ff2d75,#7c4dff);margin-top:8px
-}
-.secondary{padding:11px 15px;border-radius:12px;background:#24242d}
-.linkbtn{background:none;color:#ff6b9b;margin-top:14px}
-.status{padding:10px 12px;border-radius:12px;background:#191920;color:var(--muted);font-size:13px;margin:12px 0}
-.status.ok{color:#72e9ac}.status.err{color:#ff8498}
-.story-row{display:flex;gap:12px;overflow:auto;padding:4px 0 16px}
-.story{min-width:66px;text-align:center;font-size:11px;color:var(--muted)}
-.avatar,.story-img{width:58px;height:58px;border-radius:50%;object-fit:cover;display:block;margin:auto;border:2px solid #ff3f86;background:#20202a}
-.story-add{display:grid;place-items:center;font-size:26px;background:#1d1d26}
-.composer{padding:12px;margin-bottom:13px}
-.composer-row{display:flex;align-items:center;gap:10px}
-.composer-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#24242c}
-.composer-input{flex:1;background:#202029;color:#aaa;padding:11px 14px;border-radius:22px}
-.post{overflow:hidden;margin-bottom:14px}
-.post-head{display:flex;align-items:center;gap:10px;padding:12px}
-.post-head img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#222}
-.post-user{font-weight:750}.post-time{font-size:11px;color:var(--muted)}
-.post-menu{margin-left:auto;background:none;font-size:20px}
-.post-text{padding:0 13px 12px;line-height:1.5;white-space:pre-wrap}
-.post-media{width:100%;max-height:650px;object-fit:cover;display:block;background:#050507}
-.post-actions{display:flex;align-items:center;gap:4px;padding:8px 10px;border-top:1px solid var(--line)}
-.action{background:none;padding:8px 9px;border-radius:10px;color:#ddd}
-.action.active{color:#ff3c7d}
-.spacer{flex:1}
-.meta{padding:0 13px 12px;color:var(--muted);font-size:13px}
-.empty{padding:40px 15px;text-align:center;color:var(--muted)}
-.bottom{
- position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);
- z-index:30;height:66px;display:flex;justify-content:space-around;align-items:center;
- background:rgba(12,12,17,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line)
-}
-.nav{background:none;color:#9d9da8;font-size:22px;min-width:54px}
-.nav small{display:block;font-size:9px;margin-top:2px}
-.nav.active{color:#fff}
-.reel{position:relative;height:calc(100vh - 130px);min-height:510px;background:#050507;border-radius:18px;overflow:hidden;margin-bottom:14px}
-.reel video{width:100%;height:100%;object-fit:cover;background:#000}
-.reel-grad{position:absolute;inset:auto 0 0;height:55%;background:linear-gradient(transparent,rgba(0,0,0,.9));pointer-events:none}
-.reel-info{position:absolute;left:14px;right:75px;bottom:18px;z-index:2}
-.reel-actions{position:absolute;right:10px;bottom:22px;z-index:3;display:flex;flex-direction:column;gap:9px}
-.reel-action{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.5);font-size:21px}
-.reel-action.liked{color:#ff397d}
-.profile-head{padding:18px}
-.profile-main{display:flex;gap:16px;align-items:center}
-.profile-main .avatar{width:92px;height:92px;margin:0}
-.profile-name{font-size:21px;font-weight:850}
-.profile-bio{color:var(--muted);margin-top:4px}
-.stats{display:flex;justify-content:space-around;text-align:center;margin:18px 0}
-.stat b{font-size:18px}.stat span{display:block;color:var(--muted);font-size:11px}
-.profile-actions{display:flex;gap:8px}.profile-actions button{flex:1}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-.grid img,.grid video{width:100%;aspect-ratio:1;object-fit:cover;background:#15151a}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;display:grid;place-items:end center}
-.sheet{width:min(760px,100%);max-height:92vh;overflow:auto;background:#15151b;border-radius:24px 24px 0 0;padding:18px;border:1px solid var(--line)}
-.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.close{background:#25252d;border-radius:50%;width:38px;height:38px}
-.preview{width:100%;max-height:320px;object-fit:contain;border-radius:15px;background:#09090c;margin:8px 0}
-.upload-zone{padding:24px;border:1px dashed #555564;border-radius:16px;text-align:center;color:var(--muted);margin:10px 0}
-.progress{height:7px;border-radius:20px;background:#292932;overflow:hidden;margin:10px 0}
-.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff2d75,#7c4dff)}
-.notice{padding:11px 13px;border-radius:12px;background:#20202a;color:#bbb;font-size:13px;margin:10px 0}
-.settings-row{display:flex;align-items:center;justify-content:space-between;padding:15px 4px;border-bottom:1px solid var(--line)}
-.toggle{width:50px;height:28px;border-radius:20px;background:#363640;padding:3px}
-.toggle i{display:block;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
-.toggle.on{background:#7c4dff}.toggle.on i{transform:translateX(22px)}
-.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:100;background:#f4f4f5;color:#111;padding:11px 16px;border-radius:13px;font-weight:650;display:none;max-width:90%}
-@media(min-width:760px){.app{border-left:1px solid #17171e;border-right:1px solid #17171e}.modal{align-items:center}.sheet{border-radius:24px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0866ff" />
+  <meta name="description" content="My Social App — premium Facebook-style social network" />
+  <title>My Social App</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <style>
+    :root{
+      --bg:#f0f2f5; --card:#fff; --text:#0f1419; --muted:#65676b; --line:#e4e6eb;
+      --primary:#0866ff; --primary2:#1877f2; --danger:#e41e3f; --success:#31a24c;
+      --shadow:0 6px 24px rgba(0,0,0,.08); --radius:18px; --top:64px; --bottom:70px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Noto Sans Bengali,sans-serif;background:var(--bg);color:var(--text)}
+    body.dark{--bg:#18191a;--card:#242526;--text:#e4e6eb;--muted:#b0b3b8;--line:#3a3b3c;--shadow:0 6px 24px rgba(0,0,0,.35)}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .glass{background:color-mix(in srgb,var(--card) 93%,transparent);backdrop-filter:blur(18px)}
+    .app-shell{min-height:100vh}
+    .topbar{
+      position:sticky;top:0;z-index:50;height:var(--top);display:flex;align-items:center;gap:12px;
+      padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card)
+    }
+    .brand{font-weight:900;font-size:22px;color:var(--primary);white-space:nowrap}
+    .top-search{flex:1;max-width:520px;position:relative}
+    .top-search input{width:100%;border:none;outline:none;background:var(--bg);padding:11px 14px 11px 38px;border-radius:999px;color:var(--text)}
+    .top-search span{position:absolute;left:13px;top:10px;color:var(--muted)}
+    .iconbtn{width:42px;height:42px;border:0;border-radius:50%;background:var(--bg);color:var(--text);display:grid;place-items:center;font-size:18px}
+    .iconbtn.active{background:#e7f3ff;color:var(--primary)}
+    .layout{display:grid;grid-template-columns:260px minmax(0,680px) 300px;gap:18px;max-width:1280px;margin:18px auto;padding:0 14px}
+    .left,.right{position:sticky;top:82px;height:calc(100vh - 100px);overflow:auto}
+    .nav-card,.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .nav-card{padding:10px}
+    .navitem{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;border:0;background:transparent;color:var(--text);border-radius:12px;text-align:left;font-weight:700}
+    .navitem:hover,.navitem.active{background:var(--bg);color:var(--primary)}
+    .navitem .emoji{width:30px;text-align:center;font-size:20px}
+    .main{min-width:0}
+    .section{display:none}
+    .section.active{display:block}
+    .stories{display:flex;gap:10px;overflow:auto;padding:4px 0 14px;scrollbar-width:none}
+    .story{
+      flex:0 0 118px;height:190px;border-radius:18px;position:relative;overflow:hidden;border:1px solid var(--line);
+      background:linear-gradient(155deg,#6d28d9,#0866ff 55%,#fb7185);color:white;box-shadow:var(--shadow)
+    }
+    .story img{width:100%;height:100%;object-fit:cover}
+    .story::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+    .story .sname{position:absolute;z-index:2;left:10px;right:8px;bottom:10px;font-size:13px;font-weight:800}
+    .story .avatar{position:absolute;z-index:2;left:10px;top:10px;width:38px;height:38px;border-radius:50%;border:3px solid var(--primary);object-fit:cover;background:white}
+    .story.create{background:var(--card);color:var(--text)}
+    .story.create::after{display:none}
+    .story.create .plus{position:absolute;top:82px;left:42px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:white;font-size:24px;border:4px solid var(--card)}
+    .story.create .sname{color:var(--text);text-align:center}
+    .composer{padding:14px;margin-bottom:14px}
+    .row{display:flex;align-items:center;gap:10px}
+    .avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#ddd,#aaa);flex:none}
+    .composer-open{flex:1;border:0;background:var(--bg);padding:13px 16px;border-radius:999px;color:var(--muted);text-align:left}
+    .quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+    .quick-actions button{border:0;background:transparent;color:var(--muted);padding:10px 4px;border-radius:10px;font-weight:800}
+    .quick-actions button:hover{background:var(--bg)}
+    .post{margin-bottom:14px;overflow:hidden}
+    .post-head{padding:14px;display:flex;align-items:center;gap:10px}
+    .post-meta{min-width:0;flex:1}
+    .post-name{font-weight:900}
+    .post-time{font-size:12px;color:var(--muted)}
+    .post-text{padding:0 14px 13px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.5}
+    .post-media img,.post-media video{display:block;width:100%;max-height:620px;object-fit:cover;background:#000}
+    .post-stats{display:flex;justify-content:space-between;padding:10px 14px;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line)}
+    .post-actions{display:grid;grid-template-columns:repeat(3,1fr);padding:4px 8px}
+    .post-actions button{border:0;background:transparent;color:var(--muted);font-weight:800;padding:10px;border-radius:9px}
+    .post-actions button:hover{background:var(--bg)}
+    .post-actions button.liked{color:var(--primary)}
+    .comments{padding:0 14px 12px}
+    .comment{background:var(--bg);border-radius:14px;padding:8px 11px;margin:6px 0;font-size:13px}
+    .comment strong{display:block}
+    .comment-form{display:flex;gap:8px;margin-top:8px}
+    .comment-form input{flex:1;border:0;background:var(--bg);color:var(--text);border-radius:999px;padding:10px 13px;outline:none}
+    .comment-form button{border:0;background:var(--primary);color:white;border-radius:999px;padding:8px 14px;font-weight:800}
+    .skeleton{height:110px;margin-bottom:14px;border-radius:18px;background:linear-gradient(90deg,var(--card),var(--bg),var(--card));background-size:200% 100%;animation:sk 1.2s infinite}
+    @keyframes sk{to{background-position:-200% 0}}
+    .empty{padding:34px 18px;text-align:center;color:var(--muted)}
+    .right .card{padding:14px;margin-bottom:14px}
+    .side-title{font-weight:900;margin-bottom:8px}
+    .contact{display:flex;align-items:center;gap:9px;padding:8px 2px}
+    .contact .dot{width:9px;height:9px;background:#31a24c;border-radius:50%;margin-left:auto}
+    .bottom-nav{display:none}
+    .page-title{font-size:26px;font-weight:950;margin:0 0 14px}
+    .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .feature-card{padding:18px;min-height:140px}
+    .feature-card h3{margin:0 0 6px}
+    .feature-card p{color:var(--muted);font-size:14px}
+    .btn{border:0;border-radius:12px;padding:11px 15px;font-weight:900;background:var(--primary);color:#fff}
+    .btn.secondary{background:var(--bg);color:var(--text);border:1px solid var(--line)}
+    .btn.danger{background:var(--danger)}
+    .field{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+    .field label{font-size:13px;font-weight:800;color:var(--muted)}
+    .field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:12px;outline:none}
+    .field input:focus,.fieldhere
+textarea:focus{border-color:var(--primary)}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 10% 10%,#cfe1ff,transparent 35%),radial-gradient(circle at 90% 90%,#f0d7ff,transparent 35%),var(--bg)}
+    .auth-card{width:min(440px,100%);padding:24px}
+    .auth-card h1{margin:0;color:var(--primary);font-size:34px}
+    .auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:12px;padding:4px;margin:18px 0}
+    .auth-tabs button{border:0;background:transparent;color:var(--muted);padding:10px;border-radius:9px;font-weight:900}
+    .auth-tabs button.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow)}
+    .status{padding:10px 12px;border-radius:12px;margin:10px 0;font-size:13px;background:var(--bg);color:var(--muted)}
+    .status.ok{background:#e7f6ec;color:#176b2c}.status.err{background:#fdecef;color:#a91d38}
+    body.dark .status.ok{background:#163d22;color:#8ee3a4} body.dark .status.err{background:#481d26;color:#ff9eb0}
+    .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px}
+    .modal.show{display:flex}
+    .modal-card{width:min(620px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;box-shadow:0 20px 80px rgba(0,0,0,.3)}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
+    .modal-body{padding:18px}
+    .media-preview{margin:10px 0;border-radius:16px;overflow:hidden;background:#000}
+    .media-preview img,.media-preview video{width:100%;max-height:420px;object-fit:contain;display:block}
+    .progress{height:7px;background:var(--bg);border-radius:999px;overflow:hidden;margin:8px 0}
+    .progress>div{height:100%;width:0;background:var(--primary);transition:.2s}
+    .reels-view{height:calc(100vh - 100px);overflow-y:auto;scroll-snap-type:y mandatory;border-radius:18px;background:#000}
+    .reel{height:calc(100vh - 100px);position:relative;scroll-snap-align:start;background:#000;display:grid;place-items:center}
+    .reel video{width:100%;height:100%;object-fit:contain}
+    .reel-overlay{position:absolute;inset:auto 0 0;color:#fff;padding:40px 18px 18px;background:linear-gradient(transparent,rgba(0,0,0,.78))}
+    .reel-actions{position:absolute;right:14px;bottom:90px;display:flex;flex-direction:column;gap:12px}
+    .reel-actions button{width:48px;height:48px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;font-size:20px}
+    .profile-cover{height:250px;background:linear-gradient(135deg,#764ba2,#0866ff);border-radius:0 0 22px 22px;position:relative;overflow:hidden}
+    .profile-cover img{width:100%;height:100%;object-fit:cover}
+    .profile-info{margin-top:-52px;position:relative;padding:0 18px 18px}
+    .profile-avatar{width:132px;height:132px;border-radius:50%;object-fit:cover;border:5px solid var(--card);background:#ddd}
+    .profile-info h2{margin:6px 0 2px}
+    .badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#e7f3ff;color:var(--primary);font-size:12px;font-weight:900}
+    .chat-layout{display:grid;grid-template-columns:260px 1fr;min-height:560px;overflow:hidden}
+    .chat-list{border-right:1px solid var(--line);padding:10px}
+    .chat-room{display:flex;flex-direction:column}
+    .chat-messages{flex:1;padding:14px;overflow:auto;min-height:460px}
+    .bubble{max-width:75%;padding:10px 12px;border-radius:16px;background:var(--bg);margin:6px 0}
+    .bubble.me{margin-left:auto;background:var(--primary);color:white}
+    .chat-send{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+    .chat-send input{flex:1;border:0;background:var(--bg);border-radius:999px;padding:11px 14px;color:var(--text);outline:none}
+    .toast{position:fixed;z-index:999;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;padding:11px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw;text-align:center}
+    .toast.show{opacity:1;transform:translateX(-50%)}
+    .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-4px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:1050px){
+      .layout{grid-template-columns:220px minmax(0,1fr)} .right{display:none}
+    }
+    @media(max-width:760px){
+      :root{--top:58px}
+      .topbar{padding:8px 10px}.brand{font-size:19px}.top-search{display:none}
+      .layout{display:block;margin:10px auto 78px;padding:0 8px}.left,.right{display:none}
+      .bottom-nav{position:fixed;z-index:60;left:0;right:0;bottom:0;height:var(--bottom);display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+      .bottom-nav button{border:0;background:transparent;color:var(--muted);font-size:21px}.bottom-nav button.active{color:var(--primary)}
+      .stories{padding-top:2px}.story{flex-basis:106px;height:176px}
+      .grid2{grid-template-columns:1fr}.page-title{font-size:23px}
+      .reels-view,.reel{height:calc(100vh - 138px);border-radius:14px}
+      .chat-layout{grid-template-columns:1fr}.chat-list{display:none}.chat-messages{min-height:430px}
+      .profile-cover{height:190px}.profile-avatar{width:110px;height:110px}
+    }
+  </style>
 </head>
 <body>
-
-<div id="authScreen" class="auth-wrap">
-  <div class="auth">
-    <div class="logo"><span>My Social App</span></div>
-    <div class="subtitle">তোমার নিজের social platform</div>
-
-    <div id="authStatus" class="status">Supabase connection পরীক্ষা হচ্ছে...</div>
-
-    <div id="loginForm">
-      <div class="field"><label>Email</label><input id="loginEmail" class="input" type="email" autocomplete="email" placeholder="আপনার email"></div>
-      <div class="field"><label>Password</label><input id="loginPassword" class="input" type="password" autocomplete="current-password" placeholder="Password"></div>
-      <button id="loginBtn" class="primary">Login</button>
-      <button id="showSignup" class="linkbtn">নতুন account তৈরি করুন</button>
-      <button id="forgotBtn" class="linkbtn">Password ভুলে গেছেন?</button>
+<div id="authView" class="auth-wrap">
+  <div class="auth-card card">
+    <h1>My Social App</h1>
+    <p style="color:var(--muted);margin-top:6px">Connect • Share • Create</p>
+    <div class="auth-tabs">
+      <button id="loginTab" class="active">লগইন</button>
+      <button id="signupTab">সাইন আপ</button>
     </div>
-
-    <div id="signupForm" class="hidden">
-      <div class="field"><label>Name</label><input id="signupName" class="input" placeholder="আপনার নাম"></div>
-      <div class="field"><label>Email</label><input id="signupEmail" class="input" type="email" autocomplete="email" placeholder="আপনার email"></div>
-      <div class="field"><label>Password</label><input id="signupPassword" class="input" type="password" autocomplete="new-password" placeholder="কমপক্ষে ৬ অক্ষর"></div>
-      <button id="signupBtn" class="primary">Create account</button>
-      <button id="showLogin" class="linkbtn">আগের Login-এ ফিরুন</button>
-    </div>
+    <div id="authStatus" class="status">Supabase সংযোগ পরীক্ষা করা হচ্ছে…</div>
+    <form id="loginForm">
+      <div class="field"><label>ইমেইল</label><input id="loginEmail" type="email" required autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label>পাসওয়ার্ড</label><input id="loginPassword" type="password" required autocomplete="current-password" minlength="6" placeholder="••••••••"></div>
+      <button class="btn" style="width:100%" type="submit">লগইন</button>
+      <button id="forgotBtn" class="btn secondary" style="width:100%;margin-top:9px" type="button">পাসওয়ার্ড ভুলে গেছেন?</button>
+    </form>
+    <form id="signupForm" class="hidden">
+      <div class="field"><label>নাম</label><input id="signupName" required maxlength="70" placeholder="আপনার নাম"></div>
+      <div class="field"><label>ইমেইল</label><input id="signupEmail" type="email" required autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label>পাসওয়ার্ড</label><input id="signupPassword" type="password" required minlength="6" autocomplete="new-password" placeholder="কমপক্ষে ৬ অক্ষর"></div>
+      <button class="btn" style="width:100%" type="submit">অ্যাকাউন্ট তৈরি করুন</button>
+    </form>
   </div>
 </div>
 
-<div id="app" class="app hidden">
-  <header class="topbar">
-    <div class="brand"><span>My Social</span></div>
-    <div class="top-actions">
-      <button class="iconbtn" onclick="openSearch()">⌕</button>
-      <button class="iconbtn" onclick="showPage('notifications')">♡</button>
-      <button class="iconbtn" onclick="showPage('settings')">☰</button>
-    </div>
+<div id="appView" class="app-shell hidden">
+  <header class="topbar glass">
+    <div class="brand">My Social App</div>
+    <div class="top-search"><span>🔎</span><input id="globalSearch" placeholder="Search people, posts, reels…"></div>
+    <button class="iconbtn" data-route="messages" title="Messenger">💬</button>
+    <button class="iconbtn" data-route="notifications" title="Notifications">🔔</button>
+    <button id="themeBtn" class="iconbtn" title="Dark mode">🌙</button>
+    <img id="topAvatar" class="avatar" alt="profile">
   </header>
 
-  <main id="content" class="page"></main>
+  <div class="layout">
+    <aside class="left">
+      <div class="nav-card">
+        <button class="navitem active" data-route="home"><span class="emoji">🏠</span> Home</button>
+        <button class="navitem" data-route="reels"><span class="emoji">🎬</span> Reels</button>
+        <button class="navitem" data-route="friends"><span class="emoji">👥</span> Friends & Follow</button>
+        <button class="navitem" data-route="messages"><span class="emoji">💬</span> Messenger</button>
+        <button class="navitem" data-route="notifications"><span class="emoji">🔔</span> Notifications</button>
+        <button class="navitem" data-route="profile"><span class="emoji">👤</span> Profile</button>
+        <button class="navitem" data-route="pages"><span class="emoji">📣</span> Pages</button>
+        <button class="navitem" data-route="groups"><span class="emoji">👨‍👩‍👧‍👦</span> Groups</button>
+        <button class="navitem" data-route="marketplace"><span class="emoji">🛍️</span> Marketplace</button>
+        <button class="navitem" data-route="events"><span class="emoji">📅</span> Events</button>
+        <button class="navitem" data-route="saved"><span class="emoji">🔖</span> Saved</button>
+        <button class="navitem" data-route="monetization"><span class="emoji">💰</span> Monetization</button>
+        <button class="navitem" data-route="settings"><span class="emoji">⚙️</span> Settings</button>
+      </div>
+    </aside>
 
-  <nav class="bottom">
-    <button class="nav active" data-page="home" onclick="showPage('home')">⌂<small>Home</small></button>
-    <button class="nav" data-page="reels" onclick="showPage('reels')">▶<small>Reels</small></button>
-    <button class="nav" onclick="openUpload()">＋<small>Create</small></button>
-    <button class="nav" data-page="search" onclick="openSearch()">⌕<small>Search</small></button>
-    <button class="nav" data-page="profile" onclick="showPage('profile')">◉<small>Profile</small></button>
+    <main class="main">
+      <section id="homeSection" class="section active">
+        <div id="stories" class="stories"></div>
+        <div class="composer card">
+          <div class="row">
+            <img id="composerAvatar" class="avatar" alt="">
+            <button id="openComposer" class="composer-open">কি ভাবছেন?</button>
+          </div>
+          <div class="quick-actions">
+            <button id="quickLive">🔴 Live video</button>
+            <button id="quickPhoto">🖼️ Photo/video</button>
+            <button id="quickFeeling">😊 Feeling/activity</button>
+          </div>
+        </div>
+        <div id="feed"><div class="skeleton"></div><div class="skeleton"></div></div>
+      </section>
+
+      <section id="reelsSection" class="section">
+        <div class="row" style="justify-content:space-between;margin-bottom:10px">
+          <h1 class="page-title" style="margin:0">Reels</h1>
+          <button id="openReelComposer" class="btn">＋ Reel</button>
+        </div>
+        <div id="reelsView" class="reels-view"></div>
+      </section>
+
+      <section id="friendsSection" class="section"><h1 class="page-title">Friends & Follow</h1><div id="friendsGrid" class="grid2"></div></section>
+      <section id="messagesSection" class="section">
+        <h1 class="page-title">Messenger</h1>
+        <div class="card chat-layout">
+          <div class="chat-list"><div class="side-title">Chats</div><div id="chatContacts"></div></div>
+          <div class="chat-room">
+            <div id="chatMessages" class="chat-messages"><div class="empty">একটি কথোপকথন নির্বাচন করুন</div></div>
+            <form id="chatForm" class="chat-send"><input id="chatInput" placeholder="Message…"><button class="btn">➤</button></form>
+          </div>
+        </div>
+      </section>
+      <section id="notificationsSection" class="section"><h1 class="page-title">Notifications</h1><div id="notificationsList" class="card"></div></section>
+      <section id="profileSection" class="section">
+        <div class="card" style="overflow:hidden">
+          <div class="profile-cover" id="profileCover"></div>
+          <div class="profile-info">
+            <img id="profileAvatar" class="profile-avatar" alt="">
+            <h2 id="profileName">User</h2>
+            <div id="profileBio" style="color:var(--muted)">Welcome to My Social App</div>
+            <div style="margin-top:10px"><span class="badge">Creator</span></div>
+            <div class="row" style="margin-top:14px;flex-wrap:wrap">
+              <button id="editProfileBtn" class="btn">Edit profile</button>
+              <button class="btn secondary" data-route="friends">Friends</button>
+              <button class="btn secondary" data-route="saved">Saved</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:14px"></div>
+        <div id="profilePosts"></div>
+      </section>
+
+      <section id="pagesSection" class="section"><h1 class="page-title">Pages</h1><div class="grid2" id="pagesGrid"></div></section>
+      <section id="groupsSection" class="section"><h1 class="page-title">Groups</h1><div class="grid2" id="groupsGrid"></div></section>
+      <section id="marketplaceSection" class="section"><h1 class="page-title">Marketplace</h1><div class="grid2" id="marketGrid"></div></section>
+      <section id="eventsSection" class="section"><h1 class="page-title">Events</h1><div class="grid2" id="eventsGrid"></div></section>
+      <section id="savedSection" class="section"><h1 class="page-title">Saved</h1><div id="savedList" class="card empty">Saved posts এখানে দেখা যাবে।</div></section>
+      <section id="monetizationSection" class="section">
+        <h1 class="page-title">Creator Monetization</h1>
+        <div class="grid2">
+          <div class="card feature-card"><h3>Estimated earnings</h3><div id="earningsAmount" style="font-size:32px;font-weight:950">$0.00</div><p>Creator earnings table থাকলে এখানে ডেটা আসবে।</p></div>
+          <div class="card feature-card"><h3>Monetization status</h3><div class="badge">Dashboard</div><p>Eligibility, creator settings এবং payout management.</p><button id="refreshEarnings" class="btn secondary">Refresh</button></div>
+          <div class="card feature-card"><h3>bKash Withdrawal</h3><p>নিজস্ব backend/Edge Function ছাড়া client-side থেকে payout পাঠানো নিরাপদ নয়।</p><button id="withdrawBtn" class="btn">Request withdrawal</button></div>
+          <div class="card feature-card"><h3>Creator tools</h3><p>Performance, views, reactions, audience and reel metrics.</p><button class="btn secondary" data-route="profile">Open creator profile</button></div>
+        </div>
+      </section>
+      <section id="settingsSection" class="section">
+        <h1 class="page-title">Settings & Privacy</h1>
+        <div class="card" style="padding:18px">
+          <div class="field"><label>Display name</label><input id="settingsName"></div>
+          <div class="field"><label>Bio</label><textarea id="settingsBio" rows="3"></textarea></div>
+          <div class="row" style="flex-wrap:wrap"><button id="saveSettings" class="btn">Save profile</button><button id="logoutBtn" class="btn secondary">Log out</button></div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+          <h3>Privacy & Safety</h3>
+          <div class="grid2">
+            <div class="feature-card" style="padding:0"><h3>Blocked users</h3><p>Manage users you have blocked.</p><button id="blockedBtn" class="btn secondary">View blocked users</button></div>
+            <div class="feature-card" style="padding:0"><h3>Download data</h3><p>Export a local JSON copy of your visible profile data.</p><button id="downloadDataBtn" class="btn secondary">Download my data</button></div>
+            <div class="feature-card" style="padding:0"><h3>Deactivate account</h3><p>Uses account_status table when available.</p><button id="deactivateBtn" class="btn danger">Deactivate</button></div>
+            <div class="feature-card" style="padding:0"><h3>Security</h3><p>Change password through Supabase Auth.</p><button id="changePasswordBtn" class="btn secondary">Change password</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="searchSection" class="section"><h1 class="page-title">Search</h1><div id="searchResults"></div></section>
+    </main>
+
+    <aside class="right">
+      <div class="card"><div class="side-title">Sponsored</div><p style="color:var(--muted);font-size:13px">Ad placements can be connected to your own ad/boost backend.</p></div>
+      <div class="card"><div class="side-title">Contacts</div><div id="contactsList"></div></div>
+      <div class="card"><div class="side-title">Shortcuts</div><button class="navitem" data-route="groups">👨‍👩‍👧‍👦 My Groups</button><button class="navitem" data-route="pages">📣 My Pages</button></div>
+    </aside>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="active" data-route="home">🏠</button>
+    <button data-route="reels">🎬</button>
+    <button data-route="friends">👥</button>
+    <button data-route="notifications">🔔</button>
+    <button data-route="profile">👤</button>
   </nav>
 </div>
 
-<div id="modal" class="modal hidden">
-  <div class="sheet" id="sheet"></div>
+<div id="composerModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><strong>Create post</strong><button class="iconbtn" data-close="composerModal">✕</button></div>
+    <form id="postForm" class="modal-body">
+      <div class="row"><img id="modalAvatar" class="avatar"><div><strong id="modalName">User</strong><div><select id="postPrivacy" style="margin-top:4px"><option value="public">🌐 Public</option><option value="friends">👥 Friends</option><option value="only_me">🔒 Only me</option></select></div></div></div>
+      <div class="field"><textarea id="postText" rows="5" maxlength="5000" placeholder="কি ভাবছেন?"></textarea></div>
+      <div class="row" style="flex-wrap:wrap">
+        <label class="btn secondary">🖼️ Photo/video<input id="postFile" type="file" accept="image/*,video/*" hidden></label>
+        <button id="addFeelingBtn" class="btn secondary" type="button">😊 Feeling</button>
+        <button id="addLocationBtn" class="btn secondary" type="button">📍 Location</button>
+        <button id="addPollBtn" class="btn secondary" type="button">📊 Poll</button>
+      </div>
+      <div id="mediaPreview" class="media-preview hidden"></div>
+      <div class="progress"><div id="uploadProgress"></div></div>
+      <button id="publishBtn" class="btn" style="width:100%;margin-top:12px" type="submit">Post</button>
+    </form>
+  </div>
 </div>
+
+<div id="reelModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><strong>Create reel</strong><button class="iconbtn" data-close="reelModal">✕</button></div>
+    <form id="reelForm" class="modal-body">
+      <div class="field"><label>Video</label><input id="reelFile" type="file" accept="video/*" required></div>
+      <div id="reelPreview" class="media-preview hidden"></div>
+      <div class="grid2">
+        <div class="field"><label>Trim start (seconds)</label><input id="trimStart" type="number" min="0" value="0"></div>
+        <div class="field"><label>Trim end (seconds)</label><input id="trimEnd" type="number" min="0" placeholder="optional"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Brightness</label><input id="bright" type="range" min="50" max="150" value="100"></div>
+        <div class="field"><label>Contrast</label><input id="contrast" type="range" min="50" max="150" value="100"></div>
+        <div class="field"><label>Saturation</label><input id="saturate" type="range" min="0" max="200" value="100"></div>
+        <div class="field"><label>Speed</label><select id="speed"><option>.5</option><option>.75</option><option selected>1</option><option>1.25</option><option>1.5</option><option>2</option></select></div>
+      </div>
+      <div class="field"><label>Effect</label><select id="reelEffect"><option value="none">Normal</option><option value="grayscale(1)">B&W</option><option value="sepia(1)">Sepia</option><option value="contrast(1.3)">High Contrast</option></select></div>
+      <div class="field"><label>Caption</label><textarea id="reelCaption" rows="3" maxlength="2200"></textarea></div>
+      <div class="field"><label>Audio name</label><input id="audioName" maxlength="120" placeholder="Original audio"></div>
+      <div class="progress"><div id="reelProgress"></div></div>
+      <button class="btn" style="width:100%">Publish reel</button>
+    </form>
+  </div>
+</div>
+
+<div id="profileModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><strong>Edit profile</strong><button class="iconbtn" data-close="profileModal">✕</button></div>
+    <form id="profileForm" class="modal-body">
+      <div class="field"><label>Name</label><input id="profileEditName" maxlength="70"></div>
+      <div class="field"><label>Bio</label><textarea id="profileEditBio" rows="3" maxlength="180"></textarea></div>
+      <div class="field"><label>Profile photo</label><input id="avatarFile" type="file" accept="image/*"></div>
+      <button class="btn" style="width:100%">Save profile</button>
+    </form>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 <script>
-const SUPABASE_URL = "https://skereuaizdczbvjplisi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
+(() => {
+  "use strict";
 
-if(!window.supabase){
-  document.body.innerHTML='<div style="padding:30px;color:white;background:#111;font-family:system-ui">Supabase library load হয়নি। Internet connection check করুন।</div>';
-  throw new Error('Supabase JS failed to load');
-}
+  // Your current public client configuration.
+  // Publishable/anon keys are intended for browser use; never place a service_role key here.
+  const SUPABASE_URL = "https://skereuaizdczbvjplisi.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_3R2otJA1zIlsMsTYxe1ocw_NAPY5O9x";
 
-const {createClient} = window.supabase;
-const sb = createClient(SUPABASE_URL,SUPABASE_KEY,{
-  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-});
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const state = {
+    sb:null, session:null, user:null, profile:null, posts:[], profiles:new Map(),
+    activeChat:null, saved:new Set(JSON.parse(localStorage.getItem("msa_saved") || "[]"))
+  };
+  const defaultAvatar = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#0866ff"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><circle cx="100" cy="78" r="38" fill="white" opacity=".9"/><path d="M35 190c5-45 30-68 65-68s60 23 65 68" fill="white" opacity=".9"/></svg>`);
 
-let user=null, profile=null, currentPage='home', postsCache=[], reelsCache=[];
+  function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("show"),2600); }
+  function esc(v=""){ return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+  function fmtDate(v){ if(!v) return "এখন"; try{return new Intl.DateTimeFormat("bn-BD",{dateStyle:"medium",timeStyle:"short"}).format(new Date(v));}catch{return String(v)}}
+  function uuid(){ return crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(16).slice(2); }
+  function avatarOf(p){ return p?.profile_photo || p?.avatar_url || defaultAvatar; }
+  function nameOf(p){ return p?.name || p?.full_name || state.user?.email?.split("@")[0] || "User"; }
+  function setStatus(text,type=""){ const el=$("#authStatus"); el.textContent=text; el.className="status "+type; }
 
-const $=id=>document.getElementById(id);
-function toast(msg){
-  const t=$('toast');t.textContent=msg;t.style.display='block';
-  clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display='none',2600);
-}
-function esc(v=''){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function timeAgo(d){
-  const s=Math.max(1,Math.floor((Date.now()-new Date(d).getTime())/1000));
-  if(s<60)return s+'s'; if(s<3600)return Math.floor(s/60)+'m';
-  if(s<86400)return Math.floor(s/3600)+'h'; return Math.floor(s/86400)+'d';
-}
-function avatar(url,name='U'){
-  return url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=20202a&color=fff`;
-}
-function setAuthStatus(msg,ok=false,err=false){
-  const x=$('authStatus');x.textContent=msg;x.className='status'+(ok?' ok':'')+(err?' err':'');
-}
-
-async function testConnection(){
-  try{
-    const {error}=await sb.from('profiles').select('id').limit(1);
-    if(error){
-      setAuthStatus('Supabase connected, কিন্তু profiles query: '+error.message,false,true);
-    }else{
-      setAuthStatus('Supabase connection প্রস্তুত ✓',true,false);
+  async function init(){
+    const waitForSupabase = async (ms=8000) => {
+      const started=Date.now();
+      while(!window.supabase?.createClient && Date.now()-started<ms){
+        await new Promise(r=>setTimeout(r,100));
+      }
+      return !!window.supabase?.createClient;
+    };
+    try{
+      const ready=await waitForSupabase();
+      if(!ready) throw new Error("Supabase library load হয়নি। Internet/CDN connection পরীক্ষা করুন।");
+      state.sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+        auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}
+      });
+      setStatus("Supabase সংযোগ পরীক্ষা হচ্ছে…");
+      const {data:{session},error}=await state.sb.auth.getSession();
+      if(error) throw error;
+      setStatus(session?"Supabase সংযোগ ঠিক আছে।":"Supabase প্রস্তুত — Login করুন।","ok");
+      if(session) await enterApp(session);
+      state.sb.auth.onAuthStateChange((event,session)=>{
+        if(event==="SIGNED_OUT"){ leaveApp(); return; }
+        if(session && (!state.session || state.session.access_token!==session.access_token)){
+          setTimeout(()=>enterApp(session),0);
+        }
+      });
+    }catch(e){
+      console.error("Supabase init",e);
+      setStatus("Supabase সংযোগ সমস্যা: "+(e?.message||e),"err");
+      toast("Supabase connection ঠিক হয়নি — Refresh করে আবার চেষ্টা করুন।");
     }
-  }catch(e){
-    setAuthStatus('Supabase connection ব্যর্থ: '+e.message,false,true);
-  }
-}
-
-$('showSignup').onclick=()=>{
-  $('loginForm').classList.add('hidden');
-  $('signupForm').classList.remove('hidden');
-};
-$('showLogin').onclick=()=>{
-  $('signupForm').classList.add('hidden');
-  $('loginForm').classList.remove('hidden');
-};
-
-$('loginBtn').onclick=async()=>{
-  const email=$('loginEmail').value.trim();
-  const password=$('loginPassword').value;
-  if(!email||!password)return toast('Email এবং password দিন');
-
-  $('loginBtn').disabled=true;
-  $('loginBtn').textContent='Login হচ্ছে...';
-
-  const {data,error}=await sb.auth.signInWithPassword({email,password});
-
-  $('loginBtn').disabled=false;
-  $('loginBtn').textContent='Login';
-
-  if(error){
-    setAuthStatus(error.message,false,true);
-    return toast(error.message);
-  }
-  await startApp(data.user);
-};
-
-$('signupBtn').onclick=async()=>{
-  const name=$('signupName').value.trim();
-  const email=$('signupEmail').value.trim();
-  const password=$('signupPassword').value;
-  if(!name||!email||password.length<6)return toast('Name, valid email এবং ৬+ অক্ষরের password দিন');
-
-  $('signupBtn').disabled=true;
-  $('signupBtn').textContent='Account তৈরি হচ্ছে...';
-
-  const {data,error}=await sb.auth.signUp({
-    email,password,
-    options:{data:{name}}
-  });
-
-  $('signupBtn').disabled=false;
-  $('signupBtn').textContent='Create account';
-
-  if(error)return toast(error.message);
-  if(data.session) await startApp(data.user);
-  else toast('Account তৈরি হয়েছে। Email confirmation চালু থাকলে email verify করে Login করুন।');
-};
-
-$('forgotBtn').onclick=async()=>{
-  const email=$('loginEmail').value.trim();
-  if(!email)return toast('আগে email লিখুন');
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
-  if(error)return toast(error.message);
-  toast('Password reset email পাঠানো হয়েছে');
-};
-
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user && !$('app').classList.contains('hidden')) return;
-  if(session?.user) await startApp(session.user);
-});
-
-async function startApp(u){
-  user=u;
-  $('authScreen').classList.add('hidden');
-  $('app').classList.remove('hidden');
-  await ensureProfile();
-  await showPage('home');
-}
-
-async function ensureProfile(){
-  let {data,error}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
-
-  if(!data && !error){
-    const name=user.user_metadata?.name || user.email?.split('@')[0] || 'User';
-    const ins=await sb.from('profiles').insert({id:user.id,name,bio:''}).select().single();
-    if(!ins.error)data=ins.data;
   }
 
-  profile=data||{
-    id:user.id,
-    name:user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-    bio:''
-  };
-}
-
-function navActive(page){
-  document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===page));
-}
-
-async function showPage(page){
-  currentPage=page;
-  navActive(page);
-  const c=$('content');
-  c.innerHTML='<div class="empty">লোড হচ্ছে...</div>';
-
-  try{
-    if(page==='home')return renderHome();
-    if(page==='reels')return renderReels();
-    if(page==='profile')return renderProfile();
-    if(page==='settings')return renderSettings();
-    if(page==='notifications')return renderNotifications();
-    if(page==='search')return renderSearch();
-  }catch(e){
-    c.innerHTML=`<div class="empty">লোড করতে সমস্যা: ${esc(e.message)}</div>`;
+  async function enterApp(session){
+    state.session=session; state.user=session.user;
+    $("#authView").classList.add("hidden"); $("#appView").classList.remove("hidden");
+    await ensureProfile();
+    paintProfile();
+    route("home");
+    await Promise.allSettled([loadPosts(),loadStories(),loadProfiles(),loadNotifications(),loadReels(),loadEarnings()]);
   }
-}
-
-async function renderHome(){
-  const {data,error}=await sb.from('posts')
-    .select('id,user_id,text,image_url,created_at,privacy,feeling,location,view_count')
-    .order('created_at',{ascending:false})
-    .limit(40);
-
-  if(error){
-    $('content').innerHTML=`<div class="notice">Posts load হয়নি।<br>${esc(error.message)}</div>`;
-    return;
+  function leaveApp(){
+    state.session=null;state.user=null;state.profile=null;state.posts=[];
+    $("#appView").classList.add("hidden"); $("#authView").classList.remove("hidden");
+    setStatus("লগআউট সম্পন্ন।","ok");
   }
 
-  postsCache=data||[];
+  async function ensureProfile(){
+    const uid=state.user.id;
+    let profile=null;
+    try{
+      const {data,error}=await state.sb.from("profiles").select("*").eq("id",uid).maybeSingle();
+      if(!error && data) profile=data;
+    }catch{}
+    if(!profile){
+      try{
+        const {data,error}=await state.sb.from("profiles").select("*").eq("user_id",uid).maybeSingle();
+        if(!error && data) profile=data;
+      }catch{}
+    }
+    if(!profile){
+      const candidate={id:uid,name:state.user.user_metadata?.name || state.user.email?.split("@")[0] || "User",bio:"",profile_photo:null,last_seen:new Date().toISOString(),role:"user"};
+      try{
+        const {data,error}=await state.sb.from("profiles").insert(candidate).select().single();
+        if(!error) profile=data;
+      }catch{}
+    }
+    state.profile=profile || {id:uid,user_id:uid,name:state.user.user_metadata?.name || state.user.email?.split("@")[0] || "User",bio:""};
+    state.profiles.set(uid,state.profile);
+  }
 
-  $('content').innerHTML=`
-    <div class="story-row">
-      <div class="story" onclick="openUpload()">
-        <div class="story-img story-add">＋</div>
-        <div>আপনার story</div>
+  function paintProfile(){
+    const p=state.profile||{};
+    const av=avatarOf(p),nm=nameOf(p),bio=p.bio||"Welcome to My Social App";
+    ["topAvatar","composerAvatar","modalAvatar","profileAvatar"].forEach(id=>{const el=$("#"+id);if(el)el.src=av});
+    $("#modalName").textContent=nm; $("#profileName").textContent=nm; $("#profileBio").textContent=bio;
+    $("#settingsName").value=nm; $("#settingsBio").value=p.bio||"";
+    $("#profileEditName").value=nm; $("#profileEditBio").value=p.bio||"";
+  }
+
+  function route(name){
+    $$(".section").forEach(x=>x.classList.remove("active"));
+    const sec=$("#"+name+"Section"); if(sec) sec.classList.add("active");
+    $$("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===name));
+    if(name==="profile") renderProfilePosts();
+    if(name==="friends") renderFriends();
+    if(name==="messages") renderChats();
+    if(name==="notifications") loadNotifications();
+    if(name==="pages") renderModule("pagesGrid",[
+      ["Create a Page","Build your public brand, creator or business presence.","Create page"],
+      ["Page inbox","Manage messages and comments in one place.","Open inbox"],
+      ["Professional dashboard","Insights, reach and creator tools.","View dashboard"],
+      ["Boost & Ads","Connect your own ads backend for promotions.","Ad tools"]
+    ]);
+    if(name==="groups") renderModule("groupsGrid",[
+      ["Create group","Public or private community space.","Create group"],
+      ["Discover groups","Find communities by interests.","Discover"],
+      ["Your groups","Manage memberships and group posts.","Open groups"],
+      ["Group admin tools","Rules, moderation and member requests.","Admin tools"]
+    ]);
+    if(name==="marketplace") renderModule("marketGrid",[
+      ["Sell item","Create a marketplace listing with photo and price.","Create listing"],
+      ["Browse nearby","Location-based listings require a listings backend.","Browse"],
+      ["Saved listings","Keep items for later.","Open saved"],
+      ["Seller dashboard","Manage inventory and messages.","Dashboard"]
+    ]);
+    if(name==="events") renderModule("eventsGrid",[
+      ["Create event","Set date, time, location and audience.","Create event"],
+      ["Upcoming","Events you are interested in.","View"],
+      ["Birthdays","Friend birthdays and reminders.","View"],
+      ["Invitations","Event invites from people and groups.","Open"]
+    ]);
+  }
+
+  function renderModule(id,items){
+    $("#"+id).innerHTML=items.map(x=>`<div class="card feature-card"><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p><button class="btn secondary" onclick="window.__demo('${esc(x[0])}')">${esc(x[2])}</button></div>`).join("");
+  }
+  window.__demo=(label)=>toast(label+" UI ready — server table/API যুক্ত করলে ডেটা স্থায়ী হবে।");
+
+  async function loadProfiles(){
+    try{
+      const {data,error}=await state.sb.from("profiles").select("*").limit(50);
+      if(error) throw error;
+      (data||[]).forEach(p=>state.profiles.set(p.id||p.user_id,p));
+    }catch(e){ console.warn("profiles",e.message); }
+    renderContacts();
+    renderFriends();
+  }
+  function renderContacts(){
+    const people=[...state.profiles.values()].filter(p=>(p.id||p.user_id)!==state.user?.id).slice(0,8);
+    const html=people.length?people.map(p=>`<div class="contact"><img class="avatar" src="${avatarOf(p)}"><span>${esc(nameOf(p))}</span><span class="dot"></span></div>`).join(""):`<div style="color:var(--muted);font-size:13px">No contacts yet</div>`;
+    $("#contactsList").innerHTML=html; $("#chatContacts").innerHTML=html;
+  }
+
+  async function loadPosts(){
+    const feed=$("#feed"); feed.innerHTML='<div class="skeleton"></div><div class="skeleton"></div>';
+    try{
+      const {data,error}=await state.sb.from("posts").select("*").order("created_at",{ascending:false}).limit(50);
+      if(error) throw error;
+      state.posts=data||[];
+      await preloadPostMedia();
+      renderFeed();
+    }catch(e){
+      console.warn(e); feed.innerHTML=`<div class="card empty">Post feed load করা যায়নি।<br><small>${esc(e.message)}</small></div>`;
+    }
+  }
+  async function preloadPostMedia(){
+    if(!state.posts.length) return;
+    const ids=state.posts.map(p=>p.id);
+    try{
+      const {data,error}=await state.sb.from("post_media").select("*").in("post_id",ids).order("sort_order",{ascending:true});
+      if(error) return;
+      const map={}; (data||[]).forEach(m=>(map[m.post_id]??=[]).push(m));
+      state.posts.forEach(p=>p._media=map[p.id]||[]);
+    }catch{}
+  }
+  function mediaUrlForPost(p){
+    const m=p._media?.[0]; return m?.media_url || p.image_url || p.video_url || "";
+  }
+  function mediaTypeForPost(p){
+    const m=p._media?.[0]; if(m?.media_type) return m.media_type;
+    const u=mediaUrlForPost(p).toLowerCase(); return /\.(mp4|webm|mov|m4v)(\?|$)/.test(u)?"video":"image";
+  }
+  function renderFeed(){
+    const feed=$("#feed");
+    if(!state.posts.length){feed.innerHTML='<div class="card empty">এখনও কোনো পোস্ট নেই। প্রথম পোস্টটি আপনি করুন ✨</div>';return}
+    feed.innerHTML=state.posts.map(postHTML).join("");
+  }
+  function postHTML(p){
+    const prof=state.profiles.get(p.user_id)||((p.user_id===state.user?.id)?state.profile:null)||{};
+    const media=mediaUrlForPost(p), type=mediaTypeForPost(p), saved=state.saved.has(String(p.id));
+    const m=media?(type==="video"?`<video controls playsinline preload="metadata" src="${esc(media)}"></video>`:`<img loading="lazy" src="${esc(media)}" alt="">`):"";
+    return `<article class="post card" data-post="${esc(p.id)}">
+      <div class="post-head"><img class="avatar" src="${avatarOf(prof)}"><div class="post-meta"><div class="post-name">${esc(nameOf(prof))}</div><div class="post-time">${fmtDate(p.created_at)} · ${p.privacy==="friends"?"👥":"🌐"}</div></div><button class="iconbtn postMenu" data-id="${esc(p.id)}">•••</button></div>
+      ${p.text?`<div class="post-text">${esc(p.text)}</div>`:""}<div class="post-media">${m}</div>
+      <div class="post-stats"><span>👍 ${Number(p.like_count||p.reactions_count||0)}</span><span>${Number(p.comment_count||0)} comments · ${Number(p.view_count||0)} views</span></div>
+      <div class="post-actions">
+        <button class="likeBtn" data-id="${esc(p.id)}">👍 Like</button>
+        <button class="commentFocus" data-id="${esc(p.id)}">💬 Comment</button>
+        <button class="shareBtn" data-id="${esc(p.id)}">↗ Share</button>
       </div>
-    </div>
-
-    <div class="composer card" onclick="openUpload()">
-      <div class="composer-row">
-        <img class="composer-avatar" src="${avatar(profile?.profile_photo,profile?.name)}">
-        <div class="composer-input">What's on your mind?</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom:12px">
-      <button class="secondary" onclick="openReelUpload()">＋ Create Reel</button>
-    </div>
-
-    <div id="feed">
-      ${postsCache.length?postsCache.map(postHTML).join(''):'<div class="empty">এখনও কোনো post নেই। প্রথম post দিন!</div>'}
-    </div>`;
-}
-
-function postHTML(p){
-  const media=p.image_url
-    ? `<img class="post-media" src="${esc(p.image_url)}" loading="lazy" onclick="viewMedia('${esc(p.image_url)}')">`
-    : '';
-
-  return `<article class="post card" id="post-${p.id}">
-    <div class="post-head">
-      <img src="${avatar(profile?.profile_photo,profile?.name)}">
-      <div>
-        <div class="post-user">${esc(p.user_id===user.id?(profile?.name||'You'):'User')}</div>
-        <div class="post-time">${timeAgo(p.created_at)}${p.location?' · '+esc(p.location):''}</div>
-      </div>
-      <button class="post-menu" onclick="deletePost('${p.id}')">⋯</button>
-    </div>
-
-    ${p.text?`<div class="post-text">${esc(p.text)}</div>`:''}
-    ${media}
-
-    <div class="post-actions">
-      <button class="action" onclick="reactPost('${p.id}',this)">♡ Like</button>
-      <button class="action" onclick="openComments('${p.id}')">💬 Comment</button>
-      <button class="action" onclick="sharePost('${p.id}')">↗ Share</button>
-      <span class="spacer"></span>
-      <button class="action" onclick="toast('Saved')">🔖</button>
-    </div>
-
-    <div class="meta">${p.feeling?esc(p.feeling)+' · ':''}${p.view_count||0} views</div>
-  </article>`;
-}
-
-async function reactPost(id,btn){
-  const {error}=await sb.from('post_reactions').insert({
-    post_id:id,
-    user_id:user.id,
-    reaction:'like'
-  });
-
-  if(error && !String(error.message).toLowerCase().includes('duplicate')){
-    return toast(error.message);
+      <div class="comments"><div class="comment-list" id="comments-${esc(p.id)}"></div>
+      <form class="comment-form" data-post="${esc(p.id)}"><input placeholder="Write a comment…"><button>Send</button></form></div>
+      <div style="padding:0 14px 12px;text-align:right"><button class="btn secondary saveBtn" data-id="${esc(p.id)}">${saved?"🔖 Saved":"🔖 Save"}</button></div>
+    </article>`;
+  }
+  function renderProfilePosts(){
+    const mine=state.posts.filter(p=>p.user_id===state.user?.id);
+    $("#profilePosts").innerHTML=mine.length?mine.map(postHTML).join(""):'<div class="card empty">আপনার কোনো পোস্ট নেই।</div>';
   }
 
-  btn.classList.add('active');
-  btn.textContent='♥ Liked';
-}
-
-async function deletePost(id){
-  const p=postsCache.find(x=>String(x.id)===String(id));
-  if(!p||p.user_id!==user.id)return toast('নিজের post হলে delete করতে পারবেন');
-  if(!confirm('এই post delete করবেন?'))return;
-
-  const {error}=await sb.from('posts').delete().eq('id',id).eq('user_id',user.id);
-  if(error)return toast(error.message);
-
-  toast('Post deleted');
-  renderHome();
-}
-
-function sharePost(id){
-  const url=location.href+'#post-'+id;
-  if(navigator.share){
-    navigator.share({title:'My Social App',url}).catch(()=>{});
-  }else{
-    navigator.clipboard?.writeText(url).then(()=>toast('Link copied'));
-  }
-}
-
-function viewMedia(url){
-  openSheet(`<img class="preview" src="${esc(url)}"><button class="primary" onclick="closeModal()">Close</button>`);
-}
-
-async function renderReels(){
-  const {data,error}=await sb.from('reels')
-    .select('*')
-    .order('created_at',{ascending:false})
-    .limit(25);
-
-  reelsCache=data||[];
-
-  if(error){
-    $('content').innerHTML=`<div class="notice">Reels load হয়নি: ${esc(error.message)}</div>`;
-    return;
-  }
-
-  $('content').innerHTML=reelsCache.length
-    ? reelsCache.map(reelHTML).join('')
-    : `<div class="empty">কোনো Reel নেই।<br><br><button class="secondary" onclick="openReelUpload()">＋ প্রথম Reel upload করুন</button></div>`;
-
-  document.querySelectorAll('.reel video').forEach(v=>{
-    v.addEventListener('click',()=>{
-      if(v.paused)v.play().catch(()=>{});
-      else v.pause();
-    });
-
-    const io=new IntersectionObserver(es=>es.forEach(e=>{
-      if(e.isIntersecting)v.play().catch(()=>{});
-      else v.pause();
-    }),{threshold:.65});
-
-    io.observe(v);
-  });
-}
-
-function reelHTML(r){
-  return `<section class="reel">
-    <video src="${esc(r.video_url)}" playsinline loop preload="metadata"></video>
-    <div class="reel-grad"></div>
-
-    <div class="reel-info">
-      <b>@${esc(r.user_id===user.id?(profile?.name||'you'):'creator')}</b>
-      <div>${esc(r.caption||'')}</div>
-      <small>${r.views||0} views · ${timeAgo(r.created_at)}</small>
-    </div>
-
-    <div class="reel-actions">
-      <button class="reel-action" onclick="likeReel('${r.id}',this)">♡</button>
-      <button class="reel-action" onclick="openReelComments('${r.id}')">💬</button>
-      <button class="reel-action" onclick="shareReel('${r.id}')">↗</button>
-      <button class="reel-action" onclick="toggleMute(this)">🔊</button>
-    </div>
-  </section>`;
-}
-
-function toggleMute(btn){
-  const v=btn.closest('.reel').querySelector('video');
-  v.muted=!v.muted;
-  btn.textContent=v.muted?'🔇':'🔊';
-}
-
-async function likeReel(id,btn){
-  const {error}=await sb.from('reel_reactions').insert({
-    reel_id:id,
-    user_id:user.id,
-    reaction:'like'
-  });
-
-  if(error && !String(error.message).toLowerCase().includes('duplicate')){
-    return toast(error.message);
-  }
-
-  btn.classList.add('liked');
-  btn.textContent='♥';
-}
-
-function shareReel(id){
-  const u=location.href+'#reel-'+id;
-  navigator.clipboard?.writeText(u);
-  toast('Reel link copied');
-}
-
-async function renderProfile(){
-  const {data:p}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
-  profile=p||profile;
-
-  const {data:ps}=await sb.from('posts')
-    .select('id,image_url,text,created_at')
-    .eq('user_id',user.id)
-    .order('created_at',{ascending:false})
-    .limit(60);
-
-  $('content').innerHTML=`
-    <section class="card profile-head">
-      <div class="profile-main">
-        <img class="avatar" src="${avatar(profile?.profile_photo,profile?.name)}">
-        <div>
-          <div class="profile-name">${esc(profile?.name||'User')}</div>
-          <div class="profile-bio">${esc(profile?.bio||'No bio yet')}</div>
-        </div>
-      </div>
-
-      <div class="stats">
-        <div class="stat"><b>${ps?.length||0}</b><span>Posts</span></div>
-        <div class="stat"><b>0</b><span>Followers</span></div>
-        <div class="stat"><b>0</b><span>Following</span></div>
-      </div>
-
-      <div class="profile-actions">
-        <button class="secondary" onclick="editProfile()">Edit profile</button>
-        <button class="secondary" onclick="openUpload()">＋ Post</button>
-      </div>
-    </section>
-
-    <div style="height:12px"></div>
-
-    <div class="grid">
-      ${(ps||[]).map(x=>
-        x.image_url
-          ? `<img src="${esc(x.image_url)}" loading="lazy" onclick="viewMedia('${esc(x.image_url)}')">`
-          : `<div style="aspect-ratio:1;background:#17171e;padding:10px;overflow:hidden">${esc(x.text||'')}</div>`
-      ).join('')}
-    </div>`;
-}
-
-async function editProfile(){
-  openSheet(`
-    <div class="sheet-head">
-      <h2>Edit profile</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="field">
-      <label>Name</label>
-      <input id="epName" class="input" value="${esc(profile?.name||'')}">
-    </div>
-
-    <div class="field">
-      <label>Bio</label>
-      <textarea id="epBio" class="textarea" rows="4">${esc(profile?.bio||'')}</textarea>
-    </div>
-
-    <div class="field">
-      <label>Profile photo URL</label>
-      <input id="epAvatar" class="input" value="${esc(profile?.profile_photo||'')}" placeholder="https://...">
-    </div>
-
-    <button class="primary" onclick="saveProfile()">Save changes</button>
-  `);
-}
-
-async function saveProfile(){
-  const values={
-    name:$('epName').value.trim(),
-    bio:$('epBio').value.trim(),
-    profile_photo:$('epAvatar').value.trim()
-  };
-
-  const {data,error}=await sb.from('profiles')
-    .update(values)
-    .eq('id',user.id)
-    .select()
-    .single();
-
-  if(error)return toast(error.message);
-
-  profile=data;
-  closeModal();
-  toast('Profile updated');
-  renderProfile();
-}
-
-async function renderSettings(){
-  $('content').innerHTML=`
-    <h2>Settings</h2>
-
-    <div class="card" style="padding:8px 14px">
-      <div class="settings-row">
-        <div>
-          <b>Account</b>
-          <div style="color:#999;font-size:12px">${esc(user.email||'')}</div>
-        </div>
-        <button class="secondary" onclick="editProfile()">Edit</button>
-      </div>
-
-      <div class="settings-row">
-        <div>
-          <b>Dark mode</b>
-          <div style="color:#999;font-size:12px">বর্তমানে dark</div>
-        </div>
-        <div class="toggle on"><i></i></div>
-      </div>
-
-      <div class="settings-row">
-        <div><b>Blocked users</b></div>
-        <button class="secondary" onclick="toast('Blocked users section')">Open</button>
-      </div>
-
-      <div class="settings-row">
-        <div><b>Security</b></div>
-        <button class="secondary" onclick="toast('Session secure')">Check</button>
-      </div>
-
-      <div class="settings-row">
-        <div><b>Sign out</b></div>
-        <button class="secondary" onclick="logout()">Logout</button>
-      </div>
-    </div>
-
-    <div class="notice">Supabase connected project: ${esc(SUPABASE_URL)}</div>`;
-}
-
-async function logout(){
-  await sb.auth.signOut();
-  location.reload();
-}
-
-async function renderNotifications(){
-  const {data,error}=await sb.from('notifications')
-    .select('*')
-    .eq('receiver_id',user.id)
-    .order('created_at',{ascending:false})
-    .limit(30);
-
-  $('content').innerHTML=
-    `<h2>Notifications</h2>`+
-    (
-      error
-        ? `<div class="notice">${esc(error.message)}</div>`
-        : (
-          data?.length
-            ? data.map(n=>`
-              <div class="card" style="padding:14px;margin:8px 0">
-                ${esc(n.text||'New notification')}
-                <div style="color:#888;font-size:11px">${timeAgo(n.created_at)}</div>
-              </div>
-            `).join('')
-            : '<div class="empty">কোনো notification নেই</div>'
-        )
-    );
-}
-
-function renderSearch(){
-  $('content').innerHTML=`
-    <div class="field">
-      <input id="searchInput" class="input" placeholder="Search people..." autofocus oninput="doSearch(this.value)">
-    </div>
-    <div id="searchResults"></div>`;
-}
-
-let searchTimer;
-
-async function doSearch(q){
-  clearTimeout(searchTimer);
-  q=q.trim();
-
-  if(!q){
-    $('searchResults').innerHTML='';
-    return;
-  }
-
-  searchTimer=setTimeout(async()=>{
-    const {data,error}=await sb.from('profiles')
-      .select('id,name,bio,profile_photo')
-      .ilike('name','%'+q+'%')
-      .limit(20);
-
-    $('searchResults').innerHTML=
-      error
-        ? `<div class="notice">${esc(error.message)}</div>`
-        : (
-          data?.length
-            ? data.map(p=>`
-              <div class="card" style="padding:12px;margin:8px 0;display:flex;align-items:center;gap:10px">
-                <img class="avatar" style="margin:0;width:46px;height:46px" src="${avatar(p.profile_photo,p.name)}">
-                <div>
-                  <b>${esc(p.name)}</b>
-                  <div style="color:#999">${esc(p.bio||'')}</div>
-                </div>
-              </div>
-            `).join('')
-            : '<div class="empty">কিছু পাওয়া যায়নি</div>'
-        );
-  },300);
-}
-
-function openSearch(){
-  showPage('search');
-}
-
-function openUpload(){
-  openSheet(`
-    <div class="sheet-head">
-      <h2>Create post</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <textarea id="upText" class="textarea" rows="5" placeholder="What's on your mind?"></textarea>
-
-    <div class="upload-zone">
-      <input id="upFile" type="file" accept="image/*" onchange="previewUpload(this)">
-      <div>ছবি নির্বাচন করুন</div>
-    </div>
-
-    <div id="upPreview"></div>
-
-    <div class="progress"><i id="upProg"></i></div>
-
-    <button class="primary" onclick="publishPost()">Publish</button>
-  `);
-}
-
-function previewUpload(inp){
-  const f=inp.files[0];
-  const p=$('upPreview');
-
-  if(!f){
-    p.innerHTML='';
-    return;
-  }
-
-  const u=URL.createObjectURL(f);
-  p.innerHTML=`<img class="preview" src="${u}">`;
-}
-
-async function publishPost(){
-  const text=$('upText').value.trim();
-  const file=$('upFile').files[0];
-
-  if(!text&&!file)return toast('Text অথবা image দিন');
-
-  $('upProg').style.width='15%';
-
-  let image_url=null;
-
-  if(file){
-    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
-    const path=`${user.id}/${Date.now()}.${ext}`;
-
-    const {error}=await sb.storage.from('post-images').upload(path,file,{
-      upsert:false,
-      contentType:file.type
-    });
-
-    if(error)return toast('Upload failed: '+error.message);
-
-    image_url=sb.storage.from('post-images').getPublicUrl(path).data.publicUrl;
-  }
-
-  $('upProg').style.width='70%';
-
-  const {error}=await sb.from('posts').insert({
-    user_id:user.id,
-    text:text||null,
-    image_url,
-    privacy:'public'
-  });
-
-  $('upProg').style.width='100%';
-
-  if(error)return toast(error.message);
-
-  closeModal();
-  toast('Post published ✓');
-  showPage('home');
-}
-
-function openReelUpload(){
-  openSheet(`
-    <div class="sheet-head">
-      <h2>Create Reel</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="upload-zone">
-      <input id="reelFile" type="file" accept="video/*" onchange="previewReel(this)">
-      <div>Vertical video নির্বাচন করুন</div>
-    </div>
-
-    <div id="reelPreview"></div>
-
-    <input id="reelCaption" class="input" placeholder="Caption" style="margin:8px 0">
-    <input id="reelAudio" class="input" placeholder="Audio name (optional)" style="margin:8px 0">
-
-    <div class="progress"><i id="reelProg"></i></div>
-
-    <button class="primary" onclick="publishReel()">Publish Reel</button>
-  `);
-}
-
-function previewReel(inp){
-  const f=inp.files[0];
-  if(f){
-    $('reelPreview').innerHTML=`<video class="preview" controls playsinline src="${URL.createObjectURL(f)}"></video>`;
-  }
-}
-
-async function publishReel(){
-  const f=$('reelFile').files[0];
-
-  if(!f)return toast('Video নির্বাচন করুন');
-
-  const ext=(f.name.split('.').pop()||'mp4').toLowerCase();
-  const path=`${user.id}/reels/${Date.now()}.${ext}`;
-
-  $('reelProg').style.width='15%';
-
-  const {error}=await sb.storage.from('post-images').upload(path,f,{
-    upsert:false,
-    contentType:f.type
-  });
-
-  if(error)return toast('Video upload failed: '+error.message);
-
-  $('reelProg').style.width='70%';
-
-  const url=sb.storage.from('post-images').getPublicUrl(path).data.publicUrl;
-
-  const {error:e}=await sb.from('reels').insert({
-    user_id:user.id,
-    video_url:url,
-    caption:$('reelCaption').value.trim(),
-    audio_name:$('reelAudio').value.trim()||null
-  });
-
-  $('reelProg').style.width='100%';
-
-  if(e)return toast(e.message);
-
-  closeModal();
-  toast('Reel published ✓');
-  showPage('reels');
-}
-
-function openSheet(html){
-  $('sheet').innerHTML=html;
-  $('modal').classList.remove('hidden');
-}
-
-function closeModal(){
-  $('modal').classList.add('hidden');
-  $('sheet').innerHTML='';
-}
-
-$('modal').addEventListener('click',e=>{
-  if(e.target.id==='modal')closeModal();
-});
-
-async function openComments(id){
-  const {data,error}=await sb.from('comments')
-    .select('id,text,created_at,user_id')
-    .eq('post_id',id)
-    .order('created_at',{ascending:true})
-    .limit(100);
-
-  openSheet(`
-    <div class="sheet-head">
-      <h2>Comments</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div id="commentsList">
-      ${
-        error
-          ? `<div class="notice">${esc(error.message)}</div>`
-          : (
-            data?.length
-              ? data.map(c=>`
-                <div style="padding:10px 0;border-bottom:1px solid #292932">
-                  <b>${c.user_id===user.id?'You':'User'}</b> ${esc(c.text)}
-                  <div style="font-size:10px;color:#888">${timeAgo(c.created_at)}</div>
-                </div>
-              `).join('')
-              : '<div class="empty">No comments yet</div>'
-          )
+  async function createPost(e){
+    e.preventDefault();
+    const text=$("#postText").value.trim(), file=$("#postFile").files[0], privacy=$("#postPrivacy").value;
+    if(!text && !file) return toast("Text বা media দিন");
+    const btn=$("#publishBtn"); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Posting…';
+    try{
+      let image_url=null, mediaRecord=null;
+      if(file){
+        const uploaded=await uploadFile(file,"post-media","posts",$("#uploadProgress"));
+        image_url=uploaded.url; mediaRecord={media_url:uploaded.url,media_type:file.type.startsWith("video")?"video":"image"};
       }
-    </div>
-
-    <div style="display:flex;gap:7px;margin-top:12px">
-      <input id="commentText" class="input" placeholder="Write a comment...">
-      <button class="secondary" onclick="sendComment('${id}')">Send</button>
-    </div>
-  `);
-}
-
-async function sendComment(id){
-  const text=$('commentText').value.trim();
-  if(!text)return;
-
-  const {error}=await sb.from('comments').insert({
-    post_id:id,
-    user_id:user.id,
-    text
-  });
-
-  if(error)return toast(error.message);
-
-  openComments(id);
-}
-
-async function openReelComments(id){
-  const {data,error}=await sb.from('reel_comments')
-    .select('*')
-    .eq('reel_id',id)
-    .order('created_at',{ascending:true})
-    .limit(100);
-
-  openSheet(`
-    <div class="sheet-head">
-      <h2>Reel Comments</h2>
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <div>
-      ${
-        error
-          ? `<div class="notice">${esc(error.message)}</div>`
-          : (
-            data?.length
-              ? data.map(c=>`
-                <div style="padding:10px 0;border-bottom:1px solid #292932">
-                  <b>${c.user_id===user.id?'You':'User'}</b> ${esc(c.text)}
-                </div>
-              `).join('')
-              : '<div class="empty">No comments</div>'
-          )
+      const payload={user_id:state.user.id,text,privacy,created_at:new Date().toISOString()};
+      if(image_url) payload.image_url=image_url;
+      let {data,error}=await state.sb.from("posts").insert(payload).select().single();
+      if(error && image_url && /image_url/i.test(error.message||"")){
+        delete payload.image_url; ({data,error}=await state.sb.from("posts").insert(payload).select().single());
       }
-    </div>
+      if(error) throw error;
+      if(mediaRecord){
+        try{await state.sb.from("post_media").insert({post_id:data.id,...mediaRecord,sort_order:0});data._media=[mediaRecord]}catch{}
+      }
+      state.posts.unshift(data); renderFeed(); closeModal("composerModal"); resetPostForm(); toast("Post published");
+    }catch(err){console.error(err);toast("Post failed: "+err.message)}
+    finally{btn.disabled=false;btn.textContent="Post";$("#uploadProgress").style.width="0"}
+  }
 
-    <div style="display:flex;gap:7px;margin-top:12px">
-      <input id="rcText" class="input" placeholder="Write a comment">
-      <button class="secondary" onclick="sendReelComment('${id}')">Send</button>
-    </div>
-  `);
-}
+  async function uploadFile(file,bucket,folder,bar){
+    if(file.size>100*1024*1024) throw new Error("ফাইল 100MB-এর বেশি");
+    const ext=(file.name.split(".").pop()||"bin").replace(/[^a-z0-9]/gi,"");
+    const path=`${folder}/${state.user.id}/${Date.now()}-${uuid()}.${ext}`;
+    if(bar) bar.style.width="25%";
+    const {error}=await state.sb.storage.from(bucket).upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+    if(error) throw new Error(`${bucket} bucket upload: ${error.message}`);
+    if(bar) bar.style.width="80%";
+    const {data}=state.sb.storage.from(bucket).getPublicUrl(path);
+    if(bar) bar.style.width="100%";
+    return {path,url:data.publicUrl};
+  }
 
-async function sendReelComment(id){
-  const text=$('rcText').value.trim();
-  if(!text)return;
+  async function likePost(id,btn){
+    btn.classList.toggle("liked");
+    try{
+      const {data}=await state.sb.from("post_likes").select("id").eq("post_id",id).eq("user_id",state.user.id).maybeSingle();
+      if(data) await state.sb.from("post_likes").delete().eq("id",data.id);
+      else await state.sb.from("post_likes").insert({post_id:id,user_id:state.user.id});
+    }catch{
+      try{await state.sb.from("post_reactions").insert({post_id:id,user_id:state.user.id,reaction:"like"})}catch{}
+    }
+  }
+  async function addComment(postId,text){
+    if(!text.trim()) return;
+    try{
+      let {error}=await state.sb.from("comments").insert({post_id:postId,user_id:state.user.id,text:text.trim(),created_at:new Date().toISOString()});
+      if(error) ({error}=await state.sb.from("comment").insert({post_id:postId,user_id:state.user.id,text:text.trim(),created_at:new Date().toISOString()}));
+      if(error) throw error;
+      const list=$("#comments-"+CSS.escape(String(postId))); if(list) list.insertAdjacentHTML("beforeend",`<div class="comment"><strong>${esc(nameOf(state.profile))}</strong>${esc(text.trim())}</div>`);
+    }catch(e){toast("Comment failed: "+e.message)}
+  }
 
-  const {error}=await sb.from('reel_comments').insert({
-    reel_id:id,
-    user_id:user.id,
-    text
+  async function loadStories(){
+    const el=$("#stories");
+    let stories=[];
+    try{
+      const {data}=await state.sb.from("stories").select("*").order("created_at",{ascending:false}).limit(20);
+      stories=data||[];
+    }catch{}
+    const create=`<button class="story create" id="createStory"><div class="plus">＋</div><div class="sname">Create story</div></button>`;
+    const list=stories.map(s=>`<div class="story">${s.media_url?`<img src="${esc(s.media_url)}">`:""}<img class="avatar" src="${avatarOf(state.profiles.get(s.user_id))}"><div class="sname">${esc(nameOf(state.profiles.get(s.user_id)))}</div></div>`).join("");
+    el.innerHTML=create+list+`<div class="story"><div class="sname">Stories • 24h</div></div>`;
+  }
+
+  async function loadReels(){
+    const el=$("#reelsView");
+    try{
+      const {data,error}=await state.sb.from("reels").select("*").order("created_at",{ascending:false}).limit(25);
+      if(error) throw error;
+      if(!data?.length){el.innerHTML='<div class="empty" style="color:white">No reels yet</div>';return}
+      el.innerHTML=data.map(r=>{
+        const p=state.profiles.get(r.user_id)||{};
+        return `<div class="reel" data-id="${esc(r.id)}"><video src="${esc(r.video_url)}" playsinline loop controls></video>
+          <div class="reel-overlay"><strong>${esc(nameOf(p))}</strong><div>${esc(r.caption||"")}</div><small>🎵 ${esc(r.audio_name||"Original audio")}</small></div>
+          <div class="reel-actions"><button class="reelLike" data-id="${esc(r.id)}">❤️</button><button>💬</button><button class="reelShare" data-id="${esc(r.id)}">↗</button></div></div>`;
+      }).join("");
+      setupReelAutoplay();
+    }catch(e){el.innerHTML=`<div class="empty" style="color:white">Reels load failed<br><small>${esc(e.message)}</small></div>`}
+  }
+  function setupReelAutoplay(){
+    const io=new IntersectionObserver(entries=>entries.forEach(en=>{
+      const v=en.target.querySelector("video"); if(!v)return;
+      if(en.isIntersecting && en.intersectionRatio>.65){v.play().catch(()=>{});} else v.pause();
+    }),{threshold:[.65]});
+    $$(".reel").forEach(r=>{io.observe(r);const v=r.querySelector("video");r.addEventListener("dblclick",e=>{if(e.target===v){e.preventDefault();const b=r.querySelector(".reelLike");reelLike(r.dataset.id,b);}})});
+  }
+  async function reelLike(id,btn){btn.textContent="💖";try{await state.sb.from("reel_reactions").insert({reel_id:id,user_id:state.user.id,reaction:"like"})}catch{}}
+  async function createReel(e){
+    e.preventDefault();const f=$("#reelFile").files[0];if(!f)return;
+    const submit=e.submitter;submit.disabled=true;submit.innerHTML='<span class="spinner"></span> Publishing…';
+    try{
+      const up=await uploadFile(f,"reels","reels",$("#reelProgress"));
+      const payload={user_id:state.user.id,video_url:up.url,caption:$("#reelCaption").value.trim(),audio_name:$("#audioName").value.trim()||"Original audio",created_at:new Date().toISOString(),views:0};
+      const {error}=await state.sb.from("reels").insert(payload);if(error)throw error;
+      closeModal("reelModal");$("#reelForm").reset();$("#reelPreview").classList.add("hidden");toast("Reel published");await loadReels();
+    }catch(e2){toast("Reel failed: "+e2.message)}
+    finally{submit.disabled=false;submit.textContent="Publish reel";$("#reelProgress").style.width="0"}
+  }
+
+  function renderFriends(){
+    const el=$("#friendsGrid"); if(!el)return;
+    const people=[...state.profiles.values()].filter(p=>(p.id||p.user_id)!==state.user?.id);
+    el.innerHTML=people.length?people.map(p=>`<div class="card feature-card"><div class="row"><img class="avatar" src="${avatarOf(p)}"><div><h3 style="margin:0">${esc(nameOf(p))}</h3><small style="color:var(--muted)">People you may know</small></div></div><div class="row" style="margin-top:14px"><button class="btn followBtn" data-id="${esc(p.id||p.user_id)}">Follow</button><button class="btn secondary friendBtn" data-id="${esc(p.id||p.user_id)}">Add friend</button></div></div>`).join(""):'<div class="card empty">আরও ব্যবহারকারী যোগ হলে এখানে suggestions আসবে।</div>';
+  }
+  async function followUser(id,btn){
+    try{const {error}=await state.sb.from("follows").insert({follower_id:state.user.id,following_id:id});if(error)throw error;btn.textContent="Following";btn.classList.add("secondary");}catch(e){toast("Follow: "+e.message)}
+  }
+  async function addFriend(id,btn){
+    try{let {error}=await state.sb.from("friends").insert({user_id:state.user.id,friend_id:id});if(error)throw error;btn.textContent="Requested";}catch(e){toast("Friend: "+e.message)}
+  }
+
+  function renderChats(){
+    const people=[...state.profiles.values()].filter(p=>(p.id||p.user_id)!==state.user?.id).slice(0,12);
+    $("#chatContacts").innerHTML=people.map(p=>`<button class="navitem chatPerson" data-id="${esc(p.id||p.user_id)}"><img class="avatar" src="${avatarOf(p)}">${esc(nameOf(p))}</button>`).join("")||'<div class="empty">No contacts</div>';
+  }
+  async function openChat(id){
+    state.activeChat=id;const p=state.profiles.get(id)||{};
+    const box=$("#chatMessages");box.innerHTML=`<div class="row" style="border-bottom:1px solid var(--line);padding-bottom:10px"><img class="avatar" src="${avatarOf(p)}"><strong>${esc(nameOf(p))}</strong></div>`;
+    try{
+      const {data,error}=await state.sb.from("messages").select("*").or(`and(sender_id.eq.${state.user.id},receiver_id.eq.${id}),and(sender_id.eq.${id},receiver_id.eq.${state.user.id})`).order("created_at",{ascending:true}).limit(100);
+      if(error) throw error;
+      (data||[]).forEach(m=>box.insertAdjacentHTML("beforeend",`<div class="bubble ${m.sender_id===state.user.id?"me":""}">${esc(m.text||m.message||"")}</div>`));
+    }catch{box.insertAdjacentHTML("beforeend",'<div class="empty">Messages table যুক্ত করলে chat history sync হবে।</div>')}
+    box.scrollTop=box.scrollHeight;
+  }
+  async function sendChat(text){
+    if(!state.activeChat||!text.trim()) return;
+    const box=$("#chatMessages");box.insertAdjacentHTML("beforeend",`<div class="bubble me">${esc(text.trim())}</div>`);box.scrollTop=box.scrollHeight;
+    try{await state.sb.from("messages").insert({sender_id:state.user.id,receiver_id:state.activeChat,text:text.trim(),created_at:new Date().toISOString()})}catch{}
+  }
+
+  async function loadNotifications(){
+    const el=$("#notificationsList"); if(!state.user) return;
+    try{
+      const {data,error}=await state.sb.from("notifications").select("*").eq("receiver_id",state.user.id).order("created_at",{ascending:false}).limit(50);
+      if(error) throw error;
+      el.innerHTML=data?.length?data.map(n=>`<div style="padding:14px;border-bottom:1px solid var(--line)"><strong>🔔 ${esc(n.text||"Notification")}</strong><div class="post-time">${fmtDate(n.created_at)}</div></div>`).join(""):'<div class="empty">No notifications</div>';
+    }catch(e){el.innerHTML='<div class="empty">Notification data available হলে এখানে দেখাবে।</div>'}
+  }
+  async function loadEarnings(){
+    try{
+      const {data,error}=await state.sb.from("creator_earnings").select("*").eq("user_id",state.user.id);
+      if(error) throw error;
+      const total=(data||[]).reduce((s,x)=>s+Number(x.amount||x.earnings||0),0);
+      $("#earningsAmount").textContent="$"+total.toFixed(2);
+    }catch{$("#earningsAmount").textContent="$0.00"}
+  }
+
+  async function saveProfile(e){
+    if(e)e.preventDefault();
+    const name=(e?$("#profileEditName"):$("#settingsName")).value.trim(), bio=(e?$("#profileEditBio"):$("#settingsBio")).value.trim();
+    let profile_photo=state.profile.profile_photo||null;
+    try{
+      if(e && $("#avatarFile").files[0]) profile_photo=(await uploadFile($("#avatarFile").files[0],"avatars","avatars")).url;
+      const idCol=state.profile.id===state.user.id?"id":"user_id";
+      let {data,error}=await state.sb.from("profiles").update({name,bio,profile_photo}).eq(idCol,state.user.id).select().maybeSingle();
+      if(error) throw error;
+      state.profile={...state.profile,...(data||{}),name,bio,profile_photo};state.profiles.set(state.user.id,state.profile);paintProfile();renderFeed();closeModal("profileModal");toast("Profile saved");
+    }catch(err){toast("Profile save failed: "+err.message)}
+  }
+
+  async function search(q){
+    route("search");const el=$("#searchResults");q=q.trim();if(!q){el.innerHTML='<div class="card empty">Search লিখুন</div>';return}
+    const localPeople=[...state.profiles.values()].filter(p=>nameOf(p).toLowerCase().includes(q.toLowerCase()));
+    const localPosts=state.posts.filter(p=>(p.text||"").toLowerCase().includes(q.toLowerCase()));
+    el.innerHTML=`<div class="card" style="padding:14px;margin-bottom:14px"><h3>People</h3>${localPeople.map(p=>`<div class="contact"><img class="avatar" src="${avatarOf(p)}"><strong>${esc(nameOf(p))}</strong></div>`).join("")||'<p style="color:var(--muted)">No people</p>'}</div>${localPosts.map(postHTML).join("")||'<div class="card empty">No matching posts</div>'}`;
+  }
+
+  function openModal(id){$("#"+id).classList.add("show")}
+  function closeModal(id){$("#"+id).classList.remove("show")}
+  function resetPostForm(){$("#postForm").reset();$("#mediaPreview").innerHTML="";$("#mediaPreview").classList.add("hidden")}
+  function previewFile(file,elId){
+    const el=$("#"+elId);if(!file){el.classList.add("hidden");return}
+    const u=URL.createObjectURL(file);el.classList.remove("hidden");
+    el.innerHTML=file.type.startsWith("video")?`<video controls src="${u}"></video>`:`<img src="${u}">`;
+  }
+  function applyReelPreview(){
+    const v=$("#reelPreview video");if(!v)return;
+    const b=$("#bright").value,c=$("#contrast").value,s=$("#saturate").value,e=$("#reelEffect").value;
+    v.style.filter=`brightness(${b}%) contrast(${c}%) saturate(${s}%) ${e==="none"?"":e}`;
+    v.playbackRate=Number($("#speed").value||1);
+  }
+
+  document.addEventListener("click",async e=>{
+    const r=e.target.closest("[data-route]");if(r){route(r.dataset.route);return}
+    const c=e.target.closest("[data-close]");if(c){closeModal(c.dataset.close);return}
+    if(e.target.id==="openComposer")openModal("composerModal");
+    if(e.target.id==="quickPhoto"){openModal("composerModal");setTimeout(()=>$("#postFile").click(),100)}
+    if(e.target.id==="quickFeeling"){openModal("composerModal");$("#postText").value+=" 😊 feeling "}
+    if(e.target.id==="quickLive")toast("Live streaming-এর জন্য RTMP/WebRTC backend দরকার।");
+    if(e.target.id==="openReelComposer")openModal("reelModal");
+    if(e.target.id==="editProfileBtn")openModal("profileModal");
+    const like=e.target.closest(".likeBtn");if(like)likePost(like.dataset.id,like);
+    const cf=e.target.closest(".commentFocus");if(cf)document.querySelector(`.comment-form[data-post="${CSS.escape(cf.dataset.id)}"] input`)?.focus();
+    const sh=e.target.closest(".shareBtn");if(sh){const url=location.href.split("#")[0]+"#post-"+sh.dataset.id;navigator.clipboard?.writeText(url);toast("Post link copied")}
+    const sv=e.target.closest(".saveBtn");if(sv){const id=String(sv.dataset.id);state.saved.has(id)?state.saved.delete(id):state.saved.add(id);localStorage.setItem("msa_saved",JSON.stringify([...state.saved]));sv.textContent=state.saved.has(id)?"🔖 Saved":"🔖 Save";toast(state.saved.has(id)?"Saved":"Removed from saved")}
+    const fl=e.target.closest(".followBtn");if(fl)followUser(fl.dataset.id,fl);
+    const fr=e.target.closest(".friendBtn");if(fr)addFriend(fr.dataset.id,fr);
+    const cp=e.target.closest(".chatPerson");if(cp)openChat(cp.dataset.id);
+    const rl=e.target.closest(".reelLike");if(rl)reelLike(rl.dataset.id,rl);
+    if(e.target.id==="themeBtn"){document.body.classList.toggle("dark");localStorage.setItem("msa_theme",document.body.classList.contains("dark")?"dark":"light");e.target.textContent=document.body.classList.contains("dark")?"☀️":"🌙"}
+    if(e.target.id==="refreshEarnings")loadEarnings();
+    if(e.target.id==="withdrawBtn")toast("Withdrawal request-এর জন্য secure Edge Function/payment workflow যুক্ত করুন।");
+    if(e.target.id==="blockedBtn")toast("blocked_users table ready থাকলে blocked list screen connect করা যাবে।");
+    if(e.target.id==="downloadDataBtn"){
+      const blob=new Blob([JSON.stringify({profile:state.profile,posts:state.posts.filter(p=>p.user_id===state.user.id)},null,2)],{type:"application/json"});
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="my-social-app-data.json";a.click();URL.revokeObjectURL(a.href);
+    }
+    if(e.target.id==="deactivateBtn"){
+      if(confirm("Account deactivate করবেন?")){
+        try{const {error}=await state.sb.from("account_status").upsert({user_id:state.user.id,deactivated:true,deactivated_at:new Date().toISOString()},{onConflict:"user_id"});if(error)throw error;toast("Account status deactivated করা হয়েছে");}catch(err){toast("Deactivate failed: "+err.message)}
+      }
+    }
+    if(e.target.id==="changePasswordBtn"){
+      const p=prompt("নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)");if(p?.length>=6){const {error}=await state.sb.auth.updateUser({password:p});toast(error?error.message:"Password updated")}
+    }
+    if(e.target.id==="createStory") toast("Stories table/storage থাকলে story upload এখানে connect হবে।");
+    if(e.target.id==="addFeelingBtn"){$("#postText").value+=" 😊 feeling happy"}
+    if(e.target.id==="addLocationBtn"){const l=prompt("Location");if(l)$("#postText").value+=`\n📍 ${l}`}
+    if(e.target.id==="addPollBtn"){$("#postText").value+="\n📊 Poll: Option A / Option B"}
   });
 
-  if(error)return toast(error.message);
-
-  openReelComments(id);
-}
-
-testConnection();
-
-(async()=>{
-  const {data}=await sb.auth.getSession();
-  if(data.session){
-    startApp(data.session.user);
+  document.addEventListener("submit",e=>{
+    if(e.target.matches(".comment-form")){e.preventDefault();const input=e.target.querySelector("input");addComment(e.target.dataset.post,input.value);input.value=""}
+  });
+  $("#loginTab").onclick=()=>{$("#loginTab").classList.add("active");$("#signupTab").classList.remove("active");$("#loginForm").classList.remove("hidden");$("#signupForm").classList.add("hidden")}
+  $("#signupTab").onclick=()=>{$("#signupTab").classList.add("active");$("#loginTab").classList.remove("active");$("#signupForm").classList.remove("hidden");$("#loginForm").classList.add("hidden")}
+  $("#loginForm").onsubmit=async e=>{
+    e.preventDefault();
+    if(!state.sb) return setStatus("Supabase এখনো প্রস্তুত নয়। Refresh দিন।","err");
+    const email=$("#loginEmail").value.trim(), password=$("#loginPassword").value;
+    if(!email || !password) return setStatus("Email ও password দিন।","err");
+    setStatus("লগইন হচ্ছে…");
+    try{
+      const {data,error}=await state.sb.auth.signInWithPassword({email,password});
+      if(error) throw error;
+      if(data?.session){ setStatus("লগইন সফল। App খুলছে…","ok"); await enterApp(data.session); }
+      else setStatus("Login সফল, কিন্তু session পাওয়া যায়নি। আবার চেষ্টা করুন।","err");
+    }catch(err){
+      console.error("login",err);
+      setStatus(err?.message||"Login failed","err");
+    }
+  };
+  $("#signupForm").onsubmit=async e=>{
+    e.preventDefault();
+    if(!state.sb) return setStatus("Supabase এখনো প্রস্তুত নয়। Refresh দিন।","err");
+    const name=$("#signupName").value.trim(), email=$("#signupEmail").value.trim(), password=$("#signupPassword").value;
+    if(!name || !email || password.length<6) return setStatus("Name, valid email এবং কমপক্ষে 6 অক্ষরের password দিন।","err");
+    setStatus("অ্যাকাউন্ট তৈরি হচ্ছে…");
+    try{
+      const {data,error}=await state.sb.auth.signUp({email,password,options:{data:{name}}});
+      if(error) throw error;
+      if(data?.session){ setStatus("অ্যাকাউন্ট তৈরি ও লগইন সফল।","ok"); await enterApp(data.session); }
+      else setStatus("অ্যাকাউন্ট তৈরি হয়েছে। Email confirmation চালু থাকলে inbox থেকে confirm করুন।","ok");
+    }catch(err){ setStatus(err?.message||"Signup failed","err"); }
+  };
+  $("#forgotBtn").onclick=async()=>{
+    if(!state.sb) return toast("Supabase এখনো প্রস্তুত নয়। Refresh দিন।");
+    const email=$("#loginEmail").value.trim();
+    if(!email)return toast("Login email লিখুন");
+    try{
+      const {error}=await state.sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
+      if(error) throw error;
+      toast("Password reset email পাঠানো হয়েছে");
+    }catch(err){toast(err?.message||"Password reset failed")}
   }
+  $("#logoutBtn").onclick=()=>state.sb.auth.signOut();
+  $("#postForm").onsubmit=createPost; $("#reelForm").onsubmit=createReel; $("#profileForm").onsubmit=saveProfile;
+  $("#saveSettings").onclick=()=>saveProfile(null);
+  $("#postFile").onchange=e=>previewFile(e.target.files[0],"mediaPreview");
+  $("#reelFile").onchange=e=>{previewFile(e.target.files[0],"reelPreview");setTimeout(applyReelPreview,50)};
+  ["bright","contrast","saturate","speed","reelEffect"].forEach(id=>$("#"+id).addEventListener("input",applyReelPreview));
+  $("#chatForm").onsubmit=e=>{e.preventDefault();const v=$("#chatInput").value;sendChat(v);$("#chatInput").value=""}
+  let searchTimer;$("#globalSearch").addEventListener("input",e=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>search(e.target.value),300)});
+  $$(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));
+
+  if(localStorage.getItem("msa_theme")==="dark"){document.body.classList.add("dark");$("#themeBtn").textContent="☀️"}
+  init();
 })();
 </script>
 </body>
-</html>
+</html
